@@ -1,9 +1,5 @@
-import { Action, Dispatch } from 'redux';
-import { AnyObject, Model } from './Model';
-
-export interface NormalAction<Payload = AnyObject, Type = string> extends Action<Type> {
-  payload: Payload;
-}
+import { Dispatch } from 'redux';
+import { Model } from './Model';
 
 // Action + Reducer
 export abstract class NormalModel<Data = {}, Payload extends AnyObject = {}> extends Model<Data> {

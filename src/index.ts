@@ -1,7 +1,9 @@
 export { METHOD, HTTP_STATUS_CODE } from './util';
-export { Model, ReducerEffects } from './Model';
+export { Model } from './Model';
 export { ReducerModel } from './ReducerModel';
-export { NormalModel, NormalAction } from './NormalModel';
+export { NormalModel } from './NormalModel';
 export { NormalActionModel } from './NormalActionModel';
-export { RequestModel, RequestAction, ResponseAction, MiddlewareReturnObject, ReducerMeta } from './RequestModel';
-export { SocketModel, SocketAction } from './SocketModel';
+export { RequestModel } from './RequestModel';
+export { SocketModel } from './SocketModel';
+export { createRequestMiddleware } from './createRequestMiddleware';
+export { createReducers } from './createReducers';

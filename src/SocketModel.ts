@@ -1,10 +1,5 @@
 import { Dispatch } from 'redux';
-import { NormalAction, NormalModel } from './NormalModel';
-import { AnyObject } from './Model';
-
-export interface SocketAction<Payload = AnyObject, Type = string> extends NormalAction<Payload, Type> {
-  middleware: string;
-}
+import { NormalModel } from './NormalModel';
 
 interface DenyData {
   DO_NOT_USE_REDUCER: true;

@@ -7,6 +7,7 @@ node_modules/.bin/tsc
 mv ./build/src/* ./build/
 rm -r ./build/src
 cp package.json README.md LICENSE ./build
+cp src/definition.d.ts ./build/index.d.ts
 
 old_registry=$(npm config get registry)
 npm config set registry https://registry.npmjs.org

@@ -1,55 +1,8 @@
 import { Dispatch } from 'redux';
-import { AnyObject, Model } from './Model';
-import { HTTP_STATUS_CODE, METHOD } from './util';
-import { NormalAction } from './NormalModel';
-import { AxiosRequestConfig, Canceler } from 'axios';
+import { Model } from './Model';
+import { METHOD } from './util';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-export interface ReducerMeta {
-  actionType: string;
-  loading: boolean;
-  errorMessage?: string;
-  httpStatus?: number;
-  businessCode?: string | number;
-}
-
-type ReducerMetas = Partial<{
-  [key: string]: ReducerMeta;
-}>;
-
-interface RequestTypes {
-  prepare: string;
-  success: string;
-  fail: string;
-}
-
-export interface MiddlewareReturnObject<Response = {}, Payload = {}> {
-  promise: Promise<ResponseAction<Response, Payload>>;
-  cancel: Canceler;
-}
-
-export interface RequestAction<Payload = AnyObject, Type = RequestTypes> extends NormalAction<Payload, Type> {
-  middleware: string;
-  method: METHOD;
-  uri: string;
-  requestOptions: AxiosRequestConfig;
-  // post/put 传输数据
-  body: AnyObject;
-  // 查询字符串
-  query: AnyObject;
-  // 请求成功时提示的消息，不填即不展示
-  successText: string;
-  // 默认展示错误消息
-  hideError: boolean | ((response: ResponseAction<any>) => boolean);
-}
-
-export interface ResponseAction<Response = {}, Payload = AnyObject> extends RequestAction<Payload, string> {
-  response: Response;
-  errorMessage?: string;
-  httpStatus?: HTTP_STATUS_CODE;
-  businessCode?: string;
-}
 
 type CreateActionOption<Payload = AnyObject> = Partial<Omit<RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
 

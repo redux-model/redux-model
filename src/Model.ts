@@ -1,12 +1,3 @@
-export interface AnyObject {
-    [key: string]: any;
-}
-
-export type ReducerEffects<Data> = Array<{
-    when: string;
-    effect: (state: Data, action: any) => Data;
-}>;
-
 // Base Mix Model
 export abstract class Model<Data> {
     private static COUNTER = 0;

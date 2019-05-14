@@ -1,7 +1,8 @@
 {
   "name": "redux-mix",
-  "version": "0.0.4",
+  "version": "0.3.0",
   "main": "index.js",
+  "types": "index.d.ts",
   "repository": "https://github.com/fwh1990/redux-mix",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
@@ -11,7 +12,6 @@
   "devDependencies": {
     "@types/node": "^12.0.0",
     "@types/webpack-env": "^1.13.9",
-    "redux": "^4.0.1",
     "typescript": "^3.4.5"
   },
   "dependencies": {
