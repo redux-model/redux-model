@@ -39,7 +39,7 @@ export abstract class Model<Data> {
         };
     }
 
-    protected getEffects(): ReducerEffects<Data> {
+    protected getEffects(): RM.ReducerEffects<Data> {
         return [];
     }
 

@@ -8,14 +8,14 @@ interface FailTransform {
   businessCode?: string;
 }
 
-type MixedReturn = MiddlewareReturnObject | RequestAction;
+type MixedReturn = RM.MiddlewareEffect | RM.RequestAction;
 
-export const createRequestMiddleware = <State extends AnyObject>(config: {
+export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
   id: string;
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig;
-  onInit?: (api: MiddlewareAPI<Dispatch, State>, action: RequestAction) => void;
-  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => AnyObject;
+  onInit?: (api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void;
+  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
   onFail: (error: AxiosError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
@@ -28,7 +28,7 @@ export const createRequestMiddleware = <State extends AnyObject>(config: {
     ...config.axiosConfig,
   });
 
-  const middleware: Middleware<{}, State> = (api) => (next) => (action: RequestAction): MixedReturn => {
+  const middleware: Middleware<{}, State> = (api) => (next) => (action: RM.RequestAction): MixedReturn => {
     if (action.middleware !== config.id) {
       return next(action);
     }
@@ -58,7 +58,7 @@ export const createRequestMiddleware = <State extends AnyObject>(config: {
     next({ ...action, type: prepare });
     const promise = httpHandle.request(requestOptions)
         .then((response) => {
-          const okResponse: ResponseAction = {
+          const okResponse: RM.ResponseAction = {
             ...action,
             payload: action.payload,
             type: success,
@@ -97,7 +97,7 @@ export const createRequestMiddleware = <State extends AnyObject>(config: {
             errorMessage = '网络繁忙，请求超时';
           }
 
-          const errorResponse: ResponseAction = {
+          const errorResponse: RM.ResponseAction = {
             ...action,
             payload: action.payload,
             response: error.response || {},

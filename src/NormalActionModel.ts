@@ -5,7 +5,7 @@ interface DenyData {
 }
 
 // Action only
-export abstract class NormalActionModel<Payload extends AnyObject = {}> extends NormalModel<DenyData, Payload> {
+export abstract class NormalActionModel<Payload extends RM.AnyObject = {}> extends NormalModel<DenyData, Payload> {
   protected getInitValue(): DenyData {
     throw new Error(`[${this.constructor.name}] Do not use method: getInitValue`);
   }

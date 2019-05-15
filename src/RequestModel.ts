@@ -4,10 +4,10 @@ import { METHOD } from './util';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-type CreateActionOption<Payload = AnyObject> = Partial<Omit<RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
+type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
 
 // AsyncAction + Reducer
-export abstract class RequestModel<Data = {}, Response = {}, Payload extends AnyObject = {}> extends Model<Data> {
+export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   protected readonly prepareType: string;
 
   protected readonly failType: string;
@@ -29,7 +29,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     return this.failType;
   }
 
-  public createMeta(): (state: ReducerMeta | undefined, action: ResponseAction) => ReducerMeta {
+  public createMeta(): (state: RM.ReducerMeta | undefined, action: RM.ResponseAction) => RM.ReducerMeta {
     return (state, action) => {
       if (!state) {
         state = {
@@ -63,7 +63,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     };
   }
 
-  public createMetas(payloadKey: string): (state: ReducerMetas | undefined, action: ResponseAction<{}, Payload>) => ReducerMetas {
+  public createMetas(payloadKey: string): (state: RM.ReducerMetas | undefined, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas {
     return (state, action) => {
       if (!state) {
         state = {};
@@ -105,15 +105,15 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
 
   public dispatch(
     dispatch: Dispatch,
-    action: MiddlewareReturnObject<Response, Payload>,
-  ): MiddlewareReturnObject<Response, Payload> {
+    action: RM.MiddlewareEffect<Response, Payload>,
+  ): RM.MiddlewareEffect<Response, Payload> {
     // @ts-ignore
     return dispatch(action);
   }
 
-  public abstract action(...args: any[]): MiddlewareReturnObject<Response, Payload>;
+  public abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
 
-  protected get(uri: string, options: CreateActionOption<Payload> = {}): MiddlewareReturnObject<Response, Payload> {
+  protected get(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {
     return this.createAction({
       uri,
       method: METHOD.get,
@@ -121,7 +121,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     });
   }
 
-  protected post(uri: string, options: CreateActionOption<Payload> = {}): MiddlewareReturnObject<Response, Payload> {
+  protected post(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {
     return this.createAction({
       uri,
       method: METHOD.post,
@@ -129,7 +129,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     });
   }
 
-  protected put(uri: string, options: CreateActionOption<Payload> = {}): MiddlewareReturnObject<Response, Payload> {
+  protected put(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {
     return this.createAction({
       uri,
       method: METHOD.put,
@@ -137,7 +137,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     });
   }
 
-  protected patch(uri: string, options: CreateActionOption<Payload> = {}): MiddlewareReturnObject<Response, Payload> {
+  protected patch(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {
     return this.createAction({
       uri,
       method: METHOD.patch,
@@ -145,7 +145,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     });
   }
 
-  protected delete(uri: string, options: CreateActionOption<Payload> = {}): MiddlewareReturnObject<Response, Payload> {
+  protected delete(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {
     return this.createAction({
       uri,
       method: METHOD.delete,
@@ -153,14 +153,14 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends Any
     });
   }
 
-  protected abstract onSuccess(state: Data, action: ResponseAction<Response, Payload>): Data;
+  protected abstract onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data;
 
   protected abstract getMiddlewareName(): string;
 
   private createAction(
-    options: CreateActionOption<Payload> & Pick<RequestAction<Payload>, 'uri' | 'method'>,
-  ): MiddlewareReturnObject<Response, Payload> {
-    const data: RequestAction<Payload> = {
+    options: CreateActionOption<Payload> & Pick<RM.RequestAction<Payload>, 'uri' | 'method'>,
+  ): RM.MiddlewareEffect<Response, Payload> {
+    const data: RM.RequestAction<Payload> = {
       type: {
         prepare: this.prepareType,
         success: this.successType,

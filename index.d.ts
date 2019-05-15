@@ -42,7 +42,7 @@ export declare abstract class Model<Data> {
     constructor(name?: string);
     getSuccessType(): string;
     createData(): (state: Data | undefined, action: any) => Data;
-    protected getEffects(): ReducerEffects<Data>;
+    protected getEffects(): RM.ReducerEffects<Data>;
     protected getTypePrefix(): string;
     protected abstract getInitValue(): Data;
     protected abstract onSuccess(state: Data, action: any): Data;
@@ -56,47 +56,47 @@ export declare abstract class ReducerModel<Data = {}> extends Model<Data> {
     protected onSuccess(): Data & DenyData;
 }
 
-export declare abstract class NormalModel<Data = {}, Payload extends AnyObject = {}> extends Model<Data> {
+export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
     constructor(name?: string);
-    abstract action(...args: any[]): NormalAction<Payload>;
-    dispatch(dispatch: Dispatch, action: NormalAction<Payload>): NormalAction<Payload>;
-    protected createAction(payload: Payload): NormalAction<Payload>;
-    protected abstract onSuccess(state: Data, action: NormalAction<Payload>): Data;
+    abstract action(...args: any[]): RM.NormalAction<Payload>;
+    dispatch(dispatch: Dispatch, action: RM.NormalAction<Payload>): RM.NormalAction<Payload>;
+    protected createAction(payload: Payload): RM.NormalAction<Payload>;
+    protected abstract onSuccess(state: Data, action: RM.NormalAction<Payload>): Data;
 }
 
-export declare abstract class NormalActionModel<Payload extends AnyObject = {}> extends NormalModel<DenyData, Payload> {
+export declare abstract class NormalActionModel<Payload extends RM.AnyObject = {}> extends NormalModel<DenyData, Payload> {
     protected getInitValue(): DenyData;
     protected onSuccess(): DenyData;
 }
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-declare type CreateActionOption<Payload = AnyObject> = Partial<Omit<RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
+declare type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
 
-export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends AnyObject = {}> extends Model<Data> {
+export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
     protected readonly prepareType: string;
     protected readonly failType: string;
     constructor(name?: string);
     getPrepareType(): string;
     getFailType(): string;
-    createMeta(): (state: ReducerMeta | undefined, action: ResponseAction) => ReducerMeta;
-    createMetas(payloadKey: string): (state: ReducerMetas | undefined, action: ResponseAction<{}, Payload>) => ReducerMetas;
-    dispatch(dispatch: Dispatch, action: MiddlewareReturnObject<Response, Payload>): MiddlewareReturnObject<Response, Payload>;
-    abstract action(...args: any[]): MiddlewareReturnObject<Response, Payload>;
-    protected get(uri: string, options?: CreateActionOption<Payload>): MiddlewareReturnObject<Response, Payload>;
-    protected post(uri: string, options?: CreateActionOption<Payload>): MiddlewareReturnObject<Response, Payload>;
-    protected put(uri: string, options?: CreateActionOption<Payload>): MiddlewareReturnObject<Response, Payload>;
-    protected patch(uri: string, options?: CreateActionOption<Payload>): MiddlewareReturnObject<Response, Payload>;
-    protected delete(uri: string, options?: CreateActionOption<Payload>): MiddlewareReturnObject<Response, Payload>;
-    protected abstract onSuccess(state: Data, action: ResponseAction<Response, Payload>): Data;
+    createMeta(): (state: RM.ReducerMeta | undefined, action: RM.ResponseAction) => RM.ReducerMeta;
+    createMetas(payloadKey: string): (state: RM.ReducerMetas | undefined, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
+    dispatch(dispatch: Dispatch, action: RM.MiddlewareEffect<Response, Payload>): RM.MiddlewareEffect<Response, Payload>;
+    abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
+    protected get(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
+    protected post(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
+    protected put(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
+    protected patch(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
+    protected delete(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
+    protected abstract onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data;
     protected abstract getMiddlewareName(): string;
     private createAction;
 }
 
-export declare abstract class SocketModel<Payload extends AnyObject = {}> extends NormalModel<DenyData, Payload> {
-    dispatch(dispatch: Dispatch, action: SocketAction<Payload>): SocketAction<Payload>;
-    abstract action(...args: any[]): SocketAction<Payload>;
-    protected createAction(payload: Payload): SocketAction<Payload>;
+export declare abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<DenyData, Payload> {
+    dispatch(dispatch: Dispatch, action: RM.SocketAction<Payload>): RM.SocketAction<Payload>;
+    abstract action(...args: any[]): RM.SocketAction<Payload>;
+    protected createAction(payload: Payload): RM.SocketAction<Payload>;
     protected getInitValue(): DenyData;
     protected onSuccess(): DenyData;
     protected abstract getMiddlewareName(): string;
@@ -108,74 +108,76 @@ interface FailTransform {
     businessCode?: string;
 }
 
-export declare const createRequestMiddleware: <State extends AnyObject>(config: {
+export declare const createRequestMiddleware: <State extends RM.AnyObject>(config: {
     id: string;
     baseUrl: string;
     axiosConfig?: AxiosRequestConfig | undefined;
-    onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RequestAction<AnyObject, RequestTypes>) => void) | undefined;
-    getHeaders: (api: MiddlewareAPI<Dispatch, State>) => AnyObject;
+    onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction<RM.AnyObject, RM.RequestTypes>) => void) | undefined;
+    getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
     onFail: (error: AxiosError, transform: FailTransform) => void;
     onShowSuccess: (message: string) => void;
     onShowError: (message: string) => void;
 }) => Middleware<{}, State, Dispatch>;
 
 declare global {
-    interface AnyObject {
-        [key: string]: any;
-    }
+    namespace RM {
+        interface AnyObject {
+            [key: string]: any;
+        }
 
-    type ReducerEffects<Data> = Array<{
-        when: string;
-        effect: (state: Data, action: any) => Data;
-    }>;
+        type ReducerEffects<Data> = Array<{
+            when: string;
+            effect: (state: Data, action: any) => Data;
+        }>;
 
-    interface ReducerMeta {
-        actionType: string;
-        loading: boolean;
-        errorMessage?: string;
-        httpStatus?: number;
-        businessCode?: string | number;
-    }
+        interface ReducerMeta {
+            actionType: string;
+            loading: boolean;
+            errorMessage?: string;
+            httpStatus?: number;
+            businessCode?: string | number;
+        }
 
-    type ReducerMetas = Partial<{
-        [key: string]: ReducerMeta;
-    }>;
+        type ReducerMetas = Partial<{
+            [key: string]: RM.ReducerMeta;
+        }>;
 
-    interface RequestTypes {
-        prepare: string;
-        success: string;
-        fail: string;
-    }
+        interface RequestTypes {
+            prepare: string;
+            success: string;
+            fail: string;
+        }
 
-    interface MiddlewareReturnObject<Response = {}, Payload = {}> {
-        promise: Promise<ResponseAction<Response, Payload>>;
-        cancel: Canceler;
-    }
+        interface MiddlewareEffect<Response = {}, Payload = {}> {
+            promise: Promise<RM.ResponseAction<Response, Payload>>;
+            cancel: Canceler;
+        }
 
-    interface NormalAction<Payload = AnyObject, Type = string> extends Action<Type> {
-        payload: Payload;
-    }
+        interface NormalAction<Payload = RM.AnyObject, Type = string> extends Action<Type> {
+            payload: Payload;
+        }
 
-    interface SocketAction<Payload = AnyObject, Type = string> extends NormalAction<Payload, Type> {
-        middleware: string;
-    }
+        interface SocketAction<Payload = RM.AnyObject, Type = string> extends RM.NormalAction<Payload, Type> {
+            middleware: string;
+        }
 
-    interface RequestAction<Payload = AnyObject, Type = RequestTypes> extends NormalAction<Payload, Type> {
-        middleware: string;
-        method: METHOD;
-        uri: string;
-        requestOptions: AxiosRequestConfig;
-        body: AnyObject;
-        // queryString
-        query: AnyObject;
-        successText: string;
-        hideError: boolean | ((response: ResponseAction<any>) => boolean);
-    }
+        interface RequestAction<Payload = RM.AnyObject, Type = RequestTypes> extends RM.NormalAction<Payload, Type> {
+            middleware: string;
+            method: METHOD;
+            uri: string;
+            requestOptions: AxiosRequestConfig;
+            body: RM.AnyObject;
+            // queryString
+            query: RM.AnyObject;
+            successText: string;
+            hideError: boolean | ((response: RM.ResponseAction<any>) => boolean);
+        }
 
-    interface ResponseAction<Response = {}, Payload = AnyObject> extends RequestAction<Payload, string> {
-        response: Response;
-        errorMessage?: string;
-        httpStatus?: HTTP_STATUS_CODE;
-        businessCode?: string;
+        interface ResponseAction<Response = {}, Payload = RM.AnyObject> extends RM.RequestAction<Payload, string> {
+            response: Response;
+            errorMessage?: string;
+            httpStatus?: HTTP_STATUS_CODE;
+            businessCode?: string;
+        }
     }
 }
