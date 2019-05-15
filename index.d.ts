@@ -7,11 +7,9 @@ interface Action<T = any> {
 
 type AnyFunctionReturnType<T> = T extends (...args: any) => infer R ? R : never;
 
-type EnsureState<T> = {
+export type EnhanceState<T> = {
     [key in keyof T]: AnyFunctionReturnType<T[key]>;
 };
-
-export declare const createReducers: <T extends any>(reducers: T) => Reducer<EnsureState<T>>;
 
 export declare enum METHOD {
     get = "GET",

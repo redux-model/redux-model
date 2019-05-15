@@ -6,4 +6,3 @@ export { NormalActionModel } from './NormalActionModel';
 export { RequestModel } from './RequestModel';
 export { SocketModel } from './SocketModel';
 export { createRequestMiddleware } from './createRequestMiddleware';
-export { createReducers } from './createReducers';
