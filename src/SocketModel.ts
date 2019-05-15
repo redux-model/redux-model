@@ -1,12 +1,7 @@
 import { Dispatch } from 'redux';
 import { NormalModel } from './NormalModel';
 
-interface DenyData {
-  DO_NOT_USE_REDUCER: true;
-}
-
-// RM.SocketAction
-export abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<DenyData, Payload> {
+export abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
   public dispatch(dispatch: Dispatch, action: RM.SocketAction<Payload>): RM.SocketAction<Payload> {
     return dispatch(action);
   }
@@ -21,11 +16,11 @@ export abstract class SocketModel<Payload extends RM.AnyObject = {}> extends Nor
     };
   }
 
-  protected getInitValue(): DenyData {
+  protected getInitValue(): RM.DoNotUseReducer {
     throw new Error(`[${this.constructor.name}] Do not use method: getInitValue`);
   }
 
-  protected onSuccess(): DenyData {
+  protected onSuccess(): RM.DoNotUseReducer {
     throw new Error(`[${this.constructor.name}] Do not use method: onSuccess`);
   }
 

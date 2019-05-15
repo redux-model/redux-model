@@ -1,16 +1,12 @@
 import { NormalModel } from './NormalModel';
 
-interface DenyData {
-  DO_NOT_USE_REDUCER: true;
-}
-
 // Action only
-export abstract class NormalActionModel<Payload extends RM.AnyObject = {}> extends NormalModel<DenyData, Payload> {
-  protected getInitValue(): DenyData {
+export abstract class NormalActionModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
+  protected getInitValue(): RM.DoNotUseReducer {
     throw new Error(`[${this.constructor.name}] Do not use method: getInitValue`);
   }
 
-  protected onSuccess(): DenyData {
+  protected onSuccess(): RM.DoNotUseReducer {
     throw new Error(`[${this.constructor.name}] Do not use method: onSuccess`);
   }
 }
