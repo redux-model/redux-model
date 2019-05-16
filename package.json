@@ -3,7 +3,7 @@
   "version": "0.5.1",
   "main": "index.js",
   "types": "index.d.ts",
-  "repository": "https://github.com/fwh1990/redux-mix",
+  "repository": "https://github.com/fwh1990/redux-model-ts",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "peerDependencies": {
