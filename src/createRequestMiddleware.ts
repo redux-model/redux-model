@@ -15,6 +15,7 @@ export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig;
   onInit?: (api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void;
+  getTimeoutMessage?: () => string;
   getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
   onFail: (error: RM.HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
@@ -80,22 +81,22 @@ export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
           let businessCode;
 
           if (isCancel) {
-            errorMessage = error.message || '请求已被主动取消';
+            errorMessage = error.message;
           } else if (error.request && error.response) {
             const transform: FailTransform = {
               httpStatus: error.response.status,
             };
 
             config.onFail(error as RM.HttpError, transform);
-            errorMessage = transform.errorMessage || '接口请求时捕获到异常';
+            errorMessage = transform.errorMessage;
             httpStatus = transform.httpStatus;
             businessCode = transform.businessCode;
           } else {
-            errorMessage = error.message || '接口请求时捕获到异常';
+            errorMessage = error.message;
           }
 
-          if (/^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
-            errorMessage = '网络繁忙，请求超时';
+          if (config.getTimeoutMessage && /^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
+            errorMessage = config.getTimeoutMessage();
           }
 
           const errorResponse: RM.ResponseAction = {
