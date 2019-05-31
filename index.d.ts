@@ -141,6 +141,7 @@ export declare const createRequestMiddleware: <State extends RM.AnyObject>(confi
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig | undefined;
   onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction<RM.AnyObject, RM.RequestTypes>) => void) | undefined;
+  getTimeoutMessage?: () => string;
   getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
   onFail: (error: RM.HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
