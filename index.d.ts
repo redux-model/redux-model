@@ -1,4 +1,4 @@
-import { AxiosError, AxiosRequestConfig, Canceler } from 'axios';
+import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
 import { Dispatch, Middleware, MiddlewareAPI, Reducer } from 'redux';
 
 interface Action<T = any> {
@@ -183,6 +183,10 @@ declare global {
     interface MiddlewareEffect<Response = {}, Payload = {}> {
       promise: Promise<RM.ResponseAction<Response, Payload>>;
       cancel: Canceler;
+    }
+
+    interface HttpError<T = any> extends AxiosError {
+      response: AxiosResponse<T>;
     }
 
     interface NormalAction<Payload = RM.AnyObject, Type = string> extends Action<Type> {

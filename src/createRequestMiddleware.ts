@@ -82,10 +82,11 @@ export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
           if (isCancel) {
             errorMessage = error.message || '请求已被主动取消';
           } else if (error.request && error.response) {
-            const transform: FailTransform = {};
+            const transform: FailTransform = {
+              httpStatus: error.response.status,
+            };
 
             config.onFail(error, transform);
-
             errorMessage = transform.errorMessage || '接口请求时捕获到异常';
             httpStatus = transform.httpStatus;
             businessCode = transform.businessCode;
