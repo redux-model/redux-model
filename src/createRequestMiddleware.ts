@@ -86,7 +86,7 @@ export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
               httpStatus: error.response.status,
             };
 
-            config.onFail(error, transform);
+            config.onFail(error as RM.HttpError, transform);
             errorMessage = transform.errorMessage || '接口请求时捕获到异常';
             httpStatus = transform.httpStatus;
             businessCode = transform.businessCode;
