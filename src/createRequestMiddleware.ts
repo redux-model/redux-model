@@ -16,7 +16,7 @@ export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
   axiosConfig?: AxiosRequestConfig;
   onInit?: (api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void;
   getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
-  onFail: (error: AxiosError, transform: FailTransform) => void;
+  onFail: (error: RM.HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
 }) => {
