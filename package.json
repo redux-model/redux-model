@@ -1,21 +1,18 @@
 {
   "name": "redux-model-ts",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": "https://github.com/fwh1990/redux-model-ts",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "peerDependencies": {
+    "axios": "^0.18.0 || ^0.19.0",
     "redux": "*"
   },
   "devDependencies": {
     "@types/node": "^12.0.0",
     "@types/webpack-env": "^1.13.9",
     "typescript": "^3.4.5"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "tslib": "^1.9.3"
   }
 }

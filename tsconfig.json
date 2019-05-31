@@ -7,7 +7,7 @@
     "removeComments": false,
     "outDir": "./build",
     "rootDir": "./",
-    "importHelpers": true,
+    "importHelpers": false,
     "downlevelIteration": true,
     "strict": true,
     "noImplicitAny": false,
