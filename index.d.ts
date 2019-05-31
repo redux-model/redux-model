@@ -181,13 +181,15 @@ declare global {
       fail: string;
     }
 
-    interface MiddlewareEffect<Response = {}, Payload = {}> {
-      promise: Promise<RM.ResponseAction<Response, Payload>>;
-      cancel: Canceler;
-    }
+    type HttpCanceler = Canceler;
 
     interface HttpError<T = any> extends AxiosError {
       response: AxiosResponse<T>;
+    }
+
+    interface MiddlewareEffect<Response = {}, Payload = {}> {
+      promise: Promise<RM.ResponseAction<Response, Payload>>;
+      cancel: HttpCanceler;
     }
 
     interface NormalAction<Payload = RM.AnyObject, Type = string> extends Action<Type> {
