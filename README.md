@@ -361,19 +361,19 @@ class App extends PureComponent<Props> {
   }
   
   render() {
-    const { name, loading } = this.props;
+    const { myProfile, loading } = this.props;
     
     if (loading) {
       return <div>Fetching data...</div>;
     }
     
-    return <div>Hello: {name}</div>;
+    return <div>Hello: {myProfile ? myProfile.name : 'Guy'}</div>;
   }
 }
 
 const mapStateToProps = (state: RootStae, ownProps: OwnProps) => {
   return {
-    name: state.profileData.name,
+    myProfile: (state.profileData[ownProps.userId],
     loading: state.profileMeta.loading,
   };
 };
@@ -385,4 +385,18 @@ const mapDispatchToProps = {
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 ```
 
-Feel free to use this package and send pr to me.
+## Create pure fetch action
+```typescript
+class UpdateProfile extends CustomApiActionModel {
+  
+  action(userId: number, data: object): RM.MiddlewareEffect {
+    return this.put(`/user/profile/${userId}`, {
+      body: data,
+      successText: 'User updated.',
+    });
+  }
+  
+}
+```
+
+Feel free to use this package, and you are welcome to send RP to me.
