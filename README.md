@@ -237,7 +237,7 @@ export class CustomApiModel<Data = {}, Response = {}, Payload = {}> extends Requ
         const { data } = error.response;
 
         transform.businessCode = data ? data.code : undefined;
-        transform.errorMessage = (data && data.message) || error.message || '未能正常请求接口';
+        transform.errorMessage = (data && data.message) || error.message || 'Fail to fetch';
       },
       onShowSuccess: (successText) => {
         console.log(successText);
@@ -263,11 +263,11 @@ type Data = RM.DoNotUseReducer;
 export abstract class CustomApiActionModel<Response = {}, Payload = {}> extends CustomApiModel<Data, Response, Payload> {
   
   protected getInitValue(): RM.DoNotUseReducer {
-    throw new Error(`${this.constructor.name} 禁止使用 getInitValue`);
+    throw new Error(`[${this.constructor.name}] Do not use method: getInitValue`);
   }
 
   protected onSuccess(): RM.DoNotUseReducer {
-    throw new Error(`${this.constructor.name} 禁止使用 onSuccess`);
+    throw new Error(`[${this.constructor.name}] Do not use method: onSuccess`);
   }
 }
 
