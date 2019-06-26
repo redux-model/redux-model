@@ -46,7 +46,7 @@ export declare abstract class Model<Data> {
 
   getSuccessType(): string;
 
-  createData(): (state: Data | undefined, action: any) => Data;
+  createData(): (state: any, action: any) => Data;
 
   protected getEffects(): RM.ReducerEffects<Data>;
 
@@ -69,7 +69,7 @@ export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObjec
   dispatch(dispatch: Dispatch, action: RM.NormalAction<Payload>): RM.NormalAction<Payload>;
 
   hookRegister(): {
-    [key: string]: (state: Data | undefined, action: any) => Data;
+    [key: string]: (state: any, action: any) => Data;
   };
 
   useData<T = Data>(filter?: (data: Data) => T): T;
@@ -100,16 +100,16 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 
   getFailType(): string;
 
-  createMeta(): (state: RM.ReducerMeta | undefined, action: RM.ResponseAction) => RM.ReducerMeta;
+  createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta;
 
-  createMetas(payloadKey: string): (state: RM.ReducerMetas | undefined, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
+  createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
 
   dispatch(dispatch: Dispatch, action: RM.MiddlewareEffect<Response, Payload>): RM.MiddlewareEffect<Response, Payload>;
 
   abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
 
   hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
-    [key: string]: (state: Data | undefined, action: any) => Data;
+    [key: string]: (state: any, action: any) => Data;
   };
 
   useData<T = Data>(filter?: (data: Data) => T): T;
