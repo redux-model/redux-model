@@ -56,6 +56,6 @@ export abstract class Model<Data> {
       name += `::${counter}::`;
     }
 
-    return `${name} ${instanceName}`;
+    return `${name}__${instanceName}`;
   }
 }
