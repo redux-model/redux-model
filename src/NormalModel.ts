@@ -18,7 +18,7 @@ export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> 
     [key: string]: (state: Data | undefined, action: any) => Data;
   } {
     return {
-      [`data_${this.typePrefix}`]: this.createData(),
+      [`normal_${this.typePrefix}`]: this.createData(),
     };
   }
 

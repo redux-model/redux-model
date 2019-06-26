@@ -1,6 +1,6 @@
 {
   "name": "redux-model-ts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": "https://github.com/fwh1990/redux-model-ts",
