@@ -66,8 +66,6 @@ export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObjec
 
   abstract action(...args: any[]): RM.NormalAction<Payload>;
 
-  dispatch(dispatch: Dispatch, action: RM.NormalAction<Payload>): RM.NormalAction<Payload>;
-
   hookRegister(): {
     [key: string]: (state: any, action: any) => Data;
   };
@@ -104,8 +102,6 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 
   createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
 
-  dispatch(dispatch: Dispatch, action: RM.MiddlewareEffect<Response, Payload>): RM.MiddlewareEffect<Response, Payload>;
-
   abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
 
   hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
@@ -138,8 +134,6 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 }
 
 export declare abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
-  dispatch(dispatch: Dispatch, action: RM.SocketAction<Payload>): RM.SocketAction<Payload>;
-
   abstract action(...args: any[]): RM.SocketAction<Payload>;
 
   protected createAction(payload: Payload): RM.SocketAction<Payload>;
