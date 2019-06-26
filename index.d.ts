@@ -211,6 +211,7 @@ declare global {
     interface MiddlewareEffect<Response = {}, Payload = {}> {
       promise: Promise<RM.ResponseAction<Response, Payload>>;
       cancel: HttpCanceler;
+      type: any;
     }
 
     interface NormalAction<Payload = RM.AnyObject, Type = string> extends Action<Type> {

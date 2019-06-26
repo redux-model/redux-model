@@ -131,6 +131,8 @@ export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
     return {
       promise,
       cancel: source.cancel,
+      // It's required when you want to use dispatch() method
+      type: '_______required_______',
     };
   };
 
