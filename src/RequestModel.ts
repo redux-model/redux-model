@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import { Model } from './Model';
 import { METHOD } from './util';
 import { useSelector } from 'react-redux';
@@ -99,14 +98,6 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
           return state;
       }
     };
-  }
-
-  public dispatch(
-    dispatch: Dispatch,
-    action: RM.MiddlewareEffect<Response, Payload>,
-  ): RM.MiddlewareEffect<Response, Payload> {
-    // @ts-ignore
-    return dispatch(action);
   }
 
   public abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;

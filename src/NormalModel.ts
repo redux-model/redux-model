@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import { Model } from './Model';
 import { useSelector } from 'react-redux';
 
@@ -9,10 +8,6 @@ export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> 
   }
 
   public abstract action(...args: any[]): RM.NormalAction<Payload>;
-
-  public dispatch(dispatch: Dispatch, action: RM.NormalAction<Payload>): RM.NormalAction<Payload> {
-    return dispatch(action);
-  }
 
   public hookRegister(): {
     [key: string]: (state: any, action: any) => Data;

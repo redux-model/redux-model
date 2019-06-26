@@ -1,11 +1,6 @@
-import { Dispatch } from 'redux';
 import { NormalModel } from './NormalModel';
 
 export abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
-  public dispatch(dispatch: Dispatch, action: RM.SocketAction<Payload>): RM.SocketAction<Payload> {
-    return dispatch(action);
-  }
-
   public abstract action(...args: any[]): RM.SocketAction<Payload>;
 
   protected createAction(payload: Payload): RM.SocketAction<Payload> {
