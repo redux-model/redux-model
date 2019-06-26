@@ -399,7 +399,7 @@ class UpdateProfile extends CustomApiActionModel {
 }
 ```
 
-# React hook
+# React hooks
 
 We are so exciting that react hook can be used since `react-redux` published version `7.1.0`. So, make sure your have installed package `react-redux` and the version should `>= 7.1.0`.
 
