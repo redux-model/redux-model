@@ -399,4 +399,46 @@ class UpdateProfile extends CustomApiActionModel {
 }
 ```
 
+# React hook
+
+We are so exciting that react hook can be used since `react-redux` published version `7.1.0`. So, make sure your have installed package `react-redux` and the version should `>= 7.1.0`.
+
+## First: Bind reducer
+```typescript
+const reducers = {
+  ...profile.hookRegister(true, true),
+};
+```
+## Second: Use it in react hooks
+```typescript jsx
+import React, { FunctionComponent, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import profile from '../models/profileModel.ts';
+
+const App: FunctionComponent = () => {
+  // The same as mapStateToProps in connect()
+  const myProfile = profile.useData();
+  const loading = profile.useLoading();
+  
+  const dispatch = useDispatch();
+  
+  // The same as  effect in componentDidMount
+  useEffect(() => {
+    dispatch(profile.action());
+  }, []);
+  
+  if (loading) {
+    return <div>Fetching data...</div>;
+  }
+  
+  return <div>Hello: {myProfile ? myProfile.name : 'Guy'}</div>;
+};
+
+export default App;
+```
+
+As you see, that's a new way to save your time.
+
+---------------
+
 Feel free to use this package, and you are welcome to send RP to me.

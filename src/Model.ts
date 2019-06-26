@@ -1,61 +1,61 @@
-// Base Mix Model
 export abstract class Model<Data> {
-    private static COUNTER = 0;
+  private static COUNTER = 0;
 
-    protected readonly successType: string;
+  protected readonly successType: string;
 
-    private readonly instanceCounter: number;
+  protected readonly typePrefix: string;
 
-    // The parameter name can make different instance.
-    constructor(name: string = '') {
-        Model.COUNTER += 1;
-        this.instanceCounter = Model.COUNTER;
-        this.successType = `${this.getTypePrefix()} ${name} success`;
-    }
+  // The parameter name can make different instance.
+  constructor(name: string = '') {
+    Model.COUNTER += 1;
+    this.typePrefix = this.getTypePrefix(Model.COUNTER, name);
+    this.successType = `${this.typePrefix} success`;
+  }
 
-    public getSuccessType(): string {
-        return this.successType;
-    }
+  public getSuccessType(): string {
+    return this.successType;
+  }
 
-    public createData(): (state: Data | undefined, action: any) => Data {
-        const effects = this.getEffects();
+  public createData(): (state: Data | undefined, action: any) => Data {
+    const effects = this.getEffects();
 
-        return (state, action) => {
-            if (!state) {
-                state = this.getInitValue();
-            }
+    return (state, action) => {
+      if (!state) {
+        state = this.getInitValue();
+      }
 
-            if (this.successType === action.type) {
-                return this.onSuccess(state, action);
-            }
+      if (this.successType === action.type) {
+        return this.onSuccess(state, action);
+      }
 
-            for (const { when, effect } of effects) {
-                if (when === action.type) {
-                    return effect(state, action);
-                }
-            }
-
-            return state;
-        };
-    }
-
-    protected getEffects(): RM.ReducerEffects<Data> {
-        return [];
-    }
-
-    protected getTypePrefix(): string {
-        // Constructor name will be random string after uglify.
-        let name = this.constructor.name;
-
-        // Do not concat counter in dev mode.
-        if (!module.hot) {
-            name += `::${this.instanceCounter}::`;
+      for (const { when, effect } of effects) {
+        if (when === action.type) {
+          return effect(state, action);
         }
+      }
 
-        return name;
+      return state;
+    };
+  }
+
+  protected getEffects(): RM.ReducerEffects<Data> {
+    return [];
+  }
+
+  protected abstract getInitValue(): Data;
+
+  protected abstract onSuccess(state: Data, action: any): Data;
+
+  private getTypePrefix(counter: number, instanceName: string): string {
+    // Constructor name will be random string after uglify.
+    // So we should add counter to recognize them.
+    let name = this.constructor.name;
+
+    // Do not concat counter in dev mode.
+    if (!module.hot) {
+      name += `::${counter}::`;
     }
 
-    protected abstract getInitValue(): Data;
-
-    protected abstract onSuccess(state: Data, action: any): Data;
+    return `${name} ${instanceName}`;
+  }
 }

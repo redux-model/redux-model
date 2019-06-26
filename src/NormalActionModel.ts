@@ -1,6 +1,5 @@
 import { NormalModel } from './NormalModel';
 
-// Action only
 export abstract class NormalActionModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
   protected getInitValue(): RM.DoNotUseReducer {
     throw new Error(`[${this.constructor.name}] Do not use method: getInitValue`);

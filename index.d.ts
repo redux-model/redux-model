@@ -1,5 +1,5 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
-import { Dispatch, Middleware, MiddlewareAPI, Reducer } from 'redux';
+import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
 
 interface Action<T = any> {
   type: T;
@@ -37,8 +37,10 @@ export declare enum HTTP_STATUS_CODE {
 
 export declare abstract class Model<Data> {
   private static COUNTER;
+
   protected readonly successType: string;
-  private readonly instanceCounter;
+
+  protected readonly typePrefix: string;
 
   constructor(name?: string);
 
@@ -48,11 +50,11 @@ export declare abstract class Model<Data> {
 
   protected getEffects(): RM.ReducerEffects<Data>;
 
-  protected getTypePrefix(): string;
-
   protected abstract getInitValue(): Data;
 
   protected abstract onSuccess(state: Data, action: any): Data;
+
+  private getTypePrefix;
 }
 
 export declare abstract class ReducerModel<Data = {}> extends Model<Data> {
@@ -65,6 +67,12 @@ export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObjec
   abstract action(...args: any[]): RM.NormalAction<Payload>;
 
   dispatch(dispatch: Dispatch, action: RM.NormalAction<Payload>): RM.NormalAction<Payload>;
+
+  hookRegister(): {
+    [key: string]: (state: Data | undefined, action: any) => Data;
+  };
+
+  useData<T = Data>(filter?: (data: Data) => T): T;
 
   protected createAction(payload: Payload): RM.NormalAction<Payload>;
 
@@ -83,6 +91,7 @@ declare type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.Reques
 
 export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   protected readonly prepareType: string;
+
   protected readonly failType: string;
 
   constructor(name?: string);
@@ -98,6 +107,18 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
   dispatch(dispatch: Dispatch, action: RM.MiddlewareEffect<Response, Payload>): RM.MiddlewareEffect<Response, Payload>;
 
   abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
+
+  hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
+    [key: string]: (state: Data | undefined, action: any) => Data;
+  };
+
+  useData<T = Data>(filter?: (data: Data) => T): T;
+
+  useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T;
+
+  useMetas<T = RM.ReducerMeta>(payloadKey: string, filter?: (meta: RM.ReducerMeta) => T): T;
+
+  useLoading(payloadKeyWhenMulti?: string): boolean;
 
   protected get(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
 

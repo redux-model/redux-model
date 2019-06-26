@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { Model } from './Model';
+import { useSelector } from 'react-redux';
 
-// Action + Reducer
 export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   constructor(name: string = '') {
     super(name);
@@ -12,6 +12,22 @@ export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> 
 
   public dispatch(dispatch: Dispatch, action: RM.NormalAction<Payload>): RM.NormalAction<Payload> {
     return dispatch(action);
+  }
+
+  public hookRegister(): {
+    [key: string]: (state: Data | undefined, action: any) => Data;
+  } {
+    return {
+      [`data_${this.typePrefix}`]: this.createData(),
+    };
+  }
+
+  public useData<T = Data>(filter?: (data: Data) => T): T {
+    return useSelector((state: {}) => {
+      return filter
+        ? filter(state[`normal_${this.typePrefix}`])
+        : state[`normal_${this.typePrefix}`];
+    });
   }
 
   protected createAction(payload: Payload): RM.NormalAction<Payload> {

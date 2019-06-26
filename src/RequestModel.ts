@@ -1,8 +1,7 @@
 import { Dispatch } from 'redux';
 import { Model } from './Model';
 import { METHOD } from './util';
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+import { useSelector } from 'react-redux';
 
 type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
 
@@ -14,10 +13,9 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
 
   constructor(name: string = '') {
     super(name);
-    const prefix = this.getTypePrefix();
 
-    this.prepareType = `${prefix} ${name} prepare`;
-    this.failType = `${prefix} ${name} fail`;
+    this.prepareType = `${this.typePrefix} prepare`;
+    this.failType = `${this.typePrefix} fail`;
     this.action = this.action.bind(this);
   }
 
@@ -112,6 +110,62 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
   }
 
   public abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
+
+  public hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
+    [key: string]: (state: Data | undefined, action: any) => Data;
+  } {
+    const obj = {};
+
+    if (data) {
+      obj[`data_${this.typePrefix}`] = this.createData();
+    }
+
+    if (meta) {
+      if (payloadKeyWhenMulti) {
+        obj[`metas_${this.typePrefix}`] = this.createMetas(payloadKeyWhenMulti);
+      } else {
+        obj[`meta_${this.typePrefix}`] = this.createMeta();
+      }
+    }
+
+    return obj;
+  }
+
+  public useData<T = Data>(filter?: (data: Data) => T): T {
+    return useSelector((state: {}) => {
+      return filter
+        ? filter(state[`data_${this.typePrefix}`])
+        : state[`data_${this.typePrefix}`];
+    });
+  }
+
+  public useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T {
+    return useSelector((state: {}) => {
+      return filter
+        ? filter(state[`meta_${this.typePrefix}`])
+        : state[`meta_${this.typePrefix}`];
+    });
+  }
+
+  public useMetas<T = RM.ReducerMeta>(payloadKey: string, filter?: (meta: RM.ReducerMeta) => T): T {
+    // @ts-ignore
+    return useSelector((state: {}) => {
+      const meta: RM.ReducerMeta = state[`metas_${this.typePrefix}`][payloadKey] || {
+        actionType: '',
+        loading: false,
+      };
+
+      return filter ? filter(meta) : meta;
+    });
+  }
+
+  public useLoading(payloadKeyWhenMulti?: string): boolean {
+    if (payloadKeyWhenMulti) {
+      return this.useMetas(payloadKeyWhenMulti, (meta) => meta.loading);
+    }
+
+    return this.useMeta((meta) => meta.loading);
+  }
 
   protected get(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {
     return this.createAction({
