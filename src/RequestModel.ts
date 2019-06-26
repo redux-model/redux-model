@@ -27,7 +27,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     return this.failType;
   }
 
-  public createMeta(): (state: RM.ReducerMeta | undefined, action: RM.ResponseAction) => RM.ReducerMeta {
+  public createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta {
     return (state, action) => {
       if (!state) {
         state = {
@@ -61,7 +61,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     };
   }
 
-  public createMetas(payloadKey: string): (state: RM.ReducerMetas | undefined, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas {
+  public createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas {
     return (state, action) => {
       if (!state) {
         state = {};
@@ -112,7 +112,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
   public abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
 
   public hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
-    [key: string]: (state: Data | undefined, action: any) => Data;
+    [key: string]: (state: any, action: any) => Data;
   } {
     const obj = {};
 

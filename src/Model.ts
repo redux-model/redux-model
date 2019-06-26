@@ -16,7 +16,7 @@ export abstract class Model<Data> {
     return this.successType;
   }
 
-  public createData(): (state: Data | undefined, action: any) => Data {
+  public createData(): (state: any, action: any) => Data {
     const effects = this.getEffects();
 
     return (state, action) => {

@@ -15,7 +15,7 @@ export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> 
   }
 
   public hookRegister(): {
-    [key: string]: (state: Data | undefined, action: any) => Data;
+    [key: string]: (state: any, action: any) => Data;
   } {
     return {
       [`normal_${this.typePrefix}`]: this.createData(),
