@@ -68,6 +68,8 @@ export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObjec
 
   hookRegister(): RM.HookRegister;
 
+  stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
+
   useData<T = Data>(filter?: (data: Data) => T): T;
 
   protected createAction(payload: Payload): RM.NormalAction<Payload>;
@@ -108,6 +110,13 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 
   hookRegister(useData: boolean, useMeta: boolean): RM.HookRegister;
   hookRegister(useData: boolean, useMetas: PayloadKey<Payload>): RM.HookRegister;
+
+  stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
+
+  stateToMeta<T = RM.ReducerMeta>(state: any, filter?: (meta: RM.ReducerMeta) => T): T;
+  stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T;
+
+  stateToLoading(state: any, fromMetas?: PayloadKey<Payload>): boolean;
 
   useData<T = Data>(filter?: (data: Data) => T): T;
 

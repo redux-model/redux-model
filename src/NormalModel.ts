@@ -15,6 +15,12 @@ export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> 
     };
   }
 
+  public stateToData<T = Data>(state: any, filter?: (data: Data) => T): T {
+    const data = state[`normal_${this.typePrefix}`];
+
+    return filter ? filter(data) : data;
+  }
+
   public useData<T = Data>(filter?: (data: Data) => T): T {
     return useSelector((state: {}) => {
       return filter

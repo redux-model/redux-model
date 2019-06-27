@@ -6,6 +6,11 @@ type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<
 
 declare type PayloadKey<Payload> = keyof Payload;
 
+const DEFAULT_META: RM.ReducerMeta = {
+  actionType: '',
+  loading: false,
+};
+
 export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   public static middlewareName = 'default-request-api-middleware-name';
 
@@ -32,10 +37,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
   public createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta {
     return (state, action) => {
       if (!state) {
-        state = {
-          actionType: '',
-          loading: false,
-        };
+        state = DEFAULT_META;
       }
 
       switch (action.type) {
@@ -124,6 +126,30 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     return obj;
   }
 
+  public stateToData<T = Data>(state: any, filter?: (data: Data) => T): T {
+    const data = state[`data_${this.typePrefix}`];
+
+    return filter ? filter(data) : data;
+  }
+
+  public stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas?: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T {
+    if (typeof fromMetas === 'function') {
+      filter = fromMetas;
+      fromMetas = undefined;
+    }
+
+    const meta: RM.ReducerMeta = fromMetas
+      ? state[`metas_${this.typePrefix}`][fromMetas] || DEFAULT_META
+      : state[`meta_${this.typePrefix}`];
+
+    // @ts-ignore
+    return filter ? filter(meta) : meta;
+  }
+
+  public stateToLoading(state: any, fromMetas?: PayloadKey<Payload>): boolean {
+    return this.stateToMeta(state, fromMetas, (meta) => meta.loading);
+  }
+
   public useData<T = Data>(filter?: (data: Data) => T): T {
     return useSelector((state: {}) => {
       return filter
@@ -143,10 +169,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
   public useMetas<T = RM.ReducerMeta>(payloadKey: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T {
     // @ts-ignore
     return useSelector((state: {}) => {
-      const meta: RM.ReducerMeta = state[`metas_${this.typePrefix}`][payloadKey] || {
-        actionType: '',
-        loading: false,
-      };
+      const meta: RM.ReducerMeta = state[`metas_${this.typePrefix}`][payloadKey] || DEFAULT_META;
 
       return filter ? filter(meta) : meta;
     });
