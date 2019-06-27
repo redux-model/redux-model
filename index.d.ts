@@ -66,9 +66,7 @@ export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObjec
 
   abstract action(...args: any[]): RM.NormalAction<Payload>;
 
-  hookRegister(): {
-    [key: string]: (state: any, action: any) => Data;
-  };
+  hookRegister(): RM.HookRegister;
 
   useData<T = Data>(filter?: (data: Data) => T): T;
 
@@ -85,7 +83,9 @@ export declare abstract class NormalActionModel<Payload extends RM.AnyObject = {
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-declare type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
+type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
+
+type PayloadKey<Payload> = keyof Payload;
 
 export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   protected readonly prepareType: string;
@@ -100,21 +100,20 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 
   createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta;
 
-  createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
+  createMetas(payloadKey: PayloadKey<Payload>): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
 
   abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
 
-  hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
-    [key: string]: (state: any, action: any) => Data;
-  };
+  hookRegister(useData: boolean, useMeta: boolean): RM.HookRegister;
+  hookRegister(useData: boolean, useMetas: PayloadKey<Payload>): RM.HookRegister;
 
   useData<T = Data>(filter?: (data: Data) => T): T;
 
   useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T;
 
-  useMetas<T = RM.ReducerMeta>(payloadKey: string, filter?: (meta: RM.ReducerMeta) => T): T;
+  useMetas<T = RM.ReducerMeta>(payloadKey: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T;
 
-  useLoading(payloadKeyWhenMulti?: string): boolean;
+  useLoading(useMetas?: PayloadKey<Payload>): boolean;
 
   protected get(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
 
@@ -194,6 +193,10 @@ declare global {
       prepare: string;
       success: string;
       fail: string;
+    }
+
+    interface HookRegister {
+      [key: string]: (state: any, action: any) => any;
     }
 
     type HttpCanceler = Canceler;

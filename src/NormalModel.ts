@@ -9,9 +9,7 @@ export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> 
 
   public abstract action(...args: any[]): RM.NormalAction<Payload>;
 
-  public hookRegister(): {
-    [key: string]: (state: any, action: any) => Data;
-  } {
+  public hookRegister(): RM.HookRegister {
     return {
       [`normal_${this.typePrefix}`]: this.createData(),
     };

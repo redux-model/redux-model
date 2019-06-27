@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 
 type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
 
+declare type PayloadKey<Payload> = keyof Payload;
+
 // AsyncAction + Reducer
 export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   protected readonly prepareType: string;
@@ -60,7 +62,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     };
   }
 
-  public createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas {
+  public createMetas(payloadKey: PayloadKey<Payload>): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas {
     return (state, action) => {
       if (!state) {
         state = {};
@@ -102,18 +104,17 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
 
   public abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
 
-  public hookRegister(data: boolean, meta: boolean, payloadKeyWhenMulti?: string): {
-    [key: string]: (state: any, action: any) => Data;
-  } {
+  public hookRegister(useData: boolean, useMetaOrMetas: boolean | PayloadKey<Payload>): RM.HookRegister {
     const obj = {};
 
-    if (data) {
+    if (useData) {
       obj[`data_${this.typePrefix}`] = this.createData();
     }
 
-    if (meta) {
-      if (payloadKeyWhenMulti) {
-        obj[`metas_${this.typePrefix}`] = this.createMetas(payloadKeyWhenMulti);
+    if (useMetaOrMetas) {
+      // Type string means use metas and provide payloadKey.
+      if (typeof useMetaOrMetas === 'string') {
+        obj[`metas_${this.typePrefix}`] = this.createMetas(useMetaOrMetas);
       } else {
         obj[`meta_${this.typePrefix}`] = this.createMeta();
       }
@@ -138,7 +139,7 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     });
   }
 
-  public useMetas<T = RM.ReducerMeta>(payloadKey: string, filter?: (meta: RM.ReducerMeta) => T): T {
+  public useMetas<T = RM.ReducerMeta>(payloadKey: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T {
     // @ts-ignore
     return useSelector((state: {}) => {
       const meta: RM.ReducerMeta = state[`metas_${this.typePrefix}`][payloadKey] || {
@@ -150,9 +151,9 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     });
   }
 
-  public useLoading(payloadKeyWhenMulti?: string): boolean {
-    if (payloadKeyWhenMulti) {
-      return this.useMetas(payloadKeyWhenMulti, (meta) => meta.loading);
+  public useLoading(useMetas?: PayloadKey<Payload>): boolean {
+    if (useMetas) {
+      return this.useMetas(useMetas, (meta) => meta.loading);
     }
 
     return this.useMeta((meta) => meta.loading);
