@@ -42,7 +42,7 @@ export declare abstract class Model<Data> {
 
   protected readonly typePrefix: string;
 
-  constructor(name?: string);
+  constructor(instanceName?: string);
 
   getSuccessType(): string;
 
@@ -62,7 +62,7 @@ export declare abstract class ReducerModel<Data = {}> extends Model<Data> {
 }
 
 export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
-  constructor(name?: string);
+  constructor(instanceName?: string);
 
   abstract action(...args: any[]): RM.NormalAction<Payload>;
 
@@ -88,11 +88,13 @@ type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<
 type PayloadKey<Payload> = keyof Payload;
 
 export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
+  static middlewareName: string;
+
   protected readonly prepareType: string;
 
   protected readonly failType: string;
 
-  constructor(name?: string);
+  constructor(instanceName?: string);
 
   getPrepareType(): string;
 
@@ -125,11 +127,17 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 
   protected delete(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
 
+  protected getMiddlewareName(): string;
+
   protected abstract onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data;
 
-  protected abstract getMiddlewareName(): string;
-
   private createAction;
+}
+
+export declare abstract class RequestActionModel<Response = {}, Payload = {}> extends RequestModel<RM.DoNotUseReducer, Response, Payload> {
+  protected getInitValue(): RM.DoNotUseReducer;
+
+  protected onSuccess(): RM.DoNotUseReducer;
 }
 
 export declare abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {

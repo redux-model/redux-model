@@ -6,14 +6,15 @@ type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<
 
 declare type PayloadKey<Payload> = keyof Payload;
 
-// AsyncAction + Reducer
 export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
+  public static middlewareName = 'default-request-api-middleware-name';
+
   protected readonly prepareType: string;
 
   protected readonly failType: string;
 
-  constructor(name: string = '') {
-    super(name);
+  constructor(instanceName: string = '') {
+    super(instanceName);
 
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
@@ -199,9 +200,11 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     });
   }
 
-  protected abstract onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data;
+  protected getMiddlewareName(): string {
+    return RequestModel.middlewareName;
+  }
 
-  protected abstract getMiddlewareName(): string;
+  protected abstract onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data;
 
   private createAction(
     options: CreateActionOption<Payload> & Pick<RM.RequestAction<Payload>, 'uri' | 'method'>,

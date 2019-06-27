@@ -2,8 +2,8 @@ import { Model } from './Model';
 import { useSelector } from 'react-redux';
 
 export abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
-  constructor(name: string = '') {
-    super(name);
+  constructor(instanceName: string = '') {
+    super(instanceName);
     this.action = this.action.bind(this);
   }
 

@@ -5,10 +5,10 @@ export abstract class Model<Data> {
 
   protected readonly typePrefix: string;
 
-  // The parameter name can make different instance.
-  constructor(name: string = '') {
+  // The parameter `name` can make different instance.
+  constructor(instanceName: string = '') {
     Model.COUNTER += 1;
-    this.typePrefix = this.getTypePrefix(Model.COUNTER, name);
+    this.typePrefix = this.getTypePrefix(Model.COUNTER, instanceName);
     this.successType = `${this.typePrefix} success`;
   }
 
