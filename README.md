@@ -1,6 +1,6 @@
 使用类模型代替redux的传统函数式写法。可节省一半的代码和时间，后期维护超级方便。我认为这是一款准时下班的神器。
 
-![](https://gitee.com/fwh1990/redux-model-ts/raw/master/compare.jpg)
+![](https://raw.githubusercontent.com/fwh1990/redux-model-ts/master/compare.jpg)
 
 # 安装
 ```bash
