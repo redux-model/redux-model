@@ -89,6 +89,8 @@ type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<
 
 type PayloadKey<Payload> = keyof Payload;
 
+type PayloadData = string | number | symbol;
+
 export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
   static middlewareName: string;
 
@@ -114,19 +116,19 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
   stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
 
   stateToMeta<T = RM.ReducerMeta>(state: any, filter?: (meta: RM.ReducerMeta) => T): T;
-  stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T;
+  stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
 
-  stateToLoading(state: any, fromMetas?: PayloadKey<Payload>): boolean;
+  stateToLoading(state: any, fromMetas?: PayloadData): boolean;
 
   useData<T = Data>(filter?: (data: Data) => T): T;
 
   useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T;
 
-  useMetas<T = RM.ReducerMeta>(payloadKey: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T;
+  useMetas<T = RM.ReducerMeta>(payloadKey: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
 
   useLoading(): boolean;
   useLoading(...orUseLoading: boolean[]): boolean;
-  useLoading(useMetas: PayloadKey<Payload>, ...orUseLoading: boolean[]): boolean;
+  useLoading(useMetas: PayloadData, ...orUseLoading: boolean[]): boolean;
 
   protected get(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
 

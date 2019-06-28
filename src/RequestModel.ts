@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux';
 
 type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
 
-declare type PayloadKey<Payload> = keyof Payload;
+type PayloadKey<Payload> = keyof Payload;
+
+type PayloadData = string | number | symbol;
 
 const DEFAULT_META: RM.ReducerMeta = {
   actionType: '',
@@ -116,10 +118,10 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
 
     if (useMetaOrMetas) {
       // Type string means use metas and provide payloadKey.
-      if (typeof useMetaOrMetas === 'string') {
-        obj[`metas_${this.typePrefix}`] = this.createMetas(useMetaOrMetas);
-      } else {
+      if (typeof useMetaOrMetas === 'boolean') {
         obj[`meta_${this.typePrefix}`] = this.createMeta();
+      } else {
+        obj[`metas_${this.typePrefix}`] = this.createMetas(useMetaOrMetas);
       }
     }
 
@@ -132,21 +134,21 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     return filter ? filter(data) : data;
   }
 
-  public stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas?: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T {
+  public stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T {
     if (typeof fromMetas === 'function') {
       filter = fromMetas;
       fromMetas = undefined;
     }
 
-    const meta: RM.ReducerMeta = fromMetas
-      ? state[`metas_${this.typePrefix}`][fromMetas] || DEFAULT_META
-      : state[`meta_${this.typePrefix}`];
+    const meta: RM.ReducerMeta = fromMetas === undefined
+      ? state[`meta_${this.typePrefix}`]
+      : state[`metas_${this.typePrefix}`][fromMetas] || DEFAULT_META;
 
     // @ts-ignore
     return filter ? filter(meta) : meta;
   }
 
-  public stateToLoading(state: any, fromMetas?: PayloadKey<Payload>): boolean {
+  public stateToLoading(state: any, fromMetas?: PayloadData): boolean {
     return this.stateToMeta(state, fromMetas, (meta) => meta.loading);
   }
 
@@ -166,23 +168,23 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     });
   }
 
-  public useMetas<T = RM.ReducerMeta>(payloadKey: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T {
+  public useMetas<T = RM.ReducerMeta>(payloadData: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T {
     // @ts-ignore
     return useSelector((state: {}) => {
-      const meta: RM.ReducerMeta = state[`metas_${this.typePrefix}`][payloadKey] || DEFAULT_META;
+      const meta: RM.ReducerMeta = state[`metas_${this.typePrefix}`][payloadData] || DEFAULT_META;
 
       return filter ? filter(meta) : meta;
     });
   }
 
-  public useLoading(useMetas?: PayloadKey<Payload>, ...orUseLoading: boolean[]): boolean {
-    if (typeof useMetas === 'boolean') {
-      orUseLoading.push(useMetas);
-      useMetas = undefined;
+  public useLoading(fromMetas?: PayloadData, ...orUseLoading: boolean[]): boolean {
+    if (typeof fromMetas === 'boolean') {
+      orUseLoading.push(fromMetas);
+      fromMetas = undefined;
     }
 
-    if (useMetas) {
-      return this.useMetas(useMetas, (meta) => meta.loading);
+    if (fromMetas) {
+      return this.useMetas(fromMetas, (meta) => meta.loading);
     }
 
     return this.useMeta((meta) => meta.loading) || orUseLoading.includes(true);
