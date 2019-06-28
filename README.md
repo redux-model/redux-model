@@ -1,24 +1,38 @@
-In traditional way, we are always repeating creating actions, types, and reducers. But today, it's unnecessary to repeat your code any more once you install this package. I'll show how to release your hands and save your life.
+使用类模型代替redux的传统函数式写法。可节省一半的代码和时间，后期维护超级方便。我认为这是一款准时下班的神器。
 
-## Installation
-
+# 安装
 ```bash
+# 使用npm
+npm install redux-model-ts
+
+# 或者使用yarn
 yarn add redux-model-ts
 
-# or
-
-npm install redux-model-ts --save
-
 ```
+# 依赖
 
-# Usage
-## Create action and reducer
+
+| 插件包 | 版本 | 条件 |
+| ----- | ----- | ---- |
+| redux | * | - |
+| react | * | - |
+| react | 16.8.3+ | 使用react hooks |
+| react-redux | * | - |
+| react-redux | 7.1.0+ | 使用react hooks |
+
+# 支持
+
+该项目同时支持 `javascript` 和 `typescript`，但我推荐你使用`typescript`以得到更好的体验。下面我会用ts的案例去教你怎么使用
+
+# 使用方式
+
+## 普通模型
+
 ```typescript
-// File: Counter.ts
 import { NormalModel } from 'redux-model-ts';
 
 interface Data {
-  countLength: number;
+  amount: number;
 }
 
 interface Payload {
@@ -26,7 +40,7 @@ interface Payload {
 }
 
 class Counter extends NormalModel<Data, Payload> {
-  
+
   action(operator: '+' | '-'): RM.NormalAction<Payload> {
     return this.createAction({
       operator,
@@ -35,137 +49,63 @@ class Counter extends NormalModel<Data, Payload> {
   
   protected getInitValue(): Data {
     return {
-      countLength: 0,
+      amount: 0,
     };
   }
   
   protected onSuccess(state: Data, action: RM.NormalAction<Payload>): Data {
-    let countLength = state.countLength;
+    let amount = state.amount;
     
     switch (action.payload.operator) {
       case '+':
-        countLength += 1;
+        amount += 1;
         break;
       case '-':
-        countLength -= 1;
+        amount -= 1;
         break;
       // no default
     } 
     
-    return { countLength };
+    return { amount };
   }
 }
 
 export const counter = new Counter();
+
 ```
-## Create pure action
-```typescript
-// File: SpecificCounter.ts
-import { NormalActionModel } from 'redux-model-ts';
+现在，你已经创建了一个action和一个reducer。
 
-export interface SpecificCounterPayload {
-  countLength: number;
-}
-
-class SpecificCounter extends NormalActionModel<SpecificCounterPayload> {
-  
-  action(value: number): RM.NormalAction<SpecificCounterPayload> {
-    return this.createAction({
-      countLength: value,
-    });
-  }
-}
-
-export const specificCounter = new SpecificCounter();
-
-// -----------------------------
-// File: Counter.ts
-// -----------------------------
-
-class Counter extends NormalModel<Data, Payload> {
-  
-  ...
-  
-  // Now, we can consume the effect from model `SpecificCounter`: 
-  protected getEffects(): RM.ReducerEffects<Data> {
-    return [
-      {
-        when: specificCounter.getSuccessType(),
-        effect: (state: Data, action: RM.NormalAction<SpecificCounterPayload>) => {
-          return {
-            countLength: action.payload.countLength,
-          };
-        },
-      },
-      // Here we can append more effects from other models.
-    ];
-  }
-}
-```
-
-## Create pure reducer
-This type of model can only receive effect from other models.
-```typescript
-// File: PureCounter.ts
-import { ReducerModel } from 'redux-model-ts';
-
-interface Data {
-  countLength: number;
-}
-
-class PureCounter extends ReducerModel<Data> {
-  
-  protected getInitValue(): Data {
-    return {
-      countLength: 0,
-    };
-  }
-  
-  protected getEffects(): RM.ReducerEffects<Data> {
-    return [
-      {
-        when: specificCounter.getSuccessType(),
-        effect: (state: Data, action: RM.NormalAction<SpecificCounterPayload>) => {
-          return {
-            countLength: action.payload.countLength,
-          };
-        },
-      },
-      // Here we can append more effects from other models.
-    ];
-  }
-}
-
-export const pureCounter = new PureCounter();
-```
-
-## Combine reducers
-As we created the model with reducer, we should register them to `redux store`
-```typescript
-import { combineReducers, Reducer, createStore } from 'redux';
+我们首先要把reducer挂载到redux的store中
+```typescript jsx
+import React from 'react';
+import ReactDom from 'react-dom';
+import { combineReducers, Reducer, createStore, Provider } from 'redux';
 import { EnhanceState } from 'redux-model-ts';
 import { counter } from './Counter.ts';
-import { pureCounter } from './PureCounter.ts';
 
 const reducers = {
   counterData: counter.createData(),
-  pureCounterData: pureCounter.createData(),
 };
 
+// 定义全局的类型`RootState`，这样我们可以在`react-redux`的connect()或者useSelector()方法中使用
 declare global {
   type RootState = Readonly<ReturnType<typeof rootReducers>>;
 }
 
-export const rootReducers: Reducer<EnhanceState<typeof reducers>> = combineReducers(reducers);
+const rootReducers: Reducer<EnhanceState<typeof reducers>> = combineReducers(reducers);
 
-// Insert store to <Provider store={store}><App /></Provider>
-// You can see repo: create-react-app
-// const store = createStore(rootReducers);
+const store = createStore(rootReducers);
+
+ReactDom.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
 
 ```
 
-Now, we can use type `RootState` for `react-redux`
-
+#### 在React Class中使用
 ```typescript jsx
 import React, { PureComponent } from' react';
 import { connect } from 'react-redux';
@@ -173,123 +113,117 @@ import { connect } from 'react-redux';
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
 class App extends PureComponent<Props> {
-  
-  handleIncrease = () => {
-    const { specificLength } = this.props;
-    
-    specificLength(100);
-  };
-  
-  render() { 
-    const { myLength } = this.props;
-    
-    return <div onClick={this.handleIncrease}>My Length is: {myLength}</div>;
+  render() {
+    return (
+      <div onClick={() => this.props.doAction('+')}>
+        There are {this.props.amount} people.
+      </div>
+    );
   }
 }
 
 const mapStateToProps = (state: RootState) => {
   return {
-    myLength: state.pureCounterData.countLength;
+    amount: state.counterData.amount;
   };
 };
 
 const mapDispatchToProps = {
-  specificLength: pureCounter.action,
+  doAction: counter.action,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 ```
+每当我们点击一次文字按钮，变量amount就会自动加1。
 
-## Advance: Fetching api
-It's very easy to fetch api by using this package. Let me show you:
+#### 在React Hooks中使用
+现在，我们尝试使用react hooks来处理数据。
 
-You need to create custom model before you can use it.
-
+首先，更改模型在reducer的挂载方式。也许你会发现，这样做更加方便
 ```typescript
-// File: CustomApiModel.ts
-
-import { RequestModel, createRequestMiddleware } from 'redux-model-ts';
-
-interface ErrorResponse {
-  code: string;
-  message: string;
-  error: string;
-}
-
-// Abstract class for creating fetch action and reducer
-export class CustomApiModel<Data = {}, Response = {}, Payload = {}> extends RequestModel<Data, Response, Payload> {
-  
-  public static middleware = 'request normal kid api';
-  
-  public static createMiddleware() {
-    return createRequestMiddleware<RootState>({
-      id: CustomApiModel.middleware,
-      baseUrl: 'http://api.xxx.com',
-      getHeaders: (api) => {
-        // You can get token from reducer: api.getState().xxxReducer.access_token,
-        return {
-          Authorization: `Bearer token`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        };
-      },
-      onFail: (error: RM.HttpError<ErrorResponse>, transform) => {
-        const { data } = error.response;
-
-        transform.businessCode = data ? data.code : undefined;
-        transform.errorMessage = (data && data.message) || error.message || 'Fail to fetch';
-      },
-      onShowSuccess: (successText) => {
-        console.log(successText);
-      },
-      onShowError: (errorMessage) => {
-        console.error(errorMessage);
-      },
-    });
-  }
-  
-  protected getMiddlewareName(): string {
-    return CustomApiModel.middleware;
-  }
-}
-
-
-
-// File: CustomApiActionModel.ts
-
-type Data = RM.DoNotUseReducer;
-
-// Abstract class for creating pure fetch action
-export abstract class CustomApiActionModel<Response = {}, Payload = {}> extends CustomApiModel<Data, Response, Payload> {
-  
-  protected getInitValue(): RM.DoNotUseReducer {
-    throw new Error(`[${this.constructor.name}] Do not use method: getInitValue`);
-  }
-
-  protected onSuccess(): RM.DoNotUseReducer {
-    throw new Error(`[${this.constructor.name}] Do not use method: onSuccess`);
-  }
-}
-
+const reducers = {
+  // counterData: counter.createData(),
+  ...counter.hookRegister(),
+};
 ```
-Now, you can register middleware:
-```typescript
-import { applyMiddleware, compose, createStore, Middleware, Reducer, Store } from 'redux';
+接着，创建一个 hooks 组件
+```typescript jsx
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import counter from 'Counter.ts';
 
-createStore(
+const App: FunctionComponent = () => {
+  const amount = counter.useData((item) => item.amount);
+  const dispatch = useDispatch();
+  
+  return (
+    <div onClick={() => dispatch(counter.action('+'))}>
+      There are {amount} people.
+    </div>
+  );
+};
+```
+这种写法真是太令人兴奋了。你可以轻而易举地就拿到数据，而不需要使用connect()的方法把数据注入到props中。同时你的代码也会变得更少更简洁更易于维护。
+
+## 创建异步请求模型
+每个项目都有请求api的时候，每次请求都可能有3个状态，准备、成功和失败。这个插件利用`中间件`屏蔽了请求细节，所以在使用之前，你需要创建一个中间件
+
+#### 创建中间件
+```typescript
+import { createRequestMiddleware, RequestModel } from 'redux-model-ts';
+
+export const apiMiddleware = createRequestMiddleware<RootState>({
+  // 模型和中间件的对应关系
+  id: RequestModel.middlewareName,
+  // 请求的通用地址前缀
+  baseUrl: 'http://api.xxx.com',
+  // 请求头信息
+  getHeaders: (api) => {
+    // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
+    // const token = api.getState().xxx.token;
+    return {
+      Authorization: `Bearer token`,
+      Accept: 'application/json',
+     'Content-Type': 'application/json',
+   };
+  },
+  // 定位业务场景下的错误码等信息，会自动存入meta中
+  onFail: (error: RM.HttpError, transform) => {
+    const { data } = error.response;
+  
+    transform.businessCode = data ? data.code : undefined;
+    transform.errorMessage = (data && data.message) || error.message || 'Fail to fetch';
+  },
+  // 可以做一些弹窗操作。
+  // 只有当模型提供了successText属性才会触发。
+  onShowSuccess: (successText) => {
+    console.log(successText);
+  },
+  // 可以做一些弹窗操作。
+  // 只有当请求异常或者失败时才会触发。
+  // 模型中提供了 hideError 属性时，不再触发。
+  onShowError: (errorMessage) => {
+    console.error(errorMessage);
+  },
+});
+```
+接着注入到store中
+```typescript
+import { createStore, compose, applyMiddleware } from 'redux';
+import { apiMiddleware } from './apiMiddleware.ts';
+
+const store = createStore(
   rootReducers,
   {},
-  compose(applyMiddleware(CustomApiModel.createMiddleware())),
+  compose(applyMiddleware(apiMiddleware)),
 );
 ```
 
-## Create request action and reducer
-We have created CustomApiModel
+现在，你可以开始使用异步模型了
 
+#### 创建异步模型
 ```typescript
-interface Payload {
-  userId: number;
-}
+import { RequestModel } from 'redux-model-ts';
 
 interface Response {
   name: string;
@@ -298,82 +232,70 @@ interface Response {
 
 type Data = Partial<Response>;
 
-class Profile extends CustomApiModel<Data, Response, Payload> {
+class Profile extends RequestModel<Data, Response> {
   
-  action(userId: number): RM.MiddlewareEffect<Response, Payload> {
-    return this.get('/api/profile', {
-      query: {
-        id: userId,
-      },
-      payload: {
-        userId,
-      },
-    });
+  action(): RM.MiddlewareEffect<Response> {
+    return this.get('/api/profile');
   }
   
   protected getInitValue(): Data {
     return {};
   }
   
-  onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data {
+  onSuccess(state: Data, action: RM.ResponseAction<Response>): Data {
     return {
       ...state,
-      [action.payload.userId]: action.response,
+      ...action.response,
     };
   }
 }
 
 export const profile = new Profile();
 ```
-
-Register it to reducers:
+接着，我们需要把reducer挂载到redux中
 ```typescript
+// 如果你想使用 connect() 方式获取数据
 const reducers = {
   profileData: profile.createData(),
+  // meta是指异步请求的loading，http-status，error-message 之类的数据存储
+  // 比较常用的就是loading状态
+  // 如果你不需要这些信息，那么就不挂载
   profileMeta: profile.createMeta(),
 };
-```
 
-How to use it in **tsx** file?
+// 如果你想使用 hooks 方式获取数据
+const reducers = {
+  // 第一个参数代表是否执行：createData()
+  // 第二个参数代表是否执行：createMeta()
+  ...profile.hookRegister(true, true),
+};
+```
+#### 在React Class中使用
 ```typescript jsx
-import React, { PureComponent } from 'react';
+import React, { PureComponent } from' react';
 import { connect } from 'react-redux';
 
-
-interface OwnProps {
-  userId: number;
-}
-
-type Props = OwnProps & ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
 class App extends PureComponent<Props> {
-  
   componentDidMount() {
-    const { getProfile, userId } = this.props;
-    
-    getProfile(userId);
-    // Request action will return an object { cancel, promise }  
-    
-    // getProfile(userId).promise.then((response) => {}).catch((err) => {});
-    
-    // const { cancel } = getProfile(userId);
-    // You can invoke `cancel()` when you want to abort this request.
+    this.props.getProfile();
   }
   
   render() {
-    const { myProfile, loading } = this.props;
+    const { loading, data } = this.props;
     
     if (loading) {
-      return <div>Fetching data...</div>;
+      return <span>Loading...</span>;
     }
     
-    return <div>Hello: {myProfile ? myProfile.name : 'Guy'}</div>;
+    return <div>Hello {data ? data.name : '--'}.</div>;
   }
 }
 
-const mapStateToProps = (state: RootStae, ownProps: OwnProps) => {
+const mapStateToProps = (state: RootState) => {
   return {
-    myProfile: (state.profileData[ownProps.userId],
+    data: state.profileData,
     loading: state.profileMeta.loading,
   };
 };
@@ -384,61 +306,164 @@ const mapDispatchToProps = {
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 ```
-
-## Create pure fetch action
-```typescript
-class UpdateProfile extends CustomApiActionModel {
-  
-  action(userId: number, data: object): RM.MiddlewareEffect {
-    return this.put(`/user/profile/${userId}`, {
-      body: data,
-      successText: 'User updated.',
-    });
-  }
-  
-}
-```
-
-# React hooks
-
-We are so exciting that react hook can be used since `react-redux` published version `7.1.0`. So, make sure your have installed package `react-redux` and the version should `>= 7.1.0`.
-
-## First: Bind reducer
-```typescript
-const reducers = {
-  ...profile.hookRegister(true, true),
-};
-```
-## Second: Use it in react hooks
+#### 在React Hooks中使用
 ```typescript jsx
 import React, { FunctionComponent, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import profile from '../models/profileModel.ts';
+import profile from 'Profile.ts';
 
 const App: FunctionComponent = () => {
-  // The same as mapStateToProps in connect()
-  const myProfile = profile.useData();
+  const data = profile.useData();
   const loading = profile.useLoading();
-  
   const dispatch = useDispatch();
   
-  // The same as  effect in componentDidMount
+  // 和componentDidMount一个效果
   useEffect(() => {
     dispatch(profile.action());
   }, []);
   
   if (loading) {
-    return <div>Fetching data...</div>;
+    return <span>Loading...</span>;
   }
   
-  return <div>Hello: {myProfile ? myProfile.name : 'Guy'}</div>;
+  return <div>Hello {data ? data.name : '--'}.</div>;
+};
+```
+
+# 创建纯action模型
+
+因为模型基于ts的语法，继承`NormalModal`和`RequestModel`的模型都需要实现**action** | **getInitvalue()** | **onSuccess()** 方法。而纯action模型不需要reducer相关的信息，我已我们准备了另外两个类`NormalActionModel`和`RequestActionModel`。他们本质上是继承`NormalModal`和`RequestModel`，仅仅是屏蔽了reducer的相关信息。
+
+## 普通action
+```typescript jsx
+import { NormalActionModel } from 'redux-model-ts';
+
+interface Payload {
+  amount: number;
+}
+
+class ChangeCounter extends NormalActionModel<Payload> {
+  action(amount: number) {
+    return this.createAction({
+      amount,
+    });
+  }
+}
+
+export const changeCounter = new ChangeCounter();
+```
+
+## 异步请求action
+
+```typescript jsx
+import { RequestActionModel } from 'redux-model-ts';
+
+class UpdateProfile extends RequestActionModel {
+  action(userId: number) {
+    return this.put(`/api/profile/${userId}`, {
+      successText: '资料更新成功',
+    });
+  }
+}
+
+export const updateProfile = new UpdateProfile();
+```
+# 副作用
+任何带有action的模型都可以产生副作用，同时任何模型都可以接收副作用
+
+```typescript
+import { NormalModel } from 'redux-model-ts';
+import { changeCounter } from 'ChangeCounter.ts';
+
+interface Data {
+  amount: number;
+}
+
+// 你可以从ChangeCounter.ts中导入payload
+interface ChangeCounterPayload {
+  amount: number;
+}
+
+class Counter extends NormalModel<Data> {
+  
+  ...
+  
+  ...
+  
+  getEffects(): RM.ReducerEffects<Data> {
+    return [
+      {
+        when: changeCounter.getSuccessType(),
+        effect: (state, action: RM.NormalAction<ChangeCounterPayload>) => {
+          return {
+            ...state,
+            amount: action.payload.amount,
+          };
+        },
+      }
+    ];
+  }
+}
+```
+
+
+# 创建纯reducer模型
+```typescript
+import { ReducerModel } from 'redux-model-ts';
+
+interface Data {
+  [key: string]: any;
+}
+
+class Collector extends ReducerModel<Data> {
+  getInitValue() {
+    return {};
+  }
+  
+  // 这种类只能接收副作用
+  // 因为自己不产生副作用，没有onSuccess方法
+  getEffects(): RM.ReducerEffects<Data> {
+    return [];
+  }
+}
+```
+
+# 数据混合
+在现实世界中，一个项目不可能只有hooks组件，有可能有stateless组件和class组件。而我们有两种数据类型挂载到redux，第一种是：`{ xxxData: xxx.createData() }`，第二种是：`{ ...yyy.hookRegister() }`。那么如何混用呢
+
+## 在class中使用
+```typescript jsx
+class App extends PureComponent {
+  render() {
+    return null;
+  }
+}
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    // 如果是key-value形式，那么正常获取数据
+    x: state.xxxData,
+    // 如果是hookRegister形式，那么使用stateToData()方法获取数据
+    y: yyy.stateToData(state),
+  };
+};
+
+export default connect(mapStateToProps)(App);
+```
+
+## 在hooks中使用
+```typescript jsx
+import { useSelector } from 'react-redux';
+
+const App: FunctionComponent = () => {
+  // 如果是key-value形式，那么借助useSelector()获取数据
+  // 当然了，你也可以直接通过connect()高阶组件注入到props
+  const x = useSelector((state: RootState) => state.xxxData);
+  // 如果是hookRegister形式，那么直接通过模型获取数据
+  const y = yyy.useData();
+  
+  return null;
 };
 
 export default App;
 ```
-
-As you see, that's a new way to save your time.
-
----------------
-
-Feel free to use this package, and you are welcome to send RP to me.
