@@ -175,12 +175,17 @@ export abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.
     });
   }
 
-  public useLoading(useMetas?: PayloadKey<Payload>): boolean {
+  public useLoading(useMetas?: PayloadKey<Payload>, ...orUseLoading: boolean[]): boolean {
+    if (typeof useMetas === 'boolean') {
+      orUseLoading.push(useMetas);
+      useMetas = undefined;
+    }
+
     if (useMetas) {
       return this.useMetas(useMetas, (meta) => meta.loading);
     }
 
-    return this.useMeta((meta) => meta.loading);
+    return this.useMeta((meta) => meta.loading) || orUseLoading.includes(true);
   }
 
   protected get(uri: string, options: CreateActionOption<Payload> = {}): RM.MiddlewareEffect<Response, Payload> {

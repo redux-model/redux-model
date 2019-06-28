@@ -124,7 +124,9 @@ export declare abstract class RequestModel<Data = {}, Response = {}, Payload ext
 
   useMetas<T = RM.ReducerMeta>(payloadKey: PayloadKey<Payload>, filter?: (meta: RM.ReducerMeta) => T): T;
 
-  useLoading(useMetas?: PayloadKey<Payload>): boolean;
+  useLoading(): boolean;
+  useLoading(...orUseLoading: boolean[]): boolean;
+  useLoading(useMetas: PayloadKey<Payload>, ...orUseLoading: boolean[]): boolean;
 
   protected get(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
 
