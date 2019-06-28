@@ -242,7 +242,7 @@ class Profile extends RequestModel<Data, Response> {
     return {};
   }
   
-  onSuccess(state: Data, action: RM.ResponseAction<Response>): Data {
+  protected onSuccess(state: Data, action: RM.ResponseAction<Response>): Data {
     return {
       ...state,
       ...action.response,
@@ -332,7 +332,7 @@ const App: FunctionComponent = () => {
 
 # 创建纯action模型
 
-因为模型基于ts的语法，继承`NormalModal`和`RequestModel`的模型都需要实现**action** | **getInitvalue()** | **onSuccess()** 方法。而纯action模型不需要reducer相关的信息，我已我们准备了另外两个类`NormalActionModel`和`RequestActionModel`。他们本质上是继承`NormalModal`和`RequestModel`，仅仅是屏蔽了reducer的相关信息。
+因为模型基于ts的语法，继承`NormalModal`和`RequestModel`的模型都需要实现**action()** | **getInitvalue()** | **onSuccess()** 方法。而纯action模型不需要reducer相关的信息，我已我们准备了另外两个类`NormalActionModel`和`RequestActionModel`。他们本质上是继承`NormalModal`和`RequestModel`，仅仅是屏蔽了reducer的相关信息。
 
 ## 普通action
 ```typescript jsx
@@ -390,7 +390,7 @@ class Counter extends NormalModel<Data> {
   
   ...
   
-  getEffects(): RM.ReducerEffects<Data> {
+  protected getEffects(): RM.ReducerEffects<Data> {
     return [
       {
         when: changeCounter.getSuccessType(),
@@ -416,13 +416,13 @@ interface Data {
 }
 
 class Collector extends ReducerModel<Data> {
-  getInitValue() {
+  protected getInitValue() {
     return {};
   }
   
   // 这种类只能接收副作用
   // 因为自己不产生副作用，没有onSuccess方法
-  getEffects(): RM.ReducerEffects<Data> {
+  protected getEffects(): RM.ReducerEffects<Data> {
     return [];
   }
 }
