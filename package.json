@@ -13,7 +13,7 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
-    "start": "cd demo && webpack"
+    "start": "cd demo && yarn && node_modules/.bin/webpack-dev-server"
   },
   "peerDependencies": {
     "react-redux": "*",

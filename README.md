@@ -26,6 +26,10 @@ yarn add redux-model-ts
 
 该项目同时支持 `javascript` 和 `typescript`，但我推荐你使用`typescript`以得到更好的体验。下面我会用ts的案例去教你怎么使用
 
+# 运行案例
+
+克隆本项目并执行`yarn start`，然后打开浏览器输入`http://localhost:8080`查看效果
+
 # 使用方式
 
 ## 普通模型
