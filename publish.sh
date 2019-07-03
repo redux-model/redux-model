@@ -5,7 +5,7 @@ set -e
 rm -rf ./build
 node_modules/.bin/tsc
 mv ./build/src/*.js ./build/
-rm -r ./build/src
+rm -r ./build/src ./build/demo/
 cp package.json README.md LICENSE ./build
 cp index.d.ts ./build/index.d.ts
 
