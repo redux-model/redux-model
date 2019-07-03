@@ -58,6 +58,12 @@ export declare abstract class Model<Data> {
 }
 
 export declare abstract class ReducerModel<Data = {}> extends Model<Data> {
+  hookRegister(): RM.HookRegister;
+
+  stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
+
+  useData<T = Data>(filter?: (data: Data) => T): T;
+
   protected onSuccess(): Data & RM.DoNotUseReducer;
 }
 
