@@ -25,6 +25,7 @@ const Request: FunctionComponent = () => {
     dispatch(npmInfoModel.manage.action('react-native'))
       .promise
       .then(({ response }) => {
+        // @ts-ignore
         console.log(`Wow, You got response from ${response._id}`);
       });
   }, []);

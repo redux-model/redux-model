@@ -53,7 +53,7 @@ interface NormalActionParam<Data, A> {
 
 declare class NormalAction<Data, A extends (...args: any[]) => RM.NormalAction = any> extends BaseAction<Data> {
   readonly action: A;
-  protected readonly successCallback?: (state: Data, action: any) => Data;
+  protected readonly successCallback?: (state: Data, action: RM.NormalAction) => Data;
   constructor(config: NormalActionParam<Data, A>, instanceName: string);
   static createNormalData<Payload = {}>(payload: Payload): RM.NormalAction<Payload>;
   collectEffects(): RM.ReducerEffects<Data>;
@@ -65,9 +65,9 @@ type PayloadData = string | number | symbol;
 interface RequestActionParam<Data, A> {
   action: A;
   meta?: boolean | string;
-  onSuccess?: (state: Data, action: any) => Data;
-  onPrepare?: (state: Data, action: any) => Data;
-  onFail?: (state: Data, action: any) => Data;
+  onSuccess?: (state: Data, action: RM.ResponseAction) => Data;
+  onPrepare?: (state: Data, action: RM.ResponseAction) => Data;
+  onFail?: (state: Data, action: RM.ResponseAction) => Data;
 }
 
 declare class RequestAction<Data = any, A extends (...args: any[]) => RM.MiddlewareEffect = any> extends NormalAction<Data> {

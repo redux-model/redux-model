@@ -8,7 +8,7 @@ export interface NormalActionParam<Data, A> {
 export class NormalAction<Data, A extends (...args: any[]) => RM.NormalAction = any> extends BaseAction<Data> {
   public readonly action: A;
 
-  protected readonly successCallback?: (state: Data, action: any) => Data;
+  protected readonly successCallback?: (state: Data, action: RM.NormalAction) => Data;
 
   constructor(config: NormalActionParam<Data, A>, instanceName: string) {
     super(instanceName);

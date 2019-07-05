@@ -4,8 +4,9 @@ set -e
 
 rm -rf ./build
 node_modules/.bin/tsc
-mv ./build/src/*.js ./build/
-rm -r ./build/src ./build/demo/
+rm -rf rm -rf ./build/src/*/*.d.ts ./build/src/*.d.ts
+mv ./build/src/* ./build/
+rm -r ./build/src ./build/demo
 cp package.json README.md LICENSE ./build
 cp index.d.ts ./build/index.d.ts
 
@@ -24,6 +25,6 @@ echo "I am: $(npm whoami)"
 
 sleep 1
 echo "Begin publish..."
-npm publish ./build/
+npm publish ./build/ "$@"
 
 npm config set registry ${old_registry}
