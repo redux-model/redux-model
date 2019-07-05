@@ -1,5 +1,5 @@
 import React, { CSSProperties, FunctionComponent } from 'react';
-import { summaryModel } from '../models/normal/SummaryModel';
+import { summaryModel } from '../models/SummaryModel';
 
 const styles: CSSProperties = {
   width: 300,

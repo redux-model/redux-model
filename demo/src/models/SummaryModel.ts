@@ -1,15 +1,13 @@
-import { ReducerModel } from '../../../../src';
+import { Model } from '../../../src';
 import { counterModel } from './CounterModel';
-import { resetModel } from './ResetModel';
-import { npmInfoModel } from '../request/NpmInfoModel';
-import { resetNpmInfoModel } from '../request/ResetNpmInfoModel';
+import { npmInfoModel } from './NpmInfoModel';
 
 interface Data {
   times: number;
   lastTime?: string;
 }
 
-class SummaryModel extends ReducerModel<Data> {
+class SummaryModel extends Model<Data> {
   protected getInitValue(): Data {
     return {
       times: 0,
@@ -26,19 +24,19 @@ class SummaryModel extends ReducerModel<Data> {
   protected getEffects(): RM.ReducerEffects<Data> {
     return [
       {
-        when: counterModel.getSuccessType(),
+        when: counterModel.increase.getSuccessType(),
         effect: this.onIncrease,
       },
       {
-        when: resetModel.getSuccessType(),
+        when: counterModel.reset.getSuccessType(),
         effect: this.onIncrease,
       },
       {
-        when: npmInfoModel.getPrepareType(),
+        when: npmInfoModel.manage.getPrepareType(),
         effect: this.onIncrease,
       },
       {
-        when: resetNpmInfoModel.getSuccessType(),
+        when: npmInfoModel.reset.getSuccessType(),
         effect: this.onIncrease,
       },
     ];

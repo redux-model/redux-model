@@ -1,7 +1,6 @@
 import React, { CSSProperties, FunctionComponent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { npmInfoModel } from '../models/request/NpmInfoModel';
-import { resetNpmInfoModel } from '../models/request/ResetNpmInfoModel';
+import { npmInfoModel } from '../models/NpmInfoModel';
 
 const styles: CSSProperties = {
   width: 600,
@@ -20,10 +19,10 @@ const styles: CSSProperties = {
 const Request: FunctionComponent = () => {
   const dispatch = useDispatch();
   const npmInfo = npmInfoModel.useData();
-  const loading = npmInfoModel.useLoading();
+  const loading = npmInfoModel.manage.useLoading();
 
   const handleClick = useCallback(() => {
-    dispatch(npmInfoModel.action('react-native'))
+    dispatch(npmInfoModel.manage.action('react-native'))
       .promise
       .then(({ response }) => {
         console.log(`Wow, You got response from ${response._id}`);
@@ -31,15 +30,15 @@ const Request: FunctionComponent = () => {
   }, []);
 
   const handleClick1 = useCallback(() => {
-    dispatch(npmInfoModel.action('node'));
+    dispatch(npmInfoModel.manage.action('node'));
   }, []);
 
   const handleClick2 = useCallback(() => {
-    dispatch(npmInfoModel.action('not-existed-package'));
+    dispatch(npmInfoModel.manage.action('not-existed-package'));
   }, []);
 
   const handleReset = useCallback(() => {
-    dispatch(resetNpmInfoModel.action());
+    dispatch(npmInfoModel.reset.action());
   }, []);
 
   return (

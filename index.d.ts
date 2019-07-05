@@ -35,140 +35,108 @@ export declare enum HTTP_STATUS_CODE {
   serviceUnavailable = 503
 }
 
-export declare abstract class Model<Data> {
+declare abstract class BaseAction<Data> {
   private static COUNTER;
-
   protected readonly successType: string;
-
   protected readonly typePrefix: string;
-
-  constructor(instanceName?: string);
-
+  protected constructor(instanceName: string);
   getSuccessType(): string;
-
-  createData(): (state: any, action: any) => Data;
-
-  protected getEffects(): RM.ReducerEffects<Data>;
-
-  protected abstract getInitValue(): Data;
-
-  protected abstract onSuccess(state: Data, action: any): Data;
-
+  collectEffects(): RM.ReducerEffects<Data>;
+  collectReducers(): RM.HookRegister;
   private getTypePrefix;
 }
 
-export declare abstract class ReducerModel<Data = {}> extends Model<Data> {
-  hookRegister(): RM.HookRegister;
-
-  stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
-
-  useData<T = Data>(filter?: (data: Data) => T): T;
-
-  protected onSuccess(): Data & RM.DoNotUseReducer;
+interface NormalActionParam<Data, A> {
+  action: A;
+  onSuccess?: (state: Data, action: RM.NormalAction) => Data;
 }
 
-export declare abstract class NormalModel<Data = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
-  constructor(instanceName?: string);
-
-  abstract action(...args: any[]): RM.NormalAction<Payload>;
-
-  hookRegister(): RM.HookRegister;
-
-  stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
-
-  useData<T = Data>(filter?: (data: Data) => T): T;
-
-  protected createAction(payload: Payload): RM.NormalAction<Payload>;
-
-  protected abstract onSuccess(state: Data, action: RM.NormalAction<Payload>): Data;
+declare class NormalAction<Data, A extends (...args: any[]) => RM.NormalAction = any> extends BaseAction<Data> {
+  readonly action: A;
+  protected readonly successCallback?: (state: Data, action: any) => Data;
+  constructor(config: NormalActionParam<Data, A>, instanceName: string);
+  static createNormalData<Payload = {}>(payload: Payload): RM.NormalAction<Payload>;
+  collectEffects(): RM.ReducerEffects<Data>;
 }
 
-export declare abstract class NormalActionModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
-  protected getInitValue(): RM.DoNotUseReducer;
+type CreateActionOption = Partial<Omit<RM.RequestAction, 'type' | 'uri' | 'method'>>;
+type PayloadData = string | number | symbol;
 
-  protected onSuccess(): RM.DoNotUseReducer;
+interface RequestActionParam<Data, A> {
+  action: A;
+  meta?: boolean | string;
+  onSuccess?: (state: Data, action: any) => Data;
+  onPrepare?: (state: Data, action: any) => Data;
+  onFail?: (state: Data, action: any) => Data;
+}
+
+declare class RequestAction<Data = any, A extends (...args: any[]) => RM.MiddlewareEffect = any> extends NormalAction<Data> {
+  readonly action: A;
+  protected readonly meta: boolean | string;
+  protected readonly prepareCallback?: (state: Data, action: RM.ResponseAction) => Data;
+  protected readonly failCallback?: (state: Data, action: RM.ResponseAction) => Data;
+  protected readonly prepareType: string;
+  protected readonly failType: string;
+  constructor(config: RequestActionParam<Data, A>, instanceName: string);
+  collectEffects(): RM.ReducerEffects<Data>;
+  collectReducers(): RM.HookRegister;
+  getPrepareType(): string;
+  getFailType(): string;
+
+  useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T;
+  useMeta<T = RM.ReducerMeta>(payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
+
+  useLoading(): boolean;
+  useLoading(...orUseLoading: boolean[]): boolean;
+  useLoading(payloadData: PayloadData, ...orUseLoading: boolean[]): boolean;
+
+  connectMeta<T = RM.ReducerMeta>(rootState: any, filter?: (meta: RM.ReducerMeta) => T): T;
+  connectMeta<T = RM.ReducerMeta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
+
+  connectLoading(rootState: any): boolean;
+  connectLoading(rootState: any, payloadData: PayloadData): boolean;
+
+  static createRequestData(options: CreateActionOption & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>): RM.MiddlewareEffect;
+  protected createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta;
+  protected createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}>) => RM.ReducerMetas;
+}
+
+declare class BaseReducer<Data> {
+  protected readonly initData: Data;
+  protected cases: RM.ReducerEffects<Data>;
+  protected readonly instanceName: string;
+  constructor(init: Data, instanceName: string);
+  clear(): void;
+  addCase(...config: RM.ReducerEffects<Data>): void;
+  getReducerName(): string;
+  createData(): RM.HookRegister;
 }
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-type CreateActionOption<Payload = RM.AnyObject> = Partial<Omit<RM.RequestAction<Payload>, 'type' | 'middleware' | 'uri' | 'method'>>;
+type createRequestDataOption = Partial<Omit<RM.RequestAction, 'type' | 'middleware' | 'uri' | 'method'>>;
 
-type PayloadKey<Payload> = keyof Payload;
-
-type PayloadData = string | number | symbol;
-
-export declare abstract class RequestModel<Data = {}, Response = {}, Payload extends RM.AnyObject = {}> extends Model<Data> {
+declare abstract class Model<Data = null> {
   static middlewareName: string;
-
-  protected readonly prepareType: string;
-
-  protected readonly failType: string;
-
+  private sequenceCounter;
+  private readonly instanceName;
+  private readonly actions;
+  private readonly reducer;
   constructor(instanceName?: string);
-
-  getPrepareType(): string;
-
-  getFailType(): string;
-
-  createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta;
-
-  createMetas(payloadKey: PayloadKey<Payload>): (state: any, action: RM.ResponseAction<{}, Payload>) => RM.ReducerMetas;
-
-  abstract action(...args: any[]): RM.MiddlewareEffect<Response, Payload>;
-
-  hookRegister(useData: boolean, useMeta: boolean): RM.HookRegister;
-  hookRegister(useData: boolean, useMetas: PayloadKey<Payload>): RM.HookRegister;
-
-  stateToData<T = Data>(state: any, filter?: (data: Data) => T): T;
-
-  stateToMeta<T = RM.ReducerMeta>(state: any, filter?: (meta: RM.ReducerMeta) => T): T;
-  stateToMeta<T = RM.ReducerMeta>(state: any, fromMetas: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
-
-  stateToLoading(state: any, fromMetas?: PayloadData): boolean;
-
+  register(): RM.HookRegister;
   useData<T = Data>(filter?: (data: Data) => T): T;
-
-  useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T;
-
-  useMetas<T = RM.ReducerMeta>(payloadKey: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
-
-  useLoading(): boolean;
-  useLoading(...orUseLoading: boolean[]): boolean;
-  useLoading(useMetas: PayloadData, ...orUseLoading: boolean[]): boolean;
-
-  protected get(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
-
-  protected post(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
-
-  protected put(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
-
-  protected patch(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
-
-  protected delete(uri: string, options?: CreateActionOption<Payload>): RM.MiddlewareEffect<Response, Payload>;
-
+  connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T;
+  protected actionNormal<A extends (...args: any[]) => RM.NormalAction = any>(config: NormalActionParam<Data, A>): NormalAction<Data, A>;
+  protected actionRequest<A extends (...args: any[]) => RM.MiddlewareEffect = any>(config: RequestActionParam<Data, A>): RequestAction<Data, A>;
+  protected emit(payload?: {}): RM.NormalAction<{}, string>;
+  protected getEffects(): RM.ReducerEffects<Data>;
+  protected get(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
+  protected post(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
+  protected put(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
+  protected patch(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
+  protected delete(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
   protected getMiddlewareName(): string;
-
-  protected abstract onSuccess(state: Data, action: RM.ResponseAction<Response, Payload>): Data;
-
-  private createAction;
-}
-
-export declare abstract class RequestActionModel<Response = {}, Payload = {}> extends RequestModel<RM.DoNotUseReducer, Response, Payload> {
-  protected getInitValue(): RM.DoNotUseReducer;
-
-  protected onSuccess(): RM.DoNotUseReducer;
-}
-
-export declare abstract class SocketModel<Payload extends RM.AnyObject = {}> extends NormalModel<RM.DoNotUseReducer, Payload> {
-  abstract action(...args: any[]): RM.SocketAction<Payload>;
-
-  protected createAction(payload: Payload): RM.SocketAction<Payload>;
-
-  protected getInitValue(): RM.DoNotUseReducer;
-
-  protected onSuccess(): RM.DoNotUseReducer;
-
-  protected abstract getMiddlewareName(): string;
+  protected abstract getInitValue(): Data;
 }
 
 interface FailTransform {
@@ -193,10 +161,6 @@ declare global {
   namespace RM {
     interface AnyObject {
       [key: string]: any;
-    }
-
-    interface DoNotUseReducer {
-      do_not_use_reducer: true;
     }
 
     type ReducerEffects<Data> = Array<{
@@ -242,17 +206,12 @@ declare global {
       payload: Payload;
     }
 
-    interface SocketAction<Payload = RM.AnyObject, Type = string> extends RM.NormalAction<Payload, Type> {
-      middleware: string;
-    }
-
     interface RequestAction<Payload = RM.AnyObject, Type = RequestTypes> extends RM.NormalAction<Payload, Type> {
       middleware: string;
       method: METHOD;
       uri: string;
       requestOptions: AxiosRequestConfig;
       body: RM.AnyObject;
-      // queryString
       query: RM.AnyObject;
       successText: string;
       hideError: boolean | ((response: RM.ResponseAction<any>) => boolean);

@@ -1,61 +1,169 @@
-export abstract class Model<Data> {
-  private static COUNTER = 0;
+import { METHOD } from './utils/method';
+import { RequestAction, RequestActionParam } from './action/RequestAction';
+import { BaseReducer } from './reducer/BaseReducer';
+import { NormalAction, NormalActionParam } from './action/NormalAction';
+import { useSelector } from 'react-redux';
+import { BaseAction } from './action/BaseAction';
 
-  protected readonly successType: string;
+type createRequestDataOption = Partial<Omit<RM.RequestAction, 'type' | 'middleware' | 'uri' | 'method'>>;
 
-  protected readonly typePrefix: string;
+export abstract class Model<Data = null> {
+  public static middlewareName: string = 'default-request-middleware-name';
 
-  // The parameter `name` can make different instance.
+  private sequenceCounter = 0;
+
+  private readonly instanceName: string;
+
+  private readonly actions: Array<BaseAction<Data>> = [];
+
+  private readonly reducer: null | BaseReducer<Data> = null;
+
   constructor(instanceName: string = '') {
-    Model.COUNTER += 1;
-    this.typePrefix = this.getTypePrefix(Model.COUNTER, instanceName);
-    this.successType = `${this.typePrefix} success`;
+    this.instanceName = (instanceName ? `[${instanceName}]` : '') + this.constructor.name;
+
+    const initData = this.getInitValue();
+
+    if (initData !== null) {
+      this.reducer = new BaseReducer<Data>(initData, this.instanceName);
+    }
   }
 
-  public getSuccessType(): string {
-    return this.successType;
+  public register(): RM.HookRegister {
+    let reducers: RM.HookRegister = {};
+
+    if (this.reducer) {
+      this.reducer.clear();
+    }
+
+    this.actions.forEach((action) => {
+      reducers = {
+        ...reducers,
+        ...action.collectReducers(),
+      };
+
+      if (this.reducer) {
+        this.reducer.addCase(...action.collectEffects());
+      }
+    });
+
+    if (this.reducer) {
+      this.reducer.addCase(...this.getEffects());
+
+      reducers = {
+        ...reducers,
+        ...this.reducer.createData(),
+      };
+    }
+
+    console.log(reducers);
+
+    return reducers;
   }
 
-  public createData(): (state: any, action: any) => Data {
-    const effects = this.getEffects();
+  public useData<T = Data>(filter?: (data: Data) => T): T {
+    if (this.reducer) {
+      return useSelector((state: {}) => {
+        const customData = state[this.reducer!.getReducerName()];
 
-    return (state, action) => {
-      if (!state) {
-        state = this.getInitValue();
-      }
+        return filter ? filter(customData) : customData;
+      });
+    }
 
-      if (this.successType === action.type) {
-        return this.onSuccess(state, action);
-      }
+    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn\'t initialize your reducer yet.`);
+  }
 
-      for (const { when, effect } of effects) {
-        if (when === action.type) {
-          return effect(state, action);
-        }
-      }
+  public connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T {
+    if (this.reducer) {
+      const data = rootState[this.reducer.getReducerName()];
 
-      return state;
-    };
+      return filter ? filter(data) : data;
+    }
+
+    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn\'t initialize your reducer yet.`);
+  }
+
+  protected actionNormal<A extends (...args: any[]) => RM.NormalAction = any>(config: NormalActionParam<Data, A>) {
+    let instanceName = this.instanceName;
+
+    this.sequenceCounter += 1;
+    instanceName += '.' + this.sequenceCounter;
+
+    const instance = new NormalAction<Data, A>(config, instanceName);
+
+    this.actions.push(instance);
+
+    return instance;
+  }
+
+  protected actionRequest<A extends (...args: any[]) => RM.MiddlewareEffect = any>(config: RequestActionParam<Data, A>) {
+    let instanceName = this.instanceName;
+
+    this.sequenceCounter += 1;
+    instanceName += '.' + this.sequenceCounter;
+
+    const instance = new RequestAction<Data, A>(config, instanceName);
+
+    this.actions.push(instance);
+
+    return instance;
+  }
+
+  protected emit(payload: {} = {}) {
+    return NormalAction.createNormalData(payload);
   }
 
   protected getEffects(): RM.ReducerEffects<Data> {
     return [];
   }
 
-  protected abstract getInitValue(): Data;
-
-  protected abstract onSuccess(state: Data, action: any): Data;
-
-  private getTypePrefix(counter: number, instanceName: string): string {
-    // Constructor name will be random string after uglify.
-    // So we should add counter to recognize them.
-    let name = this.constructor.name;
-
-    // Do not concat counter in dev mode.
-    if (!module.hot) {
-      name += `::${counter}::`;
-    }
-
-    return `${name}__${instanceName}`;
+  protected get(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+    return RequestAction.createRequestData({
+      uri,
+      method: METHOD.get,
+      middleware: this.getMiddlewareName(),
+      ...options,
+    });
   }
+
+  protected post(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+    return RequestAction.createRequestData({
+      uri,
+      method: METHOD.post,
+      middleware: this.getMiddlewareName(),
+      ...options,
+    });
+  }
+
+  protected put(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+    return RequestAction.createRequestData({
+      uri,
+      method: METHOD.put,
+      middleware: this.getMiddlewareName(),
+      ...options,
+    });
+  }
+
+  protected patch(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+    return RequestAction.createRequestData({
+      uri,
+      method: METHOD.patch,
+      middleware: this.getMiddlewareName(),
+      ...options,
+    });
+  }
+
+  protected delete(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+    return RequestAction.createRequestData({
+      uri,
+      method: METHOD.delete,
+      middleware: this.getMiddlewareName(),
+      ...options,
+    });
+  }
+
+  protected getMiddlewareName(): string {
+    return Model.middlewareName;
+  }
+
+  protected abstract getInitValue(): Data;
 }

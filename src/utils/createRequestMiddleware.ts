@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
-import { HTTP_STATUS_CODE, METHOD } from './util';
+import { HTTP_STATUS_CODE } from './httpStatusCode';
+import { METHOD } from './method';
 
 interface FailTransform {
   httpStatus?: HTTP_STATUS_CODE;

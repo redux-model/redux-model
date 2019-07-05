@@ -1,8 +1,8 @@
 import {Middleware} from 'redux';
-import { createRequestMiddleware, RequestModel } from '../../../src';
+import { createRequestMiddleware, Model } from '../../../src';
 
 const apiMiddleware = createRequestMiddleware({
-  id: RequestModel.middlewareName,
+  id: Model.middlewareName,
   baseUrl: 'https://registry.npm.taobao.org',
   getHeaders: () => {
     return {

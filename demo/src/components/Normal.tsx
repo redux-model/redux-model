@@ -1,7 +1,6 @@
 import React, { CSSProperties, FunctionComponent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { counterModel } from '../models/normal/CounterModel';
-import { resetModel } from '../models/normal/ResetModel';
+import { counterModel } from '../models/CounterModel';
 
 const styles: CSSProperties = {
   width: 300,
@@ -22,11 +21,11 @@ const Normal: FunctionComponent = () => {
   const count = counterModel.useData((data) => data.amount);
 
   const handleClick = useCallback(() => {
-    dispatch(counterModel.action());
+    dispatch(counterModel.increase.action());
   }, []);
 
   const handleReset = useCallback(() => {
-    dispatch(resetModel.action());
+    dispatch(counterModel.reset.action());
   }, []);
 
   return (
