@@ -55,8 +55,6 @@ export abstract class Model<Data = null> {
       };
     }
 
-    console.log(reducers);
-
     return reducers;
   }
 

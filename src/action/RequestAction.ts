@@ -101,6 +101,10 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
   }
 
   public useMeta<T = RM.ReducerMeta>(payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T {
+    if (this.meta === false) {
+      throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
+    }
+
     if (typeof payloadData === 'function') {
       filter = payloadData;
       payloadData = undefined;
@@ -120,6 +124,10 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
   }
 
   public connectMeta<T = RM.ReducerMeta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T {
+    if (this.meta === false) {
+      throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
+    }
+
     if (typeof payloadData === 'function') {
       filter = payloadData;
       payloadData = undefined;
