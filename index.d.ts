@@ -1,10 +1,6 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
 import { Dispatch, Middleware, MiddlewareAPI, Action } from 'redux';
 
-export type EnhanceState<T> = {
-  [key in keyof T]: T[key] extends (...args: any) => infer R ? R : never;
-};
-
 export declare enum METHOD {
   get = "GET",
   post = "POST",
@@ -40,7 +36,6 @@ interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.Norm
 
 declare class NormalAction<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> extends BaseAction<Data> {
   readonly action: A;
-  constructor(config: NormalActionParam<Data, Payload, A>, instanceName: string);
 }
 
 type PayloadData = string | number | symbol;
@@ -59,7 +54,6 @@ interface RequestActionParam<Data, Response, Payload, A extends (...args: any[])
 // @ts-ignore
 declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any> extends NormalAction<Data, Payload, A> {
   readonly action: A;
-  constructor(config: RequestActionParam<Data, Response, Payload, A>, instanceName: string);
   getPrepareType(): string;
   getFailType(): string;
 
@@ -104,12 +98,6 @@ declare abstract class Model<Data = null> {
   protected abstract initReducer(): Data;
 }
 
-interface FailTransform {
-  httpStatus?: HTTP_STATUS_CODE;
-  errorMessage?: string;
-  businessCode?: string;
-}
-
 export declare const createRequestMiddleware: <State = any>(config: {
   id: string;
   baseUrl: string;
@@ -117,16 +105,17 @@ export declare const createRequestMiddleware: <State = any>(config: {
   onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void) | undefined;
   getTimeoutMessage?: () => string;
   getHeaders: (api: MiddlewareAPI<Dispatch, State>) => object;
-  onFail: (error: RM.HttpError, transform: FailTransform) => void;
+  onFail: (
+    error: RM.HttpError,
+    transform: {
+      httpStatus?: HTTP_STATUS_CODE;
+      errorMessage?: string;
+      businessCode?: string;
+    },
+  ) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
 }) => Middleware<{}, State, Dispatch>;
-
-interface RequestTypes {
-  prepare: string;
-  success: string;
-  fail: string;
-}
 
 declare global {
   namespace RM {
@@ -167,7 +156,7 @@ declare global {
       payload: Payload;
     }
 
-    interface RequestAction<Payload = {}, Type = RequestTypes> extends RM.NormalAction<Payload, Type> {
+    interface RequestAction<Payload = {}, Type = { prepare: string; success: string; fail: string }> extends RM.NormalAction<Payload, Type> {
       middleware: string;
       method: METHOD;
       uri: string;
