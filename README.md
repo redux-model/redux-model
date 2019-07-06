@@ -23,11 +23,11 @@ yarn add redux-model-ts
 # 依赖
 
 
-| 插件包 | 版本 | 条件 |
-| ----- | ----- | ---- |
-| redux | * | - |
-| react | * | - |
-| react-redux | * | - |
+| 插件包 | 版本|
+| ----- | ----- |
+| redux | * |
+| react | * |
+| react-redux | * |
 
 -------
 
