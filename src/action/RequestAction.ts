@@ -1,38 +1,40 @@
 import { NormalAction } from './NormalAction';
 import { useSelector } from 'react-redux';
 
-type CreateActionOption = Partial<Omit<RM.RequestAction, 'type' | 'uri' | 'method'>>;
-
-type PayloadData = string | number | symbol;
-
-const DEFAULT_META: RM.ReducerMeta = {
+const DEFAULT_META: RM.Meta = {
   actionType: '',
   loading: false,
 };
 
-export interface RequestActionParam<Data, A> {
+type PayloadData = string | number | symbol;
+type EnhanceResponse<A, Payload> = A extends (...args: any[]) => RM.FetchHandle<infer R, Payload> ? R : never;
+type EnhancePayload<A, Response> = A extends (...args: any[]) => RM.FetchHandle<Response, infer R> ? R : never;
+
+export interface RequestActionParam<Data, Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>> {
   action: A;
   meta?: boolean | string;
-  onSuccess?: (state: Data, action: RM.ResponseAction) => Data;
-  onPrepare?: (state: Data, action: RM.ResponseAction) => Data;
-  onFail?: (state: Data, action: any) => Data;
+  onSuccess?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
+  onPrepare?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
+  onFail?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
 }
 
-export class RequestAction<Data = any, A extends (...args: any[]) => RM.MiddlewareEffect = any> extends NormalAction<Data> {
+export class RequestAction<Data = any, Response = {}, Payload = {}, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any>
+  // @ts-ignore
+  extends NormalAction<Data, Payload, A> {
   // Point to correct type definition.
   public readonly action: A;
 
   protected readonly meta: boolean | string;
 
-  protected readonly prepareCallback?: (state: Data, action: RM.ResponseAction) => Data;
+  protected readonly prepareCallback?: any;
 
-  protected readonly failCallback?: (state: Data, action: RM.ResponseAction) => Data;
+  protected readonly failCallback?: any;
 
   protected readonly prepareType: string;
 
   protected readonly failType: string;
 
-  public constructor(config: RequestActionParam<Data, A>, instanceName: string) {
+  public constructor(config: RequestActionParam<Data, Response, Payload, A>, instanceName: string) {
     super({
       action: config.action,
       // @ts-ignore
@@ -58,7 +60,23 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
     this.failType = `${this.typePrefix}_fail`;
   }
 
-  public collectEffects(): RM.ReducerEffects<Data> {
+  public static createRequestData(options: Partial<RM.RequestAction> & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>) {
+    const data: Omit<RM.RequestAction, 'type'> = {
+      middleware: options.middleware,
+      payload: options.payload || {},
+      uri: options.uri,
+      method: options.method,
+      body: options.body || {},
+      query: options.query || {},
+      successText: options.successText || '',
+      hideError: options.hideError || false,
+      requestOptions: options.requestOptions || {},
+    };
+
+    return data;
+  }
+
+  public collectEffects(): RM.Effects<Data> {
     const effects = super.collectEffects();
 
     if (this.prepareCallback) {
@@ -78,7 +96,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
     return effects;
   }
 
-  public collectReducers(): RM.HookRegister {
+  public collectReducers(): RM.Reducers {
     const obj = super.collectReducers();
 
     if (this.meta) {
@@ -100,7 +118,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
     return this.failType;
   }
 
-  public useMeta<T = RM.ReducerMeta>(payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T {
+  public useMeta<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T {
     if (this.meta === false) {
       throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
     }
@@ -123,7 +141,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
     return this.useMeta(payloadData, (meta) => meta.loading);
   }
 
-  public connectMeta<T = RM.ReducerMeta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T {
+  public connectMeta<T = RM.Meta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T {
     if (this.meta === false) {
       throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
     }
@@ -144,32 +162,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
     return this.connectMeta(rootState, payloadData, (meta) => meta.loading);
   }
 
-  public static createRequestData(
-    options: CreateActionOption & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>,
-  ): RM.MiddlewareEffect {
-    const data: RM.RequestAction = {
-      type: {
-        prepare: '',
-        success: '',
-        fail: '',
-      },
-      middleware: options.middleware,
-      // @ts-ignore
-      payload: options.payload || {},
-      uri: options.uri,
-      method: options.method,
-      body: options.body || {},
-      query: options.query || {},
-      successText: options.successText || '',
-      hideError: options.hideError || false,
-      requestOptions: options.requestOptions || {},
-    };
-
-    // @ts-ignore
-    return data;
-  }
-
-  protected createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta {
+  protected createMeta(): (state: any, action: RM.ResponseAction) => RM.Meta {
     return (state, action) => {
       if (!state) {
         state = DEFAULT_META;
@@ -200,7 +193,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.Middlewa
     };
   }
 
-  protected createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}>) => RM.ReducerMetas {
+  protected createMetas(payloadKey: string): (state: any, action: RM.ResponseAction) => RM.Metas {
     return (state, action) => {
       if (!state) {
         state = {};

@@ -1,14 +1,8 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
-import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
-
-interface Action<T = any> {
-  type: T;
-}
-
-type AnyFunctionReturnType<T> = T extends (...args: any) => infer R ? R : never;
+import { Dispatch, Middleware, MiddlewareAPI, Action } from 'redux';
 
 export type EnhanceState<T> = {
-  [key in keyof T]: AnyFunctionReturnType<T[key]>;
+  [key in keyof T]: T[key] extends (...args: any) => infer R ? R : never;
 };
 
 export declare enum METHOD {
@@ -36,107 +30,78 @@ export declare enum HTTP_STATUS_CODE {
 }
 
 declare abstract class BaseAction<Data> {
-  private static COUNTER;
-  protected readonly successType: string;
-  protected readonly typePrefix: string;
-  protected constructor(instanceName: string);
   getSuccessType(): string;
-  collectEffects(): RM.ReducerEffects<Data>;
-  collectReducers(): RM.HookRegister;
-  private getTypePrefix;
 }
 
-interface NormalActionParam<Data, A> {
+interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
   action: A;
-  onSuccess?: (state: Data, action: RM.NormalAction) => Data;
+  onSuccess: (state: Data, action: RM.NormalAction<A extends (...args: any[]) => RM.NormalAction<infer R> ? R : never>) => Data;
 }
 
-declare class NormalAction<Data, A extends (...args: any[]) => RM.NormalAction = any> extends BaseAction<Data> {
+declare class NormalAction<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> extends BaseAction<Data> {
   readonly action: A;
-  protected readonly successCallback?: (state: Data, action: RM.NormalAction) => Data;
-  constructor(config: NormalActionParam<Data, A>, instanceName: string);
-  static createNormalData<Payload = {}>(payload: Payload): RM.NormalAction<Payload>;
-  collectEffects(): RM.ReducerEffects<Data>;
+  constructor(config: NormalActionParam<Data, Payload, A>, instanceName: string);
 }
 
-type CreateActionOption = Partial<Omit<RM.RequestAction, 'type' | 'uri' | 'method'>>;
 type PayloadData = string | number | symbol;
 
-interface RequestActionParam<Data, A> {
+type EnhanceResponse<A, Payload> = A extends (...args: any[]) => RM.FetchHandle<infer R, Payload> ? R : never;
+type EnhancePayload<A, Response> = A extends (...args: any[]) => RM.FetchHandle<Response, infer R> ? R : never;
+
+interface RequestActionParam<Data, Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>> {
   action: A;
   meta?: boolean | string;
-  onSuccess?: (state: Data, action: RM.ResponseAction) => Data;
-  onPrepare?: (state: Data, action: RM.ResponseAction) => Data;
-  onFail?: (state: Data, action: RM.ResponseAction) => Data;
+  onSuccess?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
+  onPrepare?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
+  onFail?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
 }
 
-declare class RequestAction<Data = any, A extends (...args: any[]) => RM.MiddlewareEffect = any> extends NormalAction<Data> {
+// @ts-ignore
+declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any> extends NormalAction<Data, Payload, A> {
   readonly action: A;
-  protected readonly meta: boolean | string;
-  protected readonly prepareCallback?: (state: Data, action: RM.ResponseAction) => Data;
-  protected readonly failCallback?: (state: Data, action: RM.ResponseAction) => Data;
-  protected readonly prepareType: string;
-  protected readonly failType: string;
-  constructor(config: RequestActionParam<Data, A>, instanceName: string);
-  collectEffects(): RM.ReducerEffects<Data>;
-  collectReducers(): RM.HookRegister;
+  constructor(config: RequestActionParam<Data, Response, Payload, A>, instanceName: string);
   getPrepareType(): string;
   getFailType(): string;
 
-  useMeta<T = RM.ReducerMeta>(filter?: (meta: RM.ReducerMeta) => T): T;
-  useMeta<T = RM.ReducerMeta>(payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
+  useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T;
+  useMeta<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T;
 
   useLoading(): boolean;
   useLoading(...orUseLoading: boolean[]): boolean;
   useLoading(payloadData: PayloadData, ...orUseLoading: boolean[]): boolean;
 
-  connectMeta<T = RM.ReducerMeta>(rootState: any, filter?: (meta: RM.ReducerMeta) => T): T;
-  connectMeta<T = RM.ReducerMeta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.ReducerMeta) => T): T;
+  connectMeta<T = RM.Meta>(rootState: any, filter?: (meta: RM.Meta) => T): T;
+  connectMeta<T = RM.Meta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T;
 
   connectLoading(rootState: any): boolean;
   connectLoading(rootState: any, payloadData: PayloadData): boolean;
-
-  static createRequestData(options: CreateActionOption & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>): RM.MiddlewareEffect;
-  protected createMeta(): (state: any, action: RM.ResponseAction) => RM.ReducerMeta;
-  protected createMetas(payloadKey: string): (state: any, action: RM.ResponseAction<{}>) => RM.ReducerMetas;
 }
 
-declare class BaseReducer<Data> {
-  protected readonly initData: Data;
-  protected cases: RM.ReducerEffects<Data>;
-  protected readonly instanceName: string;
-  constructor(init: Data, instanceName: string);
-  clear(): void;
-  addCase(...config: RM.ReducerEffects<Data>): void;
-  getReducerName(): string;
-  createData(): RM.HookRegister;
-}
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-type createRequestDataOption = Partial<Omit<RM.RequestAction, 'type' | 'middleware' | 'uri' | 'method'>>;
+type RequestOptions<Payload> = (Partial<Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>> & {
+  uri: string;
+} & (Payload extends {} ? {
+  payload: Payload;
+} : {
+  payload?: never;
+}));
 
 declare abstract class Model<Data = null> {
   static middlewareName: string;
-  private sequenceCounter;
-  private readonly instanceName;
-  private readonly actions;
-  private readonly reducer;
   constructor(instanceName?: string);
-  register(): RM.HookRegister;
+  register(): RM.Reducers;
   useData<T = Data>(filter?: (data: Data) => T): T;
   connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T;
-  protected actionNormal<A extends (...args: any[]) => RM.NormalAction = any>(config: NormalActionParam<Data, A>): NormalAction<Data, A>;
-  protected actionRequest<A extends (...args: any[]) => RM.MiddlewareEffect = any>(config: RequestActionParam<Data, A>): RequestAction<Data, A>;
-  protected emit(payload?: {}): RM.NormalAction<{}, string>;
-  protected getEffects(): RM.ReducerEffects<Data>;
-  protected get(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
-  protected post(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
-  protected put(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
-  protected patch(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
-  protected delete(uri: string, options?: createRequestDataOption): RM.MiddlewareEffect;
+  protected actionNormal<Payload, A extends (this: NormalAction<Data, Payload, any>, ...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
+  protected actionRequest<Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
+  protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload>;
+  protected getEffects(): RM.Effects<Data>;
+  protected get<Response, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
+  protected post<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
+  protected put<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
+  protected patch<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
+  protected delete<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected getMiddlewareName(): string;
-  protected abstract getInitValue(): Data;
+  protected abstract initReducer(): Data;
 }
 
 interface FailTransform {
@@ -145,30 +110,32 @@ interface FailTransform {
   businessCode?: string;
 }
 
-export declare const createRequestMiddleware: <State extends RM.AnyObject>(config: {
+export declare const createRequestMiddleware: <State = any>(config: {
   id: string;
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig | undefined;
-  onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction<RM.AnyObject, RM.RequestTypes>) => void) | undefined;
+  onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void) | undefined;
   getTimeoutMessage?: () => string;
-  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
+  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => object;
   onFail: (error: RM.HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
 }) => Middleware<{}, State, Dispatch>;
 
+interface RequestTypes {
+  prepare: string;
+  success: string;
+  fail: string;
+}
+
 declare global {
   namespace RM {
-    interface AnyObject {
-      [key: string]: any;
-    }
-
-    type ReducerEffects<Data> = Array<{
+    type Effects<Data> = Array<{
       when: string;
       effect: (state: Data, action: any) => Data;
     }>;
 
-    interface ReducerMeta {
+    interface Meta {
       actionType: string;
       loading: boolean;
       errorMessage?: string;
@@ -176,17 +143,11 @@ declare global {
       businessCode?: string | number;
     }
 
-    type ReducerMetas = Partial<{
-      [key: string]: RM.ReducerMeta;
+    type Metas = Partial<{
+      [key: string]: RM.Meta;
     }>;
 
-    interface RequestTypes {
-      prepare: string;
-      success: string;
-      fail: string;
-    }
-
-    interface HookRegister {
+    interface Reducers {
       [key: string]: (state: any, action: any) => any;
     }
 
@@ -196,28 +157,28 @@ declare global {
       response: AxiosResponse<T>;
     }
 
-    interface MiddlewareEffect<Response = {}, Payload = {}> {
+    interface FetchHandle<Response = {}, Payload = {}> {
       promise: Promise<RM.ResponseAction<Response, Payload>>;
       cancel: HttpCanceler;
       type: any;
     }
 
-    interface NormalAction<Payload = RM.AnyObject, Type = string> extends Action<Type> {
+    interface NormalAction<Payload = {}, Type = string> extends Action<Type> {
       payload: Payload;
     }
 
-    interface RequestAction<Payload = RM.AnyObject, Type = RequestTypes> extends RM.NormalAction<Payload, Type> {
+    interface RequestAction<Payload = {}, Type = RequestTypes> extends RM.NormalAction<Payload, Type> {
       middleware: string;
       method: METHOD;
       uri: string;
       requestOptions: AxiosRequestConfig;
-      body: RM.AnyObject;
-      query: RM.AnyObject;
+      body: object;
+      query: object;
       successText: string;
       hideError: boolean | ((response: RM.ResponseAction<any>) => boolean);
     }
 
-    interface ResponseAction<Response = {}, Payload = RM.AnyObject> extends RM.RequestAction<Payload, string> {
+    interface ResponseAction<Response = {}, Payload = {}> extends RM.RequestAction<Payload, string> {
       response: Response;
       errorMessage?: string;
       httpStatus?: HTTP_STATUS_CODE;

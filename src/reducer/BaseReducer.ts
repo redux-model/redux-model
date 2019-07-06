@@ -1,7 +1,7 @@
 export class BaseReducer<Data> {
   protected readonly initData: Data;
 
-  protected cases: RM.ReducerEffects<Data> = [];
+  protected cases: RM.Effects<Data> = [];
 
   protected readonly instanceName: string;
 
@@ -14,8 +14,7 @@ export class BaseReducer<Data> {
     this.cases = [];
   }
 
-  // TODO: use typeof keyof
-  public addCase(...config: RM.ReducerEffects<Data>) {
+  public addCase(...config: RM.Effects<Data>) {
     this.cases.push(...config);
   }
 
@@ -23,7 +22,7 @@ export class BaseReducer<Data> {
     return `${this.instanceName}__data`;
   }
 
-  public createData(): RM.HookRegister {
+  public createData(): RM.Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
         if (!state) {

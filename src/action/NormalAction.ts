@@ -1,35 +1,36 @@
 import { BaseAction } from './BaseAction';
 
-export interface NormalActionParam<Data, A> {
+export interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
   action: A;
-  onSuccess?: (state: Data, action: RM.NormalAction) => Data;
+  onSuccess: (state: Data, action: RM.NormalAction<A extends (...args: any[]) => RM.NormalAction<infer R> ? R : never>) => Data;
 }
 
-export class NormalAction<Data, A extends (...args: any[]) => RM.NormalAction = any> extends BaseAction<Data> {
+export class NormalAction<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> extends BaseAction<Data> {
   public readonly action: A;
 
-  protected readonly successCallback?: (state: Data, action: RM.NormalAction) => Data;
+  protected readonly successCallback?: any;
 
-  constructor(config: NormalActionParam<Data, A>, instanceName: string) {
+  constructor(config: NormalActionParam<Data, Payload, A>, instanceName: string) {
     super(instanceName);
     // @ts-ignore
     this.action = (...args: any[]) => {
       return {
-        ...config.action(...args) as unknown as RM.NormalAction,
+        ...config.action(...args),
         type: this.successType,
       };
     };
     this.successCallback = config.onSuccess;
   }
 
-  public static createNormalData<Payload = {}>(payload: Payload): RM.NormalAction<Payload> {
+  public static createNormalData<Payload = {}>(payload?: Payload): RM.NormalAction<Payload> {
     return {
       type: '',
-      payload,
+      // @ts-ignore
+      payload: payload || {},
     };
   }
 
-  collectEffects(): RM.ReducerEffects<Data> {
+  collectEffects(): RM.Effects<Data> {
     const effects = super.collectEffects();
 
     if (this.successCallback) {

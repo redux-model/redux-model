@@ -15,11 +15,11 @@ export abstract class BaseAction<Data> {
     return this.successType;
   }
 
-  public collectEffects(): RM.ReducerEffects<Data> {
+  public collectEffects(): RM.Effects<Data> {
     return [];
   }
 
-  public collectReducers(): RM.HookRegister {
+  public collectReducers(): RM.Reducers {
     return {};
   }
 

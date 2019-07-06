@@ -27,7 +27,7 @@ class CounterModel extends Model<Data> {
     },
   });
 
-  protected getInitValue(): Data {
+  protected initReducer(): Data {
     return {
       amount: 0,
     };

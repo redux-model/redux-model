@@ -5,7 +5,11 @@ import { NormalAction, NormalActionParam } from './action/NormalAction';
 import { useSelector } from 'react-redux';
 import { BaseAction } from './action/BaseAction';
 
-type createRequestDataOption = Partial<Omit<RM.RequestAction, 'type' | 'middleware' | 'uri' | 'method'>>;
+type RequestOptions<Payload> = (
+  Partial<Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>>
+  & { uri: string; }
+  & (Payload extends {} ? { payload: Payload } : { payload?: never })
+);
 
 export abstract class Model<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
@@ -21,15 +25,15 @@ export abstract class Model<Data = null> {
   constructor(instanceName: string = '') {
     this.instanceName = (instanceName ? `[${instanceName}]` : '') + this.constructor.name;
 
-    const initData = this.getInitValue();
+    const initData = this.initReducer();
 
     if (initData !== null) {
       this.reducer = new BaseReducer<Data>(initData, this.instanceName);
     }
   }
 
-  public register(): RM.HookRegister {
-    let reducers: RM.HookRegister = {};
+  public register(): RM.Reducers {
+    let reducers: RM.Reducers = {};
 
     if (this.reducer) {
       this.reducer.clear();
@@ -67,7 +71,7 @@ export abstract class Model<Data = null> {
       });
     }
 
-    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn\'t initialize your reducer yet.`);
+    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
   public connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T {
@@ -77,82 +81,78 @@ export abstract class Model<Data = null> {
       return filter ? filter(data) : data;
     }
 
-    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn\'t initialize your reducer yet.`);
+    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
-  protected actionNormal<A extends (...args: any[]) => RM.NormalAction = any>(config: NormalActionParam<Data, A>) {
+  protected actionNormal<Payload, A extends (this: NormalAction<Data, Payload, any>, ...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>) {
     let instanceName = this.instanceName;
-
     this.sequenceCounter += 1;
     instanceName += '.' + this.sequenceCounter;
 
-    const instance = new NormalAction<Data, A>(config, instanceName);
-
+    const instance = new NormalAction<Data, Payload, A>(config, instanceName);
     this.actions.push(instance);
 
     return instance;
   }
 
-  protected actionRequest<A extends (...args: any[]) => RM.MiddlewareEffect = any>(config: RequestActionParam<Data, A>) {
+  protected actionRequest<Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>>(config: RequestActionParam<Data, Response, Payload, A>) {
     let instanceName = this.instanceName;
-
     this.sequenceCounter += 1;
     instanceName += '.' + this.sequenceCounter;
 
-    const instance = new RequestAction<Data, A>(config, instanceName);
-
+    const instance = new RequestAction<Data, Response, Payload, A>(config, instanceName);
     this.actions.push(instance);
 
     return instance;
   }
 
-  protected emit(payload: {} = {}) {
-    return NormalAction.createNormalData(payload);
+  protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload> {
+    return NormalAction.createNormalData<Payload>(payload);
   }
 
-  protected getEffects(): RM.ReducerEffects<Data> {
+  protected getEffects(): RM.Effects<Data> {
     return [];
   }
 
-  protected get(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+  protected get<Response, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+    // @ts-ignore
     return RequestAction.createRequestData({
-      uri,
       method: METHOD.get,
       middleware: this.getMiddlewareName(),
       ...options,
     });
   }
 
-  protected post(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+  protected post<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+    // @ts-ignore
     return RequestAction.createRequestData({
-      uri,
       method: METHOD.post,
       middleware: this.getMiddlewareName(),
       ...options,
     });
   }
 
-  protected put(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+  protected put<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+    // @ts-ignore
     return RequestAction.createRequestData({
-      uri,
       method: METHOD.put,
       middleware: this.getMiddlewareName(),
       ...options,
     });
   }
 
-  protected patch(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+  protected patch<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+    // @ts-ignore
     return RequestAction.createRequestData({
-      uri,
       method: METHOD.patch,
       middleware: this.getMiddlewareName(),
       ...options,
     });
   }
 
-  protected delete(uri: string, options: createRequestDataOption = {}): RM.MiddlewareEffect {
+  protected delete<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+    // @ts-ignore
     return RequestAction.createRequestData({
-      uri,
       method: METHOD.delete,
       middleware: this.getMiddlewareName(),
       ...options,
@@ -163,5 +163,5 @@ export abstract class Model<Data = null> {
     return Model.middlewareName;
   }
 
-  protected abstract getInitValue(): Data;
+  protected abstract initReducer(): Data;
 }

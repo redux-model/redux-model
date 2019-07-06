@@ -9,15 +9,15 @@ interface FailTransform {
   businessCode?: string;
 }
 
-type MixedReturn = RM.MiddlewareEffect | RM.RequestAction;
+type MixedReturn = RM.FetchHandle | RM.RequestAction;
 
-export const createRequestMiddleware = <State extends RM.AnyObject>(config: {
+export const createRequestMiddleware = <State = any>(config: {
   id: string;
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig;
   onInit?: (api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void;
   getTimeoutMessage?: () => string;
-  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => RM.AnyObject;
+  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => object;
   onFail: (error: RM.HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;

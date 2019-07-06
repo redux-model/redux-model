@@ -8,7 +8,7 @@ interface Data {
 }
 
 class SummaryModel extends Model<Data> {
-  protected getInitValue(): Data {
+  protected initReducer(): Data {
     return {
       times: 0,
     };
@@ -21,7 +21,7 @@ class SummaryModel extends Model<Data> {
     };
   }
 
-  protected getEffects(): RM.ReducerEffects<Data> {
+  protected getEffects(): RM.Effects<Data> {
     return [
       {
         when: counterModel.increase.getSuccessType(),

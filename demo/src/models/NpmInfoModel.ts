@@ -1,17 +1,18 @@
 import { Model } from '../../../src';
 
-interface Response {
+interface ManageResponse {
   _id: string;
   license: string;
   homepage: string;
 }
 
-type Data = Partial<Response>;
+type Data = Partial<ManageResponse>;
 
 class NpmInfoModel extends Model<Data> {
   manage = this.actionRequest({
     action: (packageName: string) => {
-      return this.get('/' + packageName, {
+      return this.get<ManageResponse>({
+        uri: '/' + packageName,
         query: {
           noCache: Date.now(),
         },
@@ -19,6 +20,9 @@ class NpmInfoModel extends Model<Data> {
     },
     onSuccess: (_, action) => {
       return action.response;
+    },
+    onFail: () => {
+      return {};
     },
     meta: true,
   });
@@ -32,7 +36,7 @@ class NpmInfoModel extends Model<Data> {
     },
   });
 
-  protected getInitValue(): Data {
+  protected initReducer(): Data {
     return {};
   }
 }
