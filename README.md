@@ -113,59 +113,6 @@ ReactDom.render(
 
 ```
 
-#### 在React Class中使用
-```typescript jsx
-import React, { PureComponent } from' react';
-import { connect } from 'react-redux';
-import { counter } from './Counter';
-
-type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
-
-class App extends PureComponent<Props> {
-  render() {
-    return (
-      <div onClick={() => this.props.doAction('+')}>
-        There are {this.props.amount} people.
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {
-    amount: counter.connectData(state, (item) => item.amount),
-  };
-};
-
-const mapDispatchToProps = {
-  doAction: counter.change.action,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
-```
-每当我们点击一次文字按钮，变量amount就会自动加1。
-
-#### 在React Hooks中使用
-现在，我们尝试使用react hooks来处理数据。
-
-```typescript jsx
-import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
-import counter from './Counter.ts';
-
-const App: FunctionComponent = () => {
-  const amount = counter.useData((item) => item.amount);
-  const dispatch = useDispatch();
-  
-  return (
-    <div onClick={() => dispatch(counter.change.action('+'))}>
-      There are {amount} people.
-    </div>
-  );
-};
-```
-这种写法真是太令人兴奋了。你可以轻而易举地就拿到数据，而不需要使用connect()的方法把数据注入到props中。同时你的代码也会变得更少更简洁更易于维护。
-
 ## 创建异步请求模型
 每个项目都有请求api的时候，每次请求都可能有3个状态，准备、成功和失败。这个插件利用`中间件`屏蔽了请求细节，所以在使用之前，你需要创建一个中间件
 
@@ -173,7 +120,7 @@ const App: FunctionComponent = () => {
 ```typescript
 import { createRequestMiddleware, Model } from 'redux-model-ts';
 
-export const apiMiddleware = createRequestMiddleware<RootState>({
+export const apiMiddleware = createRequestMiddleware({
   // 模型和中间件的对应关系
   id: Model.middlewareName,
   // 请求的通用地址前缀
@@ -289,7 +236,7 @@ class App extends PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: RootState) => {
+const mapStateToProps = (state) => {
   return {
     data: profile.connectData(state),
     loading: profile.manage.connectLoading(state),
@@ -325,6 +272,7 @@ const App: FunctionComponent = () => {
   return <div>Hello {data ? data.name : '--'}.</div>;
 };
 ```
+这种写法真是太令人兴奋了。你可以轻而易举地就拿到数据，而不需要使用connect()的方法把数据注入到props中。同时你的代码也会变得更少更简洁更易于维护。
 
 # 模型交叉
 任何带有action的模型都可以产生副作用，同时任何模型都可以接收副作用
