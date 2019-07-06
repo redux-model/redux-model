@@ -27,9 +27,11 @@ yarn add redux-model-ts
 | ----- | ----- | ---- |
 | redux | * | - |
 | react | * | - |
-| react | 16.8.3+ | 使用react hooks |
 | react-redux | * | - |
-| react-redux | 7.1.0+ | 使用react hooks |
+
+-------
+
+**如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
 
 # 支持
 
