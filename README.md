@@ -40,6 +40,8 @@ Clone this repository, and run code `yarn start`. After that, open browser and v
 
 ---------
 
+# Usage
+
 Here is a usage case and description for every one:
 
 ```typescript
