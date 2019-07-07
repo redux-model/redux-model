@@ -66,6 +66,8 @@ class Test extends Model<Data> {
   firstAction = this.actionNormal({
     // action 是必须传入的
     action: (name: string) => {
+      // 泛型可以从这里注入：
+      // return this.emit<Payload>();
       return this.emit({
         name,
       });
@@ -113,12 +115,15 @@ class Test extends Model<Data> {
   secondAction = this.actionRequest({
     // action 是必须传入的
     action: (userId: number) => {
-     return this.get({
-       uri: '/profile',
-       query: {
-         userId,
-       },
-     });
+      // 还有 post put patch delete 方法可以使用
+      // 泛型可以从这里注入：
+      // return this.get<Response, Payload>();
+      return this.get({
+        uri: '/profile',
+        query: {
+          userId,
+        },
+      });
     },
     // onSuccess 是可选的
     onSuccess: (state, action) => {

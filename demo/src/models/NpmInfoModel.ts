@@ -11,6 +11,7 @@ type Data = Partial<ManageResponse>;
 class NpmInfoModel extends Model<Data> {
   manage = this.actionRequest({
     action: (packageName: string) => {
+      // Inject generic here.
       return this.get<ManageResponse>({
         uri: '/' + packageName,
         query: {

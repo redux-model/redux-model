@@ -68,6 +68,8 @@ class Test extends Model<Data> {
   firstAction = this.actionNormal({
     // action is required.
     action: (name: string) => {
+      // You can inject generic from here
+      // return this.emit<Payload>();
       return this.emit({
         name,
       });
@@ -115,6 +117,9 @@ class Test extends Model<Data> {
   secondAction = this.actionRequest({
     // action is required.
     action: (userId: number) => {
+      // More methods are defined: post put patch delete
+      // You can inject generic from here
+      // return this.get<Response, Payload>();
      return this.get({
        uri: '/profile',
        query: {
