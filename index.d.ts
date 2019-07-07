@@ -1,5 +1,6 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
 import { Dispatch, Middleware, MiddlewareAPI, Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 export declare enum METHOD {
   get = "GET",
@@ -87,6 +88,7 @@ declare abstract class Model<Data = null> {
   connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T;
   protected actionNormal<Payload, A extends (this: NormalAction<Data, Payload, any>, ...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
   protected actionRequest<Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
+  protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;
   protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload>;
   protected getEffects(): RM.Effects<Data>;
   protected get<Response, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;

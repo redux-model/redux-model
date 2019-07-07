@@ -11,35 +11,25 @@
 | 异步loading状态 | 写reducer处理 | 内置 |
 | 代码量 | 多 | 少 |
 
-# 安装
-```bash
-# 使用npm
-npm install redux-model-ts
-
-# 或者使用yarn
-yarn add redux-model-ts
-
-```
-# 依赖
-
-
-| 插件包 | 版本|
-| ----- | ----- |
-| redux | * |
-| react | * |
-| react-redux | * |
-
--------
-
-**如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
-
-# 支持
-
-该项目同时支持 `javascript` 和 `typescript`，但我推荐你使用`typescript`以得到更好的体验。下面我会用ts的案例去教你怎么使用
-
 -------------------
 
 **本模型库在使用ts的情况下，你将得到100%无死角的静态类型提示。**
+
+# 安装
+
+```bash
+# 使用npm
+npm install redux-model-ts
+npm install redux react-redux redux-thunk
+
+# 使用yarn
+yarn add redux-model-ts
+yarn add redux react-redux redux-thunk
+```
+
+**redux-thunk并不是必须的，除非你想使用thunk的特性**
+
+**如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
 
 # 运行案例（Demo）
 
@@ -66,7 +56,7 @@ class Counter extends Model<Data> {
     },
     onSuccess: (state, action) => {
       let amount = state.amount;
-          
+
       switch (action.payload.operator) {
         case '+':
           amount += 1;
@@ -75,12 +65,12 @@ class Counter extends Model<Data> {
           amount -= 1;
           break;
         // no default
-      } 
-      
+      }
+
       return { amount };
     },
   });
-  
+
   // 你可以建立多个action，并在各自配置下完成reducer的修改操作
   reset = this.actionNormal({
     action: () => {
@@ -151,7 +141,7 @@ export const apiMiddleware = createRequestMiddleware({
   // 定位业务场景下的错误码等信息，会自动存入meta中
   onFail: (error: RM.HttpError, transform) => {
     const { data } = error.response;
-  
+
     transform.businessCode = data ? data.code : undefined;
     transform.errorMessage = (data && data.message) || error.message || 'Fail to fetch';
   },
@@ -237,14 +227,14 @@ class App extends PureComponent<Props> {
       console.log('hello: ' + response.name);
     });
   }
-  
+
   render() {
     const { loading, data } = this.props;
-    
+
     if (loading) {
       return <span>Loading...</span>;
     }
-    
+
     return <div>Hello {data ? data.name : '--'}.</div>;
   }
 }
@@ -272,16 +262,16 @@ const App: FunctionComponent = () => {
   const data = profile.useData();
   const loading = profile.manage.useLoading();
   const dispatch = useDispatch();
-  
+
   // 和componentDidMount一个效果
   useEffect(() => {
     dispatch(profile.manage.action());
   }, []);
-  
+
   if (loading) {
     return <span>Loading...</span>;
   }
-  
+
   return <div>Hello {data ? data.name : '--'}.</div>;
 };
 ```
@@ -328,7 +318,7 @@ class Counter extends Model<Data> {
       amount: 0,
     };
   }
-  
+
   protected getEffects(): RM.Effects<Data> {
     return [
       {
@@ -339,7 +329,7 @@ class Counter extends Model<Data> {
               amount: 0,
             };
           }
-          
+
           return state;
         },
       }

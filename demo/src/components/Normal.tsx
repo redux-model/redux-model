@@ -25,7 +25,7 @@ const Normal: FunctionComponent = () => {
   }, []);
 
   const handleReset = useCallback(() => {
-    dispatch(counterModel.reset.action());
+    dispatch(counterModel.resetThunk());
   }, []);
 
   return (

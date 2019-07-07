@@ -1,8 +1,10 @@
+import { Action } from 'redux';
+import { useSelector } from 'react-redux';
+import { ThunkAction } from 'redux-thunk';
 import { METHOD } from './utils/method';
 import { RequestAction, RequestActionParam } from './action/RequestAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import { NormalAction, NormalActionParam } from './action/NormalAction';
-import { useSelector } from 'react-redux';
 import { BaseAction } from './action/BaseAction';
 
 type RequestOptions<Payload> = (
@@ -104,6 +106,13 @@ export abstract class Model<Data = null> {
     this.actions.push(instance);
 
     return instance;
+  }
+
+  protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(
+    action: A
+  ): (...args: Parameters<A>) => ReturnType<ReturnType<A>> {
+    // @ts-ignore
+    return action;
   }
 
   protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload> {
