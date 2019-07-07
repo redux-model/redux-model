@@ -86,7 +86,7 @@ export abstract class Model<Data = null> {
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
-  protected actionNormal<Payload, A extends (this: NormalAction<Data, Payload, any>, ...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>) {
+  protected actionNormal<Payload, A extends (...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>) {
     let instanceName = this.instanceName;
     this.sequenceCounter += 1;
     instanceName += '.' + this.sequenceCounter;
@@ -117,10 +117,6 @@ export abstract class Model<Data = null> {
 
   protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload> {
     return NormalAction.createNormalData<Payload>(payload);
-  }
-
-  protected getEffects(): RM.Effects<Data> {
-    return [];
   }
 
   protected get<Response, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
@@ -166,6 +162,10 @@ export abstract class Model<Data = null> {
       middleware: this.getMiddlewareName(),
       ...options,
     });
+  }
+
+  protected getEffects(): RM.Effects<Data> {
+    return [];
   }
 
   protected getMiddlewareName(): string {

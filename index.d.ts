@@ -86,16 +86,21 @@ declare abstract class Model<Data = null> {
   register(): RM.Reducers;
   useData<T = Data>(filter?: (data: Data) => T): T;
   connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T;
-  protected actionNormal<Payload, A extends (this: NormalAction<Data, Payload, any>, ...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
+  protected actionNormal<Payload, A extends (...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
   protected actionRequest<Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
   protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;
+
+  // Used for actionNormal
   protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload>;
-  protected getEffects(): RM.Effects<Data>;
+
+  // Used for actionRequest
   protected get<Response, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected post<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected put<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected patch<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected delete<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
+
+  protected getEffects(): RM.Effects<Data>;
   protected getMiddlewareName(): string;
   protected abstract initReducer(): Data;
 }
