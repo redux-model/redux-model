@@ -163,7 +163,7 @@ class Test extends Model<Data> {
   }
   
   // 接收来自其它模型的action操作，并改变reducer的数据
-  protected getEffects(): RM.Effects<Data> {
+  protected subscribers(): RM.Subscriber<Data> {
     return [
       {
         when: otherModel.customAction.getSuccessType(),

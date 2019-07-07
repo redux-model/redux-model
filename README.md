@@ -65,7 +65,7 @@ class Test extends Model<Data> {
   //   Invoked by dispatch() in React component:
   //     dispatch(test.firstAction.action(''));
   //
-  //   Change other model's reducer data in method getEffects():
+  //   Change other model's reducer data in method subscribers():
   //     test.firstAction.getSuccessType();
   firstAction = this.actionNormal({
     // action is required.
@@ -96,7 +96,7 @@ class Test extends Model<Data> {
   //        console.log(response.foo);
   //      );
   //
-  //   Change other model's reducer data in method getEffects():
+  //   Change other model's reducer data in method subscribers():
   //     test.secondAction.getPrepareType();
   //     test.secondAction.getSuccessType();
   //     test.secondAction.getFailType();
@@ -166,7 +166,7 @@ class Test extends Model<Data> {
   }
   
   // Receive effect from other model, and change data for this model.
-  protected getEffects(): RM.Effects<Data> {
+  protected subscribers(): RM.Subscriber<Data> {
     return [
       {
         when: otherModel.customAction.getSuccessType(),

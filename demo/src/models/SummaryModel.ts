@@ -14,32 +14,20 @@ class SummaryModel extends Model<Data> {
     };
   }
 
-  protected onIncrease(state: Data): Data {
+  protected subscribers(): RM.Subscriber<Data> {
+    return [
+      counterModel.increase.onSuccess(this.onIncrease),
+      counterModel.reset.onSuccess(this.onIncrease),
+      npmInfoModel.reset.onSuccess(this.onIncrease),
+      npmInfoModel.manage.onSuccess(this.onIncrease),
+    ];
+  }
+
+  private onIncrease(state: Data): Data {
     return {
       times: state.times + 1,
       lastTime: (new Date()).toUTCString(),
     };
-  }
-
-  protected getEffects(): RM.Effects<Data> {
-    return [
-      {
-        when: counterModel.increase.getSuccessType(),
-        effect: this.onIncrease,
-      },
-      {
-        when: counterModel.reset.getSuccessType(),
-        effect: this.onIncrease,
-      },
-      {
-        when: npmInfoModel.manage.getPrepareType(),
-        effect: this.onIncrease,
-      },
-      {
-        when: npmInfoModel.reset.getSuccessType(),
-        effect: this.onIncrease,
-      },
-    ];
   }
 }
 

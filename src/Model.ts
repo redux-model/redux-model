@@ -13,6 +13,11 @@ type RequestOptions<Payload> = (
   & (Payload extends {} ? { payload: Payload } : { payload?: never })
 );
 
+type EnhanceResponse<A> = A extends (...args: any[]) => RM.FetchHandle<infer R, any> ? R : never;
+type EnhancePayload<A> = A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? P : never;
+type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.NormalAction<infer P> ? P : never;
+
+
 export abstract class Model<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
 
@@ -53,7 +58,7 @@ export abstract class Model<Data = null> {
     });
 
     if (this.reducer) {
-      this.reducer.addCase(...this.getEffects());
+      this.reducer.addCase(...this.subscribers());
 
       reducers = {
         ...reducers,
@@ -86,7 +91,9 @@ export abstract class Model<Data = null> {
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
-  protected actionNormal<Payload, A extends (...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>) {
+  protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(
+    config: NormalActionParam<Data, Payload, A>
+  ): NormalAction<Data, Payload, A> {
     let instanceName = this.instanceName;
     this.sequenceCounter += 1;
     instanceName += '.' + this.sequenceCounter;
@@ -97,7 +104,9 @@ export abstract class Model<Data = null> {
     return instance;
   }
 
-  protected actionRequest<Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>>(config: RequestActionParam<Data, Response, Payload, A>) {
+  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    config: RequestActionParam<Data, Response, Payload, A>
+  ): RequestAction<Data, Response, Payload, A> {
     let instanceName = this.instanceName;
     this.sequenceCounter += 1;
     instanceName += '.' + this.sequenceCounter;
@@ -164,7 +173,7 @@ export abstract class Model<Data = null> {
     });
   }
 
-  protected getEffects(): RM.Effects<Data> {
+  protected subscribers(): RM.Subscriber<Data> {
     return [];
   }
 

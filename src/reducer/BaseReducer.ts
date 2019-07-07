@@ -1,7 +1,7 @@
 export class BaseReducer<Data> {
   protected readonly initData: Data;
 
-  protected cases: RM.Effects<Data> = [];
+  protected cases: RM.Subscriber<Data> = [];
 
   protected readonly instanceName: string;
 
@@ -14,7 +14,7 @@ export class BaseReducer<Data> {
     this.cases = [];
   }
 
-  public addCase(...config: RM.Effects<Data>) {
+  public addCase(...config: RM.Subscriber<Data>) {
     this.cases.push(...config);
   }
 

@@ -7,18 +7,21 @@ const DEFAULT_META: RM.Meta = {
 };
 
 type PayloadData = string | number | symbol;
-type EnhanceResponse<A, Payload> = A extends (...args: any[]) => RM.FetchHandle<infer R, Payload> ? R : never;
-type EnhancePayload<A, Response> = A extends (...args: any[]) => RM.FetchHandle<Response, infer R> ? R : never;
 
 export interface RequestActionParam<Data, Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>> {
   action: A;
   meta?: boolean | string;
-  onSuccess?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
-  onPrepare?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
-  onFail?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
+  onSuccess?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
+  onPrepare?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
+  onFail?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
 }
 
-export class RequestAction<Data = any, Response = {}, Payload = {}, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any>
+type RequestSubscriber<CustomData, Response, Payload> = {
+  when: string;
+  effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData;
+};
+
+export class RequestAction<Data = any, Response = any, Payload = any, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any>
   // @ts-ignore
   extends NormalAction<Data, Payload, A> {
   // Point to correct type definition.
@@ -76,7 +79,35 @@ export class RequestAction<Data = any, Response = {}, Payload = {}, A extends (.
     return data;
   }
 
-  public collectEffects(): RM.Effects<Data> {
+  // @ts-ignore
+  public onSuccess<CustomData>(
+    effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData
+  ): RequestSubscriber<CustomData, Response, Payload> {
+    return {
+      when: this.successType,
+      effect,
+    };
+  }
+
+  public onPrepare<CustomData>(
+    effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData
+  ): RequestSubscriber<CustomData, Response, Payload> {
+    return {
+      when: this.prepareType,
+      effect,
+    };
+  }
+
+  public onFail<CustomData>(
+    effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData
+  ): RequestSubscriber<CustomData, Response, Payload> {
+    return {
+      when: this.prepareType,
+      effect,
+    };
+  }
+
+  public collectEffects(): RM.Subscriber<Data> {
     const effects = super.collectEffects();
 
     if (this.prepareCallback) {

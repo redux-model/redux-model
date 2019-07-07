@@ -2,10 +2,15 @@ import { BaseAction } from './BaseAction';
 
 export interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
   action: A;
-  onSuccess: (state: Data, action: RM.NormalAction<A extends (...args: any[]) => RM.NormalAction<infer R> ? R : never>) => Data;
+  onSuccess: (state: Data, action: RM.NormalAction<Payload>) => Data;
 }
 
-export class NormalAction<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> extends BaseAction<Data> {
+type NormalSubscriber<CustomData, Payload> = {
+  when: string;
+  effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData;
+};
+
+export class NormalAction<Data = any, Payload = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any> extends BaseAction<Data> {
   public readonly action: A;
 
   protected readonly successCallback?: any;
@@ -30,7 +35,16 @@ export class NormalAction<Data, Payload, A extends (...args: any[]) => RM.Normal
     };
   }
 
-  collectEffects(): RM.Effects<Data> {
+  public onSuccess<CustomData>(
+    effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData
+  ): NormalSubscriber<CustomData, Payload> {
+    return {
+      when: this.successType,
+      effect,
+    };
+  }
+
+  collectEffects(): RM.Subscriber<Data> {
     const effects = super.collectEffects();
 
     if (this.successCallback) {

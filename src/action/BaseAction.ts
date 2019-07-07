@@ -15,7 +15,7 @@ export abstract class BaseAction<Data> {
     return this.successType;
   }
 
-  public collectEffects(): RM.Effects<Data> {
+  public collectEffects(): RM.Subscriber<Data> {
     return [];
   }
 

@@ -32,29 +32,43 @@ declare abstract class BaseAction<Data> {
 
 interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
   action: A;
-  onSuccess: (state: Data, action: RM.NormalAction<A extends (...args: any[]) => RM.NormalAction<infer R> ? R : never>) => Data;
+  onSuccess: (state: Data, action: RM.NormalAction<Payload>) => Data;
 }
 
-declare class NormalAction<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> extends BaseAction<Data> {
+type NormalSubscriber<CustomData, Payload> = {
+  when: string;
+  effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData;
+};
+
+declare class NormalAction<Data = any, Payload = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any> extends BaseAction<Data> {
   readonly action: A;
+  onSuccess<CustomData>(effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData): NormalSubscriber<CustomData, Payload>;
 }
 
 type PayloadData = string | number | symbol;
 
-type EnhanceResponse<A, Payload> = A extends (...args: any[]) => RM.FetchHandle<infer R, Payload> ? R : never;
-type EnhancePayload<A, Response> = A extends (...args: any[]) => RM.FetchHandle<Response, infer R> ? R : never;
-
 interface RequestActionParam<Data, Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>> {
   action: A;
   meta?: boolean | string;
-  onSuccess?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
-  onPrepare?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
-  onFail?: (state: Data, action: RM.ResponseAction<EnhanceResponse<A, Payload>, EnhancePayload<A, Response>>) => Data;
+  onSuccess?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
+  onPrepare?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
+  onFail?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
 }
+
+type RequestSubscriber<CustomData, Response, Payload> = {
+  when: string;
+  effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData;
+};
 
 // @ts-ignore
 declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any> extends NormalAction<Data, Payload, A> {
   readonly action: A;
+
+  // @ts-ignore
+  onSuccess<CustomData>(effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData): RequestSubscriber<CustomData, Response, Payload>;
+  onPrepare<CustomData>(effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData): RequestSubscriber<CustomData, Response, Payload>;
+  onFail<CustomData>(effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData): RequestSubscriber<CustomData, Response, Payload>;
+
   getPrepareType(): string;
   getFailType(): string;
 
@@ -80,14 +94,18 @@ type RequestOptions<Payload> = (Partial<Omit<RM.RequestAction, 'uri' | 'payload'
   payload?: never;
 }));
 
+declare type EnhanceResponse<A> = A extends (...args: any[]) => RM.FetchHandle<infer R, any> ? R : never;
+declare type EnhancePayload<A> = A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? P : never;
+declare type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.NormalAction<infer P> ? P : never;
+
 declare abstract class Model<Data = null> {
   static middlewareName: string;
   constructor(instanceName?: string);
   register(): RM.Reducers;
   useData<T = Data>(filter?: (data: Data) => T): T;
   connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T;
-  protected actionNormal<Payload, A extends (...args: any[]) => RM.NormalAction<Payload>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
-  protected actionRequest<Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
+  protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
+  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
   protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;
 
   // Used for actionNormal
@@ -100,7 +118,7 @@ declare abstract class Model<Data = null> {
   protected patch<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected delete<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
 
-  protected getEffects(): RM.Effects<Data>;
+  protected subscribers(): RM.Subscriber<Data>;
   protected getMiddlewareName(): string;
   protected abstract initReducer(): Data;
 }
@@ -126,7 +144,7 @@ export declare const createRequestMiddleware: <State = any>(config: {
 
 declare global {
   namespace RM {
-    type Effects<Data> = Array<{
+    type Subscriber<Data> = Array<{
       when: string;
       effect: (state: Data, action: any) => Data;
     }>;
@@ -153,17 +171,17 @@ declare global {
       response: AxiosResponse<T>;
     }
 
-    interface FetchHandle<Response = {}, Payload = {}> {
+    interface FetchHandle<Response = any, Payload = any> {
       promise: Promise<RM.ResponseAction<Response, Payload>>;
       cancel: HttpCanceler;
       type: any;
     }
 
-    interface NormalAction<Payload = {}, Type = string> extends Action<Type> {
+    interface NormalAction<Payload = any, Type = string> extends Action<Type> {
       payload: Payload;
     }
 
-    interface RequestAction<Payload = {}, Type = { prepare: string; success: string; fail: string }> extends RM.NormalAction<Payload, Type> {
+    interface RequestAction<Payload = any, Type = { prepare: string; success: string; fail: string }> extends RM.NormalAction<Payload, Type> {
       middleware: string;
       method: METHOD;
       uri: string;
@@ -174,7 +192,7 @@ declare global {
       hideError: boolean | ((response: RM.ResponseAction<any>) => boolean);
     }
 
-    interface ResponseAction<Response = {}, Payload = {}> extends RM.RequestAction<Payload, string> {
+    interface ResponseAction<Response = any, Payload = any> extends RM.RequestAction<Payload, string> {
       response: Response;
       errorMessage?: string;
       httpStatus?: HTTP_STATUS_CODE;
