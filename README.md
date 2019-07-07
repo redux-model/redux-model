@@ -1,75 +1,79 @@
-如果你还在用函数式写法去写redux的action、types、reducer，那么你有必要往下看。这个框架对redux进行了一次彻头彻尾的面向对象封装，让你用最少的代码做最多的事情。
+[简体中文](https://github.com/fwh1990/redux-model-ts/blob/master/README-cn.md)
 
-# 对比
-|     | 原生redux | redux-model-ts |
+How many people are writing redux in functional way? And how much time you had wasted since you are repeating action,types,reducer.
+Now, I want to tell you, I am in modern way to write redux. I'am using OOP instead of Functional Programming.
+
+# Compare
+|     | Original Redux | redux-model-ts |
 | ----| ---- | ---- |
-| 写法 | 函数式 | 面向对象 |
-| 定义types | 要 | 内置 |
-| action与reducer文件分离 | 要 | 不要 |
-| 对ts的支持 | 一般 | 完美 |
-| 异步请求 | thunk 或 saga | 内置 |
-| 异步loading状态 | 写reducer处理 | 内置 |
-| 代码量 | 多 | 少 |
+| Coding way | Functional | OOP |
+| TS support | A little | Perfect |
+| Define types | Yes | BuiltIn |
+| Split action and reducer file | Yes | No |
+| Sync action | Thunk OR Saga | BuiltIn |
+| Sync loading status | Code in reducer | BuiltIn |
+| Business code size | Large | Half |
 
 -------------------
 
-**本模型库在使用ts的情况下，你将得到100%无死角的静态类型提示。**
+**You Will get 100% Type checking when you are using typescript.**
 
-# 安装
+# Installation
 
 ```bash
-# 使用npm
+# By npm
 npm install redux-model-ts
 npm install redux react-redux redux-thunk
 
-# 使用yarn
+# By yarn
 yarn add redux-model-ts
 yarn add redux react-redux redux-thunk
 ```
 
-**redux-thunk并不是必须的，除非你想使用thunk的特性**
+Remember: redux-thunk is not required until you want to use method `actionThunk()`
 
-**如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
+Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when you are using `React Hooks`
 
-# 运行案例（Demo）
+# Run Demo
 
-克隆本项目并执行`yarn start`，然后打开浏览器输入`http://localhost:8080`查看效果
+Clone this repository, and run code `yarn start`. After that, open browser and visit site `http://localhost:8080`.
 
 ---------
-这里有一个完整的模型使用案例
+
+Here is a usage case and description for every one:
 
 ```typescript
 interface Data {
   foo: string;
 }
 
-// 创建一个模型，一个模型只能为一个reducer数据服务
-// 使用方法：
-//   在React Hooks组件中获取reducer数据：
-//   const data = test.useData();
-//   const foo = test.useData((item) => item.foo);
+// Create a model. One model related to one reducer.
+// Usage:
+//   Get data in React Hooks component:
+//     const data = test.useData();
+//     const foo = test.useData((item) => item.foo);
 //
-//   在react-redux.connect中获取reducer数据：
-//   const mapStateToProps = (state) => {
-//     data: test.connectData(state),
-//   };
+//   Get data in react-redux.connect:
+//     const mapStateToProps = (state) => {
+//       data: test.connectData(state),
+//     };
 class Test extends Model<Data> {
-  // 创建普通句柄
-  // 使用方法：
-  //   在React组件中被dispatch()调用：
-  //   dispatch(test.firstAction.action(''));
+  // Create a normal action
+  // Usage:
+  //   Invoked by dispatch() in React component:
+  //     dispatch(test.firstAction.action(''));
   //
-  //   在getEffects()中改变其他模型的数据：
-  //   test.firstAction.getSuccessType();
+  //   Change other model's reducer data in method getEffects():
+  //     test.firstAction.getSuccessType();
   firstAction = this.actionNormal({
-    // action 是必须传入的
+    // action is required.
     action: (name: string) => {
       return this.emit({
         name,
       });
     },
-    // onSuccess 是可选的
-    // 它的作用是改变Test模型下的reducer数据
+    // onSuccess is optional.
+    // It can change reducer data that is in this model.
     onSuccess: (state, action) => {
       return {
         ...state,
@@ -78,38 +82,38 @@ class Test extends Model<Data> {
     },
   });
   
-  // 创建异步请求句柄
-  // 使用方法：
-  //   在React组件中被dispatch()调用：
-  //   dispatch(test.secondAction.action(''));
+  // Create sync action
+  // Usage:
+  //   Invoked by dispatch() in React component:
+  //     dispatch(test.secondAction.action(''));
   //
-  //   使用Promise回调：
-  //   dispatch(test.secondAction.action('')).promise.then(({ response }) => {
-  //     console.log(response.foo);
-  //   );
+  //   Promise is supported:
+  //      dispatch(test.secondAction.action('')).promise.then(({ response }) => {
+  //        console.log(response.foo);
+  //      );
   //
-  //   在getEffects()中改变其他模型的数据：
-  //   test.secondAction.getPrepareType();
-  //   test.secondAction.getSuccessType();
-  //   test.secondAction.getFailType();
+  //   Change other model's reducer data in method getEffects():
+  //     test.secondAction.getPrepareType();
+  //     test.secondAction.getSuccessType();
+  //     test.secondAction.getFailType();
   //
-  //   在React Hooks组件中获取loading状态：
-  //   const loading = test.secondAction.useLoading();
+  //   Get loading in React Hooks component:
+  //     const loading = test.secondAction.useLoading();
   //
-  //   在react-redux.connect中获取loading状态：
-  //   const mapStateToProps = (state) => {
-  //     loading: test.secondAction.connectLoading(state),
-  //   };
+  //   Get loading in react-redux.connect:
+  //     const mapStateToProps = (state) => {
+  //       loading: test.secondAction.connectLoading(state),
+  //     };
   //
-  //   在React Hooks组件中获取meta信息：
-  //   const meta = test.secondAction.useMeta();
+  //   Get meta in React Hooks component:
+  //     const meta = test.secondAction.useMeta();
   //
-  //   在react-redux.connect中获取meta信息：
-  //   const mapStateToProps = (state) => {
-  //     meta: test.secondAction.connectMeta(state),
-  //   };
+  //   Get meta in react-redux.connect:
+  //     const mapStateToProps = (state) => {
+  //       meta: test.secondAction.connectMeta(state),
+  //     };
   secondAction = this.actionRequest({
-    // action 是必须传入的
+    // action is required.
     action: (userId: number) => {
      return this.get({
        uri: '/profile',
@@ -118,25 +122,24 @@ class Test extends Model<Data> {
        },
      });
     },
-    // onSuccess 是可选的
+    // onSuccess is optional
     onSuccess: (state, action) => {
       return action.response;
     },
-    // onFail 是可选的
+    // onFail is optional
     onPrepare: (stte, action) => {
       return state;
     },
-    // onFail 是可选的
+    // onFail is optional
     onFail: (state, action) => {
       return state;
     },
-    // meta是指异步请求的loading，http-status，error-message 之类的数据存储
-    // 比较常用的就是loading状态
-    // 如果你不需要这些信息，那么就设置为false，或者不设置
+    // Meta will store httpStatus, errorMessage and loading.
+    // It's optional, you can set false or ignore it if you don't need these information.
     meta: true,
   });
   
-  // 依赖redux-thunk包，创建thunk类型的句柄
+  // Dependence on package redux-thunk.
   thirdAction = this.actionThunk((name: string) => {
     return (dispatch, getState) => {
       if (name === 'bar') {
@@ -147,15 +150,15 @@ class Test extends Model<Data> {
     };
   });
   
-  // 初始化reducer的数据
-  // 如果你不需要reducer，那么可以返回null值，并去掉泛型Data的约束
+  // Initialize reducer data.
+  // You can return null and remove generic if you don't have reducer data in this model.
   protected initReducer(): Data {
     return {
       foo: 'bar',
     };
   }
   
-  // 接收来自其它模型的action操作，并改变reducer的数据
+  // Receive effect from other model, and change data for this model.
   protected getEffects(): RM.Effects<Data> {
     return [
       {
@@ -182,25 +185,26 @@ export const test = new Test();
 
 
 export const rootReducers = combineReducers({
-  // 因为模型中包含有reducer数据，所以我们需要把模型注册到redux中
+  // We should register reducer data from each model.
   ...test.register(),
 });
 ```
 
-## 中间件
-每个项目都有请求api的时候，每次请求都可能有3个状态，准备、成功和失败。这个插件利用`中间件`屏蔽了请求细节，所以在使用`Model.actionRequest`之前，你需要创建一个中间件
+## Middleware
+We should configure what can do and what can not do when we are fetching api. So, middleware is required before we can use method `Model.actionRequest`.
 
 ```typescript
 import { createRequestMiddleware, Model } from 'redux-model-ts';
 
 export const apiMiddleware = createRequestMiddleware({
-  // 模型和中间件的对应关系
+  // Unique name so we can related the sync action.
   id: Model.middlewareName,
-  // 请求的通用地址前缀
+  // Your base address.
   baseUrl: 'http://api.xxx.com',
-  // 请求头信息
+  // Headers are always necessary.
   getHeaders: ({ getState }) => {
-    // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
+    // You are free to get data from redux
+    // Such as access_token like:
     // const token = tokenModel.connectData(getState()).access_token;
     return {
       Authorization: `Bearer token`,
@@ -208,27 +212,27 @@ export const apiMiddleware = createRequestMiddleware({
      'Content-Type': 'application/json',
    };
   },
-  // 定位业务场景下的错误码等信息，会自动存入meta中
+  // Collect your meta.
   onFail: (error: RM.HttpError, transform) => {
     const { data } = error.response;
 
     transform.businessCode = data ? data.code : undefined;
-    transform.errorMessage = (data && data.message) || error.message || 'Fail to fetch';
+    transform.errorMessage = (data && data.message) || error.message;
   },
-  // 可以做一些弹窗操作。
-  // 只有当模型提供了successText属性才会触发。
+  // The behavior when action.successText is set.
   onShowSuccess: (successText) => {
     console.log(successText);
   },
-  // 可以做一些弹窗操作。
-  // 只有当请求异常或者失败时才会触发。
-  // 模型中提供了 hideError 属性时，不再触发。
+  // The behavior when api respond error http status.
+  // You can set action.hideError=false to stop invoking this method.
   onShowError: (errorMessage) => {
     console.error(errorMessage);
   },
 });
 ```
-接着注入到store中
+
+And then, inject middleware to redux.store.
+
 ```typescript
 import { createStore, compose, applyMiddleware } from 'redux';
 import { apiMiddleware } from './apiMiddleware.ts';
@@ -243,4 +247,4 @@ const store = createStore(
 
 --------------------
 
-欢迎您使用并随时给我建议。
+Feel free to use this package, and you are welcome to give me issue or PR.
