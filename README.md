@@ -35,91 +35,161 @@ yarn add redux react-redux redux-thunk
 
 克隆本项目并执行`yarn start`，然后打开浏览器输入`http://localhost:8080`查看效果
 
-# 使用方式
-
-## 创建模型
+---------
+这里有一个完整的模型使用案例
 
 ```typescript
-import { Model } from 'redux-model-ts';
-
 interface Data {
-  amount: number;
+  foo: string;
 }
 
-class Counter extends Model<Data> {
-  // 普通的action处理
-  change = this.actionNormal({
-    action: (operator: '+' | '-') => {
+// 创建一个模型，一个模型只能为一个reducer数据服务
+// 使用方法：
+//   在React Hooks组件中获取reducer数据：
+//   const data = test.useData();
+//   const foo = test.useData((item) => item.foo);
+//
+//   在react-redux.connect中获取reducer数据：
+//   const mapStateToProps = (state) => {
+//     data: test.connectData(state),
+//   };
+class Test extends Model<Data> {
+  // 创建普通句柄
+  // 使用方法：
+  //   在React组件中被dispatch()调用：
+  //   dispatch(test.firstAction.action(''));
+  //
+  //   在getEffects()中改变其他模型的数据：
+  //   test.firstAction.getSuccessType();
+  firstAction = this.actionNormal({
+    // action 是必须传入的
+    action: (name: string) => {
       return this.emit({
-        operator,
+        name,
       });
     },
+    // onSuccess 是可选的
+    // 它的作用是改变Test模型下的reducer数据
     onSuccess: (state, action) => {
-      let amount = state.amount;
-
-      switch (action.payload.operator) {
-        case '+':
-          amount += 1;
-          break;
-        case '-':
-          amount -= 1;
-          break;
-        // no default
+      return {
+        ...state,
+        foo: action.payload.name,
+      };
+    },
+  });
+  
+  // 创建异步请求句柄
+  // 使用方法：
+  //   在React组件中被dispatch()调用：
+  //   dispatch(test.secondAction.action(''));
+  //
+  //   使用Promise回调：
+  //   dispatch(test.secondAction.action('')).promise.then(({ response }) => {
+  //     console.log(response.foo);
+  //   );
+  //
+  //   在getEffects()中改变其他模型的数据：
+  //   test.secondAction.getPrepareType();
+  //   test.secondAction.getSuccessType();
+  //   test.secondAction.getFailType();
+  //
+  //   在React Hooks组件中获取loading状态：
+  //   const loading = test.secondAction.useLoading();
+  //
+  //   在react-redux.connect中获取loading状态：
+  //   const mapStateToProps = (state) => {
+  //     loading: test.secondAction.connectLoading(state),
+  //   };
+  //
+  //   在React Hooks组件中获取meta信息：
+  //   const meta = test.secondAction.useMeta();
+  //
+  //   在react-redux.connect中获取meta信息：
+  //   const mapStateToProps = (state) => {
+  //     meta: test.secondAction.connectMeta(state),
+  //   };
+  secondAction = this.actionRequest({
+    // action 是必须传入的
+    action: (userId: number) => {
+     return this.get({
+       uri: '/profile',
+       query: {
+         userId,
+       },
+     });
+    },
+    // onSuccess 是可选的
+    onSuccess: (state, action) => {
+      return action.response;
+    },
+    // onFail 是可选的
+    onPrepare: (stte, action) => {
+      return state;
+    },
+    // onFail 是可选的
+    onFail: (state, action) => {
+      return state;
+    },
+    // meta是指异步请求的loading，http-status，error-message 之类的数据存储
+    // 比较常用的就是loading状态
+    // 如果你不需要这些信息，那么就设置为false，或者不设置
+    meta: true,
+  });
+  
+  // 依赖redux-thunk包，创建thunk类型的句柄
+  thirdAction = this.actionThunk((name: string) => {
+    return (dispatch, getState) => {
+      if (name === 'bar') {
+        return this.firstAction.action(name);
       }
-
-      return { amount };
-    },
+      
+      return this.secondAction.action(1);
+    };
   });
-
-  // 你可以建立多个action，并在各自配置下完成reducer的修改操作
-  reset = this.actionNormal({
-    action: () => {
-      return this.emit();
-    },
-    onSuccess: () => {
-      return { amount: 0 };
-    },
-  });
-
+  
+  // 初始化reducer的数据
+  // 如果你不需要reducer，那么可以返回null值，并去掉泛型Data的约束
   protected initReducer(): Data {
     return {
-      amount: 0,
+      foo: 'bar',
     };
+  }
+  
+  // 接收来自其它模型的action操作，并改变reducer的数据
+  protected getEffects(): RM.Effects<Data> {
+    return [
+      {
+        when: otherModel.customAction.getSuccessType(),
+        effect: (state, action) => {
+          return {
+            ...state,
+            foo: action.payload.foo,
+          };
+        },
+      },
+      {
+        ...
+      },
+    ];
   }
 }
 
-export const counter = new Counter();
+export const test = new Test();
 
-```
-现在，你已经创建了一个action和一个reducer。
 
-我们首先要把reducer挂载到redux的store中
-```typescript jsx
-import React from 'react';
-import ReactDom from 'react-dom';
-import { combineReducers, createStore, Provider } from 'redux';
-import { counter } from './Counter.ts';
+// ---------------------------------------------------
+// ---------------------------------------------------
 
-const reducers = {
-  ...counter.register(),
-};
 
-const rootReducers = combineReducers(reducers);
-const store = createStore(rootReducers);
-
-ReactDom.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-);
-
+export const rootReducers = combineReducers({
+  // 因为模型中包含有reducer数据，所以我们需要把模型注册到redux中
+  ...test.register(),
+});
 ```
 
-## 创建异步请求模型
-每个项目都有请求api的时候，每次请求都可能有3个状态，准备、成功和失败。这个插件利用`中间件`屏蔽了请求细节，所以在使用之前，你需要创建一个中间件
+## 中间件
+每个项目都有请求api的时候，每次请求都可能有3个状态，准备、成功和失败。这个插件利用`中间件`屏蔽了请求细节，所以在使用`Model.actionRequest`之前，你需要创建一个中间件
 
-#### 创建中间件
 ```typescript
 import { createRequestMiddleware, Model } from 'redux-model-ts';
 
@@ -170,173 +240,6 @@ const store = createStore(
   compose(applyMiddleware(apiMiddleware)),
 );
 ```
-
-#### 创建异步Action
-```typescript
-import { Model } from 'redux-model-ts';
-
-interface Response {
-  name: string;
-  age: number;
-}
-
-type Data = Partial<Response>;
-
-class Profile extends Model<Data> {
-  manage = this.actionRequest({
-    action: () => {
-      return this.get('/api/profile');
-    },
-    onSuccess: (state, action) => {
-      return {
-        ...state,
-        ...action.response,
-      };
-    },
-    // meta是指异步请求的loading，http-status，error-message 之类的数据存储
-    // 比较常用的就是loading状态
-    // 如果你不需要这些信息，那么就设置为false，或者不设置
-    meta: true,
-  });
-
-  protected initReducer(): Data {
-    return {};
-  }
-}
-
-export const profile = new Profile();
-```
-接着，我们需要把reducer挂载到redux中
-```typescript
-const reducers = {
-  ...profile.register(),
-};
-
-```
-#### 在React Class中使用
-```typescript jsx
-import React, { PureComponent } from' react';
-import { connect } from 'react-redux';
-import { profile } from './Profile';
-
-type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
-
-class App extends PureComponent<Props> {
-  componentDidMount() {
-    this.props.getProfile().promise.then(({ response }) => {
-      console.log('hello: ' + response.name);
-    });
-  }
-
-  render() {
-    const { loading, data } = this.props;
-
-    if (loading) {
-      return <span>Loading...</span>;
-    }
-
-    return <div>Hello {data ? data.name : '--'}.</div>;
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {
-    data: profile.connectData(state),
-    loading: profile.manage.connectLoading(state),
-  };
-};
-
-const mapDispatchToProps = {
-  getProfile: profile.manage.action,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
-```
-#### 在React Hooks中使用
-```typescript jsx
-import React, { FunctionComponent, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import profile from './Profile.ts';
-
-const App: FunctionComponent = () => {
-  const data = profile.useData();
-  const loading = profile.manage.useLoading();
-  const dispatch = useDispatch();
-
-  // 和componentDidMount一个效果
-  useEffect(() => {
-    dispatch(profile.manage.action());
-  }, []);
-
-  if (loading) {
-    return <span>Loading...</span>;
-  }
-
-  return <div>Hello {data ? data.name : '--'}.</div>;
-};
-```
-这种写法真是太令人兴奋了。你可以轻而易举地就拿到数据，而不需要使用connect()的方法把数据注入到props中。同时你的代码也会变得更少更简洁更易于维护。
-
-# 模型交叉
-任何带有action的模型都可以产生副作用，同时任何模型都可以接收副作用
-
-```typescript
-import { Model } from 'redux-model-ts';
-
-interface Data {
-  amount: number;
-}
-
-// 你可以从ChangeCounter.ts中导入payload
-interface WorldBoomPayload {
-  over: boolean;
-}
-
-class WorldBoom extends Model {
-  start = this.actionNormal({
-    action: () => {
-      this.emit<WorldBoomPayload>({
-        over: true,
-      });
-    },
-  });
-}
-
-export const worldBoom = new WorldBoom();
-
-// ===============================================
-// ===============================================
-
-interface Data {
-  amount: number;
-}
-
-class Counter extends Model<Data> {
-  initReducer(): Data {
-    return {
-      amount: 0,
-    };
-  }
-
-  protected getEffects(): RM.Effects<Data> {
-    return [
-      {
-        when: worldBoom.start.getSuccessType(),
-        effect: (state, action: RM.NormalAction<WorldBoomPayload>) => {
-          if (action.payload.over === true) {
-            return {
-              amount: 0,
-            };
-          }
-
-          return state;
-        },
-      }
-    ];
-  }
-}
-```
-
 
 --------------------
 
