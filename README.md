@@ -97,7 +97,7 @@ export const counter = new Counter();
 ```typescript jsx
 import React from 'react';
 import ReactDom from 'react-dom';
-import { combineReducers, Reducer, createStore, Provider } from 'redux';
+import { combineReducers, createStore, Provider } from 'redux';
 import { counter } from './Counter.ts';
 
 const reducers = {
@@ -131,7 +131,7 @@ export const apiMiddleware = createRequestMiddleware({
   // 请求头信息
   getHeaders: ({ getState }) => {
     // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
-    // const token = tokenModel.connectData(getState(), (item) => item.access_token);
+    // const token = tokenModel.connectData(getState()).access_token;
     return {
       Authorization: `Bearer token`,
       Accept: 'application/json',
@@ -282,7 +282,6 @@ const App: FunctionComponent = () => {
 
 ```typescript
 import { Model } from 'redux-model-ts';
-import { changeCounter } from 'ChangeCounter.ts';
 
 interface Data {
   amount: number;
