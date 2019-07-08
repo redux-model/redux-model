@@ -159,7 +159,7 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
       payloadData = undefined;
     }
 
-    return useSelector((state: {}) => {
+    return useSelector((state: any) => {
       const customMeta = payloadData === undefined
         ? state[`${this.typePrefix}__meta`]
         : state[`${this.typePrefix}__metas`][payloadData] || DEFAULT_META;
@@ -172,25 +172,18 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
     return this.useMeta(payloadData, (meta) => meta.loading);
   }
 
-  public connectMeta<T = RM.Meta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T {
+  public connectMeta(rootState: any, payloadData?: PayloadData): RM.Meta {
     if (this.meta === false) {
       throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
     }
 
-    if (typeof payloadData === 'function') {
-      filter = payloadData;
-      payloadData = undefined;
-    }
-
-    const meta = payloadData === undefined
+    return payloadData === undefined
       ? rootState[`${this.typePrefix}__meta`]
       : rootState[`${this.typePrefix}__metas`][payloadData] || DEFAULT_META;
-
-    return filter ? filter(meta) : meta;
   }
 
   public connectLoading(rootState: any, payloadData?: PayloadData): boolean {
-    return this.connectMeta(rootState, payloadData, (meta) => meta.loading);
+    return this.connectMeta(rootState, payloadData).loading;
   }
 
   protected createMeta(): (state: any, action: RM.ResponseAction) => RM.Meta {

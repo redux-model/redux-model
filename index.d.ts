@@ -94,9 +94,7 @@ declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (
   useLoading(...orUseLoading: boolean[]): boolean;
   useLoading(payloadData: PayloadData, ...orUseLoading: boolean[]): boolean;
 
-  connectMeta<T = RM.Meta>(rootState: any, filter?: (meta: RM.Meta) => T): T;
-  connectMeta<T = RM.Meta>(rootState: any, payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
-
+  connectMeta(rootState: any, payloadData?: PayloadData): RM.Meta;
   connectLoading(rootState: any, payloadData?: PayloadData): boolean;
 }
 
@@ -117,7 +115,7 @@ declare abstract class Model<Data = null> {
   constructor(instanceName?: string);
   register(): RM.Reducers;
   useData<T = Data>(filter?: (data: Data) => T): T;
-  connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T;
+  connectData(rootState: any): Data;
   protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
   protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
   protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;

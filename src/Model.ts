@@ -81,11 +81,9 @@ export abstract class Model<Data = null> {
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
-  public connectData<T = Data>(rootState: any, filter?: (data: Data) => T): T {
+  public connectData(rootState: any): Data {
     if (this.reducer) {
-      const data = rootState[this.reducer.getReducerName()];
-
-      return filter ? filter(data) : data;
+      return rootState[this.reducer.getReducerName()];
     }
 
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
