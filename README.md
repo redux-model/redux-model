@@ -42,7 +42,7 @@ Clone this repository, and run code `yarn start`. After that, open browser and v
 
 # Usage
 
-Here is a full usage case and introduction for every one:
+Here is a usage case and introduction for every one:
 
 ```typescript
 interface Data {
@@ -50,25 +50,9 @@ interface Data {
 }
 
 // Create a model. One model related to one reducer.
-// Usage:
-//   Get data in React Hooks component:
-//     const data = test.useData();
-//     const foo = test.useData((item) => item.foo);
-//
-//   Get data in react-redux.connect:
-//     const mapStateToProps = (state) => {
-//       data: test.connectData(state),
-//     };
 class Test extends Model<Data> {
   // Create a normal action
-  // Usage:
-  //   Invoked by dispatch() in React component:
-  //     dispatch(test.firstAction.action(''));
-  //
-  //   Change other model's reducer data in method subscribers():
-  //     test.firstAction.getSuccessType();
   firstAction = this.actionNormal({
-    // action is required.
     action: (name: string) => {
       // You can inject generic from here
       // return this.emit<Payload>();
@@ -85,35 +69,6 @@ class Test extends Model<Data> {
   });
   
   // Create sync action
-  // Usage:
-  //   Invoked by dispatch() in React component:
-  //     dispatch(test.secondAction.action(''));
-  //
-  //   Promise is supported:
-  //      dispatch(test.secondAction.action('')).promise.then(({ response }) => {
-  //        console.log(response.foo);
-  //      );
-  //
-  //   Change other model's reducer data in method subscribers():
-  //     test.secondAction.getPrepareType();
-  //     test.secondAction.getSuccessType();
-  //     test.secondAction.getFailType();
-  //
-  //   Get loading in React Hooks component:
-  //     const loading = test.secondAction.useLoading();
-  //
-  //   Get loading in react-redux.connect:
-  //     const mapStateToProps = (state) => {
-  //       loading: test.secondAction.connectLoading(state),
-  //     };
-  //
-  //   Get meta in React Hooks component:
-  //     const meta = test.secondAction.useMeta();
-  //
-  //   Get meta in react-redux.connect:
-  //     const mapStateToProps = (state) => {
-  //       meta: test.secondAction.connectMeta(state),
-  //     };
   secondAction = this.actionRequest({
     // action is required.
     action: (userId: number) => {

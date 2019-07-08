@@ -46,23 +46,8 @@ interface Data {
 }
 
 // 创建一个模型，一个模型只能为一个reducer数据服务
-// 使用方法：
-//   在React Hooks组件中获取reducer数据：
-//     const data = test.useData();
-//     const foo = test.useData((item) => item.foo);
-//
-//   在react-redux.connect中获取reducer数据：
-//     const mapStateToProps = (state) => {
-//       data: test.connectData(state),
-//     };
 class Test extends Model<Data> {
   // 创建普通句柄
-  // 使用方法：
-  //   在React组件中被dispatch()调用：
-  //     dispatch(test.firstAction.action(''));
-  //
-  //   在getEffects()中改变其他模型的数据：
-  //     test.firstAction.getSuccessType();
   firstAction = this.actionNormal({
     // action 是必须传入的
     action: (name: string) => {
@@ -81,35 +66,6 @@ class Test extends Model<Data> {
   });
   
   // 创建异步请求句柄
-  // 使用方法：
-  //   在React组件中被dispatch()调用：
-  //     dispatch(test.secondAction.action(''));
-  //
-  //   使用Promise回调：
-  //     dispatch(test.secondAction.action('')).promise.then(({ response }) => {
-  //       console.log(response.foo);
-  //     );
-  //
-  //   在getEffects()中改变其他模型的数据：
-  //     test.secondAction.getPrepareType();
-  //     test.secondAction.getSuccessType();
-  //     test.secondAction.getFailType();
-  //
-  //   在React Hooks组件中获取loading状态：
-  //     const loading = test.secondAction.useLoading();
-  //
-  //   在react-redux.connect中获取loading状态：
-  //     const mapStateToProps = (state) => {
-  //       loading: test.secondAction.connectLoading(state),
-  //     };
-  //
-  //   在React Hooks组件中获取meta信息：
-  //     const meta = test.secondAction.useMeta();
-  //
-  //   在react-redux.connect中获取meta信息：
-  //     const mapStateToProps = (state) => {
-  //       meta: test.secondAction.connectMeta(state),
-  //     };
   secondAction = this.actionRequest({
     // action 是必须传入的
     action: (userId: number) => {
