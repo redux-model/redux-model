@@ -25,7 +25,7 @@ export abstract class BaseAction<Data> {
 
   private getTypePrefix(counter: number, name: string): string {
     // Do not concat counter in dev mode.
-    if (!module.hot) {
+    if (typeof module === 'undefined' || !module.hot) {
       name += `.${counter}`;
     }
 
