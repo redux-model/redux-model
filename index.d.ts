@@ -2,6 +2,22 @@ import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
 import { Dispatch, Middleware, MiddlewareAPI, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
+/**
+ * Useful for combineReducer, If you are using IDE WebStorm, you'd better write code like this:
+ *
+ * const reducers = { ... };
+ *
+ * export const rootReducer = Reducer<EnhanceState<typeof reducers>> = combineReducer<reducers>;
+ *
+ * declare global {
+ *   type RootState = Readonly<ReturnType<typeof rootReducers>>;
+ * }
+ *
+ */
+export type EnhanceState<T> = {
+  [key in keyof T]: T[key] extends (...args: any) => infer R ? R : never;
+};
+
 export declare enum METHOD {
   get = "GET",
   post = "POST",
@@ -73,17 +89,15 @@ declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (
   getFailType(): string;
 
   useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T;
-  useMeta<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T;
+  useMeta<T = RM.Meta>(payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
 
-  useLoading(): boolean;
   useLoading(...orUseLoading: boolean[]): boolean;
   useLoading(payloadData: PayloadData, ...orUseLoading: boolean[]): boolean;
 
   connectMeta<T = RM.Meta>(rootState: any, filter?: (meta: RM.Meta) => T): T;
-  connectMeta<T = RM.Meta>(rootState: any, payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T;
+  connectMeta<T = RM.Meta>(rootState: any, payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
 
-  connectLoading(rootState: any): boolean;
-  connectLoading(rootState: any, payloadData: PayloadData): boolean;
+  connectLoading(rootState: any, payloadData?: PayloadData): boolean;
 }
 
 type RequestOptions<Payload> = (Partial<Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>> & {
@@ -123,13 +137,13 @@ declare abstract class Model<Data = null> {
   protected abstract initReducer(): Data;
 }
 
-export declare const createRequestMiddleware: <State = any>(config: {
+export declare const createRequestMiddleware: <RootState = any>(config: {
   id: string;
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig | undefined;
-  onInit?: ((api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void) | undefined;
+  onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: RM.RequestAction) => void) | undefined;
   getTimeoutMessage?: () => string;
-  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => object;
+  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
   onFail: (
     error: RM.HttpError,
     transform: {
@@ -140,7 +154,7 @@ export declare const createRequestMiddleware: <State = any>(config: {
   ) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
-}) => Middleware<{}, State, Dispatch>;
+}) => Middleware<{}, RootState, Dispatch>;
 
 declare global {
   namespace RM {

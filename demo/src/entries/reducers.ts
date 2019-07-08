@@ -1,4 +1,9 @@
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer } from 'redux';
 import { reducers } from '../models';
+import { EnhanceState } from '../../../index';
 
-export const rootReducers = combineReducers(reducers);
+declare global {
+  type RootState = Readonly<ReturnType<typeof rootReducers>>;
+}
+
+export const rootReducers: Reducer<EnhanceState<typeof reducers>> = combineReducers(reducers);

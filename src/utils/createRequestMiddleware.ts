@@ -11,13 +11,13 @@ interface FailTransform {
 
 type MixedReturn = RM.FetchHandle | RM.RequestAction;
 
-export const createRequestMiddleware = <State = any>(config: {
+export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig;
-  onInit?: (api: MiddlewareAPI<Dispatch, State>, action: RM.RequestAction) => void;
+  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: RM.RequestAction) => void;
   getTimeoutMessage?: () => string;
-  getHeaders: (api: MiddlewareAPI<Dispatch, State>) => object;
+  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
   onFail: (error: RM.HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
@@ -30,7 +30,7 @@ export const createRequestMiddleware = <State = any>(config: {
     ...config.axiosConfig,
   });
 
-  const middleware: Middleware<{}, State> = (api) => (next) => (action: RM.RequestAction): MixedReturn => {
+  const middleware: Middleware<{}, RootState> = (api) => (next) => (action: RM.RequestAction): MixedReturn => {
     if (action.middleware !== config.id) {
       return next(action);
     }
