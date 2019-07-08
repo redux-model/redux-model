@@ -48,7 +48,7 @@ declare abstract class BaseAction<Data> {
 
 interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
   action: A;
-  onSuccess: (state: Data, action: RM.NormalAction<Payload>) => Data;
+  onSuccess?: (state: Data, action: RM.NormalAction<Payload>) => Data;
 }
 
 type NormalSubscriber<CustomData, Payload> = {
