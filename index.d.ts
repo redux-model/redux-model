@@ -89,12 +89,14 @@ declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (
   getFailType(): string;
 
   useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T;
-  useMeta<T = RM.Meta>(payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
-
+  useMetas(): RM.Metas;
+  useMetas<T = RM.Meta>(payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
   useLoading(...orUseLoading: boolean[]): boolean;
   useLoading(payloadData: PayloadData, ...orUseLoading: boolean[]): boolean;
 
-  connectMeta(rootState: any, payloadData?: PayloadData): RM.Meta;
+  connectMeta(rootState: any): RM.Meta;
+  connectMetas(rootState: any): RM.Metas;
+  connectMetas(rootState: any, payloadData: PayloadData): RM.Meta;
   connectLoading(rootState: any, payloadData?: PayloadData): boolean;
 }
 

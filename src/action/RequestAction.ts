@@ -149,41 +149,87 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
     return this.failType;
   }
 
-  public useMeta<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): T {
-    if (this.meta === false) {
-      throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
+  public useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T {
+    if (this.meta !== true) {
+      if (this.meta === false) {
+        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: true } in action.`);
+      } else {
+        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: "${this.meta}" } in action, Do you mean useMetas(...)?`);
+      }
     }
 
-    if (typeof payloadData === 'function') {
-      filter = payloadData;
-      payloadData = undefined;
+    return useSelector((state: any) => {
+      const customMeta = state[`${this.typePrefix}__meta`];
+
+      return filter ? filter(customMeta) : customMeta;
+    });
+  }
+
+  public useMetas<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): RM.Metas | T {
+    if (typeof this.meta !== 'string') {
+      if (this.meta) {
+        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: true } in action, Do you mean useMeta()?`);
+      } else {
+        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: "Payload Key" } in action.`);
+      }
+    }
+
+    if (payloadData === undefined) {
+      filter = undefined;
     }
 
     return useSelector((state: any) => {
       const customMeta = payloadData === undefined
-        ? state[`${this.typePrefix}__meta`]
+        ? state[`${this.typePrefix}__metas`]
         : state[`${this.typePrefix}__metas`][payloadData] || DEFAULT_META;
 
-      return filter ? filter(customMeta) : state[customMeta];
+      return filter ? filter(customMeta) : customMeta;
     });
   }
 
-  public useLoading(payloadData?: PayloadData): boolean {
-    return this.useMeta(payloadData, (meta) => meta.loading);
+  public useLoading(payloadData?: PayloadData, ...orUseLoading: boolean[]): boolean {
+    if (typeof payloadData === 'boolean') {
+      orUseLoading.push(payloadData);
+      payloadData = undefined;
+    }
+
+    const isLoading = payloadData === undefined
+      ? this.useMeta((meta) => meta.loading)
+      : this.useMetas(payloadData, (meta) => meta.loading) as boolean;
+
+    return isLoading || orUseLoading.some(Boolean);
   }
 
-  public connectMeta(rootState: any, payloadData?: PayloadData): RM.Meta {
-    if (this.meta === false) {
-      throw new ReferenceError(`[${this.typePrefix}] It seems like you didn't set { meta: true } in action.`)
+  public connectMeta(rootState: any): RM.Meta {
+    if (this.meta !== true) {
+      if (this.meta === false) {
+        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: true } in action.`);
+      } else {
+        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: "${this.meta}" } in action, Do you mean connectMetas(...)?`);
+      }
+    }
+
+    return rootState[`${this.typePrefix}__meta`];
+  }
+
+  public connectMetas(rootState: any, payloadData?: PayloadData): RM.Metas | RM.Meta {
+    if (typeof this.meta !== 'string') {
+      if (this.meta) {
+        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: true } in action, Do you mean connectMeta()?`);
+      } else {
+        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: "Payload Key" } in action.`);
+      }
     }
 
     return payloadData === undefined
-      ? rootState[`${this.typePrefix}__meta`]
+      ? rootState[`${this.typePrefix}__metas`]
       : rootState[`${this.typePrefix}__metas`][payloadData] || DEFAULT_META;
   }
 
   public connectLoading(rootState: any, payloadData?: PayloadData): boolean {
-    return this.connectMeta(rootState, payloadData).loading;
+    return payloadData === undefined
+      ? this.connectMeta(rootState).loading
+      : (this.connectMetas(rootState, payloadData) as RM.Meta).loading;
   }
 
   protected createMeta(): (state: any, action: RM.ResponseAction) => RM.Meta {
