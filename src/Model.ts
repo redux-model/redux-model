@@ -17,7 +17,6 @@ type EnhanceResponse<A> = A extends (...args: any[]) => RM.FetchHandle<infer R, 
 type EnhancePayload<A> = A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? P : never;
 type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.NormalAction<infer P> ? P : never;
 
-
 export abstract class Model<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
 
@@ -31,7 +30,6 @@ export abstract class Model<Data = null> {
 
   constructor(instanceName: string = '') {
     this.instanceName = (instanceName ? `[${instanceName}]` : '') + this.constructor.name;
-
     const initData = this.initReducer();
 
     if (initData !== null) {
@@ -59,7 +57,6 @@ export abstract class Model<Data = null> {
 
     if (this.reducer) {
       this.reducer.addCase(...this.subscribers());
-
       reducers = {
         ...reducers,
         ...this.reducer.createData(),

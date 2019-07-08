@@ -161,13 +161,13 @@ declare global {
       effect: (state: Data, action: any) => Data;
     }>;
 
-    interface Meta {
+    type Meta = Readonly<{
       actionType: string;
       loading: boolean;
       errorMessage?: string;
       httpStatus?: number;
       businessCode?: string | number;
-    }
+    }>;
 
     type Metas = Partial<{
       [key: string]: RM.Meta;
