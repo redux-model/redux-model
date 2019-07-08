@@ -68,9 +68,7 @@ class Test extends Model<Data> {
     action: (name: string) => {
       // 泛型可以从这里注入：
       // return this.emit<Payload>();
-      return this.emit({
-        name,
-      });
+      return this.emit({  name });
     },
     // onSuccess 是可选的
     // 它的作用是改变Test模型下的reducer数据
@@ -120,22 +118,12 @@ class Test extends Model<Data> {
       // return this.get<Response, Payload>();
       return this.get({
         uri: '/profile',
-        query: {
-          userId,
-        },
+        query: { userId },
       });
     },
     // onSuccess 是可选的
     onSuccess: (state, action) => {
       return action.response;
-    },
-    // onFail 是可选的
-    onPrepare: (stte, action) => {
-      return state;
-    },
-    // onFail 是可选的
-    onFail: (state, action) => {
-      return state;
     },
     // meta是指异步请求的loading，http-status，error-message 之类的数据存储
     // 比较常用的就是loading状态
@@ -165,18 +153,13 @@ class Test extends Model<Data> {
   // 接收来自其它模型的action操作，并改变reducer的数据
   protected subscribers(): RM.Subscriber<Data> {
     return [
-      {
-        when: otherModel.customAction.getSuccessType(),
-        effect: (state, action) => {
-          return {
-            ...state,
-            foo: action.payload.foo,
-          };
-        },
-      },
-      {
-        ...
-      },
+      otherModel.customAction.onSuccess((state, action) => {
+        return {
+          ...state,
+          foo: action.payload.foo,
+        };
+      }),
+      ...
     ];
   }
 }

@@ -42,7 +42,7 @@ Clone this repository, and run code `yarn start`. After that, open browser and v
 
 # Usage
 
-Here is a usage case and description for every one:
+Here is a full usage case and introduction for every one:
 
 ```typescript
 interface Data {
@@ -72,9 +72,7 @@ class Test extends Model<Data> {
     action: (name: string) => {
       // You can inject generic from here
       // return this.emit<Payload>();
-      return this.emit({
-        name,
-      });
+      return this.emit({ name });
     },
     // onSuccess is optional.
     // It can change reducer data that is in this model.
@@ -124,22 +122,12 @@ class Test extends Model<Data> {
       // return this.get<Response, Payload>();
      return this.get({
        uri: '/profile',
-       query: {
-         userId,
-       },
+       query: { userId },
      });
     },
     // onSuccess is optional
     onSuccess: (state, action) => {
       return action.response;
-    },
-    // onFail is optional
-    onPrepare: (stte, action) => {
-      return state;
-    },
-    // onFail is optional
-    onFail: (state, action) => {
-      return state;
     },
     // Meta will store httpStatus, errorMessage and loading.
     // It's optional, you can set false or ignore it if you don't need these information.
@@ -168,18 +156,13 @@ class Test extends Model<Data> {
   // Receive effect from other model, and change data for this model.
   protected subscribers(): RM.Subscriber<Data> {
     return [
-      {
-        when: otherModel.customAction.getSuccessType(),
-        effect: (state, action) => {
-          return {
-            ...state,
-            foo: action.payload.foo,
-          };
-        },
-      },
-      {
-        ...
-      },
+      otherModel.customAction.onSuccess((state, action) => {
+        return {
+          ...state,
+          foo: action.payload.foo,
+        };
+      }),
+      ...
     ];
   }
 }
