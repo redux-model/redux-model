@@ -17,20 +17,20 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
-"@types/node@^12.0.0":
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.0.0.tgz#d11813b9c0ff8aaca29f04cbc12817f4c7d656e5"
-  integrity sha512-Jrb/x3HT4PTJp6a4avhmJCDEVrPdqLfl3e8GGMbpkGGdwAV5UGlIs4vVEfsHHfylZVOKZWpOqmqFH8CbfOZ6kg==
+"@types/node@^12.6.1":
+  version "12.6.1"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.6.1.tgz#d5544f6de0aae03eefbb63d5120f6c8be0691946"
+  integrity sha512-rp7La3m845mSESCgsJePNL/JQyhkOJA6G4vcwvVgkDAwHhGdq5GCumxmPjEk1MZf+8p5ZQAUE7tqgQRQTXN7uQ==
 
 "@types/prop-types@*":
   version "15.7.1"
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.1.tgz#f1a11e7babb0c3cad68100be381d1e064c68f1f6"
   integrity sha512-CFzn9idOEpHrgdw8JsoTkaDDyRWk1jrzIV8djzcgpq0y9tG4B4lFT+Nxh52DVpDXV+n4+NPNv7M1Dj5uMp6XFg==
 
-"@types/react-redux@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-7.1.0.tgz#ed2c90ff192433251bd8a264195529f3613d53e2"
-  integrity sha512-SBJd6oNACDU/taMcDzFfj0mbVa+OI42L8WNvgPsCWiWUNIavPLeX5oA22V64tYIDUc7cGmJjDyLlWeCrqpZu1w==
+"@types/react-redux@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-7.1.1.tgz#eb01e89cf71cad77df9f442b819d5db692b997cb"
+  integrity sha512-owqNahzE8en/jR4NtrUJDJya3tKru7CIEGSRL/pVS84LtSCdSoT7qZTkrbBd3S4Lp11sAp+7LsvxIeONJVKMnw==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.0"
     "@types/react" "*"
@@ -149,10 +149,18 @@ redux-thunk@^2.3.0:
   resolved "https://registry.npmjs.org/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
   integrity sha512-km6dclyFnmcvxhAcrQV2AkZmPQjzPDjgVlQtR0EQjxZPyJ0BnMf3in1ryuR8A2qU0HldVRfxYXbFSKlI3N7Slw==
 
-redux@^4.0.0, redux@^4.0.1:
+redux@^4.0.0:
   version "4.0.1"
   resolved "https://registry.npmjs.org/redux/-/redux-4.0.1.tgz#436cae6cc40fbe4727689d7c8fae44808f1bfef5"
   integrity sha512-R7bAtSkk7nY6O/OYMVR9RiBI+XghjF9rlbl5806HJbQph0LJVHZrU5oaO4q70eUKiqMRqm4y07KLTlMZ2BlVmg==
+  dependencies:
+    loose-envify "^1.4.0"
+    symbol-observable "^1.2.0"
+
+redux@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/redux/-/redux-4.0.2.tgz#597cc660a99f91412e31c96c3da10ed8ace0715d"
+  integrity sha512-oAiFLWYQhbpSvzjcVfgQ90MlZ0u6uDIHFK41Q0/BnCfjEg96SACzwUFwDVUKz/LP/SwJORGaFY8AM5wOB/zf0A==
   dependencies:
     loose-envify "^1.4.0"
     symbol-observable "^1.2.0"
@@ -172,7 +180,7 @@ tslib@^1.10.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
-typescript@^3.5.2:
-  version "3.5.2"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-3.5.2.tgz#a09e1dc69bc9551cadf17dba10ee42cf55e5d56c"
-  integrity sha512-7KxJovlYhTX5RaRbUdkAXN1KUZ8PwWlTzQdHV6xNqvuFOs7+WBo10TQUqT19Q/Jz2hk5v9TQDIhyLhhJY4p5AA==
+typescript@^3.5.3:
+  version "3.5.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
+  integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
