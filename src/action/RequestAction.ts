@@ -33,9 +33,9 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
 
   protected readonly failCallback?: any;
 
-  protected readonly prepareType: string;
+  protected prepareType: string;
 
-  protected readonly failType: string;
+  protected failType: string;
 
   public constructor(config: RequestActionParam<Data, Response, Payload, A>, instanceName: string) {
     super({
@@ -59,8 +59,8 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
     this.meta = config.meta === undefined ? true : config.meta;
     this.prepareCallback = config.onPrepare;
     this.failCallback = config.onFail;
-    this.prepareType = `${this.typePrefix}_prepare`;
-    this.failType = `${this.typePrefix}_fail`;
+    this.prepareType = `${this.typePrefix} prepare`;
+    this.failType = `${this.typePrefix} fail`;
   }
 
   public static createRequestData(options: Partial<RM.RequestAction> & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>) {
@@ -230,6 +230,12 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
     return payloadData === undefined
       ? this.connectMeta(rootState).loading
       : (this.connectMetas(rootState, payloadData) as RM.Meta).loading;
+  }
+
+  protected onTypePrefixChanged(): void {
+    super.onTypePrefixChanged();
+    this.prepareType = `${this.typePrefix} prepare`;
+    this.failType = `${this.typePrefix} fail`;
   }
 
   protected createMeta(): (state: any, action: RM.ResponseAction) => RM.Meta {

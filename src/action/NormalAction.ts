@@ -44,7 +44,7 @@ export class NormalAction<Data = any, Payload = any, A extends (...args: any[]) 
     };
   }
 
-  collectEffects(): RM.Subscriber<Data> {
+  public collectEffects(): RM.Subscriber<Data> {
     const effects = super.collectEffects();
 
     if (this.successCallback) {

@@ -6,6 +6,7 @@ import { RequestAction, RequestActionParam } from './action/RequestAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import { NormalAction, NormalActionParam } from './action/NormalAction';
 import { BaseAction } from './action/BaseAction';
+import { isDebug, isProxyEnable } from './utils/dev';
 
 type RequestOptions<Payload> = (
   Partial<Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>>
@@ -34,6 +35,22 @@ export abstract class Model<Data = null> {
 
     if (initData !== null) {
       this.reducer = new BaseReducer<Data>(initData, this.instanceName);
+    }
+
+    // Do not use isDebugAndProxyEnable() for here.
+    // We Just want to strip these code by uglifyJs in production mode.
+    if (typeof module === 'object' && module.hot && typeof Proxy === 'function') {
+      // Proxy is es6 based syntax, and it can't be transform to es5.
+      return new Proxy(this, {
+        set: (model, property: string, value) => {
+          model[property] = value;
+          if (value instanceof BaseAction) {
+            value.setActionName(property);
+          }
+
+          return true;
+        },
+      });
     }
   }
 
@@ -90,8 +107,10 @@ export abstract class Model<Data = null> {
     config: NormalActionParam<Data, Payload, A>
   ): NormalAction<Data, Payload, A> {
     let instanceName = this.instanceName;
-    this.sequenceCounter += 1;
-    instanceName += '.' + this.sequenceCounter;
+    if (!isDebug() || !isProxyEnable()) {
+      this.sequenceCounter += 1;
+      instanceName += '.' + this.sequenceCounter;
+    }
 
     const instance = new NormalAction<Data, Payload, A>(config, instanceName);
     this.actions.push(instance);
@@ -103,8 +122,10 @@ export abstract class Model<Data = null> {
     config: RequestActionParam<Data, Response, Payload, A>
   ): RequestAction<Data, Response, Payload, A> {
     let instanceName = this.instanceName;
-    this.sequenceCounter += 1;
-    instanceName += '.' + this.sequenceCounter;
+    if (!isDebug() || !isProxyEnable()) {
+      this.sequenceCounter += 1;
+      instanceName += '.' + this.sequenceCounter;
+    }
 
     const instance = new RequestAction<Data, Response, Payload, A>(config, instanceName);
     this.actions.push(instance);
