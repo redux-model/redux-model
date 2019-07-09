@@ -1,0 +1,6 @@
+{
+  "auto-close-tag.activationOnLanguage": [
+    "javascriptreact",
+    "typescriptreact"
+  ]
+}
