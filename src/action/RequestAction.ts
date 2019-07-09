@@ -56,7 +56,7 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
       return data;
     };
 
-    this.meta = config.meta === undefined ? false : config.meta;
+    this.meta = config.meta === undefined ? true : config.meta;
     this.prepareCallback = config.onPrepare;
     this.failCallback = config.onFail;
     this.prepareType = `${this.typePrefix}_prepare`;
