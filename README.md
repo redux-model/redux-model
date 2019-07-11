@@ -239,7 +239,6 @@ class ProfileModel extends Model<Data> {
     action: (id: number) => {
       return this.get({
         uri: '/test/api',
-        // 查询字符串
         query: {
           id: page,
         },
@@ -380,7 +379,7 @@ For Normal Action, it only use `model.action.onSuccess(fn)` to change data for o
 
 For Request Action, it can use `onPrepare(fn)` `onSuccess(fn)` and `onFail(fn)` to subscriber action effect.
 
-## Request Promise
+## Request Action Promise
 We can use `promise` in React Component when Request Action is invoked. It's very cool, because of 100% type checking.
 
 ```typescript jsx
@@ -409,6 +408,89 @@ const App: FunctionComponent = (props) => {
   return (
     <button onClick={this.handleClick}>
       Click me: {name}
+    </button>
+  );
+};
+
+export default App;
+```
+
+## Request Action Loading
+Each Request Action has loading status itself. Feel free to use it whenever you want.
+
+```typescript jsx
+// By React Hooks
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import { profileModel } from './ProfileModel.ts';
+
+const App: FunctionComponent = (props) => {
+  const dispatch = useDispatch();
+  const name = profileModel.useData((item) => item.name);
+  // It's boolean type.
+  const loading = profileModel.manage.useLoading();
+
+  return (
+    <button onClick={() => dispatch(profileModel.manage.action(1))}>
+      Click me: {name} {loading ? 'Waiting...' : ''}
+    </button>
+  );
+};
+
+export default App;
+```
+
+You can inject loading into props by `connect()` if you don't like hooks.
+
+```typescript
+const mapStateToProps = (state) => {
+  loading: profileModel.manage.connectLoading(state),
+};
+
+export default(mapStateToProps)(App);
+```
+
+------------------
+Sometimes, you may have to show multiple loading status at the same time. In this case, we provide a property `meta` for Request Action.
+
+```typescript
+class Profile extends Model {
+  someAction = this.actionRequest({
+    action: (id: number, data: any) => {
+      return this.post({
+        uri: '/profile/api',
+        body: data,
+        payload: {
+          idKey: id,
+        },
+      });
+    },
+    meta: 'idKey',
+  });
+}
+```
+Remember: Make sure the value of meta can be found in key of payload.
+
+Let me show usage in react component.
+```typescript
+// By React Hooks
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import { profileModel } from './ProfileModel.ts';
+
+const App: FunctionComponent = (props) => {
+  const dispatch = useDispatch();
+  const name = profileModel.useData((item) => item.name);
+  const userId = 1;
+  const secondUserId = 2;
+  const loading = profileModel.manage.useLoading(userId);
+  const secondLoading = profileModel.manage.useLoading(secondUserId);
+
+  return (
+    <button onClick={() => dispatch(profileModel.manage.action(userId))}>
+      Click me: {name}
+      {loading ? 'Waiting...' : ''}
+      {secondLoading ? 'Second waiting...' : ''}
     </button>
   );
 };

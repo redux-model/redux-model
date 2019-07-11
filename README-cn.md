@@ -275,7 +275,6 @@ class ProfileModel extends Model<Data> {
     action: (id: number) => {
       return this.get({
         uri: '/test/api',
-        // 查询字符串
         query: {
           id: page,
         },
@@ -443,6 +442,89 @@ const App: FunctionComponent = (props) => {
   return (
     <button onClick={this.handleClick}>
       Click me: {name}
+    </button>
+  );
+};
+
+export default App;
+```
+
+## 异步请求Loading
+每个异步请求action都带有loading状态，只要你愿意，你可以随时使用它。
+
+```typescript jsx
+// By React Hooks
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import { profileModel } from './ProfileModel.ts';
+
+const App: FunctionComponent = (props) => {
+  const dispatch = useDispatch();
+  const name = profileModel.useData((item) => item.name);
+  // 这是个布尔值
+  const loading = profileModel.manage.useLoading();
+
+  return (
+    <button onClick={() => dispatch(profileModel.manage.action(1))}>
+      Click me: {name} {loading ? 'Waiting...' : ''}
+    </button>
+  );
+};
+
+export default App;
+```
+
+如果你是用不用hooks，我们可以用`connect()`方法注入到props中：
+```typescript
+const mapStateToProps = (state) => {
+  loading: profileModel.manage.connectLoading(state),
+};
+
+export default(mapStateToProps)(App);
+```
+
+------------------
+
+有时候，请求粒度会细到某条数据上，也就是说，你想在一个屏幕上同时使用多个loading状态，这时候我们就需要精确知道loading的作用范围。这个其实很简单就实现了，我们利用meta属性：
+
+```typescript
+class Profile extends Model {
+  someAction = this.actionRequest({
+    action: (id: number, data: any) => {
+      return this.post({
+        uri: '/profile/api',
+        body: data,
+        payload: {
+          idKey: id,
+        },
+      });
+    },
+    meta: 'idKey',
+  });
+}
+```
+必须确保meta的value在payload中能找到相应的key。否则将会产生bug。
+
+接着我们看看如何在React中使用它
+```typescript
+// By React Hooks
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import { profileModel } from './ProfileModel.ts';
+
+const App: FunctionComponent = (props) => {
+  const dispatch = useDispatch();
+  const name = profileModel.useData((item) => item.name);
+  const userId = 1;
+  const secondUserId = 2;
+  const loading = profileModel.manage.useLoading(userId);
+  const secondLoading = profileModel.manage.useLoading(secondUserId);
+
+  return (
+    <button onClick={() => dispatch(profileModel.manage.action(userId))}>
+      Click me: {name}
+      {loading ? 'Waiting...' : ''}
+      {secondLoading ? 'Second waiting...' : ''}
     </button>
   );
 };
