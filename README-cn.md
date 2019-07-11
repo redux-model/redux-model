@@ -1,17 +1,17 @@
 [English Docs](https://github.com/fwh1990/redux-model-ts/blob/master/README.md)
 
-如果你还在用函数式写法去写redux的action、types、reducer，那么你有必要往下看。这个框架对redux进行了一次彻头彻尾的面向对象封装，让你用最少的代码做最多的事情。
+Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现隐藏重复代码、提高工作效率以及减少开发时间的效果。你只需要花半个小时，就能完全了解模型的用法，并从中受益。
 
 # 对比
 |     | 原生redux | redux-model-ts |
 | ----| ---- | ---- |
 | 写法 | 函数式 | 面向对象 |
+| action与reducer文件分离 | 要 | 不要 |
 | 对ts的支持 | 一般 | 完美 |
 | 定义types | 要 | 内置 |
-| action与reducer文件分离 | 要 | 不要 |
 | 异步请求 | thunk 或 saga | 内置 |
 | 异步loading状态 | 写reducer处理 | 内置 |
-| 代码量 | 多 | 少 |
+| 代码量 | 多 | 少一半 |
 
 -------------------
 
@@ -37,105 +37,179 @@ yarn add redux react-redux redux-thunk
 
 克隆本项目并执行`yarn start`，然后打开浏览器输入`http://localhost:8080`查看效果
 
----------
-这里有一个完整的模型使用案例
 
+# 使用
+
+## 定义Model
+想要定义reducer，就必须先定义一个模型类，因为一个模型可以包含一个或没有reducer。我们需要为reducer定义一个接口，并注入到模型中，这样我们就可以在整个项目中得到数据类型的提示。
 ```typescript
+// test.ts
+import { Model } from 'redux-model-ts';
+
 interface Data {
   foo: string;
 }
 
-// 创建一个模型，一个模型只能为一个reducer数据服务
 class Test extends Model<Data> {
-  // 创建普通句柄
-  firstAction = this.actionNormal({
-    // action 是必须传入的
-    action: (name: string) => {
-      // 泛型可以从这里注入：
-      // return this.emit<Payload>();
-      return this.emit({  name });
-    },
-    // onSuccess 是可选的
-    // 它的作用是改变Test模型下的reducer数据
-    onSuccess: (state, action) => {
-      return {
-        ...state,
-        foo: action.payload.name,
-      };
-    },
-  });
-  
-  // 创建异步请求句柄
-  secondAction = this.actionRequest({
-    // action 是必须传入的
-    action: (userId: number) => {
-      // 还有 post put patch delete 方法可以使用
-      // 泛型可以从这里注入：
-      // return this.get<Response, Payload>();
-      return this.get({
-        uri: '/profile',
-        query: { userId },
-      });
-    },
-    // onSuccess 是可选的
-    onSuccess: (state, action) => {
-      return action.response;
-    },
-    // meta是指异步请求的loading，http-status，error-message 之类的数据存储
-    // 比较常用的就是loading状态
-    // 如果你不需要这些信息，那么就设置为false，或者不设置
-    meta: true,
-  });
-  
-  // 依赖redux-thunk包，创建thunk类型的句柄
-  thirdAction = this.actionThunk((name: string) => {
-    return (dispatch, getState) => {
-      if (name === 'bar') {
-        return this.firstAction.action(name);
-      }
-      
-      return this.secondAction.action(1);
-    };
-  });
-  
-  // 初始化reducer的数据
-  // 如果你不需要reducer，那么可以返回null值，并去掉泛型Data的约束
   protected initReducer(): Data {
     return {
-      foo: 'bar',
+      foo: 'init',
     };
-  }
-  
-  // 接收来自其它模型的action操作，并改变reducer的数据
-  protected subscribers(): RM.Subscriber<Data> {
-    return [
-      otherModel.customAction.onSuccess((state, action) => {
-        return {
-          ...state,
-          foo: action.payload.foo,
-        };
-      }),
-      ...
-    ];
   }
 }
 
 export const test = new Test();
-
-
-// ---------------------------------------------------
-// ---------------------------------------------------
-
-
-export const rootReducers = combineReducers({
-  // 因为模型中包含有reducer数据，所以我们需要把模型注册到redux中
-  ...test.register(),
-});
 ```
 
-## 中间件
-每个项目都有请求api的时候，每次请求都可能有3个状态，准备、成功和失败。这个插件利用`中间件`屏蔽了请求细节，所以在使用`Model.actionRequest`之前，你需要创建一个中间件
+如果你不想使用reducer，那么你可以在`initReducer()`方法中返回`null`并移除注入的泛型Data
 
+## 注册Reducer
+我们都知道，reducer是要挂载到store中的，所以我们为实例化后的模型提供了一个`register()`方法。
+```typescript
+// reducers.ts
+import { combineReducers } from 'redux';
+
+const reducers = {
+  ...test.register(),
+};
+
+export const rootReducers = combineReducers(reducers);
+```
+
+## 定义Action
+在模型中，我们一共有3中类型的action，他们分别是：
+>- 普通action
+>- 异步请求action
+>- thunk action
+
+## 定义普通action
+普通的action是最基础的action，它的作用就是同步发送一次消息
+
+```typescript
+// test.ts
+class Test extends Model<Data> {
+  myFirstAction = this.actionNormal({
+    action: (name: string) => {
+      return this.emit({
+        name,
+      });
+    },
+    onSuccess: (state, action) => {
+      return {
+        foo: 'new name: ' + action.payload.name,
+      };
+    },
+  });
+}
+
+export const test = new Test();
+```
+`onSuccess()`的作用是改变当前模型的reducer值，但它不是必须定义的，你可以删除它，意味着执行这个action不会影响这个模型的reducer。
+
+待会我会告诉你如何用这个action去影响其他模型的reducer数据。
+
+------------
+先让我们看看普通action如何使用在React组件中。我们可以通过`connect()`方法注入action
+```typescript jsx
+// By Connect
+import React, { FunctionComponent } from 'react';
+import { connect } from 'react-redux';
+import { test } from './Test';
+
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
+const App: FunctionComponent<Props> = (props) => {
+  const { runAction, name } = props;
+
+  return (
+    <button onClick={() => runAction('New Name')}>
+      Click me: {name}
+    </button>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return {
+    name: test.connectData(state).foo,
+  };
+};
+
+const mapDispatchToProps = () => {
+  runAction: test.myFirstAction.action,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+```
+因为我们在action中定义了`onSuccess()`方法，所以一旦你点击了按钮，执行`runAction`会立马变更test模型中reducer数据
+
+----------
+如果你的React版本`>=16.8.3`，而且react-redux的版本`>=7.1.0`，那么你可以用hooks实现数据的注入，这样做可以让你的代码看起来更清晰
+```typescript jsx
+// By React Hooks
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import { test } from './Test';
+
+const App: FunctionComponent = (props) => {
+  const dispatch = useDispatch();
+  const name = test.useData((item) => item.name);
+
+  return (
+    <button onClick={() => dispatch(test.myFirstAction.action('New Name'))}>
+      Click me: {name}
+    </button>
+  );
+};
+
+export default App;
+```
+
+## 定义异步请求Action
+我们总是需要请求后端接口以展示动态的内容，其中包含很多细节需要处理。在数据成功返回之前，我们可能需要确保界面上有loading加载条。在数据返回失败时，我们需要展示错误的弹窗信息。在数据更新成功的时候，我们需要展示成功的弹窗信息。
+
+别紧张，这一切我都替你想好了。
+
+为了确保action写起来足够简单，我们把诸多细节隐藏到`middleware`中，所以在开始使用异步请求action之前，我们需要先定义一个自己的中间件
+
+```typescript
+// apiMiddleware.ts
+import { createRequestMiddleware, Model } from 'redux-model-ts';
+
+export const apiMiddleware = createRequestMiddleware({
+  // action和中间件的对应关系
+  id: Model.middlewareName,
+  // 请求的通用地址前缀
+  baseUrl: 'http://api.xxx.com',
+  // 请求头信息
+  getHeaders: ({ getState }) => {
+    // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
+    // const token = tokenModel.connectData(getState()).access_token;
+    return {
+      Authorization: `Bearer token`,
+      Accept: 'application/json',
+     'Content-Type': 'application/json',
+   };
+  },
+  // 定位业务场景下的错误码等信息，会自动存入meta中
+  onFail: (error: RM.HttpError<{}>, transform) => {
+    const { data } = error.response;
+
+    transform.businessCode = data ? data.code : undefined;
+    transform.errorMessage = (data && data.message) || error.message;
+  },
+  // 可以做一些弹窗操作。
+  // 只有当模型提供了successText属性才会触发。
+  onShowSuccess: (successText) => {
+    alert(successText);
+  },
+  // 可以做一些弹窗操作。
+  // 只有当请求异常或者失败时才会触发。
+  // 模型中提供了 hideError 属性时，不再触发。
+  onShowError: (errorMessage) => {
+    alert(errorMessage);
+  },
+});
+```
 ```typescript
 import { createRequestMiddleware, Model } from 'redux-model-ts';
 
@@ -176,9 +250,10 @@ export const apiMiddleware = createRequestMiddleware({
 ```
 接着注入到store中
 ```typescript
+// middlewares.ts
 import { createStore, compose, applyMiddleware } from 'redux';
 import { apiMiddleware } from './apiMiddleware.ts';
-import { rootReducers } from './reducers';
+import { rootReducers } from './reducers.ts';
 
 const store = createStore(
   rootReducers,
@@ -186,7 +261,194 @@ const store = createStore(
   compose(applyMiddleware(apiMiddleware)),
 );
 ```
+----------------
+好了，准备就绪，开始写第一个异步action
+```typescript
+// profile.ts
+interface Data {
+  id: number;
+  name: string;
+}
 
---------------------
+class ProfileModel extends Model<Data> {
+  manage = this.actionRequest({
+    action: (id: number) => {
+      return this.get({
+        uri: '/test/api',
+        // 查询字符串
+        query: {
+          id: page,
+        },
+      });
+    },
+    onSuccess: (state, action) => {
+      return action.response;
+    },
+  });
 
-欢迎您使用并随时给我建议。
+  edit = this.actionRequest({
+    action: (id: number, name: string) => {
+      return this.put({
+        uri: `/test/api/${id}`,
+        body: {
+          name: name,
+        },
+        payload: {
+          name: name,
+        },
+        successText: '信息更新成功',
+      });
+    },
+    onSuccess: (state, action) => {
+      return {
+        ...state,
+        name: action.payload.name,
+      };
+    },
+  });
+
+  protected initReducer(): Data {
+    return {
+      id: 0,
+      name: '',
+    };
+  }
+}
+
+export const profileModel = new ProfileModel();
+```
+
+我们有更多请求的参数还没有列出来：
+
+**uri**&nbsp;&nbsp;[string] `required`
+<br>
+请求的相对路径
+<br><br>
+**query**&nbsp;&nbsp;[object]
+<br>
+查询字符串
+<br><br>
+**body**&nbsp;&nbsp;[object]
+<br>
+请求实体，仅在`post put patch delete`中有效
+<br><br>
+**payload**&nbsp;&nbsp;[object]
+<br>
+额外数据，在改变reducer时使用
+<br><br>
+**hideError**&nbsp;&nbsp;[boolean | (response) => boolean]
+<br>
+请求出错时是否隐藏错误
+<br><br>
+**successText**&nbsp;&nbsp;[string]
+<br>
+请求成功时要展示的成功文字
+
+## 定义Thunk Action
+假设你已经知道什么是 [Redux Thunk](https://github.com/reduxjs/redux-thunk)，并且已经把`thunk middleware`放进了store中。那么我们来看看怎么定义
+```typescript
+// test.ts
+import { profileModel } from './ProfileModel.ts';
+
+class Test extends Model {
+  myFirstAction = this.actionNormal(...);
+
+  /////////////////////////////////
+  /// 使用方法：test.myThunk();  ///
+  ////////////////////////////////
+  myThunk = this.actionThunk((/* 在这里定义action传入的参数 */) => {
+    return (dispatch, getState) => {
+      dispatch(this.myFirstAction.action());
+      dispatch(profileModel.manage.action());
+      ...
+    };
+  });
+}
+
+export const test = new Test();
+```
+
+## 模型交叉
+有时候，执行某个模型下的action可能需要变更其它模型的reducer数据，这是很常见的操作方式，我们提供了一个保护方法`subscribers()`来做这个事情。
+```typescript
+class Other extends Model {
+  reset = this.action.actionNormal(...);
+  request = this.action.actionRequest(...);
+}
+
+const other = new Other();
+
+// --------
+
+interface Data {
+  foo: string;
+}
+
+class Test extends Model<Data> {
+  protected subscribers(): RM.Subscriber<Data> {
+    return [
+      other.reset.onSuccess((state, action) => {
+        return {
+          foo: 'Oops, reset',
+        };
+      }),
+      other.request.onSuccess((state, action) => {
+        return {
+          foo: action.response.name,
+        };
+      }),
+      other.request.onFail((state, action) => {
+        return {
+          foo: 'reset again',
+        };
+      }),
+    ];
+  }
+
+  protected initReducer(): Data {
+    return {
+      foo: 'init',
+    };
+  }
+}
+```
+对于普通的action，我们使用`model.action.onSuccess(fn)`来监听数据的变化。如果是异步请求action，我们总共有`onPrepare(fn)` `onSuccess(fn)` `onFail(fn)` 3个监听事件
+
+## 异步请求Promise
+对于异步请求的action，我们可以在React组件中使用promise方法，并获得请求的数据
+
+```typescript jsx
+// By React Hooks
+import React, { FunctionComponent } from 'react';
+import { useDispatch } from 'react-redux';
+import { profileModel } from './ProfileModel.ts';
+
+const App: FunctionComponent = (props) => {
+  const dispatch = useDispatch();
+  const name = profileModel.useData((item) => item.name);
+  const handleClick = () => {
+    dispatch(profileModel.manage.action(1))
+      .promise
+      .then(({ response }) => {
+        console.log('Hello, ' + response.name);
+      })
+      .catch(() => {
+        console.warn('What is wrong?');
+      })
+      .finally(() => {
+        console.log('Wow, cool bro.');
+      });
+  };
+
+  return (
+    <button onClick={this.handleClick}>
+      Click me: {name}
+    </button>
+  );
+};
+
+export default App;
+```
+
+---------------------
+欢迎您自由使用并随时创建issue和PR。
