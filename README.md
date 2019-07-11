@@ -41,7 +41,7 @@ Clone this repository, and run code `yarn start`. After that, open browser and v
 # Usage
 
 ## Define Model
-You should define a model before you want to use reducer. As rule, one model can only include one or zero reducer. Firstly, let's define an interface and inject it into Model.
+You should define a model before you want to use reducer. As rule, one model can only includes one or zero reducer. Firstly, let's define an interface and initialize the reducer.
 ```typescript
 // test.ts
 import { Model } from 'redux-model-ts';
@@ -77,7 +77,7 @@ export const rootReducers = combineReducers(reducers);
 ```
 
 ## Define Action
-We totally have 3 kind of actions here. And I will show you how to use them.
+We only have 3 kind of actions here, but remember that one model can includes unlimited actions. And I will show you how to use them.
 >- Normal Action
 >- Request Action
 >- Thunk Action
@@ -259,7 +259,7 @@ class ProfileModel extends Model<Data> {
         payload: {
           name: name,
         },
-        successText: '信息更新成功',
+        successText: 'Your profile is updated',
       });
     },
     onSuccess: (state, action) => {

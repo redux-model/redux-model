@@ -77,7 +77,7 @@ export const rootReducers = combineReducers(reducers);
 ```
 
 ## 定义Action
-在模型中，我们一共有3中类型的action，他们分别是：
+在模型中，我们只有有3中类型的action需要记忆，而且一个模型支持写入无限个action。
 >- 普通action
 >- 异步请求action
 >- thunk action
