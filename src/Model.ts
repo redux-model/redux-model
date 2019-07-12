@@ -9,7 +9,7 @@ import { BaseAction } from './action/BaseAction';
 import { isDebug, isProxyEnable } from './utils/dev';
 
 type RequestOptions<Payload> = (
-  Partial<Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>>
+  Partial<RM.Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>>
   & { uri: string; }
   & (Payload extends {} ? { payload: Payload } : { payload?: never })
 );

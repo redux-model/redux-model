@@ -101,7 +101,7 @@ declare class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHa
   connectLoading(rootState: any, payloadData?: PayloadData): boolean;
 }
 
-type RequestOptions<Payload> = (Partial<Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>> & {
+type RequestOptions<Payload> = (Partial<RM.Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>> & {
   uri: string;
 } & (Payload extends {} ? {
   payload: Payload;
@@ -159,6 +159,8 @@ export declare const createRequestMiddleware: <RootState = any>(config: {
 
 declare global {
   namespace RM {
+    type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+
     type Subscriber<Data> = Array<{
       when: string;
       effect: (state: Data, action: any) => Data;

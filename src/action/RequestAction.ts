@@ -66,7 +66,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
   }
 
   public static createRequestData(options: Partial<RM.RequestAction> & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>) {
-    const data: Omit<RM.RequestAction, 'type'> = {
+    const data: RM.Omit<RM.RequestAction, 'type'> = {
       middleware: options.middleware,
       payload: options.payload || {},
       uri: options.uri,
