@@ -554,6 +554,7 @@ interface Payload {
 class Profile extends Model<Data> {
   getProfile = this.actionRequest({
     action: (id: number) => {
+      // Inject here
       return this.get<Response, Payload>({
         uri: `/profile/api/${id}`,
         payload: {
