@@ -498,6 +498,47 @@ const App: FunctionComponent = (props) => {
 export default App;
 ```
 
+
+## Generics
+Request Action is enable to inject generic `Response` and `Payload`. Remember that you only need to inject once, and the whole project will enjoin type checking where code is related with this action.
+```typescript
+import { Model } from 'redux-model-ts';
+
+type Data = Array<{
+  id: number;
+  name: string;
+}>;
+
+interface Response {
+  id: number;
+  name: string;
+}
+
+interface Payload {
+  id: number;
+}
+
+class Profile extends Model<Data> {
+  getProfile = this.actionRequest({
+    action: (id: number) => {
+      return this.get<Response, Payload>({
+        uri: `/profile/api/${id}`,
+        payload: {
+          id: id,
+        },
+      });
+    },
+    onSuccess: (state, action) => {
+      return {
+        ...state,
+        [action.payload.id]: action.response,
+      };
+    },
+  });
+}
+```
+
+
 --------------------
 Cool package.
 

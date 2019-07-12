@@ -532,5 +532,44 @@ const App: FunctionComponent = (props) => {
 export default App;
 ```
 
+## 泛型
+在异步请求action中，你可以加入Response和Payload泛型。你只需要注入一次，就可以在项目的任何地方享受到关于这个action的静态检查
+```typescript
+import { Model } from 'redux-model-ts';
+
+type Data = Array<{
+  id: number;
+  name: string;
+}>;
+
+interface Response {
+  id: number;
+  name: string;
+}
+
+interface Payload {
+  id: number;
+}
+
+class Profile extends Model<Data> {
+  getProfile = this.actionRequest({
+    action: (id: number) => {
+      return this.get<Response, Payload>({
+        uri: `/profile/api/${id}`,
+        payload: {
+          id: id,
+        },
+      });
+    },
+    onSuccess: (state, action) => {
+      return {
+        ...state,
+        [action.payload.id]: action.response,
+      };
+    },
+  });
+}
+```
+
 ---------------------
 欢迎您自由使用并随时创建issue和PR。
