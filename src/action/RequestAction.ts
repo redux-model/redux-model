@@ -8,9 +8,11 @@ const DEFAULT_META: RM.Meta = {
 
 type PayloadData = string | number | symbol;
 
-export interface RequestActionParam<Data, Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>> {
+type PayloadKey<A> =  A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? keyof P : never;
+
+export interface RequestActionParam<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> {
   action: A;
-  meta?: boolean | string;
+  meta?: boolean | PayloadKey<A>;
   onSuccess?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
   onPrepare?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
   onFail?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
@@ -21,13 +23,13 @@ type RequestSubscriber<CustomData, Response, Payload> = {
   effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData;
 };
 
-export class RequestAction<Data = any, Response = any, Payload = any, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any>
+export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any, Response = any, Payload = any>
   // @ts-ignore
-  extends NormalAction<Data, Payload, A> {
+  extends NormalAction<Data, A, Payload> {
   // Point to correct type definition.
   public readonly action: A;
 
-  protected readonly meta: boolean | string;
+  protected readonly meta: boolean | PayloadKey<A>;
 
   protected readonly prepareCallback?: any;
 
@@ -37,7 +39,7 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
 
   protected failType: string;
 
-  public constructor(config: RequestActionParam<Data, Response, Payload, A>, instanceName: string) {
+  public constructor(config: RequestActionParam<Data, A, Response, Payload>, instanceName: string) {
     super({
       action: config.action,
       // @ts-ignore
@@ -269,7 +271,7 @@ export class RequestAction<Data = any, Response = any, Payload = any, A extends 
     };
   }
 
-  protected createMetas(payloadKey: string): (state: any, action: RM.ResponseAction) => RM.Metas {
+  protected createMetas(payloadKey: any): (state: any, action: RM.ResponseAction) => RM.Metas {
     return (state, action) => {
       if (!state) {
         state = {};

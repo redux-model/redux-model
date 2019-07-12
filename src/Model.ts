@@ -104,30 +104,30 @@ export abstract class Model<Data = null> {
   }
 
   protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(
-    config: NormalActionParam<Data, Payload, A>
-  ): NormalAction<Data, Payload, A> {
+    config: NormalActionParam<Data, A, Payload>
+  ): NormalAction<Data, A, Payload> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.sequenceCounter += 1;
       instanceName += '.' + this.sequenceCounter;
     }
 
-    const instance = new NormalAction<Data, Payload, A>(config, instanceName);
+    const instance = new NormalAction<Data, A, Payload>(config, instanceName);
     this.actions.push(instance);
 
     return instance;
   }
 
   protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParam<Data, Response, Payload, A>
-  ): RequestAction<Data, Response, Payload, A> {
+    config: RequestActionParam<Data, A, Response, Payload>
+  ): RequestAction<Data, A, Response, Payload> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.sequenceCounter += 1;
       instanceName += '.' + this.sequenceCounter;
     }
 
-    const instance = new RequestAction<Data, Response, Payload, A>(config, instanceName);
+    const instance = new RequestAction<Data, A, Response, Payload>(config, instanceName);
     this.actions.push(instance);
 
     return instance;

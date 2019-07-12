@@ -1,18 +1,18 @@
 import { Model } from '../../../src';
 
-interface ManageResponse {
+interface Response {
   _id: string;
   license: string;
   homepage: string;
 }
 
-type Data = Partial<ManageResponse>;
+type Data = Partial<Response>;
 
 class NpmInfoModel extends Model<Data> {
   manage = this.actionRequest({
     action: (packageName: string) => {
       // Inject generic here.
-      return this.get<ManageResponse>({
+      return this.get<Response>({
         uri: '/' + packageName,
         query: {
           noCache: Date.now(),

@@ -46,7 +46,7 @@ declare abstract class BaseAction<Data> {
   getSuccessType(): string;
 }
 
-interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
+interface NormalActionParam<Data, A extends (...args: any[]) => RM.NormalAction<Payload>, Payload> {
   action: A;
   onSuccess?: (state: Data, action: RM.NormalAction<Payload>) => Data;
 }
@@ -56,16 +56,17 @@ type NormalSubscriber<CustomData, Payload> = {
   effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData;
 };
 
-declare class NormalAction<Data = any, Payload = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any> extends BaseAction<Data> {
+declare class NormalAction<Data = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any, Payload = any> extends BaseAction<Data> {
   readonly action: A;
   onSuccess<CustomData>(effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData): NormalSubscriber<CustomData, Payload>;
 }
 
 type PayloadData = string | number | symbol;
+type PayloadKey<A> =  A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? keyof P : never;
 
-interface RequestActionParam<Data, Response, Payload, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>> {
+interface RequestActionParam<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> {
   action: A;
-  meta?: boolean | string;
+  meta?: boolean | PayloadKey<A>;
   onSuccess?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
   onPrepare?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
   onFail?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
@@ -77,7 +78,7 @@ type RequestSubscriber<CustomData, Response, Payload> = {
 };
 
 // @ts-ignore
-declare class RequestAction<Data = any, Response = {}, Payload = {}, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any> extends NormalAction<Data, Payload, A> {
+declare class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any, Response = any, Payload = any> extends NormalAction<Data, A, Payload> {
   readonly action: A;
 
   // @ts-ignore
@@ -118,8 +119,8 @@ declare abstract class Model<Data = null> {
   register(): RM.Reducers;
   useData<T = Data>(filter?: (data: Data) => T): T;
   connectData(rootState: any): Data;
-  protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, Payload, A>): NormalAction<Data, Payload, A>;
-  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParam<Data, Response, Payload, A>): RequestAction<Data, Response, Payload, A>;
+  protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, A, Payload>): NormalAction<Data, A, Payload>;
+  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParam<Data, A, Response, Payload>): RequestAction<Data, A, Response, Payload>;
   protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;
 
   // Used for actionNormal

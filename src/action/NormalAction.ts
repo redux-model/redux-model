@@ -1,6 +1,6 @@
 import { BaseAction } from './BaseAction';
 
-export interface NormalActionParam<Data, Payload, A extends (...args: any[]) => RM.NormalAction<Payload>> {
+export interface NormalActionParam<Data, A extends (...args: any[]) => RM.NormalAction<Payload>, Payload> {
   action: A;
   onSuccess?: (state: Data, action: RM.NormalAction<Payload>) => Data;
 }
@@ -10,12 +10,12 @@ type NormalSubscriber<CustomData, Payload> = {
   effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData;
 };
 
-export class NormalAction<Data = any, Payload = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any> extends BaseAction<Data> {
+export class NormalAction<Data = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any, Payload = any> extends BaseAction<Data> {
   public readonly action: A;
 
   protected readonly successCallback?: any;
 
-  constructor(config: NormalActionParam<Data, Payload, A>, instanceName: string) {
+  constructor(config: NormalActionParam<Data, A, Payload>, instanceName: string) {
     super(instanceName);
     // @ts-ignore
     this.action = (...args: any[]) => {
