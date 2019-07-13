@@ -13,17 +13,17 @@ type PayloadKey<A> =  A extends (...args: any[]) => RM.FetchHandle<any, infer P>
 export interface RequestActionParam<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> {
   action: A;
   meta?: boolean | PayloadKey<A>;
-  onSuccess?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
-  onPrepare?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
-  onFail?: (state: Data, action: RM.ResponseAction<Response, Payload>) => Data;
+  onSuccess?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
+  onPrepare?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
+  onFail?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
 }
 
 type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
-  effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData;
+  effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData;
 };
 
-export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHandle<Response, Payload> = any, Response = any, Payload = any>
+export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload>
   // @ts-ignore
   extends NormalAction<Data, A, Payload> {
   // Point to correct type definition.
@@ -47,7 +47,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
     }, instanceName);
     // @ts-ignore
     this.action = (...args: any[]) => {
-      const data = config.action(...args) as unknown as RM.RequestAction;
+      const data = config.action(...args) as unknown as RM.ActionRequest;
 
       data.type = {
         prepare: this.prepareType,
@@ -65,8 +65,8 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
     this.failType = `${this.typePrefix} fail`;
   }
 
-  public static createRequestData(options: Partial<RM.RequestAction> & Pick<RM.RequestAction, 'uri' | 'method' | 'middleware'>) {
-    const data: RM.Omit<RM.RequestAction, 'type'> = {
+  public static createRequestData(options: Partial<RM.ActionRequest> & Pick<RM.ActionRequest, 'uri' | 'method' | 'middleware'>) {
+    const data: RM.Omit<RM.ActionRequest, 'type'> = {
       middleware: options.middleware,
       payload: options.payload || {},
       uri: options.uri,
@@ -83,7 +83,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
 
   // @ts-ignore
   public onSuccess<CustomData>(
-    effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData
+    effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData
   ): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.successType,
@@ -92,7 +92,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
   }
 
   public onPrepare<CustomData>(
-    effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData
+    effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData
   ): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.prepareType,
@@ -101,7 +101,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
   }
 
   public onFail<CustomData>(
-    effect: (state: CustomData, action: RM.ResponseAction<Response, Payload>) => CustomData
+    effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData
   ): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.prepareType,
@@ -240,7 +240,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
     this.failType = `${this.typePrefix} fail`;
   }
 
-  protected createMeta(): (state: any, action: RM.ResponseAction) => RM.Meta {
+  protected createMeta(): (state: any, action: RM.ActionResponse) => RM.Meta {
     return (state, action) => {
       if (!state) {
         state = DEFAULT_META;
@@ -271,7 +271,7 @@ export class RequestAction<Data = any, A extends (...args: any[]) => RM.FetchHan
     };
   }
 
-  protected createMetas(payloadKey: any): (state: any, action: RM.ResponseAction) => RM.Metas {
+  protected createMetas(payloadKey: any): (state: any, action: RM.ActionResponse) => RM.Metas {
     return (state, action) => {
       if (!state) {
         state = {};

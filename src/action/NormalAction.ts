@@ -1,16 +1,16 @@
 import { BaseAction } from './BaseAction';
 
-export interface NormalActionParam<Data, A extends (...args: any[]) => RM.NormalAction<Payload>, Payload> {
+export interface NormalActionParam<Data, A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload> {
   action: A;
-  onSuccess?: (state: Data, action: RM.NormalAction<Payload>) => Data;
+  onSuccess?: (state: Data, action: RM.ActionNormal<Payload>) => Data;
 }
 
 type NormalSubscriber<CustomData, Payload> = {
   when: string;
-  effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData;
+  effect: (state: CustomData, action: RM.ActionNormal<Payload>) => CustomData;
 };
 
-export class NormalAction<Data = any, A extends (...args: any[]) => RM.NormalAction<Payload> = any, Payload = any> extends BaseAction<Data> {
+export class NormalAction<Data, A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload> extends BaseAction<Data> {
   public readonly action: A;
 
   protected readonly successCallback?: any;
@@ -27,7 +27,7 @@ export class NormalAction<Data = any, A extends (...args: any[]) => RM.NormalAct
     this.successCallback = config.onSuccess;
   }
 
-  public static createNormalData<Payload = {}>(payload?: Payload): RM.NormalAction<Payload> {
+  public static createNormalData<Payload = {}>(payload?: Payload): RM.ActionNormal<Payload> {
     return {
       type: '',
       // @ts-ignore
@@ -36,7 +36,7 @@ export class NormalAction<Data = any, A extends (...args: any[]) => RM.NormalAct
   }
 
   public onSuccess<CustomData>(
-    effect: (state: CustomData, action: RM.NormalAction<Payload>) => CustomData
+    effect: (state: CustomData, action: RM.ActionNormal<Payload>) => CustomData
   ): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.successType,

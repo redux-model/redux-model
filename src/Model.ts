@@ -9,14 +9,14 @@ import { BaseAction } from './action/BaseAction';
 import { isDebug, isProxyEnable } from './utils/dev';
 
 type RequestOptions<Payload> = (
-  Partial<RM.Omit<RM.RequestAction, 'uri' | 'payload' | 'type' | 'method'>>
+  Partial<RM.Omit<RM.ActionRequest, 'uri' | 'payload' | 'type' | 'method'>>
   & { uri: string; }
-  & (Payload extends {} ? { payload: Payload } : { payload?: never })
+  & (Payload extends undefined ? { payload?: never } : { payload: Payload })
 );
 
 type EnhanceResponse<A> = A extends (...args: any[]) => RM.FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? P : never;
-type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.NormalAction<infer P> ? P : never;
+type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.ActionNormal<infer P> ? P : never;
 
 export abstract class Model<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
@@ -103,7 +103,9 @@ export abstract class Model<Data = null> {
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
-  protected actionNormal<A extends (...args: any[]) => RM.NormalAction<Payload>, Payload = EnhanceNormalPayload<A>>(
+  // FIXME: To compatible with typescript 3.3, we should remove generics RM.ActionNormal<Payload>, and add `RM.ActionNormal` instead.
+  // That's strange, because ts version at 3.0+ are all support this feature except ts 3.3
+  protected actionNormal<A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(
     config: NormalActionParam<Data, A, Payload>
   ): NormalAction<Data, A, Payload> {
     let instanceName = this.instanceName;
@@ -140,11 +142,11 @@ export abstract class Model<Data = null> {
     return action;
   }
 
-  protected emit<Payload = unknown>(payload?: Payload): RM.NormalAction<Payload> {
+  protected emit<Payload = undefined>(payload?: Payload): RM.ActionNormal<Payload> {
     return NormalAction.createNormalData<Payload>(payload);
   }
 
-  protected get<Response, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+  protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
     // @ts-ignore
     return RequestAction.createRequestData({
       method: METHOD.get,
@@ -153,7 +155,7 @@ export abstract class Model<Data = null> {
     });
   }
 
-  protected post<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+  protected post<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
     // @ts-ignore
     return RequestAction.createRequestData({
       method: METHOD.post,
@@ -162,7 +164,7 @@ export abstract class Model<Data = null> {
     });
   }
 
-  protected put<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+  protected put<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
     // @ts-ignore
     return RequestAction.createRequestData({
       method: METHOD.put,
@@ -171,7 +173,7 @@ export abstract class Model<Data = null> {
     });
   }
 
-  protected patch<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+  protected patch<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
     // @ts-ignore
     return RequestAction.createRequestData({
       method: METHOD.patch,
@@ -180,7 +182,7 @@ export abstract class Model<Data = null> {
     });
   }
 
-  protected delete<Response = {}, Payload = unknown>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
+  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload> {
     // @ts-ignore
     return RequestAction.createRequestData({
       method: METHOD.delete,

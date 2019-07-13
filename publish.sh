@@ -6,7 +6,7 @@ rm -rf ./build
 node_modules/.bin/tsc
 rm -rf rm -rf ./build/src/*/*.d.ts ./build/src/*.d.ts
 mv ./build/src/* ./build/
-rm -r ./build/src ./build/demo
+rm -r ./build/src
 cp package.json README.md LICENSE ./build
 cp index.d.ts ./build/index.d.ts
 
@@ -28,3 +28,7 @@ echo "Begin publish..."
 npm publish ./build/ "$@"
 
 npm config set registry ${old_registry}
+
+sleep 2
+
+curl https://npm.taobao.org/sync/redux-model-ts >/dev/null
