@@ -35,8 +35,7 @@ yarn add redux react-redux redux-thunk
 
 # 运行案例（Demo）
 
-克隆本项目并执行`yarn start`，然后打开浏览器输入`http://localhost:8080`查看效果
-
+请查看项目：[redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
 # 使用
 

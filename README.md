@@ -36,7 +36,7 @@ Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when y
 
 # Run Demo
 
-Clone this repository, and run code `yarn start`. After that, open browser and visit site `http://localhost:8080`.
+Forward to repository: [redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
 # Usage
 
