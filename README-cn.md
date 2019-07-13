@@ -209,44 +209,6 @@ export const apiMiddleware = createRequestMiddleware({
   },
 });
 ```
-```typescript
-import { createRequestMiddleware, Model } from 'redux-model-ts';
-
-export const apiMiddleware = createRequestMiddleware({
-  // 模型和中间件的对应关系
-  id: Model.middlewareName,
-  // 请求的通用地址前缀
-  baseUrl: 'http://api.xxx.com',
-  // 请求头信息
-  getHeaders: ({ getState }) => {
-    // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
-    // const token = tokenModel.connectData(getState()).access_token;
-    return {
-      Authorization: `Bearer token`,
-      Accept: 'application/json',
-     'Content-Type': 'application/json',
-   };
-  },
-  // 定位业务场景下的错误码等信息，会自动存入meta中
-  onFail: (error: RM.HttpError, transform) => {
-    const { data } = error.response;
-
-    transform.businessCode = data ? data.code : undefined;
-    transform.errorMessage = (data && data.message) || error.message || 'Fail to fetch';
-  },
-  // 可以做一些弹窗操作。
-  // 只有当模型提供了successText属性才会触发。
-  onShowSuccess: (successText) => {
-    console.log(successText);
-  },
-  // 可以做一些弹窗操作。
-  // 只有当请求异常或者失败时才会触发。
-  // 模型中提供了 hideError 属性时，不再触发。
-  onShowError: (errorMessage) => {
-    console.error(errorMessage);
-  },
-});
-```
 接着注入到store中
 ```typescript
 // middlewares.ts
