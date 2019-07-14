@@ -40,7 +40,7 @@ yarn add redux react-redux redux-thunk
 # 使用
 
 ## 定义Model
-想要定义reducer，就必须先定义一个模型类，因为一个模型可以包含一个或没有reducer。我们需要为reducer定义一个接口，并注入到模型中，这样我们就可以在整个项目中得到数据类型的提示。
+想要定义reducer，就必须先定义一个模型类，因为一个模型可以包含一个或不带reducer。我们需要为reducer定义一个接口，并注入到模型中，这样我们就可以在整个项目中得到数据类型的提示。
 ```typescript
 // test.ts
 import { Model } from 'redux-model-ts';
@@ -76,7 +76,7 @@ export const rootReducers = combineReducers(reducers);
 ```
 
 ## 定义Action
-在模型中，我们只有有3中类型的action需要记忆，而且一个模型支持写入无限个action。
+在模型中，我们只需要3种类型的action，而且一个模型支持写入无限个action。
 >- 普通action
 >- 异步请求action
 >- thunk action
