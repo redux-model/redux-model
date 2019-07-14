@@ -104,7 +104,7 @@ export abstract class Model<Data = null> {
   }
 
   // FIXME: To compatible with typescript 3.3, we should remove generics RM.ActionNormal<Payload>, and add `RM.ActionNormal` instead.
-  // That's strange, because ts version at 3.0+ are all support this feature except ts 3.3
+  // It's very strange, because this feature is supported by all ts versions above 3.0 except 3.3
   protected actionNormal<A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(
     config: NormalActionParam<Data, A, Payload>
   ): NormalAction<Data, A, Payload> {
