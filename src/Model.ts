@@ -21,6 +21,13 @@ type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.ActionNormal<inf
 export abstract class Model<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
 
+  // As we know, it's forbidden to make condition when we are using hooks.
+  // We can't write code like: xxxModel.xxx.useLoading() || xxxModel.yyy.useLoading()
+  // So, just write code like: Model.isLoading(xxxModel.xxx.useLoading(), xxxModel.yyy.useLoading());
+  public static isLoading(...fromUseLoading: boolean[]): boolean {
+    return fromUseLoading.some((is) => is);
+  }
+
   private sequenceCounter = 0;
 
   private readonly instanceName: string;

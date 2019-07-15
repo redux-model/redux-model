@@ -92,8 +92,7 @@ declare class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<R
   useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T;
   useMetas(): RM.Metas;
   useMetas<T = RM.Meta>(payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
-  useLoading(...orUseLoading: boolean[]): boolean;
-  useLoading(payloadData: PayloadData, ...orUseLoading: boolean[]): boolean;
+  useLoading(payloadData?: PayloadData): boolean;
 
   connectMeta(rootState: any): RM.Meta;
   connectMetas(rootState: any): RM.Metas;
@@ -115,6 +114,7 @@ declare type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.ActionNo
 
 declare abstract class Model<Data = null> {
   static middlewareName: string;
+  static isLoading(...fromUseLoading: boolean[]): boolean;
   constructor(instanceName?: string);
   register(): RM.Reducers;
   useData<T = Data>(filter?: (data: Data) => T): T;

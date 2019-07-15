@@ -189,17 +189,10 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     });
   }
 
-  public useLoading(payloadData?: PayloadData, ...orUseLoading: boolean[]): boolean {
-    if (typeof payloadData === 'boolean') {
-      orUseLoading.push(payloadData);
-      payloadData = undefined;
-    }
-
-    const isLoading = payloadData === undefined
+  public useLoading(payloadData?: PayloadData): boolean {
+    return payloadData === undefined
       ? this.useMeta((meta) => meta.loading)
       : this.useMetas(payloadData, (meta) => meta.loading) as boolean;
-
-    return isLoading || orUseLoading.some(Boolean);
   }
 
   public connectMeta(rootState: any): RM.Meta {
