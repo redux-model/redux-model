@@ -37,6 +37,8 @@ yarn add redux react-redux redux-thunk
 
 请查看项目：[redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
+![](https://github.com/fwh1990/misc/blob/master/redux-model-ts.gif?raw=true)
+
 # 使用
 
 ## 定义Model
@@ -151,7 +153,7 @@ import { test } from './Test';
 
 const App: FunctionComponent = (props) => {
   const dispatch = useDispatch();
-  const name = test.useData((item) => item.name);
+  const name = test.useData((item) => item.foo);
 
   return (
     <button onClick={() => dispatch(test.myFirstAction.action('New Name'))}>

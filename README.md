@@ -6,8 +6,8 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 # Compare
 |     | Original Redux | redux-model-ts |
 | ----| ---- | ---- |
-| Coding way | Functional | OOP |
-| TS support | A little | Perfect |
+| Coding way | Functional | Class |
+| TS support | Normal | Perfect |
 | Split action and reducer file | Yes | No |
 | Define types | Yes | BuiltIn |
 | Sync action | Thunk OR Saga | BuiltIn |
@@ -37,6 +37,8 @@ Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when y
 # Run Demo
 
 Forward to repository: [redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
+
+![](https://github.com/fwh1990/misc/blob/master/redux-model-ts.gif?raw=true)
 
 # Usage
 
@@ -154,7 +156,7 @@ import { test } from './Test';
 
 const App: FunctionComponent = (props) => {
   const dispatch = useDispatch();
-  const name = test.useData((item) => item.name);
+  const name = test.useData((item) => item.foo);
 
   return (
     <button onClick={() => dispatch(test.myFirstAction.action('New Name'))}>
