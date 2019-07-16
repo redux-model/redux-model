@@ -64,12 +64,23 @@ declare class NormalAction<Data, A extends (...args: any[]) => RM.ActionNormal<P
 type PayloadData = string | number | symbol;
 type PayloadKey<A> =  A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? keyof P : never;
 
-interface RequestActionParam<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> {
+interface RequestActionParamBase<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> {
   action: A;
-  meta?: boolean | PayloadKey<A>;
   onSuccess?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
   onPrepare?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
   onFail?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
+}
+
+interface RequestActionParam<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
+  meta: false;
+}
+
+interface RequestActionParamWithMeta<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
+  meta?: true;
+}
+
+interface RequestActionParamWithMetas<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
+  meta: PayloadKey<A>;
 }
 
 type RequestSubscriber<CustomData, Response, Payload> = {
@@ -88,13 +99,19 @@ declare class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<R
 
   getPrepareType(): string;
   getFailType(): string;
+}
 
+declare class RequestActionWithMeta<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T;
+  useLoading(): boolean;
+  connectMeta(rootState: any): RM.Meta;
+  connectLoading(rootState: any): boolean;
+}
+
+declare class RequestActionWithMetas<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMetas(): RM.Metas;
   useMetas<T = RM.Meta>(payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
-  useLoading(payloadData?: PayloadData): boolean;
-
-  connectMeta(rootState: any): RM.Meta;
+  useLoading(payloadData: PayloadData): boolean;
   connectMetas(rootState: any): RM.Metas;
   connectMetas(rootState: any, payloadData: PayloadData): RM.Meta;
   connectLoading(rootState: any, payloadData?: PayloadData): boolean;
@@ -120,7 +137,22 @@ declare abstract class Model<Data = null> {
   useData<T = Data>(filter?: (data: Data) => T): T;
   connectData(rootState: any): Data;
   protected actionNormal<A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, A, Payload>): NormalAction<Data, A, Payload>;
-  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParam<Data, A, Response, Payload>): RequestAction<Data, A, Response, Payload>;
+
+  // When meta=false
+  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    config: RequestActionParam<Data, A, Response, Payload>
+  ): RequestAction<Data, A, Response, Payload>;
+
+  // When meta is undefined or true.
+  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    config: RequestActionParamWithMeta<Data, A, Response, Payload>
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  // When meta is the key of payload.
+  protected actionRequest<A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    config: RequestActionParamWithMetas<Data, A, Response, Payload>
+  ): RequestActionWithMetas<Data, A, Response, Payload>;
+
   protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;
 
   // Used in method actionNormal
