@@ -37,6 +37,9 @@ yarn add redux react-redux redux-thunk
 
 请查看项目：[redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
+# 代码片段
+请在vscode的扩展中搜索插件 `bluewaitor.tsreact`
+
 ![](https://github.com/fwh1990/misc/blob/master/redux-model-ts.gif?raw=true)
 
 # 使用

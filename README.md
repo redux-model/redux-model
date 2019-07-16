@@ -38,6 +38,9 @@ Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when y
 
 Forward to repository: [redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
+# Snippets
+Search plugin `bluewaitor.tsreact` in vscode extension.
+
 ![](https://github.com/fwh1990/misc/blob/master/redux-model-ts.gif?raw=true)
 
 # Usage
