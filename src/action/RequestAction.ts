@@ -229,7 +229,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   }
 
   protected createMeta(): BaseReducer<RM.Meta> {
-    this.metaInstance = new BaseReducer<RM.Meta>(DEFAULT_META, this.instanceName, 'meta');
+    this.metaInstance = new BaseReducer<RM.Meta>(DEFAULT_META, this.typePrefix, 'meta');
     this.metaInstance.addCase(
       {
         when: this.prepareType,
