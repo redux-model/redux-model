@@ -1,5 +1,7 @@
 import { NormalAction } from './NormalAction';
 import { useSelector } from 'react-redux';
+import { BaseReducer } from '../reducer/BaseReducer';
+import { NotFoundError } from '../exceptions/NotFoundError';
 
 const DEFAULT_META: RM.Meta = {
   actionType: '',
@@ -38,6 +40,10 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   protected prepareType: string;
 
   protected failType: string;
+
+  protected metaInstance: BaseReducer<RM.Meta> | null = null;
+
+  protected metasInstance: BaseReducer<RM.Metas> | null = null;
 
   public constructor(config: RequestActionParam<Data, A, Response, Payload>, instanceName: string) {
     super({
@@ -130,13 +136,13 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   }
 
   public collectReducers(): RM.Reducers {
-    const obj = super.collectReducers();
+    let obj = super.collectReducers();
 
     if (this.meta) {
       if (typeof this.meta === 'boolean') {
-        obj[`${this.typePrefix}__meta`] = this.createMeta();
+        obj = { ...obj, ...this.createMeta().createData() };
       } else {
-        obj[`${this.typePrefix}__metas`] = this.createMetas(this.meta);
+        obj = { ...obj, ...this.createMetas(this.meta).createData() };
       }
     }
 
@@ -152,28 +158,22 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   }
 
   public useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T {
-    if (this.meta !== true) {
-      if (this.meta === false) {
-        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: true } in action.`);
-      } else {
-        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: "${this.meta}" } in action, Do you mean useMetas(...)?`);
-      }
+    if (!this.metaInstance) {
+      throw new NotFoundError(this.instanceName);
     }
 
+    const reducerName = this.metaInstance.getReducerName();
+
     return useSelector((state: any) => {
-      const customMeta = state[`${this.typePrefix}__meta`];
+      const customMeta = state[reducerName];
 
       return filter ? filter(customMeta) : customMeta;
     });
   }
 
   public useMetas<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): RM.Metas | T {
-    if (typeof this.meta !== 'string') {
-      if (this.meta) {
-        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: true } in action, Do you mean useMeta()?`);
-      } else {
-        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: "Payload Key" } in action.`);
-      }
+    if (!this.metasInstance) {
+      throw new NotFoundError(this.instanceName);
     }
 
     if (payloadData === undefined) {
@@ -181,9 +181,10 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     }
 
     return useSelector((state: any) => {
+      const reducerName = this.metasInstance!.getReducerName();
       const customMeta = payloadData === undefined
-        ? state[`${this.typePrefix}__metas`]
-        : state[`${this.typePrefix}__metas`][payloadData] || DEFAULT_META;
+        ? state[reducerName]
+        : state[reducerName][payloadData] || DEFAULT_META;
 
       return filter ? filter(customMeta) : customMeta;
     });
@@ -196,29 +197,23 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   }
 
   public connectMeta(rootState: any): RM.Meta {
-    if (this.meta !== true) {
-      if (this.meta === false) {
-        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: true } in action.`);
-      } else {
-        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: "${this.meta}" } in action, Do you mean connectMetas(...)?`);
-      }
+    if (!this.metaInstance) {
+      throw new NotFoundError(this.instanceName);
     }
 
-    return rootState[`${this.typePrefix}__meta`];
+    return rootState[this.metaInstance.getReducerName()];
   }
 
   public connectMetas(rootState: any, payloadData?: PayloadData): RM.Metas | RM.Meta {
-    if (typeof this.meta !== 'string') {
-      if (this.meta) {
-        throw new ReferenceError(`[${this.typePrefix}] You had set { meta: true } in action, Do you mean connectMeta()?`);
-      } else {
-        throw new ReferenceError(`[${this.typePrefix}] You didn't set { meta: "Payload Key" } in action.`);
-      }
+    if (!this.metasInstance) {
+      throw new NotFoundError(this.instanceName);
     }
 
+    const reducerName = this.metasInstance.getReducerName();
+
     return payloadData === undefined
-      ? rootState[`${this.typePrefix}__metas`]
-      : rootState[`${this.typePrefix}__metas`][payloadData] || DEFAULT_META;
+      ? rootState[reducerName]
+      : rootState[reducerName][payloadData] || DEFAULT_META;
   }
 
   public connectLoading(rootState: any, payloadData?: PayloadData): boolean {
@@ -233,45 +228,50 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     this.failType = `${this.typePrefix} fail`;
   }
 
-  protected createMeta(): (state: any, action: RM.ActionResponse) => RM.Meta {
-    return (state, action) => {
-      if (!state) {
-        state = DEFAULT_META;
-      }
-
-      switch (action.type) {
-        case this.prepareType:
+  protected createMeta(): BaseReducer<RM.Meta> {
+    this.metaInstance = new BaseReducer<RM.Meta>(DEFAULT_META, this.instanceName, 'meta');
+    this.metaInstance.addCase(
+      {
+        when: this.prepareType,
+        effect: () => {
           return {
-            actionType: action.type,
+            actionType: this.prepareType,
             loading: true,
           };
-        case this.successType:
+        }
+      },
+      {
+        when: this.successType,
+        effect: () => {
           return {
-            actionType: action.type,
+            actionType: this.successType,
             loading: false,
           };
-        case this.failType:
+        },
+      },
+      {
+        when: this.failType,
+        effect: (_, action: RM.ActionResponse) => {
           return {
-            actionType: action.type,
+            actionType: this.failType,
             loading: false,
             errorMessage: action.errorMessage,
             httpStatus: action.httpStatus,
             businessCode: action.businessCode,
           };
-        default:
-          return state;
-      }
-    };
+        },
+      },
+    );
+
+    return this.metaInstance;
   }
 
-  protected createMetas(payloadKey: any): (state: any, action: RM.ActionResponse) => RM.Metas {
-    return (state, action) => {
-      if (!state) {
-        state = {};
-      }
-
-      switch (action.type) {
-        case this.prepareType:
+  protected createMetas(payloadKey: any): BaseReducer<RM.Metas> {
+    this.metasInstance = new BaseReducer<RM.Metas>({}, this.instanceName, 'metas');
+    this.metasInstance.addCase(
+      {
+        when: this.prepareType,
+        effect: (state, action: RM.ActionResponse) => {
           return {
             ...state,
             [action.payload[payloadKey]]: {
@@ -279,7 +279,11 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
               loading: true,
             },
           };
-        case this.successType:
+        },
+      },
+      {
+        when: this.successType,
+        effect: (state, action: RM.ActionResponse) => {
           return {
             ...state,
             [action.payload[payloadKey]]: {
@@ -287,7 +291,11 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
               loading: false,
             },
           };
-        case this.failType:
+        },
+      },
+      {
+        when: this.failType,
+        effect: (state, action: RM.ActionResponse) => {
           return {
             ...state,
             [action.payload[payloadKey]]: {
@@ -298,9 +306,10 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
               businessCode: action.businessCode,
             },
           };
-        default:
-          return state;
-      }
-    };
+        },
+      },
+    );
+
+    return this.metasInstance;
   }
 }

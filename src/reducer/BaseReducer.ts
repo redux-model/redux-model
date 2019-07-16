@@ -5,9 +5,12 @@ export class BaseReducer<Data> {
 
   protected readonly instanceName: string;
 
-  constructor(init: Data, instanceName: string) {
+  protected readonly suffix: string;
+
+  constructor(init: Data, instanceName: string, suffix: string) {
     this.initData = init;
     this.instanceName = instanceName;
+    this.suffix = suffix;
   }
 
   public clear() {
@@ -19,13 +22,13 @@ export class BaseReducer<Data> {
   }
 
   public getReducerName() {
-    return `${this.instanceName}__data`;
+    return `${this.instanceName}__${this.suffix}`;
   }
 
   public createData(): RM.Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
-        if (!state) {
+        if (state === undefined) {
           state = this.initData;
         }
 

@@ -3,12 +3,15 @@ import { isDebug } from '../utils/dev';
 export abstract class BaseAction<Data> {
   private static COUNTER = 0;
 
+  protected readonly instanceName: string;
+
   protected successType: string;
 
   protected typePrefix: string;
 
   protected constructor(instanceName: string) {
     BaseAction.COUNTER += 1;
+    this.instanceName = instanceName;
     this.typePrefix = this.getTypePrefix(BaseAction.COUNTER, instanceName);
     this.successType = `${this.typePrefix} success`;
   }

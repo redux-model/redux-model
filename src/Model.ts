@@ -41,7 +41,7 @@ export abstract class Model<Data = null> {
     const initData = this.initReducer();
 
     if (initData !== null) {
-      this.reducer = new BaseReducer<Data>(initData, this.instanceName);
+      this.reducer = new BaseReducer<Data>(initData, this.instanceName, 'data');
     }
 
     // Do not use isDebugAndProxyEnable() for here.
