@@ -42,7 +42,7 @@ export declare enum HTTP_STATUS_CODE {
   serviceUnavailable = 503
 }
 
-declare abstract class BaseAction<Data> {
+interface BaseAction<Data> {
   getSuccessType(): string;
 }
 
@@ -56,7 +56,7 @@ type NormalSubscriber<CustomData, Payload> = {
   effect: (state: CustomData, action: RM.ActionNormal<Payload>) => CustomData;
 };
 
-declare class NormalAction<Data, A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload> extends BaseAction<Data> {
+interface NormalAction<Data, A extends (...args: any[]) => RM.ActionNormal<Payload>, Payload> extends BaseAction<Data> {
   readonly action: A;
   onSuccess<CustomData>(effect: (state: CustomData, action: RM.ActionNormal<Payload>) => CustomData): NormalSubscriber<CustomData, Payload>;
 }
@@ -89,7 +89,7 @@ type RequestSubscriber<CustomData, Response, Payload> = {
 };
 
 // @ts-ignore
-declare class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends NormalAction<Data, A, Payload> {
+interface RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends NormalAction<Data, A, Payload> {
   readonly action: A;
 
   // @ts-ignore
@@ -101,14 +101,14 @@ declare class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<R
   getFailType(): string;
 }
 
-declare class RequestActionWithMeta<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
+interface RequestActionWithMeta<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T;
   useLoading(): boolean;
   connectMeta(rootState: any): RM.Meta;
   connectLoading(rootState: any): boolean;
 }
 
-declare class RequestActionWithMetas<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
+interface RequestActionWithMetas<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMetas(): RM.Metas;
   useMetas<T = RM.Meta>(payloadData: PayloadData, filter?: (meta: RM.Meta) => T): T;
   useLoading(payloadData: PayloadData): boolean;
@@ -125,9 +125,9 @@ type RequestOptions<Payload> = (Partial<RM.Omit<RM.ActionRequest, 'uri' | 'paylo
   payload: Payload;
 }));
 
-declare type EnhanceResponse<A> = A extends (...args: any[]) => RM.FetchHandle<infer R, any> ? R : never;
-declare type EnhancePayload<A> = A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? P : never;
-declare type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.ActionNormal<infer P> ? P : never;
+type EnhanceResponse<A> = A extends (...args: any[]) => RM.FetchHandle<infer R, any> ? R : never;
+type EnhancePayload<A> = A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? P : never;
+type EnhanceNormalPayload<A> = A extends (...args: any[]) => RM.ActionNormal<infer P> ? P : never;
 
 declare abstract class Model<Data = null> {
   static middlewareName: string;
