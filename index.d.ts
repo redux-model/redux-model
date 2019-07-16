@@ -114,7 +114,7 @@ declare class RequestActionWithMetas<Data, A extends (...args: any[]) => RM.Fetc
   useLoading(payloadData: PayloadData): boolean;
   connectMetas(rootState: any): RM.Metas;
   connectMetas(rootState: any, payloadData: PayloadData): RM.Meta;
-  connectLoading(rootState: any, payloadData?: PayloadData): boolean;
+  connectLoading(rootState: any, payloadData: PayloadData): boolean;
 }
 
 type RequestOptions<Payload> = (Partial<RM.Omit<RM.ActionRequest, 'uri' | 'payload' | 'type' | 'method'>> & {
