@@ -165,7 +165,7 @@ declare abstract class Model<Data = null> {
   protected patch<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
   protected delete<Response = any, Payload = undefined>(options: RequestOptions<Payload>): RM.FetchHandle<Response, Payload>;
 
-  protected subscribers(): RM.Subscriber<Data>;
+  protected effects(): RM.Effects<Data>;
   protected getMiddlewareName(): string;
   protected abstract initReducer(): Data;
 }
@@ -194,7 +194,7 @@ declare global {
     // Omit is a new feature since typescript 3.5+
     type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
 
-    type Subscriber<Data> = Array<{
+    type Effects<Data> = Array<{
       when: string;
       effect: (state: Data, action: any) => Data;
     }>;

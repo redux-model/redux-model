@@ -115,7 +115,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     };
   }
 
-  public collectEffects(): RM.Subscriber<Data> {
+  public collectEffects(): RM.Effects<Data> {
     const effects = super.collectEffects();
 
     if (this.prepareCallback) {

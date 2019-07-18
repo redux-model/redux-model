@@ -20,7 +20,7 @@ export abstract class BaseAction<Data> {
     return this.successType;
   }
 
-  public collectEffects(): RM.Subscriber<Data> {
+  public collectEffects(): RM.Effects<Data> {
     return [];
   }
 

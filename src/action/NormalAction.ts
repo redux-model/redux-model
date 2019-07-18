@@ -44,7 +44,7 @@ export class NormalAction<Data, A extends (...args: any[]) => RM.ActionNormal<Pa
     };
   }
 
-  public collectEffects(): RM.Subscriber<Data> {
+  public collectEffects(): RM.Effects<Data> {
     const effects = super.collectEffects();
 
     if (this.successCallback) {

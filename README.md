@@ -337,7 +337,7 @@ export const test = new Test();
 ```
 
 ## Model effects.
-In some case, We expect the action can effect reducer from owner model but also other model. Yep, you can override protected method `subscribers()` and receive effect from other model.
+In some case, We expect the action can effect reducer from owner model but also other model. Yep, you can override protected method `effects()` and receive effect from other model.
 ```typescript
 class BarModel extends Model {
   reset = this.action.actionNormal(...);
@@ -353,7 +353,7 @@ interface Data {
 }
 
 class Test extends Model<Data> {
-  protected subscribers(): RM.Subscriber<Data> {
+  protected effects(): RM.Effects<Data> {
     return [
       barModel.reset.onSuccess((state, action) => {
         return {

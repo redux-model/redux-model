@@ -334,7 +334,7 @@ export const test = new Test();
 ```
 
 ## 模型交叉
-有时候，执行某个模型下的action可能需要变更其它模型的reducer数据，这是很常见的操作方式，我们提供了一个保护方法`subscribers()`来做这个事情。
+有时候，执行某个模型下的action可能需要变更其它模型的reducer数据，这是很常见的操作方式，我们提供了一个保护方法`effects()`来做这个事情。
 ```typescript
 class Other extends Model {
   reset = this.action.actionNormal(...);
@@ -350,7 +350,7 @@ interface Data {
 }
 
 class Test extends Model<Data> {
-  protected subscribers(): RM.Subscriber<Data> {
+  protected effects(): RM.Effects<Data> {
     return [
       other.reset.onSuccess((state, action) => {
         return {

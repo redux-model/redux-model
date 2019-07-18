@@ -80,7 +80,7 @@ export abstract class Model<Data = null> {
     });
 
     if (this.reducer) {
-      this.reducer.addCase(...this.subscribers());
+      this.reducer.addCase(...this.effects());
       reducers = {
         ...reducers,
         ...this.reducer.createData(),
@@ -198,7 +198,7 @@ export abstract class Model<Data = null> {
     });
   }
 
-  protected subscribers(): RM.Subscriber<Data> {
+  protected effects(): RM.Effects<Data> {
     return [];
   }
 
