@@ -100,7 +100,7 @@ export interface RequestActionParamBase<Data, A extends (...args: any[]) => Fetc
   onFail?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
 }
 
-export interface RequestActionParam<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
+export interface RequestActionParamNoMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
   meta: false;
 }
 

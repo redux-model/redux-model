@@ -1,7 +1,7 @@
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { NormalAction } from './action/NormalAction';
-import { ActionNormal, Effects, NormalActionParam, Reducers, RequestActionNoMeta, RequestActionParam, RequestActionParamWithMeta, RequestActionParamWithMetas, RequestActionWithMeta, RequestActionWithMetas, RequestOptions } from './utils/types';
+import { ActionNormal, Effects, NormalActionParam, Reducers, RequestActionNoMeta, RequestActionParamNoMeta, RequestActionParamWithMeta, RequestActionParamWithMetas, RequestActionWithMeta, RequestActionWithMetas, RequestOptions } from './utils/types';
 import { FetchHandle } from '../libs/types';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
@@ -21,8 +21,13 @@ export declare abstract class BaseModel<Data = null> {
 
     protected actionNormal<A extends (...args: any[]) => ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, A, Payload>): NormalAction<Data, A, Payload>;
 
-    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParam<Data, A, Response, Payload>): RequestActionNoMeta<Data, A, Response, Payload>;
+    // When meta=false
+    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamNoMeta<Data, A, Response, Payload>): RequestActionNoMeta<Data, A, Response, Payload>;
+
+    // When meta is undefined or true.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMeta<Data, A, Response, Payload>): RequestActionWithMeta<Data, A, Response, Payload>;
+
+    // When meta is the key of payload.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMetas<Data, A, Response, Payload>): RequestActionWithMetas<Data, A, Response, Payload>;
 
     protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;

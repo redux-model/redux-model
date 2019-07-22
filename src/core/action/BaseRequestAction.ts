@@ -8,7 +8,7 @@ import {
   Meta,
   Metas, PayloadData,
   PayloadKey,
-  Reducers, RequestActionParam, RequestSubscriber,
+  Reducers, RequestActionParamNoMeta, RequestSubscriber,
   UseSelector
 } from '../utils/types';
 import { ActionRequest, FetchHandle } from '../../web/types';
@@ -46,7 +46,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
   protected metasInstance: BaseReducer<Metas> | null = null;
 
-  public constructor(config: RequestActionParam<Data, A, Response, Payload>, instanceName: string) {
+  public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
     super({
       action: config.action,
       // @ts-ignore

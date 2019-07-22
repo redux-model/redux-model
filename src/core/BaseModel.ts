@@ -12,7 +12,7 @@ import {
   Effects,
   NormalActionParam,
   Reducers, RequestActionNoMeta,
-  RequestActionParam,
+  RequestActionParamNoMeta,
   RequestActionParamWithMeta,
   RequestActionParamWithMetas, RequestActionWithMeta,
   RequestActionWithMetas,
@@ -134,7 +134,7 @@ export abstract class BaseModel<Data = null> {
 
   // When meta=false
   protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParam<Data, A, Response, Payload>
+    config: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // When meta is undefined or true.
@@ -149,7 +149,7 @@ export abstract class BaseModel<Data = null> {
   ): RequestActionWithMetas<Data, A, Response, Payload>;
 
   protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParam<Data, A, Response, Payload>
+    config: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestAction<Data, A, Response, Payload> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
