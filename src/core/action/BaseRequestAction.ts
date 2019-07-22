@@ -1,5 +1,4 @@
 import { NormalAction } from './NormalAction';
-import { useSelector } from 'react-redux';
 import { BaseReducer } from '../reducer/BaseReducer';
 import { NotFoundError } from '../exceptions/NotFoundError';
 import {
@@ -166,7 +165,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
     const reducerName = this.metaInstance.getReducerName();
 
-    return useSelector((state: any) => {
+    return this.switchReduxSelector()((state: any) => {
       const customMeta = state[reducerName];
 
       return filter ? filter(customMeta) : customMeta;
@@ -182,7 +181,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       filter = undefined;
     }
 
-    return useSelector((state: any) => {
+    return this.switchReduxSelector()((state: any) => {
       const reducerName = this.metasInstance!.getReducerName();
       const customMeta = payloadData === undefined
         ? state[reducerName]
@@ -229,8 +228,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
   }
-
-  protected abstract switchSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
 
   protected createMeta(): BaseReducer<Meta> {
     this.metaInstance = new BaseReducer<Meta>(DEFAULT_META, this.typePrefix, 'meta');
@@ -316,4 +313,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
     return this.metasInstance;
   }
+
+  protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
 }
