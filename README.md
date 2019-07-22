@@ -40,7 +40,7 @@ npm install redux redux-thunk @tarojs/redux @tarojs/redux-h5
 
 # Run Demo
 
-Forward to repository: [@redux-model/*-demo](https://github.com/fwh1990/@redux-model/*-demo)
+Forward to repository: [redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
 # Snippets
 Search plugin `bluewaitor.tsreact` in vscode extension.

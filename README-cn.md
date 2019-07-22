@@ -40,7 +40,7 @@ npm install redux redux-thunk @tarojs/redux
 
 # 运行案例（Demo）
 
-请查看项目：[@redux-model/*-demo](https://github.com/fwh1990/@redux-model/*-demo)
+请查看项目：[redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
 
 # 代码片段
 请在vscode的扩展中搜索插件 `bluewaitor.tsreact`
