@@ -391,7 +391,7 @@ For Normal Action, it only use `model.action.onSuccess(fn)` to change data for o
 For Request Action, it can use `onPrepare(fn)` `onSuccess(fn)` and `onFail(fn)` to subscriber action effect.
 
 ## Request Action Promise
-We can use `promise` in React Component when Request Action is invoked. It's very cool, because of 100% type checking.
+We can use `promise` in React Component when Request Action is invoked. Now, enjoy 100% type checking for response data.
 
 ```typescript jsx
 // By React Hooks

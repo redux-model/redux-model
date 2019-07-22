@@ -386,7 +386,7 @@ class Test extends Model<Data> {
 对于普通的action，我们使用`model.action.onSuccess(fn)`来监听数据的变化。如果是异步请求action，我们总共有`onPrepare(fn)` `onSuccess(fn)` `onFail(fn)` 3个监听事件
 
 ## 异步请求Promise
-对于异步请求的action，我们可以在React组件中使用promise方法，并获得请求的数据
+对于异步请求的action，我们可以在React组件中使用Promise方法，并获得请求的数据。注意，这里也有100%的response代码提示
 
 ```typescript jsx
 // By React Hooks
