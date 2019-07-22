@@ -1,5 +1,5 @@
 export const isDebug = () => {
-  return typeof module === 'object' && module.hot;
+  return process.env.NODE_ENV !== 'production';
 };
 
 export const isProxyEnable = () => {

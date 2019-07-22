@@ -51,9 +51,7 @@ export abstract class BaseModel<Data = null> {
       this.reducer = new BaseReducer<Data>(initData, this.instanceName, 'data');
     }
 
-    // Do not use isDebugAndProxyEnable() for here.
-    // We Just want to strip these code by uglifyJs in production mode.
-    if (typeof module === 'object' && module.hot && typeof Proxy === 'function') {
+    if (isDebug() && isProxyEnable()) {
       // Proxy is es6 based syntax, and it can't be transform to es5.
       return new Proxy(this, {
         set: (model, property: string, value) => {
