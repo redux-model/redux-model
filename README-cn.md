@@ -1,4 +1,4 @@
-[English Docs](https://github.com/fwh1990/@redux-model/*/blob/master/README.md)
+[English Docs](https://github.com/fwh1990/redux-model-ts/blob/master/README.md)
 
 Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现隐藏重复代码、提高工作效率以及减少开发时间的效果。你只需要花半个小时，就能完全了解模型的用法，并从中受益。
 
