@@ -35,7 +35,7 @@ Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when y
 ```bash
 # By npm or yarn
 npm install @redux-model/taro
-npm install redux redux-thunk @tarojs/redux
+npm install redux redux-thunk @tarojs/redux @tarojs/redux-h5
 ```
 
 # Run Demo
