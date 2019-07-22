@@ -131,12 +131,13 @@ export const createRequestMiddleware = <RootState = any>(config: {
           return Promise.reject(errorResponse);
         });
 
-    return {
-      promise,
-      cancel: source.cancel,
-      // It's required when you want to use dispatch() method
-      type: '_______required_______',
-    };
+    const wrapPromise = promise as FetchHandle;
+
+    wrapPromise.cancel = source.cancel;
+    // It's required when you want to use dispatch() method
+    wrapPromise.type = '_______required_______';
+
+    return wrapPromise;
   };
 
   return middleware;

@@ -6,8 +6,7 @@ export type HttpCanceler = () => void;
 
 export type HttpError<T = any> = request.Promised<T>;
 
-export interface FetchHandle<Response = any, Payload = any> {
-  promise: Promise<ActionResponse<Response, Payload>>;
+export interface FetchHandle<Response = any, Payload = any> extends Promise<ActionResponse<Response, Payload>> {
   cancel: HttpCanceler;
   type: any;
 }
