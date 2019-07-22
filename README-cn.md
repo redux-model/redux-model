@@ -399,7 +399,6 @@ const App: FunctionComponent = (props) => {
   const name = profileModel.useData((item) => item.name);
   const handleClick = () => {
     dispatch(profileModel.manage.action(1))
-      .promise
       .then(({ response }) => {
         console.log('Hello, ' + response.name);
       })
