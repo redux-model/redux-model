@@ -1,7 +1,9 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
-import { HTTP_STATUS_CODE } from './httpStatusCode';
-import { METHOD } from './method';
+import { HTTP_STATUS_CODE } from '../core/utils/httpStatusCode';
+import { METHOD } from '../core/utils/method';
+import { ActionRequest, FetchHandle, HttpError } from './types';
+import { ActionResponse } from '../core/utils/types';
 
 interface FailTransform {
   httpStatus?: HTTP_STATUS_CODE;
@@ -9,16 +11,16 @@ interface FailTransform {
   businessCode?: string;
 }
 
-type MixedReturn = RM.FetchHandle | RM.ActionRequest;
+type MixedReturn = FetchHandle | ActionRequest;
 
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
   axiosConfig?: AxiosRequestConfig;
-  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: RM.ActionRequest) => void;
+  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   getTimeoutMessage?: () => string;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
-  onFail: (error: RM.HttpError, transform: FailTransform) => void;
+  onFail: (error: HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
 }) => {
@@ -30,7 +32,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
     ...config.axiosConfig,
   });
 
-  const middleware: Middleware<{}, RootState> = (api) => (next) => (action: RM.ActionRequest): MixedReturn => {
+  const middleware: Middleware<{}, RootState> = (api) => (next) => (action: ActionRequest): MixedReturn => {
     if (action.middleware !== config.id) {
       return next(action);
     }
@@ -60,7 +62,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
     next({ ...action, type: prepare });
     const promise = httpHandle.request(requestOptions)
         .then((response) => {
-          const okResponse: RM.ActionResponse = {
+          const okResponse: ActionResponse = {
             ...action,
             payload: action.payload,
             type: success,
@@ -88,7 +90,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
               httpStatus: error.response.status,
             };
 
-            config.onFail(error as RM.HttpError, transform);
+            config.onFail(error as HttpError, transform);
             errorMessage = transform.errorMessage;
             httpStatus = transform.httpStatus;
             businessCode = transform.businessCode;
@@ -100,7 +102,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
             errorMessage = config.getTimeoutMessage();
           }
 
-          const errorResponse: RM.ActionResponse = {
+          const errorResponse: ActionResponse = {
             ...action,
             payload: action.payload,
             response: error.response || {},

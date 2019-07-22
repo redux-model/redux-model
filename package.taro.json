@@ -1,0 +1,23 @@
+{
+  "name": "@redux-model/taro",
+  "version": "4.0.0",
+  "keywords": [
+    "redux-model",
+    "redux",
+    "typescript",
+    "taro"
+  ],
+  "main": "libs/index.js",
+  "types": "libs/index.d.ts",
+  "repository": "https://github.com/fwh1990/redux-model-ts",
+  "author": "范文华 <531362022@qq.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "@tarojs/redux": "*",
+    "redux": "*"
+  },
+  "dependencies": {
+    "qs": "^6.7.0",
+    "tslib": "^1.10.0"
+  }
+}

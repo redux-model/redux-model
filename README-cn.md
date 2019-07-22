@@ -1,9 +1,9 @@
-[English Docs](https://github.com/fwh1990/redux-model-ts/blob/master/README.md)
+[English Docs](https://github.com/fwh1990/@redux-model/*/blob/master/README.md)
 
 Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现隐藏重复代码、提高工作效率以及减少开发时间的效果。你只需要花半个小时，就能完全了解模型的用法，并从中受益。
 
 # 对比
-|     | 原生redux | redux-model-ts |
+|     | 原生redux | @redux-model/* |
 | ----| ---- | ---- |
 | 写法 | 函数式 | 面向对象 |
 | action与reducer文件分离 | 要 | 不要 |
@@ -19,23 +19,28 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 安装
 
+#### 浏览器 / [React-Native](https://github.com/facebook/react-native)
 ```bash
-# 使用npm
-npm install redux-model-ts
-npm install redux react-redux redux-thunk
-
-# 使用yarn
-yarn add redux-model-ts
-yarn add redux react-redux redux-thunk
+# 使用 npm 或者 yarn
+npm install @redux-model/web
+npm install redux redux-thunk react-redux
 ```
 
 **redux-thunk并不是必须的，除非你想使用thunk的特性**
 
 **如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
 
+#### [Taro](https://github.com/NervJS/taro)
+```bash
+# 使用 npm 或者 yarn
+npm install @redux-model/taro
+npm install redux redux-thunk @tarojs/redux
+```
+
+
 # 运行案例（Demo）
 
-请查看项目：[redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
+请查看项目：[@redux-model/*-demo](https://github.com/fwh1990/@redux-model/*-demo)
 
 # 代码片段
 请在vscode的扩展中搜索插件 `bluewaitor.tsreact`
@@ -48,7 +53,7 @@ yarn add redux react-redux redux-thunk
 想要定义reducer，就必须先定义一个模型类，因为一个模型可以包含一个或不带reducer。我们需要为reducer定义一个接口，并注入到模型中，这样我们就可以在整个项目中得到数据类型的提示。
 ```typescript
 // test.ts
-import { Model } from 'redux-model-ts';
+import { Model } from '@redux-model/*';
 
 interface Data {
   foo: string;
@@ -177,7 +182,7 @@ export default App;
 
 ```typescript
 // apiMiddleware.ts
-import { createRequestMiddleware, Model } from 'redux-model-ts';
+import { createRequestMiddleware, Model } from '@redux-model/*';
 
 export const apiMiddleware = createRequestMiddleware({
   // action和中间件的对应关系
@@ -195,7 +200,7 @@ export const apiMiddleware = createRequestMiddleware({
    };
   },
   // 定位业务场景下的错误码等信息，会自动存入meta中
-  onFail: (error: RM.HttpError<{}>, transform) => {
+  onFail: (error: HttpError<{}>, transform) => {
     const { data } = error.response;
 
     transform.businessCode = data ? data.code : undefined;
@@ -345,12 +350,13 @@ const other = new Other();
 
 // --------
 
+import { Effects, Model } from '@redux-model/*';
 interface Data {
   foo: string;
 }
 
 class Test extends Model<Data> {
-  protected effects(): RM.Effects<Data> {
+  protected effects(): Effects<Data> {
     return [
       other.reset.onSuccess((state, action) => {
         return {
@@ -501,7 +507,7 @@ export default App;
 ## 泛型
 在异步请求action中，你可以加入Response和Payload泛型。你只需要注入一次，就可以在项目的任何地方享受到关于这个action的静态检查
 ```typescript
-import { Model } from 'redux-model-ts';
+import { Model } from '@redux-model/*';
 
 type Data = Array<{
   id: number;

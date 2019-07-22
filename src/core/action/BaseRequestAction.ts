@@ -2,30 +2,32 @@ import { NormalAction } from './NormalAction';
 import { useSelector } from 'react-redux';
 import { BaseReducer } from '../reducer/BaseReducer';
 import { NotFoundError } from '../exceptions/NotFoundError';
+import {
+  ActionResponse,
+  BaseActionRequest,
+  Effects,
+  Meta,
+  Metas, PayloadData,
+  PayloadKey,
+  Reducers, RequestActionParam, RequestSubscriber,
+  UseSelector
+} from '../utils/types';
+import { ActionRequest, FetchHandle } from '../../web/types';
 
-const DEFAULT_META: RM.Meta = {
+const DEFAULT_META: Meta = {
   actionType: '',
   loading: false,
 };
 
-type PayloadData = string | number | symbol;
+// export interface RequestActionParam<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> {
+//   action: A;
+//   meta?: boolean | PayloadKey<A>;
+//   onSuccess?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
+//   onPrepare?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
+//   onFail?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
+// }
 
-type PayloadKey<A> =  A extends (...args: any[]) => RM.FetchHandle<any, infer P> ? keyof P : never;
-
-export interface RequestActionParam<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload> {
-  action: A;
-  meta?: boolean | PayloadKey<A>;
-  onSuccess?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
-  onPrepare?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
-  onFail?: (state: Data, action: RM.ActionResponse<Response, Payload>) => Data;
-}
-
-type RequestSubscriber<CustomData, Response, Payload> = {
-  when: string;
-  effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData;
-};
-
-export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Response, Payload>, Response, Payload>
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload>
   // @ts-ignore
   extends NormalAction<Data, A, Payload> {
   // Point to correct type definition.
@@ -41,9 +43,9 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
 
   protected failType: string;
 
-  protected metaInstance: BaseReducer<RM.Meta> | null = null;
+  protected metaInstance: BaseReducer<Meta> | null = null;
 
-  protected metasInstance: BaseReducer<RM.Metas> | null = null;
+  protected metasInstance: BaseReducer<Metas> | null = null;
 
   public constructor(config: RequestActionParam<Data, A, Response, Payload>, instanceName: string) {
     super({
@@ -53,7 +55,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     }, instanceName);
     // @ts-ignore
     this.action = (...args: any[]) => {
-      const data = config.action(...args) as unknown as RM.ActionRequest;
+      const data = config.action(...args) as unknown as ActionRequest;
 
       data.type = {
         prepare: this.prepareType,
@@ -71,8 +73,8 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     this.failType = `${this.typePrefix} fail`;
   }
 
-  public static createRequestData(options: Partial<RM.ActionRequest> & Pick<RM.ActionRequest, 'uri' | 'method' | 'middleware'>) {
-    const data: RM.Omit<RM.ActionRequest, 'type'> = {
+  public static createRequestData(options: Partial<BaseActionRequest> & Pick<BaseActionRequest, 'uri' | 'method' | 'middleware'>) {
+    const data: Omit<BaseActionRequest, 'type'> = {
       middleware: options.middleware,
       payload: options.payload || {},
       uri: options.uri,
@@ -89,7 +91,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
 
   // @ts-ignore
   public onSuccess<CustomData>(
-    effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData
+    effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData
   ): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.successType,
@@ -98,7 +100,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   }
 
   public onPrepare<CustomData>(
-    effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData
+    effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData
   ): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.prepareType,
@@ -107,7 +109,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   }
 
   public onFail<CustomData>(
-    effect: (state: CustomData, action: RM.ActionResponse<Response, Payload>) => CustomData
+    effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData
   ): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.prepareType,
@@ -115,7 +117,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     };
   }
 
-  public collectEffects(): RM.Effects<Data> {
+  public collectEffects(): Effects<Data> {
     const effects = super.collectEffects();
 
     if (this.prepareCallback) {
@@ -135,7 +137,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     return effects;
   }
 
-  public collectReducers(): RM.Reducers {
+  public collectReducers(): Reducers {
     let obj = super.collectReducers();
 
     if (this.meta) {
@@ -157,7 +159,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     return this.failType;
   }
 
-  public useMeta<T = RM.Meta>(filter?: (meta: RM.Meta) => T): T {
+  public useMeta<T = Meta>(filter?: (meta: Meta) => T): T {
     if (!this.metaInstance) {
       throw new NotFoundError(this.instanceName);
     }
@@ -171,7 +173,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     });
   }
 
-  public useMetas<T = RM.Meta>(payloadData?: PayloadData, filter?: (meta: RM.Meta) => T): RM.Metas | T {
+  public useMetas<T = Meta>(payloadData?: PayloadData, filter?: (meta: Meta) => T): Metas | T {
     if (!this.metasInstance) {
       throw new NotFoundError(this.instanceName);
     }
@@ -196,7 +198,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
       : this.useMetas(payloadData, (meta) => meta.loading) as boolean;
   }
 
-  public connectMeta(rootState: any): RM.Meta {
+  public connectMeta(rootState: any): Meta {
     if (!this.metaInstance) {
       throw new NotFoundError(this.instanceName);
     }
@@ -204,7 +206,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     return rootState[this.metaInstance.getReducerName()];
   }
 
-  public connectMetas(rootState: any, payloadData?: PayloadData): RM.Metas | RM.Meta {
+  public connectMetas(rootState: any, payloadData?: PayloadData): Metas | Meta {
     if (!this.metasInstance) {
       throw new NotFoundError(this.instanceName);
     }
@@ -219,7 +221,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
   public connectLoading(rootState: any, payloadData?: PayloadData): boolean {
     return payloadData === undefined
       ? this.connectMeta(rootState).loading
-      : (this.connectMetas(rootState, payloadData) as RM.Meta).loading;
+      : (this.connectMetas(rootState, payloadData) as Meta).loading;
   }
 
   protected onTypePrefixChanged(): void {
@@ -228,8 +230,10 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     this.failType = `${this.typePrefix} fail`;
   }
 
-  protected createMeta(): BaseReducer<RM.Meta> {
-    this.metaInstance = new BaseReducer<RM.Meta>(DEFAULT_META, this.typePrefix, 'meta');
+  protected abstract switchSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
+
+  protected createMeta(): BaseReducer<Meta> {
+    this.metaInstance = new BaseReducer<Meta>(DEFAULT_META, this.typePrefix, 'meta');
     this.metaInstance.addCase(
       {
         when: this.prepareType,
@@ -251,7 +255,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
       },
       {
         when: this.failType,
-        effect: (_, action: RM.ActionResponse) => {
+        effect: (_, action: ActionResponse) => {
           return {
             actionType: this.failType,
             loading: false,
@@ -266,12 +270,12 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
     return this.metaInstance;
   }
 
-  protected createMetas(payloadKey: any): BaseReducer<RM.Metas> {
-    this.metasInstance = new BaseReducer<RM.Metas>({}, this.instanceName, 'metas');
+  protected createMetas(payloadKey: any): BaseReducer<Metas> {
+    this.metasInstance = new BaseReducer<Metas>({}, this.instanceName, 'metas');
     this.metasInstance.addCase(
       {
         when: this.prepareType,
-        effect: (state, action: RM.ActionResponse) => {
+        effect: (state, action: ActionResponse) => {
           return {
             ...state,
             [action.payload[payloadKey]]: {
@@ -283,7 +287,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
       },
       {
         when: this.successType,
-        effect: (state, action: RM.ActionResponse) => {
+        effect: (state, action: ActionResponse) => {
           return {
             ...state,
             [action.payload[payloadKey]]: {
@@ -295,7 +299,7 @@ export class RequestAction<Data, A extends (...args: any[]) => RM.FetchHandle<Re
       },
       {
         when: this.failType,
-        effect: (state, action: RM.ActionResponse) => {
+        effect: (state, action: ActionResponse) => {
           return {
             ...state,
             [action.payload[payloadKey]]: {

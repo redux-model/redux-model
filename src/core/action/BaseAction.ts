@@ -1,4 +1,5 @@
 import { isDebug } from '../utils/dev';
+import { Effects, Reducers } from '../utils/types';
 
 export abstract class BaseAction<Data> {
   private static COUNTER = 0;
@@ -20,11 +21,11 @@ export abstract class BaseAction<Data> {
     return this.successType;
   }
 
-  public collectEffects(): RM.Effects<Data> {
+  public collectEffects(): Effects<Data> {
     return [];
   }
 
-  public collectReducers(): RM.Reducers {
+  public collectReducers(): Reducers {
     return {};
   }
 

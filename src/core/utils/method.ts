@@ -5,4 +5,7 @@ export enum METHOD {
   delete = 'DELETE',
   head = 'HEAD',
   patch = 'PATCH',
+  options = 'OPTIONS',
+  trace = 'TRACE',
+  connect = 'CONNECT',
 }

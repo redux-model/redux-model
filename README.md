@@ -1,10 +1,10 @@
-[简体中文](https://github.com/fwh1990/redux-model-ts/blob/master/README-cn.md)
+[简体中文](https://github.com/fwh1990/@redux-model/*/blob/master/README-cn.md)
 
 How many people are writing redux in functional way? And how much time you had wasted since you are repeating action,types,reducer.
 Now, I want to tell you, I am in modern way to write redux. I'am using OOP instead of Functional Programming.
 
 # Compare
-|     | Original Redux | redux-model-ts |
+|     | Original Redux | @redux-model/* |
 | ----| ---- | ---- |
 | Coding way | Functional | Class |
 | TS support | Normal | Perfect |
@@ -20,23 +20,27 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # Installation
 
+#### Browser / [React-Native](https://github.com/facebook/react-native)
 ```bash
-# By npm
-npm install redux-model-ts
-npm install redux react-redux redux-thunk
-
-# By yarn
-yarn add redux-model-ts
-yarn add redux react-redux redux-thunk
+# By npm or yarn
+npm install @redux-model/web
+npm install redux redux-thunk react-redux
 ```
 
 Remember: redux-thunk is not required until you want to use method `actionThunk()`
 
 Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when you are using `React Hooks`
 
+#### [Taro](https://github.com/NervJS/taro)
+```bash
+# By npm or yarn
+npm install @redux-model/taro
+npm install redux redux-thunk @tarojs/redux
+```
+
 # Run Demo
 
-Forward to repository: [redux-model-ts-demo](https://github.com/fwh1990/redux-model-ts-demo)
+Forward to repository: [@redux-model/*-demo](https://github.com/fwh1990/@redux-model/*-demo)
 
 # Snippets
 Search plugin `bluewaitor.tsreact` in vscode extension.
@@ -49,7 +53,7 @@ Search plugin `bluewaitor.tsreact` in vscode extension.
 You should define a model before you want to use reducer. As rule, one model can only includes one or zero reducer. Firstly, let's define an interface and initialize the reducer.
 ```typescript
 // test.ts
-import { Model } from 'redux-model-ts';
+import { Model } from '@redux-model/*';
 
 interface Data {
   foo: string;
@@ -179,7 +183,7 @@ Aha, Don't worry about that, I have resolved these already.
 We want to make action as soon as easy to implement, so we just hide the detail things into `middleware`. First of all, you need to create a middleware.
 
 ```typescript
-import { createRequestMiddleware, Model } from 'redux-model-ts';
+import { createRequestMiddleware, Model } from '@redux-model/*';
 
 export const apiMiddleware = createRequestMiddleware({
   // Unique name so we can related the sync action.
@@ -198,7 +202,7 @@ export const apiMiddleware = createRequestMiddleware({
    };
   },
   // Collect your meta.
-  onFail: (error: RM.HttpError, transform) => {
+  onFail: (error: HttpError, transform) => {
     const { data } = error.response;
 
     transform.businessCode = data ? data.code : undefined;
@@ -348,12 +352,14 @@ const barModel = new BarModel();
 
 // --------
 
+import { Effects, Model } from '@redux-model/*';
+
 interface Data {
   foo: string;
 }
 
 class Test extends Model<Data> {
-  protected effects(): RM.Effects<Data> {
+  protected effects(): Effects<Data> {
     return [
       barModel.reset.onSuccess((state, action) => {
         return {
@@ -507,7 +513,7 @@ export default App;
 ## Generics
 Request Action is enable to inject generic `Response` and `Payload`. Remember that you only need to inject once, and the whole project will enjoin type checking where code is related with this action.
 ```typescript
-import { Model } from 'redux-model-ts';
+import { Model } from '@redux-model/*';
 
 type Data = Array<{
   id: number;

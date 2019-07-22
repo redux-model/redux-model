@@ -1,0 +1,24 @@
+{
+  "name": "@redux-model/web",
+  "version": "4.0.0",
+  "keywords": [
+    "redux-model",
+    "redux",
+    "typescript",
+    "web",
+    "react-native"
+  ],
+  "main": "libs/index.js",
+  "types": "libs/index.d.ts",
+  "repository": "https://github.com/fwh1990/redux-model-ts",
+  "author": "范文华 <531362022@qq.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "react-redux": "*",
+    "redux": "*"
+  },
+  "dependencies": {
+    "tslib": "^1.10.0",
+    "axios": "^0.19.0"
+  }
+}

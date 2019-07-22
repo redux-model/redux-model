@@ -1,7 +1,9 @@
+import { Effects, Reducers } from '../utils/types';
+
 export class BaseReducer<Data> {
   protected readonly initData: Data;
 
-  protected cases: RM.Effects<Data> = [];
+  protected cases: Effects<Data> = [];
 
   protected readonly instanceName: string;
 
@@ -17,7 +19,7 @@ export class BaseReducer<Data> {
     this.cases = [];
   }
 
-  public addCase(...config: RM.Effects<Data>) {
+  public addCase(...config: Effects<Data>) {
     this.cases.push(...config);
   }
 
@@ -25,7 +27,7 @@ export class BaseReducer<Data> {
     return `${this.instanceName}__${this.suffix}`;
   }
 
-  public createData(): RM.Reducers {
+  public createData(): Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
         if (state === undefined) {
