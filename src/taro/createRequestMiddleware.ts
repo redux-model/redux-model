@@ -17,6 +17,7 @@ type MixedReturn = FetchHandle | ActionRequest;
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
+  request: (OBJECT: request.Param<any>) => request.requestTask<any>;
   requestConfig?: request.Param;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
@@ -37,7 +38,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
     const { prepare, success, fail } = action.type;
 
     const requestOptions: request.Param = {
-      url: action.uri,
+      url: config.baseUrl + action.uri,
       method: action.method,
       ...config.requestConfig,
       ...action.requestOptions,
@@ -61,12 +62,12 @@ export const createRequestMiddleware = <RootState = any>(config: {
 
     next({ ...action, type: prepare });
 
-    const task = request(requestOptions);
+    const task = config.request(requestOptions);
     const canceler = task.abort;
 
     const promise = task
       .then((response) => {
-        if (response.statusCode >= 200 && response.statusCode < 400) {
+        if (response.statusCode < 200 || response.statusCode >= 300) {
           return Promise.reject(response);
         }
 

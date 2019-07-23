@@ -12,6 +12,9 @@ interface FailTransform {
 export declare const createRequestMiddleware: <RootState = any>(config: {
     id: string;
     baseUrl: string;
+    // import { request } from '@tarojs/taro';
+    // request: request
+    request: (OBJECT: request.Param<any>) => request.requestTask<any>;
     requestConfig?: request.Param<any>;
     onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
     getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
