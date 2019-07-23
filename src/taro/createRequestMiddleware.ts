@@ -3,7 +3,7 @@ import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
 import { HTTP_STATUS_CODE } from '../core/utils/httpStatusCode';
 import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpError } from './types';
-import { ActionResponse } from '../core/utils/types';
+import { ActionResponse, Omit } from '../core/utils/types';
 import { METHOD } from '../core/utils/method';
 
 interface FailTransform {
@@ -18,7 +18,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
   request: (OBJECT: request.Param<any>) => request.requestTask<any>;
-  requestConfig?: request.Param;
+  requestConfig?: Omit<request.Param, 'url'>;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
   onFail: (error: HttpError, transform: FailTransform) => void;
@@ -36,9 +36,15 @@ export const createRequestMiddleware = <RootState = any>(config: {
     }
 
     const { prepare, success, fail } = action.type;
+    let url = action.uri;
+
+    // Make sure url is not absolute link
+    if (url.indexOf('://') === -1) {
+      url = config.baseUrl + url;
+    }
 
     const requestOptions: request.Param = {
-      url: config.baseUrl + action.uri,
+      url,
       method: action.method,
       ...config.requestConfig,
       ...action.requestOptions,
