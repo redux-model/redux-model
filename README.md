@@ -4,7 +4,7 @@ How many people are writing redux in functional way? And how much time you had w
 Now, I want to tell you, I am in modern way to write redux. I'am using OOP instead of Functional Programming.
 
 # Compare
-|     | Original Redux | @redux-model/* |
+|     | Original Redux | redux-model-ts |
 | ----| ---- | ---- |
 | Coding way | Functional | Class |
 | TS support | Normal | Perfect |
