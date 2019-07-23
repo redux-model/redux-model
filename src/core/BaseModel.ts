@@ -26,16 +26,11 @@ type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P>
 type EnhanceNormalPayload<A> = A extends (...args: any[]) => ActionNormal<infer P> ? P : never;
 
 export abstract class BaseModel<Data = null> {
+  private static CLASS_COUNTER = 0;
+
   public static middlewareName: string = 'default-request-middleware-name';
 
-  // As we know, it's forbidden to make condition when we are using hooks.
-  // We can't write code like: xxxModel.xxx.useLoading() || xxxModel.yyy.useLoading()
-  // So, just write code like: Model.isLoading(xxxModel.xxx.useLoading(), xxxModel.yyy.useLoading());
-  public static isLoading(...fromUseLoading: boolean[]): boolean {
-    return fromUseLoading.some((is) => is);
-  }
-
-  private sequenceCounter = 0;
+  private actionCounter = 0;
 
   private readonly instanceName: string;
 
@@ -45,6 +40,12 @@ export abstract class BaseModel<Data = null> {
 
   constructor(instanceName: string = '') {
     this.instanceName = (instanceName ? `[${instanceName}]` : '') + this.constructor.name;
+    BaseModel.CLASS_COUNTER += 1;
+
+    if (!isDebug()) {
+      this.instanceName += `.${BaseModel.CLASS_COUNTER}`;
+    }
+
     const initData = this.initReducer();
 
     if (initData !== null) {
@@ -64,6 +65,13 @@ export abstract class BaseModel<Data = null> {
         },
       });
     }
+  }
+
+  // As we know, it's forbidden to make condition when we are using hooks.
+  // We can't write code like: xxxModel.xxx.useLoading() || xxxModel.yyy.useLoading()
+  // So, just write code like: Model.isLoading(xxxModel.xxx.useLoading(), xxxModel.yyy.useLoading());
+  public static isLoading(...fromUseLoading: boolean[]): boolean {
+    return fromUseLoading.some((is) => is);
   }
 
   public register(): Reducers {
@@ -122,8 +130,8 @@ export abstract class BaseModel<Data = null> {
   ): NormalAction<Data, A, Payload> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
-      this.sequenceCounter += 1;
-      instanceName += '.' + this.sequenceCounter;
+      this.actionCounter += 1;
+      instanceName += '.' + this.actionCounter;
     }
 
     const instance = new NormalAction<Data, A, Payload>(config, instanceName);
@@ -153,8 +161,8 @@ export abstract class BaseModel<Data = null> {
   ): RequestAction<Data, A, Response, Payload> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
-      this.sequenceCounter += 1;
-      instanceName += '.' + this.sequenceCounter;
+      this.actionCounter += 1;
+      instanceName += '.' + this.actionCounter;
     }
 
     const instance = new RequestAction<Data, A, Response, Payload>(config, instanceName);

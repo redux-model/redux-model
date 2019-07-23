@@ -1,9 +1,6 @@
-import { isDebug } from '../utils/dev';
 import { Effects, Reducers } from '../utils/types';
 
 export abstract class BaseAction<Data> {
-  private static COUNTER = 0;
-
   protected readonly instanceName: string;
 
   protected successType: string;
@@ -11,9 +8,8 @@ export abstract class BaseAction<Data> {
   protected typePrefix: string;
 
   protected constructor(instanceName: string) {
-    BaseAction.COUNTER += 1;
     this.instanceName = instanceName;
-    this.typePrefix = this.getTypePrefix(BaseAction.COUNTER, instanceName);
+    this.typePrefix = instanceName;
     this.successType = `${this.typePrefix} success`;
   }
 
@@ -36,14 +32,5 @@ export abstract class BaseAction<Data> {
 
   protected onTypePrefixChanged(): void {
     this.successType = `${this.typePrefix} success`;
-  }
-
-  private getTypePrefix(counter: number, name: string): string {
-    // Do not concat counter in debug mode.
-    if (!isDebug()) {
-      name += `.${counter}`;
-    }
-
-    return name;
   }
 }
