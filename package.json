@@ -7,14 +7,9 @@
     "typescript",
     "react-redux"
   ],
-  "main": "index.js",
-  "types": "index.d.ts",
   "repository": "https://github.com/fwh1990/redux-model-ts",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
-  "scripts": {
-    "start": "cd demo && yarn && node_modules/.bin/webpack-dev-server"
-  },
   "dependencies": {
     "@tarojs/redux": "^1.3.9",
     "axios": "^0.19.0",
