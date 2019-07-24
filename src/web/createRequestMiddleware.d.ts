@@ -12,7 +12,7 @@ interface FailTransform {
 export declare const createRequestMiddleware: <RootState = any>(config: {
     id: string;
     baseUrl: string;
-    axiosConfig?: AxiosRequestConfig;
+    requestConfig?: AxiosRequestConfig;
     onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
     getTimeoutMessage?: () => string;
     getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;

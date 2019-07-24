@@ -2,6 +2,7 @@ import { request } from '@tarojs/taro';
 import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
 import { HTTP_STATUS_CODE } from '../core/utils/httpStatusCode';
 import { ActionRequest } from './types';
+import { HttpError } from '../libs/types';
 
 interface FailTransform {
     httpStatus?: HTTP_STATUS_CODE;
@@ -12,13 +13,14 @@ interface FailTransform {
 export declare const createRequestMiddleware: <RootState = any>(config: {
     id: string;
     baseUrl: string;
+    // Do it like this:
     // import { request } from '@tarojs/taro';
     // request: request
-    request: (OBJECT: request.Param<any>) => request.requestTask<any>;
+    request: (params: request.Param<any>) => request.requestTask<any>;
     requestConfig?: request.Param<any>;
     onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
     getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
-    onFail: (error: request.Promised<any>, transform: FailTransform) => void;
+    onFail: (error: HttpError, transform: FailTransform) => void;
     onShowSuccess: (message: string) => void;
     onShowError: (message: string) => void;
 }) => Middleware<{}, RootState, Dispatch>;
