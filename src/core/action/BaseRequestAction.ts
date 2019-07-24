@@ -139,8 +139,8 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   public collectReducers(): Reducers {
     let obj = super.collectReducers();
 
-    if (this.meta) {
-      if (typeof this.meta === 'boolean') {
+    if (this.meta !== false) {
+      if (this.meta === true) {
         obj = { ...obj, ...this.createMeta().createData() };
       } else {
         obj = { ...obj, ...this.createMetas(this.meta).createData() };
