@@ -16,7 +16,7 @@ type MixedReturn = FetchHandle | ActionRequest;
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
-  axiosConfig?: AxiosRequestConfig;
+  requestConfig?: AxiosRequestConfig;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   getTimeoutMessage?: () => string;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
@@ -29,7 +29,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
     timeout: 20000,
     withCredentials: false,
     responseType: 'json',
-    ...config.axiosConfig,
+    ...config.requestConfig,
   });
 
   const middleware: Middleware<{}, RootState> = (api) => (next) => (action: ActionRequest): MixedReturn => {
