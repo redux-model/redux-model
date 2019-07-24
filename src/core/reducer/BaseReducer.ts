@@ -1,3 +1,4 @@
+import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { Effects, Reducers } from '../utils/types';
 
 export class BaseReducer<Data> {
@@ -27,7 +28,7 @@ export class BaseReducer<Data> {
     return `${this.instanceName}__${this.suffix}`;
   }
 
-  public createData(): Reducers {
+  public createData(useImmer: boolean): Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
         if (state === undefined) {
@@ -36,6 +37,17 @@ export class BaseReducer<Data> {
 
         for (const { when, effect } of this.cases) {
           if (when === action.type) {
+            if (useImmer && isDraftable(state)) {
+              const responseDraft = effect(createDraft(state), action);
+              let newState: Data = responseDraft;
+
+              if (isDraft(responseDraft)) {
+                newState = finishDraft(responseDraft) as Data;
+              }
+
+              return newState;
+            }
+
             return effect(state, action);
           }
         }

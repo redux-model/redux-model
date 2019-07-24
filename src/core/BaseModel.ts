@@ -96,7 +96,7 @@ export abstract class BaseModel<Data = null> {
       this.reducer.addCase(...this.effects());
       reducers = {
         ...reducers,
-        ...this.reducer.createData(),
+        ...this.reducer.createData(true),
       };
     }
 

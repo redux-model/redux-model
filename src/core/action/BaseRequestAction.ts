@@ -141,9 +141,9 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
     if (this.meta !== false) {
       if (this.meta === true) {
-        obj = { ...obj, ...this.createMeta().createData() };
+        obj = { ...obj, ...this.createMeta().createData(false) };
       } else {
-        obj = { ...obj, ...this.createMetas(this.meta).createData() };
+        obj = { ...obj, ...this.createMetas(this.meta).createData(false) };
       }
     }
 
