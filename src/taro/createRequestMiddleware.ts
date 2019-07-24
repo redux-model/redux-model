@@ -62,7 +62,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
       if (action.query) {
         const isArg = requestOptions.url.includes('?') ? '' : '?';
 
-        requestOptions.url += `${requestOptions.url}${isArg}${stringify(action.query)}`;
+        requestOptions.url += `${isArg}${stringify(action.query)}`;
       }
     }
 
@@ -102,7 +102,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
             httpStatus: error.statusCode,
           };
 
-          config.onFail(error.data as HttpError, transform);
+          config.onFail(error, transform);
           errorMessage = transform.errorMessage;
           httpStatus = transform.httpStatus;
           businessCode = transform.businessCode;
