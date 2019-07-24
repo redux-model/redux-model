@@ -38,17 +38,20 @@ export class BaseReducer<Data> {
         for (const { when, effect } of this.cases) {
           if (when === action.type) {
             if (useImmer && isDraftable(state)) {
-              const responseDraft = effect(createDraft(state), action);
-              let newState: Data = responseDraft;
+              const draft = createDraft(state);
+              const responseDraft = effect(draft, action);
 
-              if (isDraft(responseDraft)) {
-                newState = finishDraft(responseDraft) as Data;
+              if (responseDraft === undefined) {
+                return finishDraft(draft);
               }
 
-              return newState;
+              // We will always use response data if user return data.
+              return isDraft(responseDraft) ? finishDraft(responseDraft) : responseDraft;
             }
 
-            return effect(state, action);
+            const response = effect(state, action);
+
+            return response === undefined ? state: response;
           }
         }
 

@@ -104,9 +104,7 @@ class Test extends Model<Data> {
       });
     },
     onSuccess: (state, action) => {
-      return {
-        foo: 'new name: ' + action.payload.name,
-      };
+      state.foo = 'new name: ' + action.payload.name;
     },
   });
 }
@@ -270,10 +268,7 @@ class ProfileModel extends Model<Data> {
       });
     },
     onSuccess: (state, action) => {
-      return {
-        ...state,
-        name: action.payload.name,
-      };
+      state.name = action.payload.name;
     },
   });
 
@@ -534,10 +529,7 @@ class Profile extends Model<Data> {
       });
     },
     onSuccess: (state, action) => {
-      return {
-        ...state,
-        [action.payload.id]: action.response,
-      };
+      state[action.payload.id] = action.response;
     },
   });
 }

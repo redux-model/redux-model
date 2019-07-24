@@ -18,14 +18,6 @@ const DEFAULT_META: Meta = {
   loading: false,
 };
 
-// export interface RequestActionParam<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> {
-//   action: A;
-//   meta?: boolean | PayloadKey<A>;
-//   onSuccess?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
-//   onPrepare?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
-//   onFail?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
-// }
-
 export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload>
   // @ts-ignore
   extends NormalAction<Data, A, Payload> {

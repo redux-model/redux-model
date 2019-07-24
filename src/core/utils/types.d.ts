@@ -30,7 +30,7 @@ export type UseSelector<TState, TSelected> = (
 
 export type Effects<Data> = Array<{
   when: string;
-  effect: (state: Data, action: any) => Data;
+  effect: (state: Data, action: any) => Data | void;
 }>;
 
 export type Meta = Readonly<{
@@ -90,14 +90,14 @@ export type PayloadKey<A> =  A extends (...args: any[]) => FetchHandle<any, infe
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
-  effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData;
+  effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData | void;
 };
 
 export interface RequestActionParamBase<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> {
   action: A;
-  onSuccess?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
-  onPrepare?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
-  onFail?: (state: Data, action: ActionResponse<Response, Payload>) => Data;
+  onSuccess?: (state: Data, action: ActionResponse<Response, Payload>) => Data | void;
+  onPrepare?: (state: Data, action: ActionResponse<Response, Payload>) => Data | void;
+  onFail?: (state: Data, action: ActionResponse<Response, Payload>) => Data | void;
 }
 
 export interface RequestActionParamNoMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
@@ -143,10 +143,10 @@ export interface RequestActionWithMetas<Data, A extends (...args: any[]) => Fetc
 
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {
   action: A;
-  onSuccess?: (state: Data, action: ActionNormal<Payload>) => Data;
+  onSuccess?: (state: Data, action: ActionNormal<Payload>) => Data | void;
 }
 
 export type NormalSubscriber<CustomData, Payload> = {
   when: string;
-  effect: (state: CustomData, action: ActionNormal<Payload>) => CustomData;
+  effect: (state: CustomData, action: ActionNormal<Payload>) => CustomData | void;
 };
