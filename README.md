@@ -45,7 +45,7 @@ Forward to repository: [redux-model-ts-demo](https://github.com/fwh1990/redux-mo
 # Snippets
 Search plugin `bluewaitor.tsreact` in vscode extension.
 
-![](https://github.com/fwh1990/misc/blob/master/redux-model-ts.gif?raw=true)
+You need to write almost zero line redux code when you are using snippets.
 
 # Usage
 

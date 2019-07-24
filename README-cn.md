@@ -45,8 +45,7 @@ npm install redux redux-thunk @tarojs/redux
 # 代码片段
 请在vscode的扩展中搜索插件 `bluewaitor.tsreact`
 
-![](https://github.com/fwh1990/misc/blob/master/redux-model-ts.gif?raw=true)
-
+用上代码片段之后，你基本上不用写一行redux代码。
 # 使用
 
 ## 定义Model
