@@ -97,7 +97,7 @@ export abstract class BaseModel<Data = null> {
       this.reducer.addCase(...this.effects());
       reducers = {
         ...reducers,
-        ...this.reducer.createData(true),
+        ...this.reducer.createData(this.mvvmForReducer()),
       };
     }
 
@@ -225,6 +225,11 @@ export abstract class BaseModel<Data = null> {
 
   protected getMiddlewareName(): string {
     return BaseModel.middlewareName;
+  }
+
+  // Open immer feature and you can modify state directly.
+  protected mvvmForReducer(): boolean {
+    return true;
   }
 
   protected abstract initReducer(): Data;

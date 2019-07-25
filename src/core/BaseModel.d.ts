@@ -53,5 +53,7 @@ export declare abstract class BaseModel<Data = null> {
 
     protected effects(): Effects<Data>;
     protected getMiddlewareName(): string;
+    // Open immer feature and you can modify state directly. Default is true
+    protected mvvmForReducer(): boolean;
     protected abstract initReducer(): Data;
 }

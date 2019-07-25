@@ -49,15 +49,10 @@ export class BaseReducer<Data> {
                 return finishDraft(responseDraft);
               }
 
-              // Both original data and return data changed.
-              if (finishDraft(draft) !== state) {
-                console.warn(`[${this.instanceName}] You should either modify state or return new state. Do not effect both at the same time.`);
-
-                // Make sure here is no immer type in new data's property.
-                return isDraftable(responseDraft) ? finishDraft(createDraft(responseDraft)) : responseDraft;
-              }
-
-              return responseDraft;
+              // We don't know whether user used spread syntax or not, so we always need to clear immer type.
+              return isDraftable(responseDraft)
+                ? finishDraft(createDraft(responseDraft))
+                : responseDraft;
             }
 
             const response = effect(state, action);
