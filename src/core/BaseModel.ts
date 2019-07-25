@@ -11,10 +11,11 @@ import {
   ActionNormal,
   Effects,
   NormalActionParam,
-  Reducers, RequestActionNoMeta,
+  Reducers,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
-  RequestActionParamWithMetas, RequestActionWithMeta,
+  RequestActionParamWithMetas,
+  RequestActionWithMeta,
   RequestActionWithMetas,
   RequestOptions,
   UseSelector
@@ -143,7 +144,7 @@ export abstract class BaseModel<Data = null> {
   // When meta=false
   protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
+  ): RequestAction<Data, A, Response, Payload>;
 
   // When meta is undefined or true.
   // @ts-ignore

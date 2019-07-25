@@ -26,9 +26,7 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
     };
   }
 
-  public onSuccess<CustomData>(
-    effect: (state: CustomData, action: ActionNormal<Payload>) => CustomData
-  ): NormalSubscriber<CustomData, Payload> {
+  public onSuccess<CustomData>(effect: NormalSubscriber<CustomData, Payload>['effect']): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.successType,
       effect,

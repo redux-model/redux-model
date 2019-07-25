@@ -81,27 +81,21 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   // @ts-ignore
-  public onSuccess<CustomData>(
-    effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData
-  ): RequestSubscriber<CustomData, Response, Payload> {
+  public onSuccess<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.successType,
       effect,
     };
   }
 
-  public onPrepare<CustomData>(
-    effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData
-  ): RequestSubscriber<CustomData, Response, Payload> {
+  public onPrepare<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.prepareType,
       effect,
     };
   }
 
-  public onFail<CustomData>(
-    effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData
-  ): RequestSubscriber<CustomData, Response, Payload> {
+  public onFail<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.prepareType,
       effect,

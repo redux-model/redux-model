@@ -45,8 +45,19 @@ export class BaseReducer<Data> {
                 return finishDraft(draft);
               }
 
-              // We will always use response data if user return data.
-              return isDraft(responseDraft) ? finishDraft(responseDraft) : responseDraft;
+              if (isDraft(responseDraft)) {
+                return finishDraft(responseDraft);
+              }
+
+              // Both original data and return data changed.
+              if (finishDraft(draft) !== state) {
+                console.warn(`[${this.instanceName}] You should either modify state or return new state. Do not effect both at the same time.`);
+
+                // Make sure here is no immer type in new data's property.
+                return isDraftable(responseDraft) ? finishDraft(createDraft(responseDraft)) : responseDraft;
+              }
+
+              return responseDraft;
             }
 
             const response = effect(state, action);

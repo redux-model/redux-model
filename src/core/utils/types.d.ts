@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import { METHOD } from './method';
 import { HTTP_STATUS_CODE } from './httpStatusCode';
 import { ActionRequest, FetchHandle } from '../../libs/types';
-import { NormalAction } from '../action/NormalAction';
+import { RequestAction } from '../../libs/RequestAction';
 
 /**
  * Useful for combineReducer, If you are using IDE WebStorm, you'd better write code like this:
@@ -112,27 +112,14 @@ export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) =>
   meta: PayloadKey<A>;
 }
 
-// @ts-ignore
-export interface RequestActionNoMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends NormalAction<Data, A, Payload> {
-  readonly action: A;
-
-  // @ts-ignore
-  onSuccess<CustomData>(effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData): RequestSubscriber<CustomData, Response, Payload>;
-  onPrepare<CustomData>(effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData): RequestSubscriber<CustomData, Response, Payload>;
-  onFail<CustomData>(effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData): RequestSubscriber<CustomData, Response, Payload>;
-
-  getPrepareType(): string;
-  getFailType(): string;
-}
-
-export interface RequestActionWithMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload> {
+export interface RequestActionWithMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMeta<T = Meta>(filter?: (meta: Meta) => T): T;
   useLoading(): boolean;
   connectMeta(rootState: any): Meta;
   connectLoading(rootState: any): boolean;
 }
 
-export interface RequestActionWithMetas<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload> {
+export interface RequestActionWithMetas<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMetas(): Metas;
   useMetas<T = Meta>(payloadData: PayloadData, filter?: (meta: Meta) => T): T;
   useLoading(payloadData: PayloadData): boolean;

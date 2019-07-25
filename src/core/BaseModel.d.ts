@@ -1,7 +1,19 @@
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { RequestAction } from '../libs/RequestAction';
 import { NormalAction } from './action/NormalAction';
-import { ActionNormal, Effects, NormalActionParam, Reducers, RequestActionNoMeta, RequestActionParamNoMeta, RequestActionParamWithMeta, RequestActionParamWithMetas, RequestActionWithMeta, RequestActionWithMetas, RequestOptions } from './utils/types';
+import {
+  ActionNormal,
+  Effects,
+  NormalActionParam,
+  Reducers,
+  RequestActionParamNoMeta,
+  RequestActionParamWithMeta,
+  RequestActionParamWithMetas,
+  RequestActionWithMeta,
+  RequestActionWithMetas,
+  RequestOptions,
+} from './utils/types';
 import { FetchHandle } from '../libs/types';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
@@ -22,7 +34,7 @@ export declare abstract class BaseModel<Data = null> {
     protected actionNormal<A extends (...args: any[]) => ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, A, Payload>): NormalAction<Data, A, Payload>;
 
     // When meta=false
-    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamNoMeta<Data, A, Response, Payload>): RequestActionNoMeta<Data, A, Response, Payload>;
+    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamNoMeta<Data, A, Response, Payload>): RequestAction<Data, A, Response, Payload>;
 
     // When meta is undefined or true.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMeta<Data, A, Response, Payload>): RequestActionWithMeta<Data, A, Response, Payload>;
