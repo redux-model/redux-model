@@ -84,7 +84,7 @@ export type RequestOptions<Payload> = (
   & (Payload extends undefined ? { payload?: never } : { payload: Payload })
   );
 
-export type PayloadData = string | number | symbol;
+export type PayloadData = string | number;
 
 export type PayloadKey<A> =  A extends (...args: any[]) => FetchHandle<any, infer P> ? keyof P : never;
 
@@ -115,17 +115,17 @@ export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) =>
 export interface RequestActionWithMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMeta<T = Meta>(filter?: (meta: Meta) => T): T;
   useLoading(): boolean;
-  connectMeta(rootState: any): Meta;
-  connectLoading(rootState: any): boolean;
+  connectMeta(): Meta;
+  connectLoading(): boolean;
 }
 
 export interface RequestActionWithMetas<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
   useMetas(): Metas;
   useMetas<T = Meta>(payloadData: PayloadData, filter?: (meta: Meta) => T): T;
   useLoading(payloadData: PayloadData): boolean;
-  connectMetas(rootState: any): Metas;
-  connectMetas(rootState: any, payloadData: PayloadData): Meta;
-  connectLoading(rootState: any, payloadData: PayloadData): boolean;
+  connectMetas(): Metas;
+  connectMetas(payloadData: PayloadData): Meta;
+  connectLoading(payloadData: PayloadData): boolean;
 }
 
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {

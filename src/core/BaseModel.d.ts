@@ -29,7 +29,7 @@ export declare abstract class BaseModel<Data = null> {
     register(): Reducers;
 
     useData<T = Data>(filter?: (data: Data) => T): T;
-    connectData(rootState: any): Data;
+    connectData(): Data;
 
     protected actionNormal<A extends (...args: any[]) => ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, A, Payload>): NormalAction<Data, A, Payload>;
 

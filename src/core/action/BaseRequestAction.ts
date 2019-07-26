@@ -183,30 +183,30 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       : this.useMetas(payloadData, (meta) => meta.loading) as boolean;
   }
 
-  public connectMeta(rootState: any): Meta {
+  public connectMeta(): Meta {
     if (!this.metaInstance) {
       throw new NotFoundError(this.instanceName);
     }
 
-    return rootState[this.metaInstance.getReducerName()];
+    return this.metaInstance.getCurrentReducerData();
   }
 
-  public connectMetas(rootState: any, payloadData?: PayloadData): Metas | Meta {
+  public connectMetas(payloadData?: PayloadData): Metas | Meta {
     if (!this.metasInstance) {
       throw new NotFoundError(this.instanceName);
     }
 
-    const reducerName = this.metasInstance.getReducerName();
+    const reducer = this.metasInstance.getCurrentReducerData();
 
     return payloadData === undefined
-      ? rootState[reducerName]
-      : rootState[reducerName][payloadData] || DEFAULT_META;
+      ? reducer
+      : reducer[payloadData] || DEFAULT_META;
   }
 
-  public connectLoading(rootState: any, payloadData?: PayloadData): boolean {
+  public connectLoading(payloadData?: PayloadData): boolean {
     return payloadData === undefined
-      ? this.connectMeta(rootState).loading
-      : (this.connectMetas(rootState, payloadData) as Meta).loading;
+      ? this.connectMeta().loading
+      : (this.connectMetas(payloadData) as Meta).loading;
   }
 
   protected onTypePrefixChanged(): void {
@@ -254,7 +254,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   protected createMetas(payloadKey: any): BaseReducer<Metas> {
-    this.metasInstance = new BaseReducer<Metas>({}, this.instanceName, 'metas');
+    this.metasInstance = new BaseReducer<Metas>({}, this.typePrefix, 'metas');
     this.metasInstance.addCase(
       {
         when: this.prepareType,

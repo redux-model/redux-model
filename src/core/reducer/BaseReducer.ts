@@ -10,8 +10,11 @@ export class BaseReducer<Data> {
 
   protected readonly suffix: string;
 
+  protected currentReducerData: Data;
+
   constructor(init: Data, instanceName: string, suffix: string) {
     this.initData = init;
+    this.currentReducerData = init;
     this.instanceName = instanceName;
     this.suffix = suffix;
   }
@@ -28,6 +31,10 @@ export class BaseReducer<Data> {
     return `${this.instanceName}__${this.suffix}`;
   }
 
+  public getCurrentReducerData(): Data {
+    return this.currentReducerData;
+  }
+
   public createData(useImmer: boolean): Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
@@ -42,24 +49,23 @@ export class BaseReducer<Data> {
               const responseDraft = effect(draft, action);
 
               if (responseDraft === undefined) {
-                return finishDraft(draft);
+                state = finishDraft(draft);
+              } else if (isDraft(responseDraft)) {
+                state = finishDraft(responseDraft);
+              } else {
+                state = responseDraft;
               }
+            } else {
+              state = effect(state, action);
 
-              if (isDraft(responseDraft)) {
-                return finishDraft(responseDraft);
+              if (state === undefined) {
+                throw new Error(`[${this.instanceName}] You must return new state due to you have disabled immer reducer in this model, or the reducer data is unable to transform to immer type.`)
               }
-
-              // We don't know whether user used spread syntax or not, so we always need to clear immer type.
-              return isDraftable(responseDraft)
-                ? finishDraft(createDraft(responseDraft))
-                : responseDraft;
             }
-
-            const response = effect(state, action);
-
-            return response === undefined ? state: response;
           }
         }
+
+        this.currentReducerData = state;
 
         return state;
       },

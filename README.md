@@ -136,9 +136,9 @@ const App: FunctionComponent<Props> = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
   return {
-    name: test.connectData(state).foo,
+    name: test.connectData().foo,
   };
 };
 
@@ -192,7 +192,7 @@ export const apiMiddleware = createRequestMiddleware({
   getHeaders: ({ getState }) => {
     // You are free to get data from redux
     // Such as access_token like:
-    // const token = tokenModel.connectData(getState()).access_token;
+    // const token = tokenModel.connectData().access_token;
     return {
       Authorization: `Bearer token`,
       Accept: 'application/json',
@@ -449,7 +449,7 @@ You can inject loading into props by `connect()` if you don't like hooks.
 
 ```typescript
 const mapStateToProps = (state) => {
-  loading: profileModel.manage.connectLoading(state),
+  loading: profileModel.manage.connectLoading(),
 };
 
 export default(mapStateToProps)(App);

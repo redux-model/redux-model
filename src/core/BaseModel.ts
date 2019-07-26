@@ -116,9 +116,9 @@ export abstract class BaseModel<Data = null> {
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
   }
 
-  public connectData(rootState: any): Data {
+  public connectData(): Data {
     if (this.reducer) {
-      return rootState[this.reducer.getReducerName()];
+      return this.reducer.getCurrentReducerData();
     }
 
     throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);

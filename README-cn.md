@@ -134,9 +134,9 @@ const App: FunctionComponent<Props> = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
   return {
-    name: test.connectData(state).foo,
+    name: test.connectData().foo,
   };
 };
 
@@ -189,7 +189,7 @@ export const apiMiddleware = createRequestMiddleware({
   // 请求头信息
   getHeaders: ({ getState }) => {
     // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
-    // const token = tokenModel.connectData(getState()).access_token;
+    // const token = tokenModel.connectData().access_token;
     return {
       Authorization: `Bearer token`,
       Accept: 'application/json',
@@ -441,8 +441,8 @@ export default App;
 
 如果你是用不用hooks，我们可以用`connect()`方法注入到props中：
 ```typescript
-const mapStateToProps = (state) => {
-  loading: profileModel.manage.connectLoading(state),
+const mapStateToProps = () => {
+  loading: profileModel.manage.connectLoading(),
 };
 
 export default(mapStateToProps)(App);
