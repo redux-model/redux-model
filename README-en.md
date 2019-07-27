@@ -1,4 +1,4 @@
-### English Document | [简体中文文档](https://github.com/fwh1990/redux-model-ts/blob/master/README-cn.md)
+### English Document | [简体中文文档](https://github.com/fwh1990/redux-model-ts/blob/master/README.md)
 
 How many people are writing redux in functional way? And how much time you had wasted since you are repeating action,types,reducer.
 Now, I want to tell you, I am in modern way to write redux. I'am using OOP instead of Functional Programming.
