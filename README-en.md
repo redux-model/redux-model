@@ -3,6 +3,10 @@
 How many people are writing redux in functional way? And how much time you had wasted since you are repeating action,types,reducer.
 Now, I want to tell you, I am in modern way to write redux. I'am using OOP instead of Functional Programming.
 
+[![](https://img.shields.io/npm/dw/@redux-model/web?label=@redux-model/web)](https://www.npmjs.com/package/@redux-model/web)
+[![](https://img.shields.io/npm/dw/@redux-model/react-native?label=@redux-model/react-native)](https://www.npmjs.com/package/@redux-model/react-native)
+[![](https://img.shields.io/npm/dw/@redux-model/taro?label=@redux-model/taro)](https://www.npmjs.com/package/@redux-model/taro)
+
 # 特性
 
 * Class Type
