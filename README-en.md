@@ -5,13 +5,13 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # 特性
 
->* Class Type
->* Support mvvm
->* Reduce 30% redux code
->* Combine action with reducer in one file
->* Action.type is built in
->* Perfectly support typescript，with 100% Type Checking
->* Loading status is built in when request api
+* Class Type
+* Support mvvm
+* Reduce 30% redux code
+* Combine action with reducer in one file
+* Action.type is built in
+* Perfectly support typescript，with 100% Type Checking
+* Loading status is built in when request api
 
 # Installation
 

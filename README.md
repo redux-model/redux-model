@@ -4,13 +4,13 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 特性
 
->* 纯面向对象
->* 支持mvvm操作
->* 代码量比函数式redux写法少一半
->* action与reducer合体
->* 无需定义types
->* 完美支持typescript，拥有100%无死角的代码类型提示
->* 请求操作内置loading状态
+* 纯面向对象
+* 支持mvvm操作
+* 代码量比函数式redux写法少一半
+* action与reducer合体
+* 无需定义types
+* 完美支持typescript，拥有100%无死角的代码类型提示
+* 请求操作内置loading状态
 
 # 安装
 
