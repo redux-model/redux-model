@@ -5,14 +5,14 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 ![](https://img.shields.io/github/license/fwh1990/redux-model-ts)
 
 [![](https://img.shields.io/npm/dw/@redux-model/web?label=@redux-model/web)](https://www.npmjs.com/package/@redux-model/web)
-[![](https://img.shields.io/bundlephobia/min/@redux-model/web?label=bundle size)](https://www.npmjs.com/package/@redux-model/web)
+[![](https://img.shields.io/bundlephobia/min/@redux-model/web?label=bundle%20size)](https://www.npmjs.com/package/@redux-model/web)
 
 [![](https://img.shields.io/npm/dw/@redux-model/react-native?label=@redux-model/react-native)](https://www.npmjs.com/package/@redux-model/react-native)
-[![](https://img.shields.io/bundlephobia/min/@redux-model/react-native?label=bundle size)](https://www.npmjs.com/package/@redux-model/react-native)
+[![](https://img.shields.io/bundlephobia/min/@redux-model/react-native?label=bundle%20size)](https://www.npmjs.com/package/@redux-model/react-native)
 
 
 [![](https://img.shields.io/npm/dw/@redux-model/taro?label=@redux-model/taro)](https://www.npmjs.com/package/@redux-model/taro)
-[![](https://img.shields.io/bundlephobia/min/@redux-model/taro?label=bundle size)](https://www.npmjs.com/package/@redux-model/taro)
+[![](https://img.shields.io/bundlephobia/min/@redux-model/taro?label=bundle%20size)](https://www.npmjs.com/package/@redux-model/taro)
 
 # 特性
 
