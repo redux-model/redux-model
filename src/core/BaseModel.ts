@@ -6,7 +6,8 @@ import { RequestAction } from '../libs/RequestAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import { NormalAction } from './action/NormalAction';
 import { BaseAction } from './action/BaseAction';
-import { isDebug, isProxyEnable } from './utils/dev';
+import { isProxyEnable } from './utils/dev';
+import { isDebug } from '../libs/dev';
 import {
   ActionNormal,
   Effects,

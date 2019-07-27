@@ -14,7 +14,7 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 安装
 
-#### H5 / [React-Native](https://github.com/facebook/react-native)
+#### H5
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/web
@@ -24,6 +24,14 @@ npm install redux redux-thunk react-redux
 **redux-thunk并不是必须的，除非你想使用thunk的特性**
 
 **如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
+
+#### [React-Native](https://github.com/facebook/react-native)
+
+```bash
+# 使用 npm 或者 yarn
+npm install @redux-model/react-native
+npm install redux redux-thunk react-redux
+```
 
 #### [Taro](https://github.com/NervJS/taro)
 ```bash

@@ -15,7 +15,7 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # Installation
 
-#### H5 / [React-Native](https://github.com/facebook/react-native)
+#### H5
 ```bash
 # By npm or yarn
 npm install @redux-model/web
@@ -25,6 +25,14 @@ npm install redux redux-thunk react-redux
 Remember: redux-thunk is not required until you want to use method `actionThunk()`
 
 Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when you are using `React Hooks`
+
+#### [React-Native](https://github.com/facebook/react-native)
+
+```bash
+# By npm or yarn
+npm install @redux-model/react-native
+npm install redux redux-thunk react-redux
+```
 
 #### [Taro](https://github.com/NervJS/taro)
 ```bash
