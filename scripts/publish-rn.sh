@@ -24,7 +24,7 @@ done
 mv ./build/${package_name} ./build/libs
 
 cp README.md LICENSE ./build
-cp package.${package_name}.json ./build/package.json
+cp package-list/${package_name}.json ./build/package.json
 
 old_registry=$(npm config get registry)
 npm config set registry https://registry.npmjs.org
