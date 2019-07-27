@@ -15,7 +15,7 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # Installation
 
-#### H5
+#### H5 / Web / Browser
 ```bash
 # By npm or yarn
 npm install @redux-model/web
