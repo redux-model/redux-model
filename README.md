@@ -14,11 +14,11 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 安装
 
-#### 浏览器 / [React-Native](https://github.com/facebook/react-native)
+#### H5 / [React-Native](https://github.com/facebook/react-native)
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/web
-npm install redux redux-thunk react-redux @tarojs/redux-h5
+npm install redux redux-thunk react-redux
 ```
 
 **redux-thunk并不是必须的，除非你想使用thunk的特性**
@@ -29,7 +29,7 @@ npm install redux redux-thunk react-redux @tarojs/redux-h5
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/taro
-npm install redux redux-thunk @tarojs/redux
+npm install redux redux-thunk @tarojs/redux @tarojs/redux-h5
 ```
 
 

@@ -15,7 +15,7 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # Installation
 
-#### Browser / [React-Native](https://github.com/facebook/react-native)
+#### H5 / [React-Native](https://github.com/facebook/react-native)
 ```bash
 # By npm or yarn
 npm install @redux-model/web
