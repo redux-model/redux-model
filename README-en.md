@@ -150,7 +150,7 @@ const mapStateToProps = () => {
   };
 };
 
-const mapDispatchToProps = () => {
+const mapDispatchToProps = {
   runAction: test.myFirstAction.action,
 };
 
