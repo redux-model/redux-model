@@ -19,7 +19,7 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 安装
 
-#### H5 / Web
+#### [H5 / Web](https://reactjs.org)
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/web

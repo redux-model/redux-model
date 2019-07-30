@@ -8,7 +8,7 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 [![](https://img.shields.io/npm/dw/@redux-model/react-native?label=@redux-model/react-native)](https://www.npmjs.com/package/@redux-model/react-native)
 [![](https://img.shields.io/npm/dw/@redux-model/taro?label=@redux-model/taro)](https://www.npmjs.com/package/@redux-model/taro)
 
-# 特性
+# Feature
 
 * Class Type
 * Support mvvm
@@ -20,7 +20,7 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # Installation
 
-#### H5 / Web / Browser
+#### [H5 / Web](https://reactjs.org)
 ```bash
 # By npm or yarn
 npm install @redux-model/web
