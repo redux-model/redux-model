@@ -54,6 +54,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
         ...action.requestOptions.headers,
       },
     };
+    let successInvoked = false;
 
     if ([METHOD.post, METHOD.put, METHOD.delete, METHOD.patch].includes(action.method)) {
       requestOptions.data = action.body;
@@ -69,6 +70,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
             response: response.data,
           };
 
+          successInvoked = true;
           next(okResponse);
 
           if (action.successText) {
@@ -78,6 +80,10 @@ export const createRequestMiddleware = <RootState = any>(config: {
           return Promise.resolve(okResponse);
         })
         .catch((error: AxiosError) => {
+          if (successInvoked) {
+            return Promise.reject(error);
+          }
+
           const isCancel = axios.isCancel(error);
           let errorMessage;
           let httpStatus;

@@ -70,6 +70,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
 
     const task = config.request(requestOptions);
     const canceler = task.abort;
+    let successInvoked = false;
 
     const promise = task
       .then((response) => {
@@ -84,6 +85,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
           response: response.data,
         };
 
+        successInvoked = true;
         next(okResponse);
 
         if (action.successText) {
@@ -93,6 +95,10 @@ export const createRequestMiddleware = <RootState = any>(config: {
         return Promise.resolve(okResponse);
       })
       .catch((error: request.Promised) => {
+        if (successInvoked) {
+          return Promise.reject(error);
+        }
+
         let errorMessage;
         let httpStatus;
         let businessCode;
