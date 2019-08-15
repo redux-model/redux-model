@@ -1,5 +1,5 @@
-import { BaseRequestAction } from '../core/action/BaseRequestAction';
 import { useSelector } from 'react-redux';
+import { BaseRequestAction } from '../core/action/BaseRequestAction';
 import { FetchHandle } from './types';
 import { UseSelector } from '../core/utils/types';
 

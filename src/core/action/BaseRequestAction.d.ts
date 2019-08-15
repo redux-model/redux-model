@@ -1,16 +1,15 @@
-import { NormalAction } from './NormalAction';
+import { BaseAction } from './BaseAction';
 import { RequestSubscriber } from '../utils/types';
 import { FetchHandle } from '../../libs/types';
 
-// @ts-ignore
-export declare abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends NormalAction<Data, A, Payload> {
+export declare abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
     readonly action: A;
 
-    // @ts-ignore
     onSuccess<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload>;
     onPrepare<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload>;
     onFail<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload>;
 
     getPrepareType(): string;
+    getSuccessType(): string;
     getFailType(): string;
 }

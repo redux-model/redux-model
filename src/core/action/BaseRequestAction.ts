@@ -1,4 +1,3 @@
-import { NormalAction } from './NormalAction';
 import { BaseReducer } from '../reducer/BaseReducer';
 import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import {
@@ -16,21 +15,21 @@ import {
 } from '../utils/types';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { getStore } from '../utils/createReduxStore';
+import { BaseAction } from './BaseAction';
 
 const DEFAULT_META: Meta = {
   actionType: '',
   loading: false,
 };
 
-export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload>
-  // @ts-ignore
-  extends NormalAction<Data, A, Payload> {
-  // Point to correct type definition.
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
   public readonly action: A;
 
   protected readonly meta: boolean | PayloadKey<A>;
 
   protected readonly prepareCallback?: any;
+
+  protected readonly successCallback?: any;
 
   protected readonly failCallback?: any;
 
@@ -43,11 +42,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   protected metasInstance: BaseReducer<Metas> | null = null;
 
   public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
-    super({
-      action: config.action,
-      // @ts-ignore
-      onSuccess: config.onSuccess,
-    }, instanceName);
+    super(instanceName);
     // @ts-ignore
     this.action = (...args: any[]) => {
       const data = config.action(...args) as unknown as ActionRequest;
@@ -63,6 +58,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
     this.meta = config.meta === undefined ? true : config.meta;
     this.prepareCallback = config.onPrepare;
+    this.successCallback = config.onSuccess;
     this.failCallback = config.onFail;
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
@@ -84,7 +80,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     return data;
   }
 
-  // @ts-ignore
   public onSuccess<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.successType,
@@ -113,6 +108,13 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       effects.push({
         when: this.prepareType,
         effect: this.prepareCallback,
+      });
+    }
+
+    if (this.successCallback) {
+      effects.push({
+        when: this.successType,
+        effect: this.successCallback,
       });
     }
 
