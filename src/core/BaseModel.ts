@@ -29,9 +29,11 @@ type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P>
 type EnhanceNormalPayload<A> = A extends (...args: any[]) => ActionNormal<infer P> ? P : never;
 
 export abstract class BaseModel<Data = null> {
-  private static CLASS_COUNTER = 0;
-
   public static middlewareName: string = 'default-request-middleware-name';
+
+  // In case the same classname by uglify in production mode.
+  // In case user create the same classname in different folders.
+  private static CLASS_DICT = {};
 
   private actionCounter = 0;
 
@@ -45,11 +47,17 @@ export abstract class BaseModel<Data = null> {
 
   constructor(alias: string = '') {
     this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
-    BaseModel.CLASS_COUNTER += 1;
-    // In case the same classname by uglify in production mode.
-    // In case user create the same classname in different folders.
-    // FIXME: Is the relation between counter and classname is correct.
-    this.instanceName += `.${BaseModel.CLASS_COUNTER}`;
+    const dictKey = `dict_${this.instanceName}`;
+
+    if (BaseModel.CLASS_DICT[dictKey] === undefined) {
+      BaseModel.CLASS_DICT[dictKey] = 0;
+    } else {
+      BaseModel.CLASS_DICT[dictKey] += 1;
+    }
+
+    if (BaseModel.CLASS_DICT[dictKey] > 0) {
+      this.instanceName += `.${BaseModel.CLASS_DICT[dictKey]}`;
+    }
 
     const initData = this.initReducer();
 
