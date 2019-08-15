@@ -1,5 +1,6 @@
 import { BaseAction } from './BaseAction';
 import { ActionNormal, Effects, NormalActionParam, NormalSubscriber } from '../utils/types';
+import { getStore } from '../utils/createReduxStore';
 
 export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> extends BaseAction<Data> {
   public readonly action: A;
@@ -10,10 +11,10 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
     super(instanceName);
     // @ts-ignore
     this.action = (...args: any[]) => {
-      return {
+      return getStore().dispatch({
         ...config.action(...args),
         type: this.successType,
-      };
+      });
     };
     this.successCallback = config.onSuccess;
   }

@@ -130,13 +130,13 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { test } from './Test';
 
-type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+type Props = ReturnType<typeof mapStateToProps>;
 
 const App: FunctionComponent<Props> = (props) => {
   const { runAction, name } = props;
 
   return (
-    <button onClick={() => runAction('New Name')}>
+    <button onClick={() => test.myFirstAction.action('New Name')}>
       Click me: {name}
     </button>
   );
@@ -148,11 +148,7 @@ const mapStateToProps = () => {
   };
 };
 
-const mapDispatchToProps = {
-  runAction: test.myFirstAction.action,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);
 ```
 因为我们在action中定义了`onSuccess()`方法，所以一旦你点击了按钮，执行`runAction`会立马变更test模型中reducer数据
 
@@ -161,15 +157,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(App);
 ```typescript jsx
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { test } from './Test';
 
-const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
+const App: FunctionComponent = () => {
   const name = test.useData((item) => item.foo);
 
   return (
-    <button onClick={() => dispatch(test.myFirstAction.action('New Name'))}>
+    <button onClick={() => test.myFirstAction.action('New Name')}>
       Click me: {name}
     </button>
   );
@@ -227,11 +221,12 @@ export const apiMiddleware = createRequestMiddleware({
 接着注入到store中
 ```typescript
 // middlewares.ts
-import { createStore, compose, applyMiddleware } from 'redux';
+import { createReduxStore } from '@redux-model/*';
+import { compose, applyMiddleware } from 'redux';
 import { apiMiddleware } from './apiMiddleware.ts';
 import { rootReducers } from './reducers.ts';
 
-const store = createStore(
+const store = createReduxStore(
   rootReducers,
   {},
   compose(applyMiddleware(apiMiddleware)),
@@ -329,11 +324,9 @@ class Test extends Model {
   /// 使用方法：test.myThunk();  ///
   ////////////////////////////////
   myThunk = this.actionThunk((/* 在这里定义action传入的参数 */) => {
-    return (dispatch, getState) => {
-      dispatch(this.myFirstAction.action());
-      dispatch(profileModel.manage.action());
+      this.myFirstAction.action();
+      profileModel.manage.action();
       ...
-    };
   });
 }
 
@@ -393,14 +386,12 @@ class Test extends Model<Data> {
 ```typescript jsx
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { profileModel } from './ProfileModel.ts';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = profileModel.useData((item) => item.name);
   const handleClick = () => {
-    dispatch(profileModel.manage.action(1))
+    profileModel.manage.action(1)
       .then(({ response }) => {
         console.log('Hello, ' + response.name);
       })
@@ -428,17 +419,15 @@ export default App;
 ```typescript jsx
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { profileModel } from './ProfileModel.ts';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = profileModel.useData((item) => item.name);
   // 这是个布尔值
   const loading = profileModel.manage.useLoading();
 
   return (
-    <button onClick={() => dispatch(profileModel.manage.action(1))}>
+    <button onClick={() => profileModel.manage.action(1)}>
       Click me: {name} {loading ? 'Waiting...' : ''}
     </button>
   );
@@ -482,11 +471,9 @@ class Profile extends Model {
 ```typescript
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { profileModel } from './ProfileModel.ts';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = profileModel.useData((item) => item.name);
   const userId = 1;
   const secondUserId = 2;
@@ -494,7 +481,7 @@ const App: FunctionComponent = (props) => {
   const secondLoading = profileModel.manage.useLoading(secondUserId);
 
   return (
-    <button onClick={() => dispatch(profileModel.manage.action(userId))}>
+    <button onClick={() => profileModel.manage.action(userId)}>
       Click me: {name}
       {loading ? 'Waiting...' : ''}
       {secondLoading ? 'Second waiting...' : ''}

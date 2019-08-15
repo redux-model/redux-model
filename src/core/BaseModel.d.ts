@@ -1,4 +1,4 @@
-import { Action } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { NormalAction } from './action/NormalAction';
 import {
@@ -48,7 +48,7 @@ export declare abstract class BaseModel<Data = null> {
     // Case meta is one of payload's key. we will automatically register metas reducer.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMetas<Data, A, Response, Payload>): RequestActionWithMetas<Data, A, Response, Payload>;
 
-    protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(action: A): (...args: Parameters<A>) => ReturnType<ReturnType<A>>;
+    protected actionThunk<A extends (...args: any[]) => any>(action: A): (...args: Parameters<A>) => ReturnType<A>;
 
     protected emit<Payload = undefined>(payload?: Payload): ActionNormal<Payload>;
 

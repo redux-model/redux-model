@@ -1,5 +1,3 @@
-import { Action } from 'redux';
-import { ThunkAction } from 'redux-thunk';
 import { BaseAction } from './action/BaseAction';
 import { BaseRequestAction } from './action/BaseRequestAction';
 import { NormalAction } from './action/NormalAction';
@@ -24,6 +22,7 @@ import { isDebug } from '../libs/dev';
 import { FetchHandle } from '../libs/types';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
+import { getStore } from './utils/createReduxStore';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
@@ -188,11 +187,15 @@ export abstract class BaseModel<Data = null> {
     return instance;
   }
 
-  protected actionThunk<A extends (...args: any[]) => ThunkAction<any, any, any, Action>>(
+  protected actionThunk<A extends (...args: any[]) => any>(
     action: A
-  ): (...args: Parameters<A>) => ReturnType<ReturnType<A>> {
-    // @ts-ignore
-    return action;
+  ): (...args: Parameters<A>) => ReturnType<A> {
+    return (...args: Parameters<A>) => {
+      // @ts-ignore
+      return getStore().dispatch((/* dispatch, getState */) => {
+        return action(...args);
+      });
+    };
   }
 
   protected emit<Payload = undefined>(payload?: Payload): ActionNormal<Payload> {

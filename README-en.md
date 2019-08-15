@@ -81,7 +81,7 @@ export const test = new Test();
 And how to strip reducer? You just need to return `null` from method `initReducer()` and remove generic `Data`.
 
 ## Register Reducer
-As we know, the reducer data must be registered to store by `createStore()`, so the model instance has provided a method named `register()` to do that thing.
+As we know, the reducer data must be registered to store by `createReduxStore()`, so the model instance has provided a method named `register()` to do that thing.
 ```typescript
 // reducers.ts
 import { combineReducers } from 'redux';
@@ -132,13 +132,13 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { test } from './Test';
 
-type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+type Props = ReturnType<typeof mapStateToProps>;
 
 const App: FunctionComponent<Props> = (props) => {
   const { runAction, name } = props;
 
   return (
-    <button onClick={() => runAction('New Name')}>
+    <button onClick={() => test.myFirstAction.action('New Name')}>
       Click me: {name}
     </button>
   );
@@ -150,11 +150,7 @@ const mapStateToProps = () => {
   };
 };
 
-const mapDispatchToProps = {
-  runAction: test.myFirstAction.action,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);
 ```
 Once you click the button, `runAction` will be invoked,
  and `test.reducer` will be modified by the method `onSuccess()` defined in action right now.
@@ -164,15 +160,13 @@ Since React version `>=16.8.3` and react-redux version `>=7.1.0`, you can use ho
 ```typescript jsx
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { test } from './Test';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = test.useData((item) => item.foo);
 
   return (
-    <button onClick={() => dispatch(test.myFirstAction.action('New Name'))}>
+    <button onClick={() => test.myFirstAction.action('New Name')}>
       Click me: {name}
     </button>
   );
@@ -229,11 +223,12 @@ And then inject this middleware into store.
 
 ```typescript
 // middlewares.ts
-import { createStore, compose, applyMiddleware } from 'redux';
+import { createReduxStore } from '@redux-model/*';
+import { compose, applyMiddleware } from 'redux';
 import { apiMiddleware } from './apiMiddleware.ts';
 import { rootReducers } from './reducers.ts';
 
-const store = createStore(
+const store = createReduxStore(
   rootReducers,
   {},
   compose(applyMiddleware(apiMiddleware)),
@@ -332,11 +327,9 @@ class Test extends Model {
   /// Usage: test.myThunk();   ///
   ////////////////////////////////
   myThunk = this.actionThunk((/* Action parameters here */) => {
-    return (dispatch, getState) => {
-      dispatch(this.myFirstAction.action());
-      dispatch(profileModel.manage.action());
+      this.myFirstAction.action();
+      profileModel.manage.action();
       ...
-    };
   });
 }
 
@@ -399,14 +392,12 @@ We can use `promise` in React Component when Request Action is invoked. Now, enj
 ```typescript jsx
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { profileModel } from './ProfileModel.ts';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = profileModel.useData((item) => item.name);
   const handleClick = () => {
-    dispatch(profileModel.manage.action(1))
+    profileModel.manage.action(1)
       .then(({ response }) => {
         console.log('Hello, ' + response.name);
       })
@@ -434,17 +425,15 @@ Each Request Action has loading status itself. Feel free to use it whenever you 
 ```typescript jsx
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { profileModel } from './ProfileModel.ts';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = profileModel.useData((item) => item.name);
   // It's boolean type.
   const loading = profileModel.manage.useLoading();
 
   return (
-    <button onClick={() => dispatch(profileModel.manage.action(1))}>
+    <button onClick={() => profileModel.manage.action(1)}>
       Click me: {name} {loading ? 'Waiting...' : ''}
     </button>
   );
@@ -488,11 +477,9 @@ Let me show usage in react component.
 ```typescript
 // By React Hooks
 import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
 import { profileModel } from './ProfileModel.ts';
 
 const App: FunctionComponent = (props) => {
-  const dispatch = useDispatch();
   const name = profileModel.useData((item) => item.name);
   const userId = 1;
   const secondUserId = 2;
@@ -500,7 +487,7 @@ const App: FunctionComponent = (props) => {
   const secondLoading = profileModel.manage.useLoading(secondUserId);
 
   return (
-    <button onClick={() => dispatch(profileModel.manage.action(userId))}>
+    <button onClick={() => profileModel.manage.action(userId)}>
       Click me: {name}
       {loading ? 'Waiting...' : ''}
       {secondLoading ? 'Second waiting...' : ''}

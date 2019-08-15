@@ -15,6 +15,7 @@ import {
   UseSelector,
 } from '../utils/types';
 import { ActionRequest, FetchHandle } from '../../libs/types';
+import { getStore } from '../utils/createReduxStore';
 
 const DEFAULT_META: Meta = {
   actionType: '',
@@ -57,7 +58,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
         fail: this.failType,
       };
 
-      return data;
+      return getStore().dispatch(data);
     };
 
     this.meta = config.meta === undefined ? true : config.meta;
