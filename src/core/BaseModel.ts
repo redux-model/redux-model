@@ -1,13 +1,9 @@
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { METHOD } from './utils/method';
-import { BaseRequestAction } from './action/BaseRequestAction';
-import { RequestAction } from '../libs/RequestAction';
-import { BaseReducer } from './reducer/BaseReducer';
-import { NormalAction } from './action/NormalAction';
 import { BaseAction } from './action/BaseAction';
-import { isProxyEnable } from './utils/dev';
-import { isDebug } from '../libs/dev';
+import { BaseRequestAction } from './action/BaseRequestAction';
+import { NormalAction } from './action/NormalAction';
+import { BaseReducer } from './reducer/BaseReducer';
 import {
   ActionNormal,
   Effects,
@@ -19,9 +15,15 @@ import {
   RequestActionWithMeta,
   RequestActionWithMetas,
   RequestOptions,
-  UseSelector
+  UseSelector,
 } from './utils/types';
+import { METHOD } from './utils/method';
+import { isProxyEnable } from './utils/dev';
+import { RequestAction } from '../libs/RequestAction';
+import { isDebug } from '../libs/dev';
 import { FetchHandle } from '../libs/types';
+import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
+import { NullReducerError } from './exceptions/NullReducerError';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
@@ -40,22 +42,25 @@ export abstract class BaseModel<Data = null> {
 
   private readonly reducer: null | BaseReducer<Data> = null;
 
-  constructor(instanceName: string = '') {
-    this.instanceName = (instanceName ? `[${instanceName}]` : '') + this.constructor.name;
-    BaseModel.CLASS_COUNTER += 1;
+  private readonly reducerName: string = '';
 
-    if (!isDebug()) {
-      this.instanceName += `.${BaseModel.CLASS_COUNTER}`;
-    }
+  constructor(alias: string = '') {
+    this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
+    BaseModel.CLASS_COUNTER += 1;
+    // In case the same classname by uglify in production mode.
+    // In case user create the same classname in different folders.
+    // FIXME: Is the relation between counter and classname is correct.
+    this.instanceName += `.${BaseModel.CLASS_COUNTER}`;
 
     const initData = this.initReducer();
 
     if (initData !== null) {
       this.reducer = new BaseReducer<Data>(initData, this.instanceName, 'data');
+      this.reducerName = this.reducer.getReducerName();
     }
 
     if (isDebug() && isProxyEnable()) {
-      // Proxy is es6 based syntax, and it can't be transform to es5.
+      // Proxy is es6 syntax, and it can't be transformed to es5.
       return new Proxy(this, {
         set: (model, property: string, value) => {
           model[property] = value;
@@ -83,7 +88,7 @@ export abstract class BaseModel<Data = null> {
       this.reducer.clear();
     }
 
-    this.actions.forEach((action) => {
+    for (const action of this.actions) {
       reducers = {
         ...reducers,
         ...action.collectReducers(),
@@ -92,7 +97,7 @@ export abstract class BaseModel<Data = null> {
       if (this.reducer) {
         this.reducer.addCase(...action.collectEffects());
       }
-    });
+    }
 
     if (this.reducer) {
       this.reducer.addCase(...this.effects());
@@ -108,21 +113,31 @@ export abstract class BaseModel<Data = null> {
   public useData<T = Data>(filter?: (data: Data) => T): T {
     if (this.reducer) {
       return this.switchReduxSelector()((state) => {
-        const customData = state[this.reducer!.getReducerName()];
+        const customData = state[this.reducerName];
+
+        if (customData === undefined) {
+          throw new ForgetRegisterError(this.constructor.name);
+        }
 
         return filter ? filter(customData) : customData;
       });
     }
 
-    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
+    throw new NullReducerError(this.constructor.name);
   }
 
   public connectData(): Data {
     if (this.reducer) {
-      return this.reducer.getCurrentReducerData();
+      const customData = this.reducer.getCurrentReducerData();
+
+      if (customData === undefined) {
+        throw new ForgetRegisterError(this.constructor.name);
+      }
+
+      return customData;
     }
 
-    throw new ReferenceError(`[${this.constructor.name}] It seems like you hadn't initialize your reducer yet.`);
+    throw new NullReducerError(this.constructor.name);
   }
 
   // FIXME: To compatible with typescript 3.3, we should remove generics ActionNormal<Payload>, and add `ActionNormal` instead.

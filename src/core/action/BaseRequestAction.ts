@@ -1,17 +1,20 @@
 import { NormalAction } from './NormalAction';
 import { BaseReducer } from '../reducer/BaseReducer';
-import { NotFoundError } from '../exceptions/NotFoundError';
+import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import {
   ActionResponse,
   BaseActionRequest,
   Effects,
   Meta,
-  Metas, PayloadData,
+  Metas,
+  PayloadData,
   PayloadKey,
-  Reducers, RequestActionParamNoMeta, RequestSubscriber,
-  UseSelector
+  Reducers,
+  RequestActionParamNoMeta,
+  RequestSubscriber,
+  UseSelector,
 } from '../utils/types';
-import { ActionRequest, FetchHandle } from '../../web/types';
+import { ActionRequest, FetchHandle } from '../../libs/types';
 
 const DEFAULT_META: Meta = {
   actionType: '',
@@ -146,7 +149,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
   public useMeta<T = Meta>(filter?: (meta: Meta) => T): T {
     if (!this.metaInstance) {
-      throw new NotFoundError(this.instanceName);
+      throw new ForgetRegisterError(this.instanceName);
     }
 
     const reducerName = this.metaInstance.getReducerName();
@@ -160,7 +163,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
   public useMetas<T = Meta>(payloadData?: PayloadData, filter?: (meta: Meta) => T): Metas | T {
     if (!this.metasInstance) {
-      throw new NotFoundError(this.instanceName);
+      throw new ForgetRegisterError(this.instanceName);
     }
 
     if (payloadData === undefined) {
@@ -185,7 +188,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
   public connectMeta(): Meta {
     if (!this.metaInstance) {
-      throw new NotFoundError(this.instanceName);
+      throw new ForgetRegisterError(this.instanceName);
     }
 
     return this.metaInstance.getCurrentReducerData();
@@ -193,7 +196,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
   public connectMetas(payloadData?: PayloadData): Metas | Meta {
     if (!this.metasInstance) {
-      throw new NotFoundError(this.instanceName);
+      throw new ForgetRegisterError(this.instanceName);
     }
 
     const reducer = this.metasInstance.getCurrentReducerData();

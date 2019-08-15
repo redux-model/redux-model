@@ -1,6 +1,6 @@
+import { NormalAction } from './NormalAction';
 import { RequestSubscriber } from '../utils/types';
 import { FetchHandle } from '../../libs/types';
-import { NormalAction } from './NormalAction';
 
 // @ts-ignore
 export declare abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends NormalAction<Data, A, Payload> {

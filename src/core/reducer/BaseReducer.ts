@@ -1,5 +1,6 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { Effects, Reducers } from '../utils/types';
+import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -59,7 +60,7 @@ export class BaseReducer<Data> {
               state = effect(state, action);
 
               if (state === undefined) {
-                throw new Error(`[${this.instanceName}] You must return new state due to you have disabled immer reducer in this model, or the reducer data is unable to transform to immer type.`)
+                throw new StateReturnRequiredError(when);
               }
             }
           }

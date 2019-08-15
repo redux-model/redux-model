@@ -1,6 +1,5 @@
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { RequestAction } from '../libs/RequestAction';
 import { NormalAction } from './action/NormalAction';
 import {
   ActionNormal,
@@ -15,6 +14,7 @@ import {
   RequestOptions,
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
+import { RequestAction } from '../libs/RequestAction';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
@@ -23,12 +23,12 @@ type EnhanceNormalPayload<A> = A extends (...args: any[]) => ActionNormal<infer 
 export declare abstract class BaseModel<Data = null> {
     static middlewareName: string;
 
-    // `const loading = a.action.useLoading() || b.action.useLoading()` is not allowed in hooks.
-    // But you can use this static method:
-    // `const loading = Model.isLoading(a.action.useLoading(), b.action.useLoading())`;
+    // As we know, it's forbidden to make condition when we are using hooks.
+    // We can't write code like: xxxModel.xxx.useLoading() || xxxModel.yyy.useLoading()
+    // So, just write code like: Model.isLoading(xxxModel.xxx.useLoading(), xxxModel.yyy.useLoading());
     static isLoading(...fromUseLoading: boolean[]): boolean;
 
-    constructor(instanceName?: string);
+    constructor(alias?: string);
 
     register(): Reducers;
 
