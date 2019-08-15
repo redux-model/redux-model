@@ -158,6 +158,10 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     return this.switchReduxSelector()((state: any) => {
       const customMeta = state[reducerName];
 
+      if (customMeta === undefined) {
+        throw new ForgetRegisterError(this.instanceName);
+      }
+
       return filter ? filter(customMeta) : customMeta;
     });
   }
@@ -173,9 +177,13 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
     return this.switchReduxSelector()((state: any) => {
       const reducerName = this.metasInstance!.getReducerName();
-      const customMeta = payloadData === undefined
-        ? state[reducerName]
-        : state[reducerName][payloadData] || DEFAULT_META;
+      const customMetas = state[reducerName];
+
+      if (customMetas === undefined) {
+        throw new ForgetRegisterError(this.instanceName);
+      }
+
+      const customMeta = payloadData === undefined ? customMetas : customMetas[payloadData] || DEFAULT_META;
 
       return filter ? filter(customMeta) : customMeta;
     });
