@@ -15,6 +15,7 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 * Reduce 30% redux code
 * Combine action with reducer in one file
 * Action.type is built in
+* Needn't wrap dispatch()
 * Perfectly support typescript，with 100% Type Checking
 * Loading status is built in when request api
 

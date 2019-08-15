@@ -14,6 +14,7 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 * 代码量比函数式redux写法少一半
 * action与reducer合体
 * 无需定义types
+* 无需包裹dispatch()
 * 完美支持typescript，拥有100%无死角的代码类型提示
 * 请求操作内置loading状态
 
