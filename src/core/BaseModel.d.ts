@@ -15,10 +15,9 @@ import { RequestAction } from '../libs/RequestAction';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
+
 type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
-type ExtractNormalAction<A> = A extends (state: any, payload: (unknown | undefined)) => any
-  ? () => ActionNormal<ExtractNormalPayload<A>>
-  : (payload: ExtractNormalPayload<A>) => ActionNormal<ExtractNormalPayload<A>>;
+type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
 
 export declare abstract class BaseModel<Data = null> {
     static middlewareName: string;
@@ -37,7 +36,7 @@ export declare abstract class BaseModel<Data = null> {
     // Remember: You can only use it in react-redux.connect() method.
     connectData(): Data;
 
-    protected actionNormal<A extends (state: Data, payload: any) => void | Data>(fn: A): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
+    protected actionNormal<A extends (state: Data, payload: any) => void | Data>(onSuccess: A): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
     // Case meta is false. We will never create meta reducer for this action.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamNoMeta<Data, A, Response, Payload>): RequestAction<Data, A, Response, Payload>;

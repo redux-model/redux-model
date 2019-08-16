@@ -24,10 +24,9 @@ import { NullReducerError } from './exceptions/NullReducerError';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
+
 type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
-type ExtractNormalAction<A> = A extends (state: any, payload: (unknown | undefined)) => any
-  ? () => ActionNormal<ExtractNormalPayload<A>>
-  : (payload: ExtractNormalPayload<A>) => ActionNormal<ExtractNormalPayload<A>>;
+type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
 
 export abstract class BaseModel<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
@@ -148,8 +147,8 @@ export abstract class BaseModel<Data = null> {
     throw new NullReducerError(this.constructor.name);
   }
 
-  protected actionNormal<A extends (state: Data, payload?: any) => void | Data>(
-    fn: A
+  protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
+    onSuccess: A
   ): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
@@ -164,7 +163,7 @@ export abstract class BaseModel<Data = null> {
         return NormalAction.createNormalData(payload);
       },
       onSuccess: (state, action) => {
-        return fn(state, action.payload);
+        return onSuccess(state, action.payload);
       },
     }, instanceName);
     this.actions.push(instance);
