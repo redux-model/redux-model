@@ -105,21 +105,14 @@ export const rootReducers = combineReducers(reducers);
 ```typescript
 // test.ts
 class Test extends Model<Data> {
-  myFirstAction = this.actionNormal({
-    action: (name: string) => {
-      return this.emit({
-        name,
-      });
-    },
-    onSuccess: (state, action) => {
-      state.foo = 'new name: ' + action.payload.name;
-    },
+  myFirstAction = this.actionNormal((state, payload: { name: string }) => {
+      state.foo = 'new name: ' + payload.name;
   });
 }
 
 export const test = new Test();
 ```
-`onSuccess()`的作用是改变当前模型的reducer值，但它不是必须定义的，你可以删除它，意味着执行这个action不会影响这个模型的reducer。
+这里定义了一个匿名函数，它隐式地定义了一个`action`和一个`onSuccess`函数，你只需要在函数体里更改reducer的值就行了。
 
 待会我会告诉你如何用这个action去影响其他模型的reducer数据。
 
@@ -137,7 +130,7 @@ const App: FunctionComponent<Props> = (props) => {
   const { runAction, name } = props;
 
   return (
-    <button onClick={() => test.myFirstAction.action('New Name')}>
+    <button onClick={() => test.myFirstAction.action({ name: 'New Name' })}>
       Click me: {name}
     </button>
   );
@@ -151,7 +144,7 @@ const mapStateToProps = () => {
 
 export default connect(mapStateToProps)(App);
 ```
-因为我们在action中定义了`onSuccess()`方法，所以一旦你点击了按钮，执行`runAction`会立马变更test模型中reducer数据
+一旦你点击了按钮，执行action会立马变更test模型中reducer数据
 
 ----------
 如果你的React版本`>=16.8.3`，而且react-redux的版本`>=7.1.0`，那么你可以用hooks实现数据的注入，这样做可以让你的代码看起来更清晰
@@ -164,7 +157,7 @@ const App: FunctionComponent = () => {
   const name = test.useData((item) => item.foo);
 
   return (
-    <button onClick={() => test.myFirstAction.action('New Name')}>
+    <button onClick={() => test.myFirstAction.action({ name: 'New Name' })}>
       Click me: {name}
     </button>
   );

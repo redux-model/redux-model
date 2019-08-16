@@ -106,23 +106,16 @@ Normal Action is the mostly basic action. It can just send message to reducer.
 ```typescript
 // test.ts
 class Test extends Model<Data> {
-  myFirstAction = this.actionNormal({
-    action: (name: string) => {
-      return this.emit({
-        name,
-      });
-    },
-    onSuccess: (state, action) => {
-      state.foo = 'new name: ' + action.payload.name;
-    },
+  myFirstAction = this.actionNormal((state, payload: { name: string }) => {
+    state.foo = 'new name: ' + payload.name;
   });
 }
 
 export const test = new Test();
 ```
-The method `onSuccess()` will change reducer data from this model. But remember that it's an **optional property**, that means you can remove it and this action will never change this model who's reducer data is here any more.
+The property `myFirstAction` automatically created an `action handler` and a `reducer handler`. You just need to modify state in function body.
 
-However, Action can also effect other model no matter onSuccess is defined or not. I'll show you later.
+I'll show you how to effect other model later.
 
 ------------
 
@@ -139,7 +132,7 @@ const App: FunctionComponent<Props> = (props) => {
   const { runAction, name } = props;
 
   return (
-    <button onClick={() => test.myFirstAction.action('New Name')}>
+    <button onClick={() => test.myFirstAction.action({ name: 'New Name' })}>
       Click me: {name}
     </button>
   );
@@ -153,8 +146,8 @@ const mapStateToProps = () => {
 
 export default connect(mapStateToProps)(App);
 ```
-Once you click the button, `runAction` will be invoked,
- and `test.reducer` will be modified by the method `onSuccess()` defined in action right now.
+Once you click the button, `action` will be invoked,
+ and `test.reducer` will be modified .
 
 ----------
 Since React version `>=16.8.3` and react-redux version `>=7.1.0`, you can use hooks to refactor code from above.
@@ -167,7 +160,7 @@ const App: FunctionComponent = (props) => {
   const name = test.useData((item) => item.foo);
 
   return (
-    <button onClick={() => test.myFirstAction.action('New Name')}>
+    <button onClick={() => test.myFirstAction.action({ name: 'New Name' })}>
       Click me: {name}
     </button>
   );
