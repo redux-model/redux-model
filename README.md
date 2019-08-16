@@ -24,10 +24,8 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/web
-npm install redux redux-thunk react-redux
+npm install redux react-redux
 ```
-
-**redux-thunk并不是必须的，除非你想使用thunk的特性**
 
 **如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
 
@@ -36,14 +34,14 @@ npm install redux redux-thunk react-redux
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/react-native
-npm install redux redux-thunk react-redux
+npm install redux react-redux
 ```
 
 #### [Taro](https://github.com/NervJS/taro)
 ```bash
 # 使用 npm 或者 yarn
 npm install @redux-model/taro
-npm install redux redux-thunk @tarojs/redux @tarojs/redux-h5
+npm install redux @tarojs/redux @tarojs/redux-h5
 ```
 
 
@@ -97,7 +95,6 @@ export const rootReducers = combineReducers(reducers);
 在模型中，我们只需要3种类型的action，而且一个模型支持写入无限个action。
 >- 普通action
 >- 异步请求action
->- thunk action
 
 ## 定义普通action
 普通的action是最基础的action，它的作用就是同步发送一次消息
@@ -304,28 +301,6 @@ export const profileModel = new ProfileModel();
 **successText**&nbsp;&nbsp;[string]
 <br>
 请求成功时要展示的成功文字
-
-## 定义Thunk Action
-假设你已经知道什么是 [Redux Thunk](https://github.com/reduxjs/redux-thunk)，并且已经把`thunk middleware`放进了store中。那么我们来看看怎么定义
-```typescript
-// test.ts
-import { profileModel } from './ProfileModel.ts';
-
-class Test extends Model {
-  myFirstAction = this.actionNormal(...);
-
-  /////////////////////////////////
-  /// 使用方法：test.myThunk();  ///
-  ////////////////////////////////
-  myThunk = this.actionThunk((/* 在这里定义action传入的参数 */) => {
-      this.myFirstAction.action();
-      profileModel.manage.action();
-      ...
-  });
-}
-
-export const test = new Test();
-```
 
 ## 模型交叉
 有时候，执行某个模型下的action可能需要变更其它模型的reducer数据，这是很常见的操作方式，我们提供了一个保护方法`effects()`来做这个事情。

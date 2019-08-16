@@ -25,10 +25,8 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 ```bash
 # By npm or yarn
 npm install @redux-model/web
-npm install redux redux-thunk react-redux
+npm install redux react-redux
 ```
-
-Remember: redux-thunk is not required until you want to use method `actionThunk()`
 
 Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when you are using `React Hooks`
 
@@ -37,14 +35,14 @@ Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when y
 ```bash
 # By npm or yarn
 npm install @redux-model/react-native
-npm install redux redux-thunk react-redux
+npm install redux react-redux
 ```
 
 #### [Taro](https://github.com/NervJS/taro)
 ```bash
 # By npm or yarn
 npm install @redux-model/taro
-npm install redux redux-thunk @tarojs/redux @tarojs/redux-h5
+npm install redux @tarojs/redux @tarojs/redux-h5
 ```
 
 # Run Demo
@@ -307,28 +305,6 @@ Decide show or hide error message when fetch fail. The default value is false.
 **successText**&nbsp;&nbsp;[string]
 <br>
 Success message you want to show in screen when fetch succeed.
-
-## Define Thunk Action
-I suppose you understand what is [Redux Thunk](https://github.com/reduxjs/redux-thunk), and you have put `thunk middleware` into store. And then, let's go on.
-```typescript
-// test.ts
-import { profileModel } from './ProfileModel.ts';
-
-class Test extends Model {
-  myFirstAction = this.actionNormal(...);
-
-  /////////////////////////////////
-  /// Usage: test.myThunk();   ///
-  ////////////////////////////////
-  myThunk = this.actionThunk((/* Action parameters here */) => {
-      this.myFirstAction.action();
-      profileModel.manage.action();
-      ...
-  });
-}
-
-export const test = new Test();
-```
 
 ## Model effects.
 In some case, We expect the action can effect reducer from owner model but also other model. Yep, you can override protected method `effects()` and receive effect from other model.

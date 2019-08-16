@@ -2,7 +2,6 @@ import { NormalAction } from './action/NormalAction';
 import {
   ActionNormal,
   Effects,
-  NormalActionParam,
   Reducers,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
@@ -48,8 +47,6 @@ export declare abstract class BaseModel<Data = null> {
 
     // Case meta is one of payload's key. we will automatically register metas reducer.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMetas<Data, A, Response, Payload>): RequestActionWithMetas<Data, A, Response, Payload>;
-
-    protected actionThunk<A extends (...args: any[]) => any>(action: A): { action: (...args: Parameters<A>) => ReturnType<A>; };
 
     protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
     protected post<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
