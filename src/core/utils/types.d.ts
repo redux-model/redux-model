@@ -77,12 +77,11 @@ export interface ActionResponse<Response = any, Payload = any> extends ActionNor
   businessCode?: string;
 }
 
-
 export type RequestOptions<Payload> = (
   Partial<Omit<ActionRequest, 'uri' | 'payload' | 'type' | 'method'>>
   & { uri: string; }
   & (Payload extends undefined ? { payload?: never } : { payload: Payload })
-  );
+);
 
 export type PayloadData = string | number;
 

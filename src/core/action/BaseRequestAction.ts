@@ -67,7 +67,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   public static createRequestData(options: Partial<BaseActionRequest> & Pick<BaseActionRequest, 'uri' | 'method' | 'middleware'>) {
     const data: Omit<BaseActionRequest, 'type'> = {
       middleware: options.middleware,
-      payload: options.payload || {},
+      payload: options.payload === undefined ? {} : options.payload,
       uri: options.uri,
       method: options.method,
       body: options.body || {},

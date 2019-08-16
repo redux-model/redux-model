@@ -5,7 +5,6 @@ import { BaseReducer } from './reducer/BaseReducer';
 import {
   ActionNormal,
   Effects,
-  NormalActionParam,
   Reducers,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
@@ -26,7 +25,10 @@ import { getStore } from './utils/createReduxStore';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
-type EnhanceNormalPayload<A> = A extends (...args: any[]) => ActionNormal<infer P> ? P : never;
+type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
+type ExtractNormalAction<A> = A extends (state: any, payload: (unknown | undefined)) => any
+  ? () => ActionNormal<ExtractNormalPayload<A>>
+  : (payload: ExtractNormalPayload<A>) => ActionNormal<ExtractNormalPayload<A>>;
 
 export abstract class BaseModel<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
@@ -147,18 +149,25 @@ export abstract class BaseModel<Data = null> {
     throw new NullReducerError(this.constructor.name);
   }
 
-  // FIXME: To compatible with typescript 3.3, we should remove generics ActionNormal<Payload>, and add `ActionNormal` instead.
-  // It's very strange, because this feature is supported by all ts versions above 3.0 except 3.3
-  protected actionNormal<A extends (...args: any[]) => ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(
-    config: NormalActionParam<Data, A, Payload>
-  ): NormalAction<Data, A, Payload> {
+  protected actionNormal<A extends (state: Data, payload?: any) => void | Data>(
+    fn: A
+  ): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.actionCounter += 1;
       instanceName += '.' + this.actionCounter;
     }
 
-    const instance = new NormalAction<Data, A, Payload>(config, instanceName);
+    const instance = new NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>({
+      // @ts-ignore
+      // FIXME: Incompatible with ExtractNormalAction<A>
+      action: (payload) => {
+        return NormalAction.createNormalData(payload);
+      },
+      onSuccess: (state, action) => {
+        return fn(state, action.payload);
+      },
+    }, instanceName);
     this.actions.push(instance);
 
     return instance;
@@ -195,19 +204,15 @@ export abstract class BaseModel<Data = null> {
     return instance;
   }
 
-  protected actionThunk<A extends (...args: any[]) => any>(
-    action: A
-  ): (...args: Parameters<A>) => ReturnType<A> {
-    return (...args: Parameters<A>) => {
-      // @ts-ignore
-      return getStore().dispatch((/* dispatch, getState */) => {
-        return action(...args);
-      });
+  protected actionThunk<A extends (...args: any[]) => any>(action: A): { action: (...args: Parameters<A>) => ReturnType<A>; } {
+    return {
+      action: (...args: Parameters<A>) => {
+        // @ts-ignore
+        return getStore().dispatch((/* dispatch, getState */) => {
+          return action(...args);
+        });
+      },
     };
-  }
-
-  protected emit<Payload = undefined>(payload?: Payload): ActionNormal<Payload> {
-    return NormalAction.createNormalData<Payload>(payload);
   }
 
   protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {

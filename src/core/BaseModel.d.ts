@@ -1,5 +1,3 @@
-import { Action, Dispatch } from 'redux';
-import { ThunkAction } from 'redux-thunk';
 import { NormalAction } from './action/NormalAction';
 import {
   ActionNormal,
@@ -18,7 +16,10 @@ import { RequestAction } from '../libs/RequestAction';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
-type EnhanceNormalPayload<A> = A extends (...args: any[]) => ActionNormal<infer P> ? P : never;
+type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
+type ExtractNormalAction<A> = A extends (state: any, payload: (unknown | undefined)) => any
+  ? () => ActionNormal<ExtractNormalPayload<A>>
+  : (payload: ExtractNormalPayload<A>) => ActionNormal<ExtractNormalPayload<A>>;
 
 export declare abstract class BaseModel<Data = null> {
     static middlewareName: string;
@@ -37,7 +38,7 @@ export declare abstract class BaseModel<Data = null> {
     // Remember: You can only use it in react-redux.connect() method.
     connectData(): Data;
 
-    protected actionNormal<A extends (...args: any[]) => ActionNormal<Payload>, Payload = EnhanceNormalPayload<A>>(config: NormalActionParam<Data, A, Payload>): NormalAction<Data, A, Payload>;
+    protected actionNormal<A extends (state: Data, payload: any) => void | Data>(fn: A): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
     // Case meta is false. We will never create meta reducer for this action.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamNoMeta<Data, A, Response, Payload>): RequestAction<Data, A, Response, Payload>;
@@ -48,9 +49,7 @@ export declare abstract class BaseModel<Data = null> {
     // Case meta is one of payload's key. we will automatically register metas reducer.
     protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMetas<Data, A, Response, Payload>): RequestActionWithMetas<Data, A, Response, Payload>;
 
-    protected actionThunk<A extends (...args: any[]) => any>(action: A): (...args: Parameters<A>) => ReturnType<A>;
-
-    protected emit<Payload = undefined>(payload?: Payload): ActionNormal<Payload>;
+    protected actionThunk<A extends (...args: any[]) => any>(action: A): { action: (...args: Parameters<A>) => ReturnType<A>; };
 
     protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
     protected post<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;

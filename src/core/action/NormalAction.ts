@@ -19,11 +19,11 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
     this.successCallback = config.onSuccess;
   }
 
-  public static createNormalData<Payload = {}>(payload?: Payload): ActionNormal<Payload> {
+  public static createNormalData<Payload>(payload?: Payload): ActionNormal<Payload> {
     return {
       type: '',
       // @ts-ignore
-      payload: payload || {},
+      payload: payload === undefined ? {} : payload,
     };
   }
 
