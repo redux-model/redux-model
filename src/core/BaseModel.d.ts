@@ -1,8 +1,8 @@
 import { NormalAction } from './action/NormalAction';
 import {
   ActionNormal,
-  Effects,
-  Reducers,
+  Effects, NormalActionAlias,
+  Reducers, RequestActionNoMeta,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
   RequestActionParamWithMetas,
@@ -11,7 +11,6 @@ import {
   RequestOptions,
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
-import { RequestAction } from '../libs/RequestAction';
 
 type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
 type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
@@ -36,16 +35,24 @@ export declare abstract class BaseModel<Data = null> {
     // Remember: You can only use it in react-redux.connect() method.
     connectData(): Data;
 
-    protected actionNormal<A extends (state: Data, payload: any) => void | Data>(onSuccess: A): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
+    protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
+      onSuccess: A
+    ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
     // Case meta is false. We will never create meta reducer for this action.
-    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamNoMeta<Data, A, Response, Payload>): RequestAction<Data, A, Response, Payload>;
+    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+      config: RequestActionParamNoMeta<Data, A, Response, Payload>
+    ): RequestActionNoMeta<Data, A, Response, Payload>;
 
     // Case meta is undefined or true. we will automatically register meta reducer.
-    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMeta<Data, A, Response, Payload>): RequestActionWithMeta<Data, A, Response, Payload>;
+    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+      config: RequestActionParamWithMeta<Data, A, Response, Payload>
+    ): RequestActionWithMeta<Data, A, Response, Payload>;
 
     // Case meta is one of payload's key. we will automatically register metas reducer.
-    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(config: RequestActionParamWithMetas<Data, A, Response, Payload>): RequestActionWithMetas<Data, A, Response, Payload>;
+    protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+      config: RequestActionParamWithMetas<Data, A, Response, Payload>
+    ): RequestActionWithMetas<Data, A, Response, Payload>;
 
     protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
     protected post<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;

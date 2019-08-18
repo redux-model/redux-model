@@ -6,6 +6,7 @@ import {
   ActionNormal,
   Effects,
   Reducers,
+  RequestActionNoMeta,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
   RequestActionParamWithMetas,
@@ -71,7 +72,7 @@ export abstract class BaseModel<Data = null> {
       return new Proxy(this, {
         set: (model, property: string, value) => {
           model[property] = value;
-          if (value instanceof BaseAction) {
+          if (typeof value === 'function' && value.__isAction__ === true) {
             value.setActionName(property);
           }
 
@@ -174,7 +175,7 @@ export abstract class BaseModel<Data = null> {
   // When meta=false
   protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestAction<Data, A, Response, Payload>;
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // When meta is undefined or true.
   // @ts-ignore

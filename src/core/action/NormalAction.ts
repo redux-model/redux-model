@@ -3,20 +3,19 @@ import { ActionNormal, Effects, NormalActionParam, NormalSubscriber } from '../u
 import { getStore } from '../utils/createReduxStore';
 
 export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> extends BaseAction<Data> {
-  public readonly action: A;
-
   protected readonly successCallback?: any;
 
   constructor(config: NormalActionParam<Data, A, Payload>, instanceName: string) {
     super(instanceName);
+    this.successCallback = config.onSuccess;
+
     // @ts-ignore
-    this.action = (...args: any[]) => {
+    return this.proxy((...args: any[]) => {
       return getStore().dispatch({
         ...config.action(...args),
         type: this.successType,
       });
-    };
-    this.successCallback = config.onSuccess;
+    }, ['onSuccess']);
   }
 
   public static createNormalData<Payload>(payload?: Payload): ActionNormal<Payload> {

@@ -127,7 +127,7 @@ const App: FunctionComponent<Props> = (props) => {
   const { runAction, name } = props;
 
   return (
-    <button onClick={() => test.myFirstAction.action({ name: 'New Name' })}>
+    <button onClick={() => test.myFirstAction({ name: 'New Name' })}>
       Click me: {name}
     </button>
   );
@@ -154,7 +154,7 @@ const App: FunctionComponent = () => {
   const name = test.useData((item) => item.foo);
 
   return (
-    <button onClick={() => test.myFirstAction.action({ name: 'New Name' })}>
+    <button onClick={() => test.myFirstAction({ name: 'New Name' })}>
       Click me: {name}
     </button>
   );
@@ -360,7 +360,7 @@ import { profileModel } from './ProfileModel.ts';
 const App: FunctionComponent = (props) => {
   const name = profileModel.useData((item) => item.name);
   const handleClick = () => {
-    profileModel.manage.action(1)
+    profileModel.manage(1)
       .then(({ response }) => {
         console.log('Hello, ' + response.name);
       })
@@ -396,7 +396,7 @@ const App: FunctionComponent = (props) => {
   const loading = profileModel.manage.useLoading();
 
   return (
-    <button onClick={() => profileModel.manage.action(1)}>
+    <button onClick={() => profileModel.manage(1)}>
       Click me: {name} {loading ? 'Waiting...' : ''}
     </button>
   );
@@ -450,7 +450,7 @@ const App: FunctionComponent = (props) => {
   const secondLoading = profileModel.manage.useLoading(secondUserId);
 
   return (
-    <button onClick={() => profileModel.manage.action(userId)}>
+    <button onClick={() => profileModel.manage(userId)}>
       Click me: {name}
       {loading ? 'Waiting...' : ''}
       {secondLoading ? 'Second waiting...' : ''}

@@ -3,6 +3,7 @@ import { METHOD } from './method';
 import { HTTP_STATUS_CODE } from './httpStatusCode';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { RequestAction } from '../../libs/RequestAction';
+import { NormalAction } from '../action/NormalAction';
 
 /**
  * Useful for combineReducer, If you are using IDE WebStorm, you'd better write code like this:
@@ -111,14 +112,18 @@ export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) =>
   meta: PayloadKey<A>;
 }
 
-export interface RequestActionWithMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
+export interface RequestActionNoMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
+  (...args: Parameters<A>): ReturnType<A>;
+}
+
+export interface RequestActionWithMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload> {
   useMeta<T = Meta>(filter?: (meta: Meta) => T): T;
   useLoading(): boolean;
   connectMeta(): Meta;
   connectLoading(): boolean;
 }
 
-export interface RequestActionWithMetas<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
+export interface RequestActionWithMetas<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload> {
   useMetas(): Metas;
   useMetas<T = Meta>(payloadData: PayloadData, filter?: (meta: Meta) => T): T;
   useLoading(payloadData: PayloadData): boolean;
@@ -130,6 +135,10 @@ export interface RequestActionWithMetas<Data, A extends (...args: any[]) => Fetc
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {
   action: A;
   onSuccess?: (state: Data, action: ActionNormal<Payload>) => Data | void;
+}
+
+export interface NormalActionAlias<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> extends NormalAction<Data, A, Payload> {
+  (...args: Parameters<A>): ReturnType<A>;
 }
 
 export type NormalSubscriber<CustomData, Payload> = {

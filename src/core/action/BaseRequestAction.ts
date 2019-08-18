@@ -24,8 +24,6 @@ const DEFAULT_META: Meta = {
 };
 
 export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
-  public readonly action: A;
-
   protected readonly meta: boolean | PayloadKey<A>;
 
   protected readonly prepareCallback?: any;
@@ -44,8 +42,16 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
 
   public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
     super(instanceName);
+
+    this.meta = config.meta === undefined ? true : config.meta;
+    this.prepareCallback = config.onPrepare;
+    this.successCallback = config.onSuccess;
+    this.failCallback = config.onFail;
+    this.prepareType = `${this.typePrefix} prepare`;
+    this.failType = `${this.typePrefix} fail`;
+
     // @ts-ignore
-    this.action = (...args: any[]) => {
+    return this.proxy((...args: any[]) => {
       const data = config.action(...args) as unknown as ActionRequest;
 
       data.type = {
@@ -55,14 +61,12 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       };
 
       return getStore().dispatch(data);
-    };
-
-    this.meta = config.meta === undefined ? true : config.meta;
-    this.prepareCallback = config.onPrepare;
-    this.successCallback = config.onSuccess;
-    this.failCallback = config.onFail;
-    this.prepareType = `${this.typePrefix} prepare`;
-    this.failType = `${this.typePrefix} fail`;
+    }, [
+      'onSuccess', 'onPrepare', 'onFail',
+      'getPrepareType', 'getFailType',
+      'useMeta', 'useMetas', 'useLoading',
+      'connectMeta', 'connectMetas', 'connectLoading',
+    ]);
   }
 
   public static createRequestData(options: Partial<BaseActionRequest> & Pick<BaseActionRequest, 'uri' | 'method' | 'middleware'>) {
