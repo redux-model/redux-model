@@ -419,7 +419,7 @@ const mapStateToProps = (state) => {
   loading: profileModel.manage.connectLoading(),
 };
 
-export default(mapStateToProps)(App);
+export default connect(mapStateToProps)(App);
 ```
 
 ------------------

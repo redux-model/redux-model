@@ -405,13 +405,13 @@ const App: FunctionComponent = (props) => {
 export default App;
 ```
 
-如果你是用不用hooks，我们可以用`connect()`方法注入到props中：
+如果你不喜欢hooks，我们可以用`connect()`方法注入到props中：
 ```typescript
 const mapStateToProps = () => {
   loading: profileModel.manage.connectLoading(),
 };
 
-export default(mapStateToProps)(App);
+export default connect(mapStateToProps)(App);
 ```
 
 ------------------
