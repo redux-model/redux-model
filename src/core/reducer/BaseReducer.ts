@@ -9,15 +9,12 @@ export class BaseReducer<Data> {
 
   protected readonly instanceName: string;
 
-  protected readonly suffix: string;
-
   protected currentReducerData: Data;
 
-  constructor(init: Data, instanceName: string, suffix: string) {
+  constructor(init: Data, instanceName: string) {
     this.initData = init;
     this.currentReducerData = init;
     this.instanceName = instanceName;
-    this.suffix = suffix;
   }
 
   public clear() {
@@ -29,7 +26,7 @@ export class BaseReducer<Data> {
   }
 
   public getReducerName() {
-    return `${this.instanceName}__${this.suffix}`;
+    return this.instanceName;
   }
 
   public getCurrentReducerData(): Data {

@@ -1,7 +1,4 @@
-import { BaseReducer } from '../reducer/BaseReducer';
-import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import {
-  ActionResponse,
   BaseActionRequest,
   Effects,
   Meta,
@@ -17,6 +14,7 @@ import {
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { getStore } from '../utils/createReduxStore';
 import { BaseAction } from './BaseAction';
+import { MetaReducer } from '../reducer/MetaReducer';
 
 const DEFAULT_META: Meta = {
   actionType: '',
@@ -35,10 +33,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   protected prepareType: string;
 
   protected failType: string;
-
-  protected metaInstance: BaseReducer<Meta> | null = null;
-
-  protected metasInstance: BaseReducer<Metas> | null = null;
 
   public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
     super(instanceName);
@@ -134,17 +128,21 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   public collectReducers(): Reducers {
-    let obj = super.collectReducers();
-
     if (this.meta !== false) {
+      const types = {
+        prepare: this.prepareType,
+        success: this.successType,
+        fail: this.failType,
+      };
+
       if (this.meta === true) {
-        obj = { ...obj, ...this.createMeta().createData(false) };
+        MetaReducer.addCase(this.typePrefix, types, false, '');
       } else {
-        obj = { ...obj, ...this.createMetas(this.meta).createData(false) };
+        MetaReducer.addCase(this.typePrefix, types, true, this.meta);
       }
     }
 
-    return obj;
+    return MetaReducer.createData();
   }
 
   public getPrepareType(): string {
@@ -156,17 +154,11 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   public useMeta<T = Meta>(filter?: (meta: Meta) => T): T {
-    if (!this.metaInstance) {
-      throw new ForgetRegisterError(this.instanceName);
-    }
-
-    const reducerName = this.metaInstance.getReducerName();
-
     return this.switchReduxSelector()((state: any) => {
-      const customMeta = state[reducerName];
+      let customMeta = state[MetaReducer.getName()][this.typePrefix];
 
       if (customMeta === undefined) {
-        throw new ForgetRegisterError(this.instanceName);
+        customMeta = DEFAULT_META;
       }
 
       return filter ? filter(customMeta) : customMeta;
@@ -174,20 +166,15 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   public useMetas<T = Meta>(payloadData?: PayloadData, filter?: (meta: Meta) => T): Metas | T {
-    if (!this.metasInstance) {
-      throw new ForgetRegisterError(this.instanceName);
-    }
-
     if (payloadData === undefined) {
       filter = undefined;
     }
 
     return this.switchReduxSelector()((state: any) => {
-      const reducerName = this.metasInstance!.getReducerName();
-      const customMetas = state[reducerName];
+      let customMetas = state[MetaReducer.getName()][this.typePrefix];
 
       if (customMetas === undefined) {
-        throw new ForgetRegisterError(this.instanceName);
+        customMetas = {};
       }
 
       const customMeta = payloadData === undefined ? customMetas : customMetas[payloadData] || DEFAULT_META;
@@ -203,19 +190,11 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   public connectMeta(): Meta {
-    if (!this.metaInstance) {
-      throw new ForgetRegisterError(this.instanceName);
-    }
-
-    return this.metaInstance.getCurrentReducerData();
+    return MetaReducer.getData(this.typePrefix);
   }
 
   public connectMetas(payloadData?: PayloadData): Metas | Meta {
-    if (!this.metasInstance) {
-      throw new ForgetRegisterError(this.instanceName);
-    }
-
-    const reducer = this.metasInstance.getCurrentReducerData();
+    const reducer = MetaReducer.getData(this.typePrefix);
 
     return payloadData === undefined
       ? reducer
@@ -232,91 +211,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     super.onTypePrefixChanged();
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
-  }
-
-  protected createMeta(): BaseReducer<Meta> {
-    this.metaInstance = new BaseReducer<Meta>(DEFAULT_META, this.typePrefix, 'meta');
-    this.metaInstance.addCase(
-      {
-        when: this.prepareType,
-        effect: () => {
-          return {
-            actionType: this.prepareType,
-            loading: true,
-          };
-        }
-      },
-      {
-        when: this.successType,
-        effect: () => {
-          return {
-            actionType: this.successType,
-            loading: false,
-          };
-        },
-      },
-      {
-        when: this.failType,
-        effect: (_, action: ActionResponse) => {
-          return {
-            actionType: this.failType,
-            loading: false,
-            errorMessage: action.errorMessage,
-            httpStatus: action.httpStatus,
-            businessCode: action.businessCode,
-          };
-        },
-      },
-    );
-
-    return this.metaInstance;
-  }
-
-  protected createMetas(payloadKey: any): BaseReducer<Metas> {
-    this.metasInstance = new BaseReducer<Metas>({}, this.typePrefix, 'metas');
-    this.metasInstance.addCase(
-      {
-        when: this.prepareType,
-        effect: (state, action: ActionResponse) => {
-          return {
-            ...state,
-            [action.payload[payloadKey]]: {
-              actionType: action.type,
-              loading: true,
-            },
-          };
-        },
-      },
-      {
-        when: this.successType,
-        effect: (state, action: ActionResponse) => {
-          return {
-            ...state,
-            [action.payload[payloadKey]]: {
-              actionType: action.type,
-              loading: false,
-            },
-          };
-        },
-      },
-      {
-        when: this.failType,
-        effect: (state, action: ActionResponse) => {
-          return {
-            ...state,
-            [action.payload[payloadKey]]: {
-              actionType: action.type,
-              loading: false,
-              errorMessage: action.errorMessage,
-              httpStatus: action.httpStatus,
-              businessCode: action.businessCode,
-            },
-          };
-        },
-      },
-    );
-
-    return this.metasInstance;
   }
 
   protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;

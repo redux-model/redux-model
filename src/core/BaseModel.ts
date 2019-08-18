@@ -63,7 +63,7 @@ export abstract class BaseModel<Data = null> {
     const initData = this.initReducer();
 
     if (initData !== null) {
-      this.reducer = new BaseReducer<Data>(initData, this.instanceName, 'data');
+      this.reducer = new BaseReducer<Data>(initData, this.instanceName);
       this.reducerName = this.reducer.getReducerName();
     }
 
