@@ -59,7 +59,7 @@ You need to write almost zero line redux code when you are using snippets.
 ## Define Model
 You should define a model before you want to use reducer. As rule, one model can only includes one or zero reducer. Firstly, let's define an interface and initialize the reducer.
 ```typescript
-// test.ts
+// Test.ts
 import { Model } from '@redux-model/*';
 
 interface Data {
@@ -84,12 +84,15 @@ As we know, the reducer data must be registered to store by `createReduxStore()`
 ```typescript
 // reducers.ts
 import { combineReducers } from 'redux';
+import { createReduxStore } from '@redux-model/*';
 
 const reducers = {
   ...test.register(),
 };
 
-export const rootReducers = combineReducers(reducers);
+const rootReducers = combineReducers(reducers);
+
+const store = createReduxStore(rootReducers);
 ```
 
 ## Define Action

@@ -58,7 +58,7 @@ npm install redux @tarojs/redux @tarojs/redux-h5
 ## 定义Model
 想要定义reducer，就必须先定义一个模型类，因为一个模型可以包含一个或不带reducer。我们需要为reducer定义一个接口，并注入到模型中，这样我们就可以在整个项目中得到数据类型的提示。
 ```typescript
-// test.ts
+// Test.ts
 import { Model } from '@redux-model/*';
 
 interface Data {
@@ -83,12 +83,15 @@ export const test = new Test();
 ```typescript
 // reducers.ts
 import { combineReducers } from 'redux';
+import { createReduxStore } from '@redux-model/*';
 
 const reducers = {
   ...test.register(),
 };
 
-export const rootReducers = combineReducers(reducers);
+const rootReducers = combineReducers(reducers);
+
+const store = createReduxStore(rootReducers);
 ```
 
 ## 定义Action
