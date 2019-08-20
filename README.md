@@ -95,7 +95,7 @@ const store = createReduxStore(rootReducers);
 ```
 
 ## 定义Action
-在模型中，我们只需要3种类型的action，而且一个模型支持写入无限个action。
+在模型中，我们只需要2种类型的action，而且一个模型支持写入无限个action。
 >- 普通action
 >- 异步请求action
 
@@ -103,7 +103,7 @@ const store = createReduxStore(rootReducers);
 普通的action是最基础的action，它的作用就是同步发送一次消息
 
 ```typescript
-// test.ts
+// Test.ts
 class Test extends Model<Data> {
   myFirstAction = this.actionNormal((state, payload: { name: string }) => {
       state.foo = 'new name: ' + payload.name;
@@ -127,7 +127,7 @@ import { test } from './Test';
 type Props = ReturnType<typeof mapStateToProps>;
 
 const App: FunctionComponent<Props> = (props) => {
-  const { runAction, name } = props;
+  const { name } = props;
 
   return (
     <button onClick={() => test.myFirstAction({ name: 'New Name' })}>
@@ -229,7 +229,7 @@ const store = createReduxStore(
 ----------------
 好了，准备就绪，开始写第一个异步action
 ```typescript
-// profile.ts
+// Profile.ts
 interface Data {
   id: number;
   name: string;

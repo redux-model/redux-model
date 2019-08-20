@@ -96,16 +96,15 @@ const store = createReduxStore(rootReducers);
 ```
 
 ## Define Action
-We only have 3 kind of actions here, but remember that one model can includes unlimited actions. And I will show you how to use them.
+We only have two kind of actions here, but remember that one model can includes unlimited actions. And I will show you how to use them.
 >- Normal Action
 >- Request Action
->- Thunk Action
 
 ## Define Normal Action
 Normal Action is the mostly basic action. It can just send message to reducer.
 
 ```typescript
-// test.ts
+// Test.ts
 class Test extends Model<Data> {
   myFirstAction = this.actionNormal((state, payload: { name: string }) => {
     state.foo = 'new name: ' + payload.name;
@@ -130,7 +129,7 @@ import { test } from './Test';
 type Props = ReturnType<typeof mapStateToProps>;
 
 const App: FunctionComponent<Props> = (props) => {
-  const { runAction, name } = props;
+  const { name } = props;
 
   return (
     <button onClick={() => test.myFirstAction({ name: 'New Name' })}>
@@ -233,7 +232,7 @@ const store = createReduxStore(
 All right. You get everything ready and let's go on.
 
 ```typescript
-// profile.ts
+// Profile.ts
 interface Data {
   id: number;
   name: string;
