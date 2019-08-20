@@ -1,7 +1,10 @@
-import { NormalAction } from './action/NormalAction';
 import {
-  ActionNormal,
-  Effects, NormalActionAlias,
+  Effects,
+  EnhancePayload,
+  EnhanceResponse,
+  ExtractNormalAction,
+  ExtractNormalPayload,
+  NormalActionAlias,
   Reducers, RequestActionNoMeta,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
@@ -11,12 +14,6 @@ import {
   RequestOptions,
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
-
-type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
-type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
-
-type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
-type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
 
 export declare abstract class BaseModel<Data = null> {
     static middlewareName: string;

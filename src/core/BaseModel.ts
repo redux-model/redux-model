@@ -3,8 +3,11 @@ import { BaseRequestAction } from './action/BaseRequestAction';
 import { NormalAction } from './action/NormalAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import {
-  ActionNormal,
   Effects,
+  EnhancePayload,
+  EnhanceResponse,
+  ExtractNormalAction,
+  ExtractNormalPayload,
   Reducers,
   RequestActionNoMeta,
   RequestActionParamNoMeta,
@@ -22,12 +25,6 @@ import { isDebug } from '../libs/dev';
 import { FetchHandle } from '../libs/types';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
-
-type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
-type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
-
-type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
-type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
 
 export abstract class BaseModel<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';

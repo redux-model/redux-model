@@ -34,7 +34,9 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
   }
 
   public collectEffects(): Effects<Data> {
-    const effects = super.collectEffects();
+    const effects = [
+      ...super.collectEffects(),
+    ];
 
     if (this.successCallback) {
       effects.push({

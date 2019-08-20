@@ -145,3 +145,9 @@ export type NormalSubscriber<CustomData, Payload> = {
   when: string;
   effect: (state: CustomData, action: ActionNormal<Payload>) => CustomData | void;
 };
+
+export type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;
+export type EnhancePayload<A> = A extends (...args: any[]) => FetchHandle<any, infer P> ? P : never;
+
+export type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
+export type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
