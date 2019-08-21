@@ -2,10 +2,11 @@
   "name": "@redux-model/react-native",
   "version": "5.4.0",
   "keywords": [
+    "react",
     "redux-model",
     "redux",
+    "model",
     "typescript",
-    "web",
     "react-native"
   ],
   "main": "libs/index.js",

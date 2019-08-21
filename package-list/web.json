@@ -2,11 +2,15 @@
   "name": "@redux-model/web",
   "version": "5.4.0",
   "keywords": [
+    "react",
     "redux-model",
     "redux",
+    "model",
     "typescript",
     "web",
-    "react-native"
+    "h5",
+    "html5",
+    "browser"
   ],
   "main": "libs/index.js",
   "types": "libs/index.d.ts",
