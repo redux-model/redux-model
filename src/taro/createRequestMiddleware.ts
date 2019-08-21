@@ -116,6 +116,10 @@ export const createRequestMiddleware = <RootState = any>(config: {
           errorMessage = 'Fail to request.';
         }
 
+        if (!errorMessage) {
+          errorMessage = action.failText || 'Fail to fetch api';
+        }
+
         const errorResponse: ActionResponse = {
           ...action,
           payload: action.payload,
@@ -137,7 +141,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
         }
 
         if (showError) {
-          config.onShowError(errorMessage);
+          config.onShowError(action.failText || errorMessage);
         }
 
         return Promise.reject(errorResponse);

@@ -104,6 +104,10 @@ export const createRequestMiddleware = <RootState = any>(config: {
             errorMessage = error.message;
           }
 
+          if (!errorMessage) {
+            errorMessage = action.failText || 'Fail to fetch api';
+          }
+
           if (config.getTimeoutMessage && /^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
             errorMessage = config.getTimeoutMessage();
           }
@@ -130,7 +134,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
             }
 
             if (showError) {
-              config.onShowError(errorMessage);
+              config.onShowError(action.failText || errorMessage);
             }
           }
 

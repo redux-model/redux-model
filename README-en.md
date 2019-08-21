@@ -307,6 +307,10 @@ Decide show or hide error message when fetch fail. The default value is false.
 **successText**&nbsp;&nbsp;[string]
 <br>
 Success message you want to show in screen when fetch succeed.
+<br><br>
+**failText**&nbsp;&nbsp;[string]
+<br>
+Specific error message you want to show when fetch failed. We will focus to show this message or turn to show api error message if failText is empty.
 
 ## Model effects.
 In some case, We expect the action can effect reducer from owner model but also other model. Yep, you can override protected method `effects()` and receive effect from other model.

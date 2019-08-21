@@ -67,6 +67,7 @@ export interface BaseActionRequest<Payload = any, Type = Types> extends ActionNo
   body: object;
   query: object;
   successText: string;
+  failText: string;
   hideError: boolean | ((response: ActionResponse) => boolean);
   requestOptions: object;
 }

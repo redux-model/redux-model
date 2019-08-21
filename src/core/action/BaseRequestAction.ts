@@ -72,6 +72,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       body: options.body || {},
       query: options.query || {},
       successText: options.successText || '',
+      failText: options.failText || '',
       hideError: options.hideError || false,
       requestOptions: options.requestOptions || {},
     };

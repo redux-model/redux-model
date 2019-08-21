@@ -304,6 +304,10 @@ export const profileModel = new ProfileModel();
 **successText**&nbsp;&nbsp;[string]
 <br>
 请求成功时要展示的成功文字
+<br><br>
+**failText**&nbsp;&nbsp;[string]
+<br>
+请求失败时要展示的文字，如果没有提供，则展示接口返回的错误信息
 
 ## 模型交叉
 有时候，执行某个模型下的action可能需要变更其它模型的reducer数据，这是很常见的操作方式，我们提供了一个保护方法`effects()`来做这个事情。
