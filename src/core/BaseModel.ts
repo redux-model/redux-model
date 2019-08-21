@@ -131,7 +131,7 @@ export abstract class BaseModel<Data = null> {
     throw new NullReducerError(this.constructor.name);
   }
 
-  public connectData(): Data {
+  public get data(): Data {
     if (this.reducer) {
       const customData = this.reducer.getCurrentReducerData();
 

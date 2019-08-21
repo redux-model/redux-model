@@ -5,22 +5,22 @@ import { ActionRequest } from './types';
 import { HttpError } from '../libs/types';
 
 interface FailTransform {
-    httpStatus?: HTTP_STATUS_CODE;
-    errorMessage?: string;
-    businessCode?: string;
+  httpStatus?: HTTP_STATUS_CODE;
+  errorMessage?: string;
+  businessCode?: string;
 }
 
 export declare const createRequestMiddleware: <RootState = any>(config: {
-    id: string;
-    baseUrl: string;
-    // Do it like this:
-    // import { request } from '@tarojs/taro';
-    // request: request
-    request: (params: request.Param<any>) => request.requestTask<any>;
-    requestConfig?: request.Param<any>;
-    onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
-    getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
-    onFail: (error: HttpError, transform: FailTransform) => void;
-    onShowSuccess: (message: string) => void;
-    onShowError: (message: string) => void;
+  id: string;
+  baseUrl: string;
+  // Do it like this:
+  // import { request } from '@tarojs/taro';
+  // request: request
+  request: (params: request.Param<any>) => request.requestTask<any>;
+  requestConfig?: request.Param<any>;
+  onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
+  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
+  onFail: (error: HttpError, transform: FailTransform) => void;
+  onShowSuccess: (message: string) => void;
+  onShowError: (message: string) => void;
 }) => Middleware<{}, RootState, Dispatch>;

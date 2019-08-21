@@ -140,7 +140,7 @@ const App: FunctionComponent<Props> = (props) => {
 
 const mapStateToProps = () => {
   return {
-    name: test.connectData().foo,
+    name: test.data.foo,
   };
 };
 
@@ -188,7 +188,7 @@ export const apiMiddleware = createRequestMiddleware({
   getHeaders: ({ getState }) => {
     // You are free to get data from redux
     // Such as access_token like:
-    // const token = tokenModel.connectData().access_token;
+    // const token = tokenModel.data.access_token;
     return {
       Authorization: `Bearer token`,
       Accept: 'application/json',

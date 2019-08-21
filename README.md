@@ -138,7 +138,7 @@ const App: FunctionComponent<Props> = (props) => {
 
 const mapStateToProps = () => {
   return {
-    name: test.connectData().foo,
+    name: test.data.foo,
   };
 };
 
@@ -185,7 +185,7 @@ export const apiMiddleware = createRequestMiddleware({
   // 请求头信息
   getHeaders: ({ getState }) => {
     // header一般要带token等信息做权限校验，如果token存在reducer中，那么可以直接获取：
-    // const token = tokenModel.connectData().access_token;
+    // const token = tokenModel.data.access_token;
     return {
       Authorization: `Bearer token`,
       Accept: 'application/json',
