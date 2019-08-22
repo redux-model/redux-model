@@ -59,7 +59,7 @@ export abstract class BaseModel<Data = null> {
 
     const initData = this.initReducer();
 
-    if (initData !== null) {
+    if (initData !== null || typeof initData === 'function') {
       this.reducer = new BaseReducer<Data>(initData, this.instanceName);
       this.reducerName = this.reducer.getReducerName();
     }
@@ -249,7 +249,7 @@ export abstract class BaseModel<Data = null> {
     return true;
   }
 
-  protected abstract initReducer(): Data;
+  protected abstract initReducer(): Data | (() => Data);
 
   protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
 }

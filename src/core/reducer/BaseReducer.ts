@@ -3,17 +3,16 @@ import { Effects, Reducers } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 
 export class BaseReducer<Data> {
-  protected readonly initData: Data;
+  protected readonly initData: Data | (() => Data);
 
   protected cases: Effects<Data> = [];
 
   protected readonly instanceName: string;
 
-  protected currentReducerData: Data;
+  protected currentReducerData: Data | undefined = undefined;
 
-  constructor(init: Data, instanceName: string) {
+  constructor(init: Data | (() => Data), instanceName: string) {
     this.initData = init;
-    this.currentReducerData = init;
     this.instanceName = instanceName;
   }
 
@@ -30,14 +29,14 @@ export class BaseReducer<Data> {
   }
 
   public getCurrentReducerData(): Data {
-    return this.currentReducerData;
+    return this.currentReducerData!;
   }
 
   public createData(useImmer: boolean): Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
         if (state === undefined) {
-          state = this.initData;
+          state = typeof this.initData === 'function' ? (this.initData as Function)() : this.initData;
         }
 
         for (const { when, effect } of this.cases) {
