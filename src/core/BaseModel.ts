@@ -64,6 +64,8 @@ export abstract class BaseModel<Data = null> {
       this.reducerName = this.reducer.getReducerName();
     }
 
+    this.onInit();
+
     if (isDebug() && isProxyEnable()) {
       // Proxy is es6 syntax, and it can't be transformed to es5.
       return new Proxy(this, {
@@ -143,6 +145,10 @@ export abstract class BaseModel<Data = null> {
     }
 
     throw new NullReducerError(this.constructor.name);
+  }
+
+  protected onInit(): void {
+    // Do anything as in constructor.
   }
 
   protected actionNormal<A extends (state: Data, payload: any) => void | Data>(

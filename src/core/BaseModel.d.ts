@@ -38,6 +38,9 @@ export declare abstract class BaseModel<Data = null> {
   // Make sure React version >=16.8 and react-redux version >=7.1.0
   useData<T = Data>(filter?: (data: Data) => T): T;
 
+  // Do anything as in constructor.
+  protected onInit(): void;
+
   protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
     onSuccess: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
