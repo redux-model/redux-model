@@ -19,6 +19,7 @@ import {
   UseSelector,
 } from './utils/types';
 import { METHOD } from './utils/method';
+import { onStoreCreated } from './utils/createReduxStore';
 import { isProxyEnable } from './utils/dev';
 import { RequestAction } from '../libs/RequestAction';
 import { isDebug } from '../libs/dev';
@@ -65,6 +66,9 @@ export abstract class BaseModel<Data = null> {
     }
 
     this.onInit();
+    onStoreCreated(() => {
+      this.onReducerCreated();
+    });
 
     if (isDebug() && isProxyEnable()) {
       // Proxy is es6 syntax, and it can't be transformed to es5.
@@ -149,6 +153,10 @@ export abstract class BaseModel<Data = null> {
 
   protected onInit(): void {
     // Do anything as in constructor.
+  }
+
+  protected onReducerCreated(): void {
+    // Do anything after reducer is generated.
   }
 
   protected actionNormal<A extends (state: Data, payload: any) => void | Data>(

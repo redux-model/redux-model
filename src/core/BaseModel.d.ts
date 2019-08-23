@@ -41,6 +41,9 @@ export declare abstract class BaseModel<Data = null> {
   // Do anything as in constructor.
   protected onInit(): void;
 
+  // Do anything after reducer is generated.
+  protected onReducerCreated(): void;
+
   protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
     onSuccess: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
