@@ -20,6 +20,9 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 安装
 
+**如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
+
+
 #### [H5 / Web](https://reactjs.org)
 ```bash
 # 使用 npm 或者 yarn
@@ -27,7 +30,8 @@ npm install @redux-model/web
 npm install redux react-redux
 ```
 
-**如果你想使用react的hooks特性，请保持react的版本在`16.8.3+`以及react-redux的版本在`7.1.0+`**
+如果你想要使用Redux控制路由，类似connected-react-router或者react-router-redux，那么你现在不需要使用它们了。我推荐用更加适配的插件：[@redux-model/web-router](https://github.com/fwh1990/redux-model-web-router)。
+
 
 #### [React-Native](https://github.com/facebook/react-native)
 

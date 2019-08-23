@@ -21,6 +21,8 @@ Now, I want to tell you, I am in modern way to write redux. I'am using OOP inste
 
 # Installation
 
+Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when you are using `React Hooks`
+
 #### [H5 / Web](https://reactjs.org)
 ```bash
 # By npm or yarn
@@ -28,7 +30,7 @@ npm install @redux-model/web
 npm install redux react-redux
 ```
 
-Remember: Keep react version at **16.8.3+** and react-redux at **7.1.0+** when you are using `React Hooks`
+If you want to control router by redux, you may use connected-react-router or react-router-redux or something like. But now, I recommend you to use a more compatible package: [@redux-model/web-router](https://github.com/fwh1990/redux-model-web-router) .
 
 #### [React-Native](https://github.com/facebook/react-native)
 
