@@ -1,3 +1,4 @@
+import { Store } from 'redux';
 import { BaseAction } from './action/BaseAction';
 import { BaseRequestAction } from './action/BaseRequestAction';
 import { NormalAction } from './action/NormalAction';
@@ -66,8 +67,8 @@ export abstract class BaseModel<Data = null> {
     }
 
     this.onInit();
-    onStoreCreated(() => {
-      this.onReducerCreated();
+    onStoreCreated((store) => {
+      this.onReducerCreated(store);
     });
 
     if (isDebug() && isProxyEnable()) {
@@ -155,7 +156,7 @@ export abstract class BaseModel<Data = null> {
     // Do anything as in constructor.
   }
 
-  protected onReducerCreated(): void {
+  protected onReducerCreated(_store: Store): void {
     // Do anything after reducer is generated.
   }
 

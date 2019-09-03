@@ -1,3 +1,4 @@
+import { Store } from 'redux';
 import {
   Effects,
   EnhancePayload,
@@ -42,7 +43,7 @@ export declare abstract class BaseModel<Data = null> {
   protected onInit(): void;
 
   // Do anything after reducer is generated.
-  protected onReducerCreated(): void;
+  protected onReducerCreated(store: Store): void;
 
   protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
     onSuccess: A
