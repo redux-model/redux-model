@@ -5,6 +5,8 @@ import { NormalAction } from './action/NormalAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import {
   Effects,
+  State,
+  StateReturn,
   EnhancePayload,
   EnhanceResponse,
   ExtractNormalAction,
@@ -115,7 +117,7 @@ export abstract class BaseModel<Data = null> {
       this.reducer.addCase(...this.effects());
       reducers = {
         ...reducers,
-        ...this.reducer.createData(this.mvvmForReducer()),
+        ...this.reducer.createData(),
       };
     }
 
@@ -160,7 +162,7 @@ export abstract class BaseModel<Data = null> {
     // Do anything after reducer is generated.
   }
 
-  protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
+  protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     onSuccess: A
   ): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = this.instanceName;
@@ -257,11 +259,6 @@ export abstract class BaseModel<Data = null> {
 
   protected getMiddlewareName(): string {
     return BaseModel.middlewareName;
-  }
-
-  // Open immer feature and you can modify state directly.
-  protected mvvmForReducer(): boolean {
-    return true;
   }
 
   protected abstract initReducer(): Data | (() => Data);

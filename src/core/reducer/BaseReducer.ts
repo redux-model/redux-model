@@ -40,7 +40,7 @@ export class BaseReducer<Data> {
     return this.currentReducerData!;
   }
 
-  public createData(useImmer: boolean): Reducers {
+  public createData(): Reducers {
     return {
       [this.getReducerName()]: (state, action) => {
         if (state === undefined) {
@@ -49,7 +49,7 @@ export class BaseReducer<Data> {
 
         for (const { when, effect } of this.cases) {
           if (when === action.type) {
-            if (useImmer && isDraftable(state)) {
+            if (isDraftable(state)) {
               const draft = createDraft(state);
               const responseDraft = effect(draft, action);
 

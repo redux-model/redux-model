@@ -29,9 +29,15 @@ export type UseSelector<TState, TSelected> = (
   equalityFn?: (left: TSelected, right: TSelected) => boolean
 ) => TSelected;
 
+type State<Data> = Data & {
+  __use_mvvm__: true;
+};
+
+type StateReturn<Data> = void | (Data & { __use_mvvm__?: false })
+
 export type Effects<Data> = Array<{
   when: string;
-  effect: (state: Data, action: any) => Data | void;
+  effect: (state: State<Data>, action: any) => StateReturn<Data>;
 }>;
 
 export type Meta = Readonly<{
@@ -91,14 +97,14 @@ export type PayloadKey<A> =  A extends (...args: any[]) => FetchHandle<any, infe
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
-  effect: (state: CustomData, action: ActionResponse<Response, Payload>) => CustomData | void;
+  effect: (state: State<CustomData>, action: ActionResponse<Response, Payload>) => StateReturn<CustomData>;
 };
 
 export interface RequestActionParamBase<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> {
   action: A;
-  onSuccess?: (state: Data, action: ActionResponse<Response, Payload>) => Data | void;
-  onPrepare?: (state: Data, action: ActionResponse<Response, Payload>) => Data | void;
-  onFail?: (state: Data, action: ActionResponse<Response, Payload>) => Data | void;
+  onSuccess?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
+  onPrepare?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
+  onFail?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
 }
 
 export interface RequestActionParamNoMeta<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
@@ -135,7 +141,7 @@ export interface RequestActionWithMetas<Data, A extends (...args: any[]) => Fetc
 
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {
   action: A;
-  onSuccess?: (state: Data, action: ActionNormal<Payload>) => Data | void;
+  onSuccess?: (state: State<Data>, action: ActionNormal<Payload>) => StateReturn<Data>;
 }
 
 export interface NormalActionAlias<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> extends NormalAction<Data, A, Payload> {
@@ -144,7 +150,7 @@ export interface NormalActionAlias<Data, A extends (...args: any[]) => ActionNor
 
 export type NormalSubscriber<CustomData, Payload> = {
   when: string;
-  effect: (state: CustomData, action: ActionNormal<Payload>) => CustomData | void;
+  effect: (state: State<CustomData>, action: ActionNormal<Payload>) => StateReturn<CustomData>;
 };
 
 export type EnhanceResponse<A> = A extends (...args: any[]) => FetchHandle<infer R, any> ? R : never;

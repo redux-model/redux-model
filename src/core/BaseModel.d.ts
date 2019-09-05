@@ -13,6 +13,8 @@ import {
   RequestActionWithMeta,
   RequestActionWithMetas,
   RequestOptions,
+  State,
+  StateReturn,
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
 
@@ -45,7 +47,7 @@ export declare abstract class BaseModel<Data = null> {
   // Do anything after reducer is generated.
   protected onReducerCreated(store: Store): void;
 
-  protected actionNormal<A extends (state: Data, payload: any) => void | Data>(
+  protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     onSuccess: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
@@ -71,7 +73,5 @@ export declare abstract class BaseModel<Data = null> {
 
   protected effects(): Effects<Data>;
   protected getMiddlewareName(): string;
-  // Open immer feature and you can modify state directly. Default is true
-  protected mvvmForReducer(): boolean;
   protected abstract initReducer(): Data | (() => Data);
 }
