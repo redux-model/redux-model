@@ -141,6 +141,10 @@ export abstract class BaseModel<Data = null> {
   }
 
   public get data(): Data {
+    return this.connectData();
+  }
+
+  public connectData(): Data {
     if (this.reducer) {
       const customData = this.reducer.getCurrentReducerData();
 

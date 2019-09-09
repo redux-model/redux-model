@@ -27,12 +27,17 @@ export declare abstract class BaseModel<Data = null> {
   static isLoading(...fromUseLoading: boolean[]): boolean;
 
   // Remember:
-  // Do not use it in component directly.
-  // If your are using hooks, just invoke useData().
-  // If your are using function-component or class-component, just inject data by react-redux.connect()
+  // can be used anywhere except component.
+  // For component, just inject data by react-redux.connect().
+  // For react-hooks, just invoke useData() without connect().
   readonly data: Data;
 
   constructor(alias?: string);
+
+  // The same as model.data, can be used anywhere except component.
+  // For component, just inject data by react-redux.connect().
+  // For react-hooks, just invoke useData() without connect().
+  connectData(): Data;
 
   register(): Reducers;
 
