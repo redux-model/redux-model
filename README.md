@@ -197,7 +197,7 @@ export const apiMiddleware = createRequestMiddleware({
    };
   },
   // 定位业务场景下的错误码等信息，会自动存入meta中
-  onFail: (error: HttpError<{}>, transform) => {
+  onRespondError: (error: HttpError<{}>, transform) => {
     const { data } = error.response;
 
     transform.businessCode = data ? data.code : undefined;

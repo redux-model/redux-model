@@ -17,13 +17,15 @@ type MixedReturn = FetchHandle | ActionRequest;
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
-  request: (params: request.Param<any>) => request.requestTask<any>;
-  requestConfig?: Omit<request.Param, 'url'>;
-  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
-  onFail: (error: HttpError, transform: FailTransform) => void;
+  onRespondError: (error: HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
+  request: (params: request.Param<any>) => request.requestTask<any>;
+  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
+  requestConfig?: Omit<request.Param, 'url'>;
+  timeoutMessage?: string;
+  networkErrorMessage?: string;
 }) => {
 
   const middleware: Middleware<{}, RootState> = (api) => (next) => (action: ActionRequest): MixedReturn => {
@@ -94,7 +96,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
 
         return Promise.resolve(okResponse);
       })
-      .catch((error: request.Promised) => {
+      .catch((error: request.Promised & { errMsg: string }) => {
         if (successInvoked) {
           return Promise.reject(error);
         }
@@ -108,16 +110,18 @@ export const createRequestMiddleware = <RootState = any>(config: {
             httpStatus: error.statusCode,
           };
 
-          config.onFail(error, transform);
-          errorMessage = transform.errorMessage;
+          config.onRespondError(error, transform);
+          errorMessage = action.failText || transform.errorMessage || 'Fail to fetch api';
           httpStatus = transform.httpStatus;
           businessCode = transform.businessCode;
         } else {
-          errorMessage = 'Fail to request.';
-        }
+          errorMessage = 'Fail to request api';
 
-        if (!errorMessage) {
-          errorMessage = action.failText || 'Fail to fetch api';
+          if (error.errMsg && config.timeoutMessage && /timeout/i.test(error.errMsg)) {
+            errorMessage = config.timeoutMessage;
+          } else if (error.errMsg && config.networkErrorMessage && /fail/i.test(error.errMsg)) {
+            errorMessage = config.networkErrorMessage;
+          }
         }
 
         const errorResponse: ActionResponse = {
@@ -141,7 +145,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
         }
 
         if (showError) {
-          config.onShowError(action.failText || errorMessage);
+          config.onShowError(errorMessage);
         }
 
         return Promise.reject(errorResponse);

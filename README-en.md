@@ -198,7 +198,7 @@ export const apiMiddleware = createRequestMiddleware({
    };
   },
   // Collect your meta.
-  onFail: (error: HttpError, transform) => {
+  onRespondError: (error: HttpError, transform) => {
     const { data } = error.response;
 
     transform.businessCode = data ? data.code : undefined;

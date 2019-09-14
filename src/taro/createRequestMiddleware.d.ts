@@ -13,14 +13,18 @@ interface FailTransform {
 export declare const createRequestMiddleware: <RootState = any>(config: {
   id: string;
   baseUrl: string;
+  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
+  // Method `onRespondError` does not work for network-error and timeout-error
+  // In that case, consider providing config `timeoutMessage` and `networkErrorMessage`
+  onRespondError: (error: HttpError, transform: FailTransform) => void;
+  onShowSuccess: (message: string) => void;
+  onShowError: (message: string) => void;
   // Do it like this:
   // import { request } from '@tarojs/taro';
   // request: request
   request: (params: request.Param<any>) => request.requestTask<any>;
-  requestConfig?: Omit<request.Param, 'url'>;
   onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
-  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
-  onFail: (error: HttpError, transform: FailTransform) => void;
-  onShowSuccess: (message: string) => void;
-  onShowError: (message: string) => void;
+  requestConfig?: Omit<request.Param, 'url'>;
+  timeoutMessage?: string;
+  networkErrorMessage?: string;
 }) => Middleware<{}, RootState, Dispatch>;

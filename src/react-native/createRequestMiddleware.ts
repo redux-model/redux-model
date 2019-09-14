@@ -16,13 +16,14 @@ type MixedReturn = FetchHandle | ActionRequest;
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
-  requestConfig?: AxiosRequestConfig;
-  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
-  getTimeoutMessage?: () => string;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
-  onFail: (error: HttpError, transform: FailTransform) => void;
+  onRespondError: (error: HttpError, transform: FailTransform) => void;
   onShowSuccess: (message: string) => void;
   onShowError: (message: string) => void;
+  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
+  requestConfig?: AxiosRequestConfig;
+  timeoutMessage?: string;
+  networkErrorMessage?: string;
 }) => {
   const httpHandle = axios.create({
     baseURL: config.baseUrl,
@@ -62,84 +63,82 @@ export const createRequestMiddleware = <RootState = any>(config: {
 
     next({ ...action, type: prepare });
     const promise = httpHandle.request(requestOptions)
-        .then((response) => {
-          const okResponse: ActionResponse = {
-            ...action,
-            payload: action.payload,
-            type: success,
-            response: response.data,
+      .then((response) => {
+        const okResponse: ActionResponse = {
+          ...action,
+          payload: action.payload,
+          type: success,
+          response: response.data,
+        };
+
+        successInvoked = true;
+        next(okResponse);
+
+        if (action.successText) {
+          config.onShowSuccess(action.successText);
+        }
+
+        return Promise.resolve(okResponse);
+      })
+      .catch((error: AxiosError) => {
+        if (successInvoked) {
+          return Promise.reject(error);
+        }
+
+        const isCancel = axios.isCancel(error);
+        let errorMessage;
+        let httpStatus;
+        let businessCode;
+
+        if (isCancel) {
+          errorMessage = error.message || 'Abort';
+        } else if (error.request && error.response) {
+          const transform: FailTransform = {
+            httpStatus: error.response.status,
           };
 
-          successInvoked = true;
-          next(okResponse);
+          config.onRespondError(error as HttpError, transform);
+          errorMessage = action.failText || transform.errorMessage || 'Fail to request api';
+          httpStatus = transform.httpStatus;
+          businessCode = transform.businessCode;
+        } else {
+          errorMessage = error.message;
 
-          if (action.successText) {
-            config.onShowSuccess(action.successText);
+          if (config.timeoutMessage && /^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
+            errorMessage = config.timeoutMessage;
+          } else if (config.networkErrorMessage && /Network\sError/i.test(errorMessage)) {
+            errorMessage = config.networkErrorMessage;
           }
+        }
 
-          return Promise.resolve(okResponse);
-        })
-        .catch((error: AxiosError) => {
-          if (successInvoked) {
-            return Promise.reject(error);
-          }
+        const errorResponse: ActionResponse = {
+          ...action,
+          payload: action.payload,
+          response: error.response || {},
+          type: fail,
+          errorMessage,
+          httpStatus,
+          businessCode,
+        };
 
-          const isCancel = axios.isCancel(error);
-          let errorMessage;
-          let httpStatus;
-          let businessCode;
+        next(errorResponse);
 
-          if (isCancel) {
-            errorMessage = error.message;
-          } else if (error.request && error.response) {
-            const transform: FailTransform = {
-              httpStatus: error.response.status,
-            };
+        if (!isCancel) {
+          let showError: boolean;
 
-            config.onFail(error as HttpError, transform);
-            errorMessage = transform.errorMessage;
-            httpStatus = transform.httpStatus;
-            businessCode = transform.businessCode;
+          if (typeof action.hideError === 'boolean') {
+            showError = !action.hideError;
           } else {
-            errorMessage = error.message;
+            showError = !action.hideError(errorResponse);
           }
 
-          if (!errorMessage) {
-            errorMessage = action.failText || 'Fail to fetch api';
+          if (showError) {
+            config.onShowError(action.failText || errorMessage);
           }
+        }
 
-          if (config.getTimeoutMessage && /^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
-            errorMessage = config.getTimeoutMessage();
-          }
-
-          const errorResponse: ActionResponse = {
-            ...action,
-            payload: action.payload,
-            response: error.response || {},
-            type: fail,
-            errorMessage,
-            httpStatus,
-            businessCode,
-          };
-
-          next(errorResponse);
-
-          if (!isCancel) {
-            let showError: boolean;
-
-            if (typeof action.hideError === 'boolean') {
-              showError = !action.hideError;
-            } else {
-              showError = !action.hideError(errorResponse);
-            }
-
-            if (showError) {
-              config.onShowError(action.failText || errorMessage);
-            }
-          }
-
-          return Promise.reject(errorResponse);
-        });
+        return Promise.reject(errorResponse);
+      });
 
     const wrapPromise = promise as FetchHandle;
 
