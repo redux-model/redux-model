@@ -133,7 +133,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
           }
 
           if (showError) {
-            config.onShowError(action.failText || errorMessage);
+            config.onShowError(errorMessage);
           }
         }
 
