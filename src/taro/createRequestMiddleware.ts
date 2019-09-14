@@ -17,7 +17,7 @@ type MixedReturn = FetchHandle | ActionRequest;
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
-  request: (OBJECT: request.Param<any>) => request.requestTask<any>;
+  request: (params: request.Param<any>) => request.requestTask<any>;
   requestConfig?: Omit<request.Param, 'url'>;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;

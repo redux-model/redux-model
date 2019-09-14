@@ -1,8 +1,8 @@
 import { request } from '@tarojs/taro';
 import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
 import { HTTP_STATUS_CODE } from '../core/utils/httpStatusCode';
-import { ActionRequest } from './types';
-import { HttpError } from '../libs/types';
+import { ActionRequest, HttpError } from './types';
+import { Omit } from '../core/utils/types';
 
 interface FailTransform {
   httpStatus?: HTTP_STATUS_CODE;
@@ -17,7 +17,7 @@ export declare const createRequestMiddleware: <RootState = any>(config: {
   // import { request } from '@tarojs/taro';
   // request: request
   request: (params: request.Param<any>) => request.requestTask<any>;
-  requestConfig?: request.Param<any>;
+  requestConfig?: Omit<request.Param, 'url'>;
   onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
   getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
   onFail: (error: HttpError, transform: FailTransform) => void;
