@@ -150,8 +150,6 @@ export const createRequestMiddleware = <RootState = any>(config: {
     const wrapPromise = promise as FetchHandle;
 
     wrapPromise.cancel = canceler;
-    // It's required when you want to use dispatch() method
-    wrapPromise.type = '_______required_______';
 
     return wrapPromise;
   };

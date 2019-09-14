@@ -8,7 +8,6 @@ export type HttpError<T = any> = request.Promised<T>;
 
 export interface FetchHandle<Response = any, Payload = any> extends Promise<ActionResponse<Response, Payload>> {
   cancel: HttpCanceler;
-  type: any;
 }
 
 export interface ActionRequest<Payload = any, Type = Types> extends BaseActionRequest<Payload, Type> {
