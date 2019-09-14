@@ -16,10 +16,10 @@ type MixedReturn = FetchHandle | ActionRequest;
 export const createRequestMiddleware = <RootState = any>(config: {
   id: string;
   baseUrl: string;
-  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>) => object;
+  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => object;
   onRespondError: (error: HttpError, transform: FailTransform) => void;
-  onShowSuccess: (message: string) => void;
-  onShowError: (message: string) => void;
+  onShowSuccess: (message: string, action: ActionResponse) => void;
+  onShowError: (message: string, action: ActionResponse) => void;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   requestConfig?: AxiosRequestConfig;
   timeoutMessage?: string;
@@ -51,7 +51,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
       method: action.method,
       ...action.requestOptions,
       headers: {
-        ...config.getHeaders(api),
+        ...config.getHeaders(api, action),
         ...action.requestOptions.headers,
       },
     };
@@ -64,9 +64,9 @@ export const createRequestMiddleware = <RootState = any>(config: {
     next({ ...action, type: prepare });
     const promise = httpHandle.request(requestOptions)
       .then((response) => {
+        // @ts-ignore
         const okResponse: ActionResponse = {
           ...action,
-          payload: action.payload,
           type: success,
           response: response.data,
         };
@@ -75,7 +75,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
         next(okResponse);
 
         if (action.successText) {
-          config.onShowSuccess(action.successText);
+          config.onShowSuccess(action.successText, okResponse);
         }
 
         return Promise.resolve(okResponse);
@@ -111,9 +111,9 @@ export const createRequestMiddleware = <RootState = any>(config: {
           }
         }
 
+        // @ts-ignore
         const errorResponse: ActionResponse = {
           ...action,
-          payload: action.payload,
           response: error.response || {},
           type: fail,
           errorMessage,
@@ -133,7 +133,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
           }
 
           if (showError) {
-            config.onShowError(errorMessage);
+            config.onShowError(errorMessage, errorResponse);
           }
         }
 

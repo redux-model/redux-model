@@ -76,9 +76,10 @@ export interface BaseActionRequest<Payload = any, Type = Types> extends ActionNo
   failText: string;
   hideError: boolean | ((response: ActionResponse) => boolean);
   requestOptions: object;
+  extraData: Record<string, any>;
 }
 
-export interface ActionResponse<Response = any, Payload = any> extends ActionNormal<Payload, string> {
+export interface ActionResponse<Response = any, Payload = any> extends ActionRequest<Payload, string> {
   response: Response;
   errorMessage?: string;
   httpStatus?: HTTP_STATUS_CODE;
