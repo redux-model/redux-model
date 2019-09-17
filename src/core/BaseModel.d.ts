@@ -79,5 +79,5 @@ export declare abstract class BaseModel<Data = null> {
 
   protected effects(): Effects<Data>;
   protected getMiddlewareName(): string;
-  protected abstract initReducer(): Data | (() => Data);
+  protected abstract initReducer(): Data;
 }

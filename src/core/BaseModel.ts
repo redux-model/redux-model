@@ -43,9 +43,9 @@ export abstract class BaseModel<Data = null> {
 
   private readonly actions: Array<BaseAction<Data>> = [];
 
-  private readonly reducer: null | BaseReducer<Data> = null;
+  private reducer: null | BaseReducer<Data> = null;
 
-  private readonly reducerName: string = '';
+  private reducerName: string = '';
 
   constructor(alias: string = '') {
     this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
@@ -59,13 +59,6 @@ export abstract class BaseModel<Data = null> {
 
     if (BaseModel.CLASS_DICT[dictKey] > 0) {
       this.instanceName += `.${BaseModel.CLASS_DICT[dictKey]}`;
-    }
-
-    const initData = this.initReducer();
-
-    if (initData !== null || typeof initData === 'function') {
-      this.reducer = new BaseReducer<Data>(initData, this.instanceName);
-      this.reducerName = this.reducer.getReducerName();
     }
 
     this.onInit();
@@ -96,7 +89,13 @@ export abstract class BaseModel<Data = null> {
   }
 
   public register(): Reducers {
+    const initData = this.initReducer();
     let reducers: Reducers = {};
+
+    if (initData !== null) {
+      this.reducer = new BaseReducer<Data>(initData, this.instanceName);
+      this.reducerName = this.reducer.getReducerName();
+    }
 
     if (this.reducer) {
       this.reducer.clear();
@@ -265,7 +264,7 @@ export abstract class BaseModel<Data = null> {
     return BaseModel.middlewareName;
   }
 
-  protected abstract initReducer(): Data | (() => Data);
+  protected abstract initReducer(): Data;
 
   protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
 }
