@@ -41,7 +41,7 @@ export class MetaReducer {
     };
   }
 
-  public static getData(name: string) {
+  public static getData<T = any>(name: string): T | undefined {
     return MetaReducer.currentState[name];
   }
 

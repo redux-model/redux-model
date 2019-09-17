@@ -21,6 +21,8 @@ const DEFAULT_META: Meta = {
   loading: false,
 };
 
+const DEFAULT_METAS: Metas = {};
+
 export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
   protected readonly meta: boolean | PayloadKey<A>;
 
@@ -176,7 +178,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       let customMetas = state[MetaReducer.getName()][this.typePrefix];
 
       if (customMetas === undefined) {
-        customMetas = {};
+        customMetas = DEFAULT_METAS;
       }
 
       const customMeta = payloadData === undefined ? customMetas : customMetas[payloadData] || DEFAULT_META;
@@ -192,15 +194,15 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   public connectMeta(): Meta {
-    return MetaReducer.getData(this.typePrefix);
+    return MetaReducer.getData<Meta>(this.typePrefix) || DEFAULT_META;
   }
 
   public connectMetas(payloadData?: PayloadData): Metas | Meta {
-    const reducer = MetaReducer.getData(this.typePrefix);
+    const reducer = MetaReducer.getData<Metas>(this.typePrefix);
 
     return payloadData === undefined
-      ? reducer
-      : reducer[payloadData] || DEFAULT_META;
+      ? reducer || DEFAULT_METAS
+      : reducer && reducer[payloadData] || DEFAULT_META;
   }
 
   public connectLoading(payloadData?: PayloadData): boolean {
