@@ -54,7 +54,7 @@ export declare abstract class BaseModel<Data = null> {
   protected onReducerCreated(store: Store): void;
 
   protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    onSuccess: A
+    changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
   // Case meta is false. We will never create meta reducer for this action.

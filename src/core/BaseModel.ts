@@ -166,7 +166,7 @@ export abstract class BaseModel<Data = null> {
   }
 
   protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    onSuccess: A
+    changeReducer: A
   ): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
@@ -181,7 +181,7 @@ export abstract class BaseModel<Data = null> {
         return NormalAction.createNormalData(payload);
       },
       onSuccess: (state, action) => {
-        return onSuccess(state, action.payload);
+        return changeReducer(state, action.payload);
       },
     }, instanceName);
     this.actions.push(instance);
