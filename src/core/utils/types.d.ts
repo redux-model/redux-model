@@ -30,10 +30,12 @@ export type UseSelector<TState, TSelected> = (
 ) => TSelected;
 
 type State<Data> = Data & {
-  __use_mvvm__: true;
+  readonly __use_mvvm__: 'Modify data directly';
 };
 
-type StateReturn<Data> = void | (Data & { __use_mvvm__?: false })
+type StateReturn<Data> = void | (Data & {
+  readonly __use_mvvm__?: 'Return new data or don\'t return';
+});
 
 export type Effects<Data> = Array<{
   when: string;
