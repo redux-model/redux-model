@@ -1,5 +1,5 @@
 import { BaseModel } from '../core/BaseModel';
-import TaroRedux from '@tarojs/redux';
+import * as TaroRedux from '@tarojs/redux';
 import { RequestOptions, UseSelector } from '../core/utils/types';
 import { FetchHandle } from '../web/types';
 import { BaseRequestAction } from '../core/action/BaseRequestAction';

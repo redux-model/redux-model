@@ -1,5 +1,5 @@
 import { BaseModel } from '../core/BaseModel';
-import ReactRedux from 'react-redux';
+import * as ReactRedux from 'react-redux';
 import { RequestOptions, UseSelector } from '../core/utils/types';
 import { FetchHandle } from './types';
 import { BaseRequestAction } from '../core/action/BaseRequestAction';
