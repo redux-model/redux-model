@@ -1,6 +1,6 @@
 {
   "name": "redux-model",
-  "version": "5.4.0",
+  "version": "5.5.x",
   "keywords": [
     "redux-model",
     "redux",
@@ -10,9 +10,6 @@
   "repository": "https://github.com/fwh1990/redux-model",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
-  "scripts": {
-    "publish": "sh scripts/publish-web.sh && sh scripts/publish-rn.sh && sh scripts/publish-taro.sh"
-  },
   "dependencies": {
     "@tarojs/redux": "^1.3.18",
     "axios": "^0.19.0",
