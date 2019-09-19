@@ -22,8 +22,8 @@ export const createRequestMiddleware = <RootState = any>(config: {
   onShowError: (message: string, action: ActionResponse) => void;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   requestConfig?: AxiosRequestConfig;
-  timeoutMessage?: string;
-  networkErrorMessage?: string;
+  timeoutMessage?: () => string;
+  networkErrorMessage?: () => string;
 }) => {
   const httpHandle = axios.create({
     baseURL: config.baseUrl,
@@ -105,9 +105,9 @@ export const createRequestMiddleware = <RootState = any>(config: {
           errorMessage = error.message;
 
           if (config.timeoutMessage && /^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
-            errorMessage = config.timeoutMessage;
+            errorMessage = config.timeoutMessage();
           } else if (config.networkErrorMessage && /Network\sError/i.test(errorMessage)) {
-            errorMessage = config.networkErrorMessage;
+            errorMessage = config.networkErrorMessage();
           }
         }
 

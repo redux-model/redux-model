@@ -24,8 +24,8 @@ export const createRequestMiddleware = <RootState = any>(config: {
   request: (params: request.Param<any>) => request.requestTask<any>;
   onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
   requestConfig?: Omit<request.Param, 'url'>;
-  timeoutMessage?: string;
-  networkErrorMessage?: string;
+  timeoutMessage?: () => string;
+  networkErrorMessage?: () => string;
 }) => {
 
   const middleware: Middleware<{}, RootState> = (api) => (next) => (action: ActionRequest): MixedReturn => {
@@ -118,9 +118,9 @@ export const createRequestMiddleware = <RootState = any>(config: {
           errorMessage = 'Fail to request api';
 
           if (error.errMsg && config.timeoutMessage && /timeout/i.test(error.errMsg)) {
-            errorMessage = config.timeoutMessage;
+            errorMessage = config.timeoutMessage();
           } else if (error.errMsg && config.networkErrorMessage && /fail/i.test(error.errMsg)) {
-            errorMessage = config.networkErrorMessage;
+            errorMessage = config.networkErrorMessage();
           }
         }
 

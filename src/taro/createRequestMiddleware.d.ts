@@ -25,6 +25,6 @@ export declare const createRequestMiddleware: <RootState = any>(config: {
   request: (params: request.Param<any>) => request.requestTask<any>;
   onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
   requestConfig?: Omit<request.Param, 'url'>;
-  timeoutMessage?: string;
-  networkErrorMessage?: string;
+  timeoutMessage?: () => string;
+  networkErrorMessage?: () => string;
 }) => Middleware<{}, RootState, Dispatch>;

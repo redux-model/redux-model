@@ -21,6 +21,6 @@ export declare const createRequestMiddleware: <RootState = any>(config: {
   onShowError: (message: string, action: ActionResponse) => void;
   onInit?: ((api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void);
   requestConfig?: AxiosRequestConfig;
-  timeoutMessage?: string;
-  networkErrorMessage?: string;
+  timeoutMessage?: () => string;
+  networkErrorMessage?: () => string;
 }) => Middleware<{}, RootState, Dispatch>;
