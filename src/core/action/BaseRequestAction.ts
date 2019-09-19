@@ -77,7 +77,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
       failText: options.failText || '',
       hideError: options.hideError || false,
       requestOptions: options.requestOptions || {},
-      extraData: options.extraData || {},
     };
 
     return data;
