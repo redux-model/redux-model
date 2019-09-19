@@ -34,11 +34,6 @@ export declare abstract class BaseModel<Data = null> {
 
   constructor(alias?: string);
 
-  // The same as model.data, can be used anywhere except component.
-  // For component, just inject data by react-redux.connect().
-  // For react-hooks, just invoke useData() without connect().
-  connectData(): Data;
-
   register(): Reducers;
 
   // Remember:
