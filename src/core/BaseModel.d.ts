@@ -17,6 +17,7 @@ import {
   StateReturn,
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
+import { Uri } from './utils/Uri';
 
 export declare abstract class BaseModel<Data = null> {
   static middlewareName: string;
@@ -67,10 +68,12 @@ export declare abstract class BaseModel<Data = null> {
     config: RequestActionParamWithMetas<Data, A, Response, Payload>
   ): RequestActionWithMetas<Data, A, Response, Payload>;
 
-  protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
-  protected post<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
-  protected put<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
-  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload>;
+  protected uri<Response>(uri: string): Uri<Response>;
+
+  protected get<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
+  protected post<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
+  protected put<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
+  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
 
   protected effects(): Effects<Data>;
   protected getMiddlewareName(): string;

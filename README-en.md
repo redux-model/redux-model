@@ -244,7 +244,7 @@ class ProfileModel extends Model<Data> {
   manage = this.actionRequest({
     action: (id: number) => {
       return this.get({
-        uri: '/test/api',
+        uri: this.uri('/test/api'),
         query: {
           id: page,
         },
@@ -258,7 +258,7 @@ class ProfileModel extends Model<Data> {
   edit = this.actionRequest({
     action: (id: number, name: string) => {
       return this.put({
-        uri: `/test/api/${id}`,
+        uri: this.uri(`/test/api/${id}`),
         body: {
           name: name,
         },
@@ -438,7 +438,7 @@ class Profile extends Model {
   someAction = this.actionRequest({
     action: (id: number, data: any) => {
       return this.post({
-        uri: '/profile/api',
+        uri: this.uri('/profile/api'),
         body: data,
         payload: {
           idKey: id,
@@ -492,16 +492,12 @@ interface Response {
   name: string;
 }
 
-interface Payload {
-  id: number;
-}
-
 class Profile extends Model<Data> {
   getProfile = this.actionRequest({
     action: (id: number) => {
       // Inject here
-      return this.get<Response, Payload>({
-        uri: `/profile/api/${id}`,
+      return this.get({
+        uri: this.uri<Response>(`/profile/api/${id}`),
         payload: {
           id: id,
         },

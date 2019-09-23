@@ -10,21 +10,23 @@ export abstract class Model<Data = null> extends BaseModel<Data> {
     return TaroRedux.useSelector;
   }
 
-  protected connect<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected connect<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.connect,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 
-  protected trace<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected trace<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.trace,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 }

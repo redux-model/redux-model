@@ -23,6 +23,7 @@ import {
 } from './utils/types';
 import { METHOD } from './utils/method';
 import { onStoreCreated } from './utils/createReduxStore';
+import { Uri } from './utils/Uri';
 import { isProxyEnable } from './utils/dev';
 import { RequestAction } from '../libs/RequestAction';
 import { isDebug } from '../libs/dev';
@@ -216,39 +217,47 @@ export abstract class BaseModel<Data = null> {
     return instance;
   }
 
-  protected get<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected uri<Response>(uri: string): Uri<Response> {
+    return new Uri<Response>(uri);
+  }
+
+  protected get<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.get,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 
-  protected post<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected post<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.post,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 
-  protected put<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected put<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.put,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 
-  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.delete,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 

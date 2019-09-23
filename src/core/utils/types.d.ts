@@ -4,6 +4,7 @@ import { HTTP_STATUS_CODE } from './httpStatusCode';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { RequestAction } from '../../libs/RequestAction';
 import { NormalAction } from '../action/NormalAction';
+import { Uri } from './Uri';
 
 /**
  * Useful for combineReducer, If you are using IDE WebStorm, you'd better write code like this:
@@ -87,11 +88,7 @@ export interface ActionResponse<Response = any, Payload = any> extends ActionReq
   businessCode?: string;
 }
 
-export type RequestOptions<Payload> = (
-  Partial<Omit<ActionRequest, 'uri' | 'payload' | 'type' | 'method'>>
-  & { uri: string; }
-  & (Payload extends undefined ? { payload?: never } : { payload: Payload })
-);
+export type RequestOptions<Response, Payload> = Partial<Omit<ActionRequest<Payload>, 'uri' | 'type' | 'method'>> & { uri: Uri<Response>; };
 
 export type PayloadData = string | number;
 

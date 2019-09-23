@@ -10,12 +10,13 @@ export abstract class Model<Data = null> extends BaseModel<Data> {
     return ReactRedux.useSelector;
   }
 
-  protected patch<Response = any, Payload = undefined>(options: RequestOptions<Payload>): FetchHandle<Response, Payload> {
+  protected patch<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
     // @ts-ignore
     return BaseRequestAction.createRequestData({
       method: METHOD.patch,
       middleware: this.getMiddlewareName(),
       ...options,
+      uri: options.uri.getUri(),
     });
   }
 }
