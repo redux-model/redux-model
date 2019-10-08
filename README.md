@@ -82,22 +82,6 @@ export const test = new Test();
 
 如果你不想使用reducer，那么你可以在`initReducer()`方法中返回`null`并移除注入的泛型Data
 
-## 注册Reducer
-我们都知道，reducer是要挂载到store中的，所以我们为实例化后的模型提供了一个`register()`方法。
-```typescript
-// reducers.ts
-import { combineReducers } from 'redux';
-import { createReduxStore } from '@redux-model/*';
-
-const reducers = {
-  ...test.register(),
-};
-
-const rootReducers = combineReducers(reducers);
-
-const store = createReduxStore(rootReducers);
-```
-
 ## 定义Action
 在模型中，我们只需要2种类型的action，而且一个模型支持写入无限个action。
 >- 普通action

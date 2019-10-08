@@ -81,22 +81,6 @@ export const test = new Test();
 
 And how to strip reducer? You just need to return `null` from method `initReducer()` and remove generic `Data`.
 
-## Register Reducer
-As we know, the reducer data must be registered to store by `createReduxStore()`, so the model instance has provided a method named `register()` to do that thing.
-```typescript
-// reducers.ts
-import { combineReducers } from 'redux';
-import { createReduxStore } from '@redux-model/*';
-
-const reducers = {
-  ...test.register(),
-};
-
-const rootReducers = combineReducers(reducers);
-
-const store = createReduxStore(rootReducers);
-```
-
 ## Define Action
 We only have two kind of actions here, but remember that one model can includes unlimited actions. And I will show you how to use them.
 >- Normal Action
