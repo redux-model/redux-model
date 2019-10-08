@@ -20,7 +20,7 @@
     "redux": "*"
   },
   "dependencies": {
-    "immer": "^4.0.0",
+    "immer": "^4.0.1",
     "qs": "^6.9.0",
     "tslib": "^1.10.0"
   }
