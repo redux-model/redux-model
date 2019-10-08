@@ -30,17 +30,16 @@ export const watchReducer = (reducerName: string, className: string) => {
   setTimeout(() => {
     if (!usersReducers[reducerName]) {
       console.error(
-`Model '${className}' has override method 'effects()', consider register its instance manually:
+`Model '${className}' has override protected method 'effects()', consider register its instance manually:
 
 
-#################################
-##                             ##
-##   createReduxStore({        ##
-##     ...aModel.register(),   ##   
-##     ...bModel.register(),   ##  
-##   });                       ##
-##                             ##
-#################################
+Example:
+
+const store = createReduxStore({ 
+  ...aModel.register(),
+  ...bModel.register(),
+  ...cModel.register(),
+});
 
 
 `
