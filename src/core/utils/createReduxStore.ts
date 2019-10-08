@@ -3,7 +3,7 @@ import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
 
-const hasEffectReducers: string[] = [];
+const hasEffectsReducers: string[] = [];
 const autoReducers: Reducers = {};
 let usersReducers: Reducers = {};
 let store: Store;
@@ -12,7 +12,7 @@ let listeners: Array<(store: Store) => void> = [];
 const combine = () => {
   if (isDebug()) {
     Object.keys(usersReducers).forEach((key) => {
-      if (autoReducers[key] && hasEffectReducers.indexOf(key) === -1) {
+      if (autoReducers[key] && hasEffectsReducers.indexOf(key) === -1) {
         // Indeed, it's reducer name but not model name
         console.warn(`Model '${key}' has been registered automatically, do not register it again.`);
       }
@@ -25,8 +25,8 @@ const combine = () => {
   });
 };
 
-export const watchReducer = (reducerName: string, className: string) => {
-  hasEffectReducers.push(reducerName);
+export const watchEffectsReducer = (reducerName: string, className: string) => {
+  hasEffectsReducers.push(reducerName);
   setTimeout(() => {
     if (!usersReducers[reducerName]) {
       console.error(

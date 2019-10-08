@@ -21,7 +21,7 @@ import {
   UseSelector,
 } from './utils/types';
 import { METHOD } from './utils/method';
-import { appendReducers, onStoreCreated, watchReducer } from './utils/createReduxStore';
+import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
 import { Uri } from './utils/Uri';
 import { isProxyEnable } from './utils/dev';
 import { RequestAction } from '../libs/RequestAction';
@@ -75,7 +75,7 @@ export abstract class BaseModel<Data = null> {
     if (this.autoRegister()) {
       appendReducers(this.register());
       if (this.reducer && this.reducerHasEffects) {
-        watchReducer(this.reducer.getReducerName(), this.constructor.name);
+        watchEffectsReducer(this.reducer.getReducerName(), this.constructor.name);
       }
     }
 
