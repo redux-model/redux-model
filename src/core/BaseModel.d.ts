@@ -77,5 +77,6 @@ export declare abstract class BaseModel<Data = null> {
 
   protected effects(): Effects<Data>;
   protected getMiddlewareName(): string;
+  protected autoRegister(): boolean;
   protected abstract initReducer(): Data;
 }

@@ -1,4 +1,5 @@
 import { ActionResponse, Reducers, Types } from '../utils/types';
+import { appendReducers } from '../utils/createReduxStore';
 
 interface MetaDict {
   [key: string]: {
@@ -158,3 +159,6 @@ export class MetaReducer {
     };
   }
 }
+
+// Register metas automatically
+appendReducers(MetaReducer.createData());

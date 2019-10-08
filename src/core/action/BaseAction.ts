@@ -1,4 +1,4 @@
-import { Effects, Reducers } from '../utils/types';
+import { Effects } from '../utils/types';
 
 export abstract class BaseAction<Data> {
   protected readonly instanceName: string;
@@ -21,18 +21,14 @@ export abstract class BaseAction<Data> {
     return [];
   }
 
-  public collectReducers(): Reducers {
-    return {};
-  }
-
   public setActionName(actionName: string | number) {
-    this.typePrefix += `.${actionName}`;
+    this.typePrefix += `_${actionName}`;
     this.onTypePrefixChanged();
   }
 
   protected proxy(fn: Function, publicMethods: string[]) {
     // Only public method is required.
-    for (const method of ['getSuccessType', 'collectEffects', 'collectReducers', 'setActionName']) {
+    for (const method of ['getSuccessType', 'collectEffects', 'setActionName']) {
       fn[method] = (...args: any[]) => {
         return this[method](...args);
       };

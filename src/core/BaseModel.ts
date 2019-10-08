@@ -1,5 +1,4 @@
 import { Store } from 'redux';
-import { BaseAction } from './action/BaseAction';
 import { BaseRequestAction } from './action/BaseRequestAction';
 import { NormalAction } from './action/NormalAction';
 import { BaseReducer } from './reducer/BaseReducer';
@@ -22,7 +21,7 @@ import {
   UseSelector,
 } from './utils/types';
 import { METHOD } from './utils/method';
-import { onStoreCreated } from './utils/createReduxStore';
+import { appendReducers, onStoreCreated, watchReducer } from './utils/createReduxStore';
 import { Uri } from './utils/Uri';
 import { isProxyEnable } from './utils/dev';
 import { RequestAction } from '../libs/RequestAction';
@@ -30,13 +29,15 @@ import { isDebug } from '../libs/dev';
 import { FetchHandle } from '../libs/types';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
+import { BaseAction } from './action/BaseAction';
 
 export abstract class BaseModel<Data = null> {
   public static middlewareName: string = 'default-request-middleware-name';
 
   // In case the same classname by uglify in production mode.
-  // In case user create the same classname in different folders.
-  private static CLASS_DICT = {};
+  // Do not use this variable in dev mode with hot reloading.
+  // Remember: Do not create class by the same name, or reducer will be override by another one.
+  private static PROD_CLASS_DICT = {};
 
   private actionCounter = 0;
 
@@ -44,22 +45,26 @@ export abstract class BaseModel<Data = null> {
 
   private readonly actions: Array<BaseAction<Data>> = [];
 
-  private reducer: null | BaseReducer<Data> = null;
+  private reducer?: BaseReducer<Data>;
+  private reducerHasEffects: boolean = false;
 
   private reducerName: string = '';
 
   constructor(alias: string = '') {
     this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
-    const dictKey = `dict_${this.instanceName}`;
 
-    if (BaseModel.CLASS_DICT[dictKey] === undefined) {
-      BaseModel.CLASS_DICT[dictKey] = 0;
-    } else {
-      BaseModel.CLASS_DICT[dictKey] += 1;
-    }
+    if (!isDebug()) {
+      const dictKey = `dict_${this.instanceName}`;
 
-    if (BaseModel.CLASS_DICT[dictKey] > 0) {
-      this.instanceName += `.${BaseModel.CLASS_DICT[dictKey]}`;
+      if (BaseModel.PROD_CLASS_DICT[dictKey] === undefined) {
+        BaseModel.PROD_CLASS_DICT[dictKey] = 0;
+      } else {
+        BaseModel.PROD_CLASS_DICT[dictKey] += 1;
+      }
+
+      if (BaseModel.PROD_CLASS_DICT[dictKey] > 0) {
+        this.instanceName += `-${BaseModel.PROD_CLASS_DICT[dictKey]}`;
+      }
     }
 
     this.onInit();
@@ -67,13 +72,26 @@ export abstract class BaseModel<Data = null> {
       this.onReducerCreated(store);
     });
 
+    if (this.autoRegister()) {
+      appendReducers(this.register());
+      if (this.reducer && this.reducerHasEffects) {
+        watchReducer(this.reducer.getReducerName(), this.constructor.name);
+      }
+    }
+
     if (isDebug() && isProxyEnable()) {
       // Proxy is es6 syntax, and it can't be transformed to es5.
       return new Proxy(this, {
         set: (model, property: string, value) => {
           model[property] = value;
           if (typeof value === 'function' && value.__isAction__ === true) {
-            value.setActionName(property);
+            const instance = value as BaseAction<Data>;
+            instance.setActionName(property);
+
+            if (this.reducer) {
+              // Method register() was invoked, we should append case immediately.
+              this.reducer.addCase(...instance.collectEffects());
+            }
           }
 
           return true;
@@ -91,37 +109,29 @@ export abstract class BaseModel<Data = null> {
 
   public register(): Reducers {
     const initData = this.initReducer();
-    let reducers: Reducers = {};
 
-    if (initData !== null) {
+    // Only create class once.
+    // For effects model, register() will be invoked twice.
+    if (!this.reducer && initData !== null) {
       this.reducer = new BaseReducer<Data>(initData, this.instanceName);
       this.reducerName = this.reducer.getReducerName();
     }
 
     if (this.reducer) {
+      const sideEffects = this.effects();
+
       this.reducer.clear();
-    }
+      this.reducer.addCase(...sideEffects);
+      this.reducerHasEffects = sideEffects.length > 0;
 
-    for (const action of this.actions) {
-      reducers = {
-        ...reducers,
-        ...action.collectReducers(),
-      };
-
-      if (this.reducer) {
+      for (const action of this.actions) {
         this.reducer.addCase(...action.collectEffects());
       }
+
+      return this.reducer.createData();
     }
 
-    if (this.reducer) {
-      this.reducer.addCase(...this.effects());
-      reducers = {
-        ...reducers,
-        ...this.reducer.createData(),
-      };
-    }
-
-    return reducers;
+    return {};
   }
 
   public useData<T = Data>(filter?: (data: Data) => T): T {
@@ -168,7 +178,7 @@ export abstract class BaseModel<Data = null> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.actionCounter += 1;
-      instanceName += '.' + this.actionCounter;
+      instanceName += '_' + this.actionCounter;
     }
 
     const instance = new NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>({
@@ -181,7 +191,13 @@ export abstract class BaseModel<Data = null> {
         return changeReducer(state, action.payload);
       },
     }, instanceName);
+
     this.actions.push(instance);
+    if (this.autoRegister()) {
+      if (this.reducer && (!isDebug() || !isProxyEnable())) {
+        this.reducer.addCase(...instance.collectEffects());
+      }
+    }
 
     return instance;
   }
@@ -208,11 +224,18 @@ export abstract class BaseModel<Data = null> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.actionCounter += 1;
-      instanceName += '.' + this.actionCounter;
+      instanceName += '_' + this.actionCounter;
     }
 
     const instance = new RequestAction<Data, A, Response, Payload>(config, instanceName);
+
     this.actions.push(instance);
+    if (this.autoRegister()) {
+      // Method register() was invoked, we should append case immediately.
+      if (this.reducer && (!isDebug() || !isProxyEnable())) {
+        this.reducer.addCase(...instance.collectEffects());
+      }
+    }
 
     return instance;
   }
@@ -267,6 +290,10 @@ export abstract class BaseModel<Data = null> {
 
   protected getMiddlewareName(): string {
     return BaseModel.middlewareName;
+  }
+
+  protected autoRegister(): boolean {
+    return true;
   }
 
   protected abstract initReducer(): Data;

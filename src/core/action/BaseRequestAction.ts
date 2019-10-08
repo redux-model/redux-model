@@ -6,7 +6,6 @@ import {
   Omit,
   PayloadData,
   PayloadKey,
-  Reducers,
   RequestActionParamNoMeta,
   RequestSubscriber,
   UseSelector,
@@ -15,6 +14,8 @@ import { ActionRequest, FetchHandle } from '../../libs/types';
 import { getStore } from '../utils/createReduxStore';
 import { BaseAction } from './BaseAction';
 import { MetaReducer } from '../reducer/MetaReducer';
+import { isDebug } from '../../libs/dev';
+import { isProxyEnable } from '../utils/dev';
 
 const DEFAULT_META: Meta = {
   actionType: '',
@@ -45,6 +46,10 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     this.failCallback = config.onFail;
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
+
+    if (!isDebug() || !isProxyEnable()) {
+      this.registerMetas();
+    }
 
     // @ts-ignore
     return this.proxy((...args: any[]) => {
@@ -104,7 +109,9 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
   }
 
   public collectEffects(): Effects<Data> {
-    const effects = super.collectEffects();
+    const effects = [
+      ...super.collectEffects(),
+    ];
 
     if (this.prepareCallback) {
       effects.push({
@@ -128,24 +135,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     }
 
     return effects;
-  }
-
-  public collectReducers(): Reducers {
-    if (this.meta !== false) {
-      const types = {
-        prepare: this.prepareType,
-        success: this.successType,
-        fail: this.failType,
-      };
-
-      if (this.meta === true) {
-        MetaReducer.addCase(this.typePrefix, types, false, '');
-      } else {
-        MetaReducer.addCase(this.typePrefix, types, true, this.meta);
-      }
-    }
-
-    return MetaReducer.createData();
   }
 
   public getPrepareType(): string {
@@ -214,6 +203,26 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     super.onTypePrefixChanged();
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
+
+    if (isDebug() && isProxyEnable()) {
+      this.registerMetas();
+    }
+  }
+
+  protected registerMetas() {
+    if (this.meta !== false) {
+      const types = {
+        prepare: this.prepareType,
+        success: this.successType,
+        fail: this.failType,
+      };
+
+      if (this.meta === true) {
+        MetaReducer.addCase(this.typePrefix, types, false, '');
+      } else {
+        MetaReducer.addCase(this.typePrefix, types, true, this.meta);
+      }
+    }
   }
 
   protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
