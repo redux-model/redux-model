@@ -33,13 +33,13 @@ export const watchReducer = (reducerName: string, className: string) => {
 `Model '${className}' has override method 'effects()', consider register its instance manually:
 
 
-#####################################################
-#####                                           #####
-#####   const store = createReduxStore({        #####
-#####     ...xxxModel.register(),               #####
-#####   });                                     #####
-#####                                           #####
-#####################################################
+####################################
+##                                ##
+##   createReduxStore({           ##
+##     ...xxxModel.register(),    ##   
+##   });                          ##
+##                                ##
+####################################
 
 
 `
