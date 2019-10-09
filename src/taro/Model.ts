@@ -1,32 +1,9 @@
 import { BaseModel } from '../core/BaseModel';
 import * as TaroRedux from '@tarojs/redux';
-import { RequestOptions, UseSelector } from '../core/utils/types';
-import { FetchHandle } from '../web/types';
-import { BaseRequestAction } from '../core/action/BaseRequestAction';
-import { METHOD } from '../core/utils/method';
+import { UseSelector } from '../core/utils/types';
 
 export abstract class Model<Data = null> extends BaseModel<Data> {
   protected switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected> {
     return TaroRedux.useSelector;
-  }
-
-  protected connect<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
-    // @ts-ignore
-    return BaseRequestAction.createRequestData({
-      method: METHOD.connect,
-      middleware: this.getMiddlewareName(),
-      ...options,
-      uri: options.uri.getUri(),
-    });
-  }
-
-  protected trace<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
-    // @ts-ignore
-    return BaseRequestAction.createRequestData({
-      method: METHOD.trace,
-      middleware: this.getMiddlewareName(),
-      ...options,
-      uri: options.uri.getUri(),
-    });
   }
 }

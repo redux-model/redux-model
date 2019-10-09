@@ -1,5 +1,4 @@
 import { Store } from 'redux';
-import { BaseRequestAction } from './action/BaseRequestAction';
 import { NormalAction } from './action/NormalAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import {
@@ -17,23 +16,19 @@ import {
   RequestActionParamWithMetas,
   RequestActionWithMeta,
   RequestActionWithMetas,
-  RequestOptions,
   UseSelector,
 } from './utils/types';
-import { METHOD } from './utils/method';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
 import { Uri } from './utils/Uri';
 import { isProxyEnable } from './utils/dev';
 import { RequestAction } from '../libs/RequestAction';
 import { isDebug } from '../libs/dev';
-import { FetchHandle } from '../libs/types';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
 import { BaseAction } from './action/BaseAction';
+import { HttpServiceHandle } from './service/HttpServiceHandle';
 
 export abstract class BaseModel<Data = null> {
-  public static middlewareName: string = 'default-request-middleware-name';
-
   // In case the same classname by uglify in production mode.
   // Do not use this variable in dev mode with hot reloading.
   // Remember: Do not create class by the same name, or reducer will be override by another one.
@@ -185,7 +180,10 @@ export abstract class BaseModel<Data = null> {
       // @ts-ignore
       // FIXME: Incompatible with ExtractNormalAction<A>
       action: (payload) => {
-        return NormalAction.createNormalData(payload);
+        return {
+          type: '',
+          payload: payload === undefined ? {} : payload,
+        };
       },
       onSuccess: (state, action) => {
         return changeReducer(state, action.payload);
@@ -203,22 +201,22 @@ export abstract class BaseModel<Data = null> {
   }
 
   // When meta=false
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // When meta is undefined or true.
   // @ts-ignore
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamWithMeta<Data, A, Response, Payload>
   ): RequestActionWithMeta<Data, A, Response, Payload>;
 
   // When meta is the key of payload.
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamWithMetas<Data, A, Response, Payload>
   ): RequestActionWithMetas<Data, A, Response, Payload>;
 
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestAction<Data, A, Response, Payload> {
     let instanceName = this.instanceName;
@@ -244,52 +242,8 @@ export abstract class BaseModel<Data = null> {
     return new Uri<Response>(uri);
   }
 
-  protected get<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
-    // @ts-ignore
-    return BaseRequestAction.createRequestData({
-      method: METHOD.get,
-      middleware: this.getMiddlewareName(),
-      ...options,
-      uri: options.uri.getUri(),
-    });
-  }
-
-  protected post<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
-    // @ts-ignore
-    return BaseRequestAction.createRequestData({
-      method: METHOD.post,
-      middleware: this.getMiddlewareName(),
-      ...options,
-      uri: options.uri.getUri(),
-    });
-  }
-
-  protected put<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
-    // @ts-ignore
-    return BaseRequestAction.createRequestData({
-      method: METHOD.put,
-      middleware: this.getMiddlewareName(),
-      ...options,
-      uri: options.uri.getUri(),
-    });
-  }
-
-  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload> {
-    // @ts-ignore
-    return BaseRequestAction.createRequestData({
-      method: METHOD.delete,
-      middleware: this.getMiddlewareName(),
-      ...options,
-      uri: options.uri.getUri(),
-    });
-  }
-
   protected effects(): Effects<Data> {
     return [];
-  }
-
-  protected getMiddlewareName(): string {
-    return BaseModel.middlewareName;
   }
 
   protected autoRegister(): boolean {

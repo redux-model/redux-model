@@ -1,57 +1,56 @@
 import { request } from '@tarojs/taro';
-import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
-import { HTTP_STATUS_CODE } from '../core/utils/httpStatusCode';
 import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpError } from './types';
-import { ActionResponse, Omit } from '../core/utils/types';
+import { BaseHttpService } from '../core/service/BaseHttpService';
+import { ActionResponse, HttpTransform, Omit, RequestOptions } from '../core/utils/types';
 import { METHOD } from '../core/utils/method';
+import { getStore } from '../core/utils/createReduxStore';
+import { HttpServiceHandle } from '../core/service/HttpServiceHandle';
 
-interface FailTransform {
-  httpStatus?: HTTP_STATUS_CODE;
-  errorMessage?: string;
-  businessCode?: string;
-}
+export abstract class HttpService extends BaseHttpService {
+  public connect<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
+    return new HttpServiceHandle(config, this).setMethod(METHOD.connect);
+  }
 
-type MixedReturn = FetchHandle | ActionRequest;
+  public trace<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
+    return new HttpServiceHandle(config, this).setMethod(METHOD.trace);
+  }
 
-export const createRequestMiddleware = <RootState = any>(config: {
-  id: string;
-  baseUrl: string;
-  getHeaders: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => object;
-  onRespondError: (error: HttpError, transform: FailTransform) => void;
-  onShowSuccess: (message: string, action: ActionResponse) => void;
-  onShowError: (message: string, action: ActionResponse) => void;
-  request: (params: request.Param<any>) => request.requestTask<any>;
-  onInit?: (api: MiddlewareAPI<Dispatch, RootState>, action: ActionRequest) => void;
-  requestConfig?: Omit<request.Param, 'url'>;
-  timeoutMessage?: () => string;
-  networkErrorMessage?: () => string;
-}) => {
+  // @ts-ignore
+  protected beforeSend(action: ActionRequest) {};
 
-  const middleware: Middleware<{}, RootState> = (api) => (next) => (action: ActionRequest): MixedReturn => {
-    if (action.middleware !== config.id) {
-      return next(action);
-    }
+  protected abstract onRespondError(error: HttpError, transform: HttpTransform): void;
 
-    if (config.onInit) {
-      config.onInit(api, action);
-    }
+  protected abstract onRespondError(error: HttpError, transform: HttpTransform): void;
+
+  protected abstract headers(action: ActionRequest): object;
+
+  protected abstract request(): (params: request.Param<any>) => request.requestTask<any>;
+
+  protected requestConfig(): Omit<request.Param, 'url'> {
+    return {};
+  }
+
+  public runAction(action: ActionRequest): FetchHandle {
+    const next = getStore().dispatch;
+
+    this.beforeSend(action);
 
     const { prepare, success, fail } = action.type;
     let url = action.uri;
 
     // Make sure url is not absolute link
     if (url.indexOf('://') === -1) {
-      url = config.baseUrl + url;
+      url = this.baseUrl() + url;
     }
 
     const requestOptions: request.Param = {
       url,
       method: action.method,
-      ...config.requestConfig,
+      ...this.requestConfig(),
       ...action.requestOptions,
       header: {
-        ...config.getHeaders(api, action),
+        ...this.headers(action),
         ...action.requestOptions.header,
       },
     };
@@ -70,7 +69,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
 
     next({ ...action, type: prepare });
 
-    const task = config.request(requestOptions);
+    const task = this.request()(requestOptions);
     const canceler = task.abort;
     let successInvoked = false;
 
@@ -91,7 +90,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
         next(okResponse);
 
         if (action.successText) {
-          config.onShowSuccess(action.successText, okResponse);
+          this.onShowSuccess(action.successText, okResponse);
         }
 
         return Promise.resolve(okResponse);
@@ -106,21 +105,21 @@ export const createRequestMiddleware = <RootState = any>(config: {
         let businessCode;
 
         if (error.statusCode) {
-          const transform: FailTransform = {
+          const transform: HttpTransform = {
             httpStatus: error.statusCode,
           };
 
-          config.onRespondError(error, transform);
+          this.onRespondError(error, transform);
           errorMessage = action.failText || transform.errorMessage || 'Fail to fetch api';
           httpStatus = transform.httpStatus;
           businessCode = transform.businessCode;
         } else {
           errorMessage = 'Fail to request api';
 
-          if (error.errMsg && config.timeoutMessage && /timeout/i.test(error.errMsg)) {
-            errorMessage = config.timeoutMessage();
-          } else if (error.errMsg && config.networkErrorMessage && /fail/i.test(error.errMsg)) {
-            errorMessage = config.networkErrorMessage();
+          if (error.errMsg && /timeout/i.test(error.errMsg)) {
+            errorMessage = this.timeoutMessage(error.errMsg);
+          } else if (error.errMsg && /fail/i.test(error.errMsg)) {
+            errorMessage = this.networkErrorMessage(error.errMsg);
           }
         }
 
@@ -136,17 +135,7 @@ export const createRequestMiddleware = <RootState = any>(config: {
 
         next(errorResponse);
 
-        let showError: boolean;
-
-        if (typeof action.hideError === 'boolean') {
-          showError = !action.hideError;
-        } else {
-          showError = !action.hideError(errorResponse);
-        }
-
-        if (showError) {
-          config.onShowError(errorMessage, errorResponse);
-        }
+        this.helperShowError(errorResponse, action.hideError);
 
         return Promise.reject(errorResponse);
       });
@@ -156,7 +145,5 @@ export const createRequestMiddleware = <RootState = any>(config: {
     wrapPromise.cancel = canceler;
 
     return wrapPromise;
-  };
-
-  return middleware;
-};
+  }
+}

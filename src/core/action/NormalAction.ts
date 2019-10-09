@@ -18,14 +18,6 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
     }, ['onSuccess']);
   }
 
-  public static createNormalData<Payload>(payload?: Payload): ActionNormal<Payload> {
-    return {
-      type: '',
-      // @ts-ignore
-      payload: payload === undefined ? {} : payload,
-    };
-  }
-
   public onSuccess<CustomData>(effect: NormalSubscriber<CustomData, Payload>['effect']): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.successType,

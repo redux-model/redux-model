@@ -18,10 +18,9 @@ import {
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
 import { Uri } from './utils/Uri';
+import { HttpServiceHandle } from './service/HttpServiceHandle';
 
 export declare abstract class BaseModel<Data = null> {
-  static middlewareName: string;
-
   // As we know, it's forbidden to make condition when we are using hooks.
   // We can't write code like: xxxModel.xxx.useLoading() || xxxModel.yyy.useLoading()
   // So, just write code like: Model.isLoading(xxxModel.xxx.useLoading(), xxxModel.yyy.useLoading());
@@ -54,29 +53,23 @@ export declare abstract class BaseModel<Data = null> {
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
   // Case meta is false. We will never create meta reducer for this action.
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // Case meta is undefined or true. we will automatically register meta reducer.
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamWithMeta<Data, A, Response, Payload>
   ): RequestActionWithMeta<Data, A, Response, Payload>;
 
   // Case meta is one of payload's key. we will automatically register metas reducer.
-  protected actionRequest<A extends (...args: any[]) => FetchHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamWithMetas<Data, A, Response, Payload>
   ): RequestActionWithMetas<Data, A, Response, Payload>;
 
   protected uri<Response>(uri: string): Uri<Response>;
 
-  protected get<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
-  protected post<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
-  protected put<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
-  protected delete<Response = any, Payload = undefined>(options: RequestOptions<Response, Payload>): FetchHandle<Response, Payload>;
-
   protected effects(): Effects<Data>;
-  protected getMiddlewareName(): string;
   protected autoRegister(): boolean;
   protected abstract initReducer(): Data;
 }

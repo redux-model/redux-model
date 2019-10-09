@@ -1,21 +1,18 @@
 import {
-  BaseActionRequest,
   Effects,
   Meta,
   Metas,
-  Omit,
   PayloadData,
   PayloadKey,
   RequestActionParamNoMeta,
   RequestSubscriber,
   UseSelector,
 } from '../utils/types';
-import { ActionRequest, FetchHandle } from '../../libs/types';
-import { getStore } from '../utils/createReduxStore';
 import { BaseAction } from './BaseAction';
 import { MetaReducer } from '../reducer/MetaReducer';
 import { isDebug } from '../../libs/dev';
 import { isProxyEnable } from '../utils/dev';
+import { HttpServiceHandle } from '../service/HttpServiceHandle';
 
 const DEFAULT_META: Meta = {
   actionType: '',
@@ -24,7 +21,7 @@ const DEFAULT_META: Meta = {
 
 const DEFAULT_METAS: Metas = {};
 
-export abstract class BaseRequestAction<Data, A extends (...args: any[]) => FetchHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
   protected readonly meta: boolean | PayloadKey<A>;
 
   protected readonly prepareCallback?: any;
@@ -52,39 +49,20 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Fetc
     }
 
     // @ts-ignore
-    return this.proxy((...args: any[]) => {
-      const data = config.action(...args) as unknown as ActionRequest;
-
-      data.type = {
-        prepare: this.prepareType,
-        success: this.successType,
-        fail: this.failType,
-      };
-
-      return getStore().dispatch(data);
+    return this.proxy((...args: Parameters<A>) => {
+      return (config.action(...args) as unknown as HttpServiceHandle<Response, Payload>)
+        .setTypes({
+          prepare: this.prepareType,
+          success: this.successType,
+          fail: this.failType,
+        })
+        .runAction();
     }, [
       'onSuccess', 'onPrepare', 'onFail',
       'getPrepareType', 'getFailType',
       'useMeta', 'useMetas', 'useLoading',
       'connectMeta', 'connectMetas', 'connectLoading',
     ]);
-  }
-
-  public static createRequestData(options: Partial<BaseActionRequest> & Pick<BaseActionRequest, 'uri' | 'method' | 'middleware'>) {
-    const data: Omit<BaseActionRequest, 'type'> = {
-      middleware: options.middleware,
-      payload: options.payload === undefined ? {} : options.payload,
-      uri: options.uri,
-      method: options.method,
-      body: options.body || {},
-      query: options.query || {},
-      successText: options.successText || '',
-      failText: options.failText || '',
-      hideError: options.hideError || false,
-      requestOptions: options.requestOptions || {},
-    };
-
-    return data;
   }
 
   public onSuccess<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
