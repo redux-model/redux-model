@@ -2,18 +2,30 @@ import { request } from '@tarojs/taro';
 import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
-import { ActionResponse, HttpTransform, Omit, RequestOptions } from '../core/utils/types';
+import { ActionResponse, OrphanRequestOptions, HttpTransform, Omit, RequestOptions } from '../core/utils/types';
 import { METHOD } from '../core/utils/method';
-import { getStore } from '../core/utils/createReduxStore';
 import { HttpServiceHandle } from '../core/service/HttpServiceHandle';
+import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
 export abstract class HttpService extends BaseHttpService {
   public connect<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
     return new HttpServiceHandle(config, this).setMethod(METHOD.connect);
   }
 
+  public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
+    return new OrphanHttpServiceHandle<Response>(config, this)
+      .setMethod(METHOD.connect)
+      .runAction();
+  }
+
   public trace<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
     return new HttpServiceHandle(config, this).setMethod(METHOD.trace);
+  }
+
+  public traceAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
+    return new OrphanHttpServiceHandle<Response>(config, this)
+      .setMethod(METHOD.trace)
+      .runAction();
   }
 
   // @ts-ignore
@@ -32,8 +44,6 @@ export abstract class HttpService extends BaseHttpService {
   }
 
   public runAction(action: ActionRequest): FetchHandle {
-    const next = getStore().dispatch;
-
     this.beforeSend(action);
 
     const { prepare, success, fail } = action.type;
@@ -67,7 +77,7 @@ export abstract class HttpService extends BaseHttpService {
       }
     }
 
-    next({ ...action, type: prepare });
+    this._next({ ...action, type: prepare });
 
     const task = this.request()(requestOptions);
     const canceler = task.abort;
@@ -87,7 +97,7 @@ export abstract class HttpService extends BaseHttpService {
         };
 
         successInvoked = true;
-        next(okResponse);
+        this._next(okResponse);
 
         if (action.successText) {
           this.onShowSuccess(action.successText, okResponse);
@@ -133,7 +143,7 @@ export abstract class HttpService extends BaseHttpService {
           businessCode,
         };
 
-        next(errorResponse);
+        this._next(errorResponse);
 
         this._triggerShowError(errorResponse, action.hideError);
 

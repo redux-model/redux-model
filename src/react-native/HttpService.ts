@@ -2,9 +2,9 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import { METHOD } from '../core/utils/method';
-import { ActionResponse, HttpTransform, RequestOptions } from '../core/utils/types';
-import { getStore } from '../core/utils/createReduxStore';
+import { ActionResponse, OrphanRequestOptions, HttpTransform, RequestOptions } from '../core/utils/types';
 import { HttpServiceHandle } from '../core/service/HttpServiceHandle';
+import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
 export abstract class HttpService extends BaseHttpService {
   protected readonly httpHandle: AxiosInstance;
@@ -24,6 +24,12 @@ export abstract class HttpService extends BaseHttpService {
     return new HttpServiceHandle(config, this).setMethod(METHOD.patch);
   }
 
+  public patchAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
+    return new OrphanHttpServiceHandle<Response>(config, this)
+      .setMethod(METHOD.patch)
+      .runAction();
+  }
+
   // @ts-ignore
   protected beforeSend(action: ActionRequest) {};
 
@@ -36,8 +42,6 @@ export abstract class HttpService extends BaseHttpService {
   }
 
   public runAction(action: ActionRequest): FetchHandle {
-    const next = getStore().dispatch;
-
     this.beforeSend(action);
     const { prepare, success, fail } = action.type;
     const source = axios.CancelToken.source();
@@ -56,7 +60,7 @@ export abstract class HttpService extends BaseHttpService {
     if ([METHOD.post, METHOD.put, METHOD.delete, METHOD.patch].includes(action.method)) {
       requestOptions.data = action.body;
     }
-    next({ ...action, type: prepare });
+    this._next({ ...action, type: prepare });
     const promise = this.httpHandle.request(requestOptions)
       .then((response) => {
         // @ts-ignore
@@ -67,7 +71,7 @@ export abstract class HttpService extends BaseHttpService {
         };
 
         successInvoked = true;
-        next(okResponse);
+        this._next(okResponse);
 
         if (action.successText) {
           this.onShowSuccess(action.successText, okResponse);
@@ -116,7 +120,7 @@ export abstract class HttpService extends BaseHttpService {
           businessCode,
         };
 
-        next(errorResponse);
+        this._next(errorResponse);
 
         if (!isCancel) {
           this._triggerShowError(errorResponse, action.hideError);

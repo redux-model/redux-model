@@ -1,7 +1,7 @@
 import { RequestOptions, Types } from '../utils/types';
 import { BaseHttpService } from './BaseHttpService';
 import { METHOD } from '../utils/method';
-import { ActionRequest } from '../../libs/types';
+import { ActionRequest, FetchHandle } from '../../libs/types';
 
 export class HttpServiceHandle<Response, Payload> {
   protected readonly fetchApi: BaseHttpService;
@@ -31,7 +31,7 @@ export class HttpServiceHandle<Response, Payload> {
     return this;
   }
 
-  runAction() {
+  runAction(): FetchHandle {
     const config = this.config;
     const action: ActionRequest = {
       payload: config.payload === undefined ? {} : config.payload,

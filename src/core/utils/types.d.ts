@@ -72,7 +72,8 @@ export interface ActionResponse<Response = any, Payload = any> extends ActionReq
   businessCode?: string;
 }
 
-export type RequestOptions<Response, Payload> = Partial<Omit<ActionRequest<Payload>, 'uri' | 'type' | 'method'>> & { uri: Uri<Response>; };
+export type RequestOptions<Response, Payload> = Partial<Omit<ActionRequest<Payload>, 'uri' | 'type' | 'method'>> & { uri: Uri<Response> };
+export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' | 'body' | 'requestOptions' >> & { uri: string };
 
 export type PayloadKey<A> =  A extends (...args: any[]) => HttpServiceHandle<any, infer P> ? keyof P : never;
 export type PayloadData<Payload, M> = M extends keyof Payload ? Payload[M] : never;
