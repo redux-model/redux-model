@@ -6,7 +6,9 @@ import {
   ExtractNormalAction,
   ExtractNormalPayload,
   NormalActionAlias,
-  Reducers, RequestActionNoMeta,
+  PayloadKey,
+  Reducers,
+  RequestActionNoMeta,
   RequestActionParamNoMeta,
   RequestActionParamWithMeta,
   RequestActionParamWithMetas,
@@ -15,6 +17,7 @@ import {
   RequestOptions,
   State,
   StateReturn,
+  IsPayload,
 } from './utils/types';
 import { FetchHandle } from '../libs/types';
 import { Uri } from './utils/Uri';
@@ -63,9 +66,9 @@ export declare abstract class BaseModel<Data = null> {
   ): RequestActionWithMeta<Data, A, Response, Payload>;
 
   // Case meta is one of payload's key. we will automatically register metas reducer.
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamWithMetas<Data, A, Response, Payload>
-  ): RequestActionWithMetas<Data, A, Response, Payload>;
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
+    config: RequestActionParamWithMetas<Data, A, Response, Payload, M>
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
 
   protected uri<Response>(uri: string): Uri<Response>;
 

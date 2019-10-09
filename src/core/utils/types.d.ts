@@ -74,9 +74,9 @@ export interface ActionResponse<Response = any, Payload = any> extends ActionReq
 
 export type RequestOptions<Response, Payload> = Partial<Omit<ActionRequest<Payload>, 'uri' | 'type' | 'method'>> & { uri: Uri<Response>; };
 
-export type PayloadData = string | number;
-
 export type PayloadKey<A> =  A extends (...args: any[]) => HttpServiceHandle<any, infer P> ? keyof P : never;
+export type PayloadData<Payload, M> = M extends keyof Payload ? Payload[M] : never;
+export type IsPayload<Payload> = keyof Payload | boolean;
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
@@ -98,28 +98,28 @@ export interface RequestActionParamWithMeta<Data, A extends (...args: any[]) => 
   meta?: true;
 }
 
-export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
-  meta: PayloadKey<A>;
+export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends RequestActionParamBase<Data, A, Response, Payload> {
+  meta: M;
 }
 
-export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestAction<Data, A, Response, Payload> {
+export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload> = false> extends RequestAction<Data, A, Response, Payload, M> {
   (...args: Parameters<A>): FetchHandle<Response, Payload>;
 }
 
-export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload> {
+export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload, true> {
   useMeta<T = Meta>(filter?: (meta: Meta) => T): T;
   useLoading(): boolean;
   connectMeta(): Meta;
   connectLoading(): boolean;
 }
 
-export interface RequestActionWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload> {
+export interface RequestActionWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends RequestActionNoMeta<Data, A, Response, Payload, M> {
   useMetas(): Metas;
-  useMetas<T = Meta>(payloadData: PayloadData, filter?: (meta: Meta) => T): T;
-  useLoading(payloadData: PayloadData): boolean;
+  useMetas<T = Meta>(payload: PayloadData<Payload, M>, filter?: (meta: Meta) => T): T;
+  useLoading(payload: PayloadData<Payload, M>): boolean;
   connectMetas(): Metas;
-  connectMetas(payloadData: PayloadData): Meta;
-  connectLoading(payloadData: PayloadData): boolean;
+  connectMetas(payload: PayloadData<Payload, M>): Meta;
+  connectLoading(payload: PayloadData<Payload, M>): boolean;
 }
 
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {

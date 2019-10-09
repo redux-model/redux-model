@@ -16,7 +16,7 @@ import {
   RequestActionParamWithMetas,
   RequestActionWithMeta,
   RequestActionWithMetas,
-  UseSelector,
+  UseSelector, PayloadKey, IsPayload,
 } from './utils/types';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
 import { Uri } from './utils/Uri';
@@ -212,20 +212,20 @@ export abstract class BaseModel<Data = null> {
   ): RequestActionWithMeta<Data, A, Response, Payload>;
 
   // When meta is the key of payload.
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamWithMetas<Data, A, Response, Payload>
-  ): RequestActionWithMetas<Data, A, Response, Payload>;
+  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
+    config: RequestActionParamWithMetas<Data, A, Response, Payload, M>
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
 
   protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     config: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestAction<Data, A, Response, Payload> {
+  ): RequestAction<Data, A, Response, Payload, false> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.actionCounter += 1;
       instanceName += '_' + this.actionCounter;
     }
 
-    const instance = new RequestAction<Data, A, Response, Payload>(config, instanceName);
+    const instance = new RequestAction<Data, A, Response, Payload, false>(config, instanceName);
 
     this.actions.push(instance);
     if (this.autoRegister()) {

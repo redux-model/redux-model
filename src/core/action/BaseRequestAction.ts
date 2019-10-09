@@ -1,5 +1,6 @@
 import {
   Effects,
+  IsPayload,
   Meta,
   Metas,
   PayloadData,
@@ -21,7 +22,7 @@ const DEFAULT_META: Meta = {
 
 const DEFAULT_METAS: Metas = {};
 
-export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends BaseAction<Data> {
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends BaseAction<Data> {
   protected readonly meta: boolean | PayloadKey<A>;
 
   protected readonly prepareCallback?: any;
@@ -135,8 +136,8 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     });
   }
 
-  public useMetas<T = Meta>(payloadData?: PayloadData, filter?: (meta: Meta) => T): Metas | T {
-    if (payloadData === undefined) {
+  public useMetas<T = Meta>(payload?: PayloadData<Payload, M>, filter?: (meta: Meta) => T): Metas | T {
+    if (payload === undefined) {
       filter = undefined;
     }
 
@@ -147,34 +148,35 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
         customMetas = DEFAULT_METAS;
       }
 
-      const customMeta = payloadData === undefined ? customMetas : customMetas[payloadData] || DEFAULT_META;
+      const customMeta = payload === undefined ? customMetas : customMetas[payload] || DEFAULT_META;
 
       return filter ? filter(customMeta) : customMeta;
     });
   }
 
-  public useLoading(payloadData?: PayloadData): boolean {
-    return payloadData === undefined
+  public useLoading(payload?: PayloadData<Payload, M>): boolean {
+    return payload === undefined
       ? this.useMeta((meta) => meta.loading)
-      : this.useMetas(payloadData, (meta) => meta.loading) as boolean;
+      : this.useMetas(payload, (meta) => meta.loading) as boolean;
   }
 
   public connectMeta(): Meta {
     return MetaReducer.getData<Meta>(this.typePrefix) || DEFAULT_META;
   }
 
-  public connectMetas(payloadData?: PayloadData): Metas | Meta {
+  public connectMetas(payload?: PayloadData<Payload, M>): Metas | Meta {
     const reducer = MetaReducer.getData<Metas>(this.typePrefix);
 
-    return payloadData === undefined
+    return payload === undefined
       ? reducer || DEFAULT_METAS
-      : reducer && reducer[payloadData] || DEFAULT_META;
+      // @ts-ignore
+      : reducer && reducer[payload] || DEFAULT_META;
   }
 
-  public connectLoading(payloadData?: PayloadData): boolean {
-    return payloadData === undefined
+  public connectLoading(payload?: PayloadData<Payload, M>): boolean {
+    return payload === undefined
       ? this.connectMeta().loading
-      : (this.connectMetas(payloadData) as Meta).loading;
+      : (this.connectMetas(payload) as Meta).loading;
   }
 
   protected onTypePrefixChanged(): void {
