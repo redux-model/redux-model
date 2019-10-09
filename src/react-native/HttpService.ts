@@ -119,7 +119,7 @@ export abstract class HttpService extends BaseHttpService {
         next(errorResponse);
 
         if (!isCancel) {
-          this.helperShowError(errorResponse, action.hideError);
+          this._triggerShowError(errorResponse, action.hideError);
         }
 
         return Promise.reject(errorResponse);

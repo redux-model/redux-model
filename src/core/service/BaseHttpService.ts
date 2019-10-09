@@ -1,4 +1,4 @@
-import { ActionResponse, HttpTransform, RequestOptions } from '../utils/types';
+import { ActionResponse, RequestOptions } from '../utils/types';
 import { METHOD } from '../utils/method';
 import { HttpServiceHandle } from './HttpServiceHandle';
 
@@ -21,9 +21,6 @@ export abstract class BaseHttpService {
 
   public abstract runAction(action: any): any;
 
-  // @ts-ignore
-  protected beforeSend(action: any) {};
-
   protected timeoutMessage(originalMessage: string): string {
     return originalMessage;
   }
@@ -34,14 +31,10 @@ export abstract class BaseHttpService {
 
   protected abstract baseUrl(): string;
 
-  protected abstract onShowSuccess(message: string, action: ActionResponse): void;
-  protected abstract onShowError(message: string, action: ActionResponse): void;
+  protected abstract onShowSuccess(successText: string, action: ActionResponse): void;
+  protected abstract onShowError(errorText: string, action: ActionResponse): void;
 
-  protected abstract onRespondError(error: any, transform: HttpTransform): void;
-
-  protected abstract headers(action: any): object;
-
-  protected helperShowError(errorResponse: ActionResponse, hideError: boolean | ((response: ActionResponse) => boolean)) {
+  protected _triggerShowError(errorResponse: ActionResponse, hideError: boolean | ((response: ActionResponse) => boolean)) {
     if (!errorResponse.errorMessage) {
       return;
     }
