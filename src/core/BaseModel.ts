@@ -16,7 +16,7 @@ import {
   RequestActionParamWithMetas,
   RequestActionWithMeta,
   RequestActionWithMetas,
-  UseSelector, PayloadKey, IsPayload,
+  UseSelector, PayloadKey, IsPayload, ActionNormal,
 } from './utils/types';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
 import { Uri } from './utils/Uri';
@@ -44,6 +44,10 @@ export abstract class BaseModel<Data = null> {
   private reducerHasEffects: boolean = false;
 
   private reducerName: string = '';
+
+  // Property name will be displayed into action.type, we just make it readable by developer.
+  // Therefore, we use snake case to define name.
+  private change_reducer?: NormalAction<Data, () => ActionNormal, any>;
 
   constructor(alias: string = '') {
     this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
@@ -165,6 +169,19 @@ export abstract class BaseModel<Data = null> {
 
   protected onReducerCreated(_store: Store): void {
     // Do anything after reducer is generated.
+  }
+
+  protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void {
+    if (this.reducer) {
+      if (!this.change_reducer) {
+        this.change_reducer = this.actionNormal(fn);
+      }
+
+      // @ts-ignore
+      this.change_reducer();
+    } else {
+      throw new NullReducerError(this.instanceName);
+    }
   }
 
   protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(

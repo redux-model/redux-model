@@ -51,6 +51,8 @@ export declare abstract class BaseModel<Data = null> {
   // Do anything after reducer is generated.
   protected onReducerCreated(store: Store): void;
 
+  protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void;
+
   protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
