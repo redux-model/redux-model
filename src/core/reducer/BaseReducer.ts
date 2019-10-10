@@ -32,6 +32,15 @@ export class BaseReducer<Data> {
     this.cases.push(...config);
   }
 
+  public changeCase(when: Effects<Data>[number]['when'], effect: Effects<Data>[number]['effect']) {
+    for (const item of this.cases) {
+      if (item.when === when) {
+        item.effect = effect;
+        break;
+      }
+    }
+  }
+
   public getReducerName() {
     return this.instanceName;
   }

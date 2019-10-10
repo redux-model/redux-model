@@ -16,7 +16,7 @@ import {
   RequestActionParamWithMetas,
   RequestActionWithMeta,
   RequestActionWithMetas,
-  UseSelector, PayloadKey, IsPayload, ActionNormal,
+  UseSelector, PayloadKey, IsPayload, ActionNormal, NormalActionAlias,
 } from './utils/types';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
 import { Uri } from './utils/Uri';
@@ -47,7 +47,7 @@ export abstract class BaseModel<Data = null> {
 
   // Property name will be displayed into action.type, we just make it readable by developer.
   // Therefore, we use snake case to define name.
-  private change_reducer?: NormalAction<Data, () => ActionNormal, any>;
+  private change_reducer?: NormalActionAlias<Data, () => ActionNormal, any>;
 
   constructor(alias: string = '') {
     this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
@@ -173,11 +173,12 @@ export abstract class BaseModel<Data = null> {
 
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void {
     if (this.reducer) {
-      if (!this.change_reducer) {
+      if (this.change_reducer) {
+        this.reducer.changeCase(this.change_reducer.getSuccessType(), fn);
+      } else {
         this.change_reducer = this.actionNormal(fn);
       }
 
-      // @ts-ignore
       this.change_reducer();
     } else {
       throw new NullReducerError(this.instanceName);
@@ -186,7 +187,7 @@ export abstract class BaseModel<Data = null> {
 
   protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     changeReducer: A
-  ): NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
+  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = this.instanceName;
     if (!isDebug() || !isProxyEnable()) {
       this.actionCounter += 1;
