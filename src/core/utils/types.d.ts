@@ -36,9 +36,11 @@ export type Meta = Readonly<{
   businessCode?: string | number;
 }>;
 
-export type Metas = Partial<{
+export type Metas<Payload = any, M = any> = Partial<{
   [key: string]: Meta;
-}>;
+}> & {
+  getItem: (payload: PayloadData<Payload, M>) => Meta;
+};
 
 export interface Reducers {
   [key: string]: (state: any, action: any) => any;
@@ -108,19 +110,24 @@ export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpSer
 }
 
 export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload, true> {
-  useMeta<T = Meta>(filter?: (meta: Meta) => T): T;
+  loading: boolean;
+  meta: Meta;
+
+  useMeta(): Meta;
+  useMeta<T extends keyof Meta>(key?: T): Meta[T];
   useLoading(): boolean;
-  connectMeta(): Meta;
-  connectLoading(): boolean;
 }
 
 export interface RequestActionWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends RequestActionNoMeta<Data, A, Response, Payload, M> {
-  useMetas(): Metas;
-  useMetas<T = Meta>(payload: PayloadData<Payload, M>, filter?: (meta: Meta) => T): T;
-  useLoading(payload: PayloadData<Payload, M>): boolean;
-  connectMetas(): Metas;
-  connectMetas(payload: PayloadData<Payload, M>): Meta;
-  connectLoading(payload: PayloadData<Payload, M>): boolean;
+  loadings: MetasLoading<Payload, M>;
+  metas: Metas<Payload, M>;
+
+  useMetas(): Metas<Payload, M>;
+  useMetas(payload: PayloadData<Payload, M>): Meta;
+  useMetas<T extends keyof Meta>(payload: PayloadData<Payload, M>, key: T): Meta[T];
+
+  useLoadings(): MetasLoading<Payload, M>;
+  useLoadings(payload: PayloadData<Payload, M>): boolean;
 }
 
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {
@@ -148,3 +155,7 @@ export interface HttpTransform {
   errorMessage?: string;
   businessCode?: string;
 }
+
+export type MetasLoading<Payload, Meta> = {
+  getItem: (payload: PayloadData<Payload, Meta>) => boolean;
+};

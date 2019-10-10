@@ -4,15 +4,15 @@ import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError
 import { onStoreCreated } from '../utils/createReduxStore';
 
 export class BaseReducer<Data> {
-  protected readonly initData: Data | (() => Data);
+  protected readonly initData: Data;
 
   protected cases: Effects<Data> = [];
 
   protected readonly instanceName: string;
 
-  protected currentReducerData: Data | undefined = undefined;
+  protected currentReducerData?: Data;
 
-  constructor(init: Data | (() => Data), instanceName: string) {
+  constructor(init: Data, instanceName: string) {
     this.initData = init;
     this.instanceName = instanceName;
 

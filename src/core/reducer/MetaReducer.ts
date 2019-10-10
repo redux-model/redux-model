@@ -1,5 +1,6 @@
-import { ActionResponse, Reducers, Types } from '../utils/types';
+import { ActionResponse, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers } from '../utils/createReduxStore';
+import { METAS_GET_ITEM } from '../utils/meta';
 
 interface MetaDict {
   [key: string]: {
@@ -7,6 +8,10 @@ interface MetaDict {
     isMetas: boolean;
     metaKey: any;
   };
+}
+
+interface BigMetas {
+  [key: string]: Metas;
 }
 
 export class MetaReducer {
@@ -54,7 +59,7 @@ export class MetaReducer {
     MetaReducer.isAppend = true;
 
     return {
-      [MetaReducer.getName()]: (state, action: ActionResponse) => {
+      [MetaReducer.getName()]: (state: BigMetas, action: ActionResponse) => {
         if (state === undefined) {
           state = {};
         }
@@ -94,6 +99,7 @@ export class MetaReducer {
             actionType: action.type,
             loading: true,
           },
+          ...METAS_GET_ITEM,
         },
       };
     }
@@ -117,6 +123,7 @@ export class MetaReducer {
             actionType: action.type,
             loading: false,
           },
+          ...METAS_GET_ITEM,
         },
       };
     }
@@ -143,6 +150,7 @@ export class MetaReducer {
             httpStatus: action.httpStatus,
             businessCode: action.businessCode,
           },
+          ...METAS_GET_ITEM,
         },
       };
     }
