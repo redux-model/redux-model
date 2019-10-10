@@ -15,7 +15,7 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
         ...config.action(...args),
         type: this.successType,
       });
-    }, ['onSuccess']);
+    }, ['onSuccess'], []);
   }
 
   public onSuccess<CustomData>(effect: NormalSubscriber<CustomData, Payload>['effect']): NormalSubscriber<CustomData, Payload> {

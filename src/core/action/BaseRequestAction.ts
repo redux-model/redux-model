@@ -58,8 +58,9 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     }, [
       'onSuccess', 'onPrepare', 'onFail',
       'getPrepareType', 'getFailType',
-      'useMeta', 'useMetas', 'useLoading',
-      'connectMeta', 'connectMetas', 'connectLoading',
+      'useMeta', 'useMetas', 'useLoading', 'useLoadings',
+    ], [
+      'meta', 'metas', 'loading', 'loadings',
     ]);
   }
 
@@ -189,7 +190,8 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
       index += 1;
     }
 
-    if (index === -1) {
+    if (index === this.loadingsCache.length) {
+      // The index value get correct index number after push item
       this.loadingsCache.push([
         metas,
         {
@@ -198,8 +200,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
           },
         }
       ]);
-
-      index = this.loadingsCache.length - 1;
     }
 
     return this.loadingsCache[index][1];

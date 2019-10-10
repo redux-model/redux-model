@@ -26,21 +26,26 @@ export abstract class BaseAction<Data> {
     this.onTypePrefixChanged();
   }
 
-  protected proxy(fn: Function, publicMethods: string[]) {
-    // Only public method is required.
-    for (const method of ['getSuccessType', 'collectEffects', 'setActionName']) {
-      fn[method] = (...args: any[]) => {
-        return this[method](...args);
-      };
+  // Only public method is required.
+  protected proxy(fn: Function, publicMethods: string[], publicProperties: string[]) {
+    const handles = {};
+    const methodNames = publicMethods.concat(['getSuccessType', 'collectEffects', 'setActionName']);
+
+    for (const method of methodNames) {
+      handles[method] = this[method].bind(this);
+
+      Object.defineProperty(fn, method, {
+        get: () => handles[method],
+      });
     }
 
-    for (const method of publicMethods) {
-      fn[method] = (...args: any[]) => {
-        return this[method](...args);
-      };
+    for (const property of publicProperties) {
+      Object.defineProperty(fn, property, {
+        get: () => this[property],
+      });
     }
 
-    // Used for Proxy in BaseModel.ts
+    // Used for Proxy in BaseModel
     fn['__isAction__'] = true;
 
     return fn;
