@@ -30,7 +30,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   protected failType: string;
 
   // Avoid re-render component even if reducer data doesn't change.
-  protected loadingsCache: [Metas, MetasLoading<Payload, M>][] = [];
+  protected loadingsCache?: [Metas, MetasLoading<Payload, M>];
 
   public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
     super(instanceName);
@@ -160,7 +160,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
   public useLoadings(payload?: PayloadData<Payload, M>): boolean | MetasLoading<Payload, M> {
     return payload === undefined
-      ? this.getLoadingCache(<Metas>this.useMetas())
+      ? this.getLoadingHandle(<Metas>this.useMetas())
       : this.useMetas(payload, 'loading') as boolean;
   }
 
@@ -177,32 +177,19 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public get loadings(): MetasLoading<Payload, M> {
-    return this.getLoadingCache(this.metas);
+    return this.getLoadingHandle(this.metas);
   }
 
-  protected getLoadingCache(metas: Metas): MetasLoading<Payload, M> {
-    let index = 0;
-
-    for (const item of this.loadingsCache) {
-      if (item[0] === metas) {
-        break;
-      }
-      index += 1;
+  protected getLoadingHandle(metas: Metas): MetasLoading<Payload, M> {
+    if (!this.loadingsCache || this.loadingsCache[0] !== metas) {
+      this.loadingsCache = [metas, {
+        pick: (payload) => {
+          return metas.pick(payload).loading;
+        },
+      }];
     }
 
-    if (index === this.loadingsCache.length) {
-      // The index value get correct index number after push item
-      this.loadingsCache.push([
-        metas,
-        {
-          pick: (payload) => {
-            return metas.pick(payload).loading;
-          },
-        }
-      ]);
-    }
-
-    return this.loadingsCache[index][1];
+    return this.loadingsCache[1];
   }
 
   protected onTypePrefixChanged(): void {
