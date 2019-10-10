@@ -39,7 +39,11 @@ export type Meta = Readonly<{
 export type Metas<Payload = any, M = any> = Partial<{
   [key: string]: Meta;
 }> & {
-  getItem: (payload: PayloadData<Payload, M>) => Meta;
+  pick: (payload: PayloadData<Payload, M>) => Meta;
+};
+
+export type MetasLoading<Payload, M> = {
+  pick: (payload: PayloadData<Payload, M>) => boolean;
 };
 
 export interface Reducers {
@@ -155,7 +159,3 @@ export interface HttpTransform {
   errorMessage?: string;
   businessCode?: string;
 }
-
-export type MetasLoading<Payload, Meta> = {
-  getItem: (payload: PayloadData<Payload, Meta>) => boolean;
-};

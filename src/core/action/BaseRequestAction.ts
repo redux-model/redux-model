@@ -193,8 +193,8 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
       this.loadingsCache.push([
         metas,
         {
-          getItem: (payload) => {
-            return metas.getItem(payload).loading;
+          pick: (payload) => {
+            return metas.pick(payload).loading;
           },
         }
       ]);

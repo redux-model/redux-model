@@ -1,6 +1,6 @@
 import { ActionResponse, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers } from '../utils/createReduxStore';
-import { METAS_GET_ITEM } from '../utils/meta';
+import { METAS_PICK_METHOD } from '../utils/meta';
 
 interface MetaDict {
   [key: string]: {
@@ -99,7 +99,7 @@ export class MetaReducer {
             actionType: action.type,
             loading: true,
           },
-          ...METAS_GET_ITEM,
+          ...METAS_PICK_METHOD,
         },
       };
     }
@@ -123,7 +123,7 @@ export class MetaReducer {
             actionType: action.type,
             loading: false,
           },
-          ...METAS_GET_ITEM,
+          ...METAS_PICK_METHOD,
         },
       };
     }
@@ -150,7 +150,7 @@ export class MetaReducer {
             httpStatus: action.httpStatus,
             businessCode: action.businessCode,
           },
-          ...METAS_GET_ITEM,
+          ...METAS_PICK_METHOD,
         },
       };
     }

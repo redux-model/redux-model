@@ -5,15 +5,15 @@ export const DEFAULT_META: Meta = {
   loading: false,
 };
 
-export const METAS_GET_ITEM: {
-  getItem: Metas['getItem'];
+export const METAS_PICK_METHOD: {
+  pick: Metas['pick'];
 } = {
-  getItem: function (payload) {
+  pick: function (payload) {
     return this[payload] || DEFAULT_META;
   },
 };
 
 // @ts-ignore
 export const DEFAULT_METAS: Metas = {
-  ...METAS_GET_ITEM,
+  ...METAS_PICK_METHOD,
 };
