@@ -20,11 +20,20 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
     "@types/qs": "^6.5.3",
     "@types/react-redux": "^7.1.4",
     "@types/webpack-env": "^1.14.0",
     "babel-types": "^6.26.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.0",
+    "jest": "^24.9.0",
+    "jest-environment-enzyme": "^7.1.1",
+    "jest-enzyme": "^7.1.1",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
+    "ts-jest": "^24.1.0",
     "typescript": "^3.6.3"
   }
 }
