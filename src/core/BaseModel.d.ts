@@ -14,12 +14,10 @@ import {
   RequestActionParamWithMetas,
   RequestActionWithMeta,
   RequestActionWithMetas,
-  RequestOptions,
   State,
   StateReturn,
   IsPayload,
 } from './utils/types';
-import { FetchHandle } from '../libs/types';
 import { Uri } from './utils/Uri';
 import { HttpServiceHandle } from './service/HttpServiceHandle';
 
