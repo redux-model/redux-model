@@ -9,6 +9,9 @@ cache:
 install:
   - yarn install
 
+before_script:
+  - sh scripts/create-symbol.sh
+
 script:
   - yarn jest
 
