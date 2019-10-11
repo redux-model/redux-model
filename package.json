@@ -26,6 +26,7 @@
     "@types/react-redux": "^7.1.4",
     "@types/webpack-env": "^1.14.0",
     "babel-types": "^6.26.0",
+    "coveralls": "^3.0.7",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.0",
     "jest": "^24.9.0",

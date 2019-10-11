@@ -13,7 +13,7 @@ before_script:
   - sh scripts/create-symbol.sh
 
 script:
-  - yarn jest
+  - yarn jest --coverageReporters=text-lcov | coveralls
 
 branches:
   only:
