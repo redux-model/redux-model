@@ -80,7 +80,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
   public onFail<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
     return {
-      when: this.prepareType,
+      when: this.failType,
       effect,
     };
   }
