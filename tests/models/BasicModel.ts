@@ -1,5 +1,5 @@
-import { Model } from "../../src/web";
 import { $api } from './ApiService';
+import { BaseTestModel } from './BaseTestModel';
 
 interface Response {
   id: number;
@@ -9,7 +9,7 @@ interface Response {
 
 type Data = Response;
 
-export class BasicModel extends Model<Data> {
+export class BasicModel extends BaseTestModel<Data> {
   modify = this.actionNormal((state, payload: Partial<Data>) => {
     Object.assign(state, payload);
   });

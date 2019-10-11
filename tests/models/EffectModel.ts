@@ -1,5 +1,7 @@
-import { Effects, Model } from '../../src/web';
+import { Effects } from '../../src/web';
 import { testModel } from './BasicModel';
+import { requestModel } from './RequestModel';
+import { BaseTestModel } from './BaseTestModel';
 
 interface Data {
   counter: number;
@@ -7,7 +9,11 @@ interface Data {
   bar: string;
 }
 
-export class EffectModel extends Model<Data> {
+export class EffectModel extends BaseTestModel<Data> {
+  reset = this.actionNormal((state) => {
+    state.counter = 0;
+  });
+
   protected effects(): Effects<Data> {
     return [
       testModel.effectOtherModel.onSuccess((state) => {
@@ -16,6 +22,18 @@ export class EffectModel extends Model<Data> {
 
       testModel.effectWithPayload.onSuccess((state, action) => {
         state.counter = action.payload.counter;
+      }),
+
+      requestModel.getNpmInfo.onPrepare((state) => {
+        state.counter += 5;
+      }),
+
+      requestModel.getNpmInfo.onSuccess((state) => {
+        state.counter += 7;
+      }),
+
+      requestModel.getNpmInfo.onFail((state) => {
+        state.counter += 10;
       }),
     ];
   }

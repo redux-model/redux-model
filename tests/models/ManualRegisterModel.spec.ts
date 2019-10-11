@@ -1,14 +1,18 @@
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { ManualRegisterModel } from './ManualRegisterModel';
 
+let model: ManualRegisterModel;
+
 beforeEach(() => {
   createReduxStore({});
 });
 
-let model: ManualRegisterModel;
-
 beforeEach(() => {
   model = new ManualRegisterModel();
+});
+
+afterEach(() => {
+  model.clear();
 });
 
 test('No reducer data when we forget register', () => {

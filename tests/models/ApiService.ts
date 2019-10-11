@@ -1,8 +1,7 @@
 import { HttpError, HttpService, HttpTransform } from '../../src/web';
-import Mock = jest.Mock;
 
 class ApiService extends HttpService {
-  protected readonly mock: Mock;
+  protected readonly mock: jest.Mock;
 
   constructor() {
     super();
@@ -11,22 +10,32 @@ class ApiService extends HttpService {
     this.httpHandle.request = this.mock;
   }
 
-  public mockValue(data?: any) {
-    this.mock.mockResolvedValue({
+  public mockResolveValue(data?: any) {
+    this.mock.mockResolvedValueOnce({
+      data,
+    });
+  }
+
+  public mockRejectValue(data?: any) {
+    this.mock.mockRejectedValue({
       data,
     });
   }
 
   protected baseUrl(): string {
-    return 'http://localhost';
+    return '';
   }
 
   protected headers(): object {
     return {};
   }
 
-  protected onRespondError(error: HttpError<{ message: string }>, transform: HttpTransform): void {
-    transform.errorMessage = error.response.data.message;
+  protected onRespondError(error: HttpError<{ error: string }>, transform: HttpTransform): void {
+    transform.errorMessage = error.response.data.error;
+  }
+
+  protected timeoutMessage(): string {
+    return 'Timeout!';
   }
 
   protected onShowError(): void {}

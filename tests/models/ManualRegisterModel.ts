@@ -1,10 +1,10 @@
-import { Model } from '../../src/web';
+import { BaseTestModel } from './BaseTestModel';
 
 interface Data {
   foo: string,
 }
 
-export class ManualRegisterModel extends Model<Data> {
+export class ManualRegisterModel extends BaseTestModel<Data> {
   modify = this.actionNormal((state) => {
     state.foo = 'bar';
   });

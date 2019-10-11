@@ -1,14 +1,23 @@
 import { BasicModel } from './BasicModel';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 
+let model: BasicModel;
+let spy: jest.SpyInstance;
+
 beforeAll(() => {
   createReduxStore({});
 });
 
-let model: BasicModel;
+afterAll(() => {
+  spy && spy.mockRestore();
+});
 
 beforeEach(() => {
   model = new BasicModel();
+});
+
+afterEach(() => {
+  model.clear();
 });
 
 test('Model has right initialized reducer data', () => {
@@ -30,7 +39,22 @@ test('Modify data by normal action', () => {
 
 test('Normal action has successType', () => {
   expect(model.modify.getSuccessType()).toContain(model.constructor.name);
+  expect(model.modify.getSuccessType()).toContain('modify');
   expect(model.modify.getSuccessType()).toContain('success');
+});
+
+test('Request action has three kind of types', () => {
+  expect(model.getProfile.getPrepareType()).toContain(model.constructor.name);
+  expect(model.getProfile.getSuccessType()).toContain(model.constructor.name);
+  expect(model.getProfile.getFailType()).toContain(model.constructor.name);
+
+  expect(model.getProfile.getPrepareType()).toContain('getProfile');
+  expect(model.getProfile.getSuccessType()).toContain('getProfile');
+  expect(model.getProfile.getFailType()).toContain('getProfile');
+
+  expect(model.getProfile.getPrepareType()).toContain('prepare');
+  expect(model.getProfile.getSuccessType()).toContain('success');
+  expect(model.getProfile.getFailType()).toContain('fail');
 });
 
 test('Easy to use changeReducer by non-action method', () => {
@@ -63,6 +87,10 @@ test('Even if it can be register automatically, but we can register model again 
   });
   expect(model.data.id).toBe(44);
 
+  // Must restore when all tests is finished in this file.
+  // Or console.warn can't be prevented.
+  spy = jest.spyOn(console, 'warn').mockImplementation();
+
   createReduxStore({
     ...model.register(),
   });
@@ -72,6 +100,7 @@ test('Even if it can be register automatically, but we can register model again 
     ...model.register(),
   });
   expect(model.data.id).toBe(44);
+  expect(spy).toHaveBeenCalledTimes(2);
 });
 
 test('Not allowed to use methods which have prefix useXXX() outside hooks-style component', () => {

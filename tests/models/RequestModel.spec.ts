@@ -1,6 +1,7 @@
 import { $api } from './ApiService';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { RequestModel } from './RequestModel';
+import { ActionResponse } from '../../src/core/utils/types';
 
 const data = {
   id: 1463,
@@ -18,8 +19,12 @@ beforeEach(() => {
   model = new RequestModel();
 });
 
+afterEach(() => {
+  model.clear();
+});
+
 test('Profile can be fetch by request action', async () => {
-  $api.mockValue(data);
+  $api.mockResolveValue(data);
 
   const profile = await model.getProfile();
 
@@ -31,7 +36,7 @@ test('Profile can be fetch by request action', async () => {
 });
 
 test('Request action has the correct meta', (done) => {
-  $api.mockValue();
+  $api.mockResolveValue();
 
   const promise = model.getProfile();
 
@@ -49,7 +54,7 @@ test('Request action has the correct meta', (done) => {
 
 
 test('Request action has the correct metas', (done) => {
-  $api.mockValue(data);
+  $api.mockResolveValue(data);
 
   const promise = model.getProfileById(data.id);
 
@@ -74,7 +79,75 @@ test('Request action has the correct metas', (done) => {
 });
 
 test('Fetch profile by orphan request', async () => {
+  $api.mockResolveValue(data);
+
   const profile = await model.orphanGetRequest();
 
   expect(profile.id).toBe(data.id);
+});
+
+test('Request not found', async () => {
+  try {
+    await model.getNpmInfo((new Date()).toUTCString());
+  } catch (e) {
+    expect(e.type).toBe(model.getNpmInfo.getFailType());
+    expect(e.errorMessage).toBe('Not found');
+    expect(e.httpStatus).toBe(404);
+  }
+});
+
+test('Request timeout', async () => {
+  try {
+    await model.getNpmInfoWithTimeout('redux');
+
+    expect(false).toBeTruthy();
+  } catch (e) {
+    expect(e.errorMessage).toBe('Timeout!');
+  }
+});
+
+test('Easy to abort request action', (done) => {
+  const promise = model.getNpmInfo('redux');
+
+  promise
+    .catch((e: ActionResponse) => {
+      expect(e.type).toBe(model.getNpmInfo.getFailType());
+      expect(e.errorMessage).toBe('Abort');
+
+      const promise = model.getNpmInfo('react-redux');
+      promise
+        .catch((e: ActionResponse) => {
+          expect(e.type).toBe(model.getNpmInfo.getFailType());
+          expect(e.errorMessage).toBe('I want to cancel by myself');
+
+          done();
+        });
+      promise.cancel('I want to cancel by myself');
+    });
+
+  promise.cancel();
+});
+
+describe('Request action has three kinds of reducer event', () => {
+  test('case onPrepare', () => {
+    $api.mockResolveValue();
+    model.getProfile();
+    expect(model.data.id).toBe(666);
+  });
+
+  test('case onSuccess', async () => {
+    $api.mockResolveValue(data);
+    await model.getProfile();
+    expect(model.data.id).toBe(data.id);
+  });
+
+  test('case onFail', async () => {
+    $api.mockRejectValue();
+    try {
+      await model.getProfile();
+      expect(false).toBeTruthy();
+    } catch {
+      expect(model.data.id).toBe(1000);
+    }
+  });
 });
