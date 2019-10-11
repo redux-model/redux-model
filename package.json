@@ -20,6 +20,7 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
+    "@types/enzyme": "^3.10.3",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
     "@types/qs": "^6.5.3",

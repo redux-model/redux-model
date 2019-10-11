@@ -1,4 +1,4 @@
-import { testModel } from './BasicModel';
+import { basicModel } from './BasicModel';
 import { EffectModel } from './EffectModel';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { $api } from './ApiService';
@@ -19,20 +19,20 @@ afterEach(() => {
 
 test('Effect by normal action', () => {
   expect(model.data.counter).toBe(0);
-  testModel.effectOtherModel();
+  basicModel.effectOtherModel();
   expect(model.data.counter).toBe(1);
-  testModel.effectOtherModel();
+  basicModel.effectOtherModel();
   expect(model.data.counter).toBe(2);
-  testModel.effectOtherModel();
+  basicModel.effectOtherModel();
   expect(model.data.counter).toBe(3);
 });
 
 test('Effect data with payload', () => {
   expect(model.data.counter).toBe(0);
-  testModel.effectWithPayload({ counter: 130 });
+  basicModel.effectWithPayload({ counter: 130 });
   expect(model.data.counter).toBe(130);
 
-  testModel.effectWithPayload({ counter: 387 });
+  basicModel.effectWithPayload({ counter: 387 });
   expect(model.data.counter).toBe(387);
 });
 

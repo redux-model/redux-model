@@ -51,4 +51,4 @@ export class BasicModel extends BaseTestModel<Data> {
   }
 }
 
-export const testModel = new BasicModel();
+export const basicModel = new BasicModel();

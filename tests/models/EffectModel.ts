@@ -1,5 +1,5 @@
 import { Effects } from '../../src/web';
-import { testModel } from './BasicModel';
+import { basicModel } from './BasicModel';
 import { requestModel } from './RequestModel';
 import { BaseTestModel } from './BaseTestModel';
 
@@ -16,11 +16,11 @@ export class EffectModel extends BaseTestModel<Data> {
 
   protected effects(): Effects<Data> {
     return [
-      testModel.effectOtherModel.onSuccess((state) => {
+      basicModel.effectOtherModel.onSuccess((state) => {
         state.counter += 1;
       }),
 
-      testModel.effectWithPayload.onSuccess((state, action) => {
+      basicModel.effectWithPayload.onSuccess((state, action) => {
         state.counter = action.payload.counter;
       }),
 
