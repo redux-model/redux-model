@@ -5,3 +5,4 @@ build/
 .history/
 src/libs
 .DS_Store
+coverage/

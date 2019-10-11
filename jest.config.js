@@ -8,4 +8,6 @@ module.exports = {
     enzymeAdapter: 'react16',
   },
   verbose: true,
+  collectCoverage: true,
+  coverageReporters: ['text-summary', 'lcov'],
 };
