@@ -1,5 +1,5 @@
 import { Effects, Model } from '../../src/web';
-import { testModel } from './TestModel';
+import { testModel } from './BasicModel';
 
 interface Data {
   counter: number;

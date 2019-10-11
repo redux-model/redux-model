@@ -7,6 +7,7 @@ module.exports = {
   testEnvironmentOptions: {
     enzymeAdapter: 'react16',
   },
+  coveragePathIgnorePatterns: ['<rootDir>/tests', '/node_modules/'],
   verbose: true,
   collectCoverage: true,
   coverageReporters: ['text-summary', 'lcov'],

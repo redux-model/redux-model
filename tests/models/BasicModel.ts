@@ -1,12 +1,15 @@
 import { Model } from "../../src/web";
+import { $api } from './ApiService';
 
-interface Data {
+interface Response {
   id: number;
   name: string;
   age?: number;
 }
 
-export class TestModel extends Model<Data> {
+type Data = Response;
+
+export class BasicModel extends Model<Data> {
   modify = this.actionNormal((state, payload: Partial<Data>) => {
     Object.assign(state, payload);
   });
@@ -17,6 +20,17 @@ export class TestModel extends Model<Data> {
       name: 'peter',
       age: 20,
     };
+  });
+
+  getProfile = this.actionRequest({
+    action: () => {
+      return $api.get({
+        uri: this.uri<Response>('/profile.json'),
+      });
+    },
+    onSuccess: (_, action) => {
+      return action.response;
+    },
   });
 
   effectOtherModel = this.actionNormal(() => {});
@@ -37,4 +51,4 @@ export class TestModel extends Model<Data> {
   }
 }
 
-export const testModel = new TestModel();
+export const testModel = new BasicModel();

@@ -1,32 +1,31 @@
-import { testModel } from './TestModel';
+import { testModel } from './BasicModel';
 import { EffectModel } from './EffectModel';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 
-beforeAll(() => {
-  createReduxStore({});
-});
-
-let effectModel: EffectModel;
+let model: EffectModel;
 
 beforeEach(() => {
-  effectModel = new EffectModel();
+  model = new EffectModel();
+  createReduxStore({
+    ...model.register(),
+  });
 });
 
 test('Effect by normal action', () => {
-  expect(effectModel.data.counter).toBe(0);
+  expect(model.data.counter).toBe(0);
   testModel.effectOtherModel();
-  expect(effectModel.data.counter).toBe(1);
+  expect(model.data.counter).toBe(1);
   testModel.effectOtherModel();
-  expect(effectModel.data.counter).toBe(2);
+  expect(model.data.counter).toBe(2);
   testModel.effectOtherModel();
-  expect(effectModel.data.counter).toBe(3);
+  expect(model.data.counter).toBe(3);
 });
 
 test('Effect data with payload', () => {
-  expect(effectModel.data.counter).toBe(0);
+  expect(model.data.counter).toBe(0);
   testModel.effectWithPayload({ counter: 130 });
-  expect(effectModel.data.counter).toBe(130);
+  expect(model.data.counter).toBe(130);
 
   testModel.effectWithPayload({ counter: 387 });
-  expect(effectModel.data.counter).toBe(387);
+  expect(model.data.counter).toBe(387);
 });
