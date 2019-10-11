@@ -107,13 +107,15 @@ export abstract class BaseModel<Data = null> {
   }
 
   public register(): Reducers {
-    const initData = this.initReducer();
-
     // Only create class once.
     // For effects model, register() will be invoked twice.
-    if (!this.reducer && initData !== null) {
-      this.reducer = new BaseReducer<Data>(initData, this.instanceName);
-      this.reducerName = this.reducer.getReducerName();
+    if (!this.reducer) {
+      const initData = this.initReducer();
+
+      if (initData !== null) {
+        this.reducer = new BaseReducer<Data>(initData, this.instanceName);
+        this.reducerName = this.reducer.getReducerName();
+      }
     }
 
     if (this.reducer) {
@@ -209,10 +211,10 @@ export abstract class BaseModel<Data = null> {
     }, instanceName);
 
     this.actions.push(instance);
-    if (this.autoRegister()) {
-      if (this.reducer && (!isDebug() || !isProxyEnable())) {
-        this.reducer.addCase(...instance.collectEffects());
-      }
+
+    // Method register() was invoked, we should append case immediately.
+    if (this.reducer && (!isDebug() || !isProxyEnable())) {
+      this.reducer.addCase(...instance.collectEffects());
     }
 
     return instance;
@@ -246,11 +248,10 @@ export abstract class BaseModel<Data = null> {
     const instance = new RequestAction<Data, A, Response, Payload, false>(config, instanceName);
 
     this.actions.push(instance);
-    if (this.autoRegister()) {
-      // Method register() was invoked, we should append case immediately.
-      if (this.reducer && (!isDebug() || !isProxyEnable())) {
-        this.reducer.addCase(...instance.collectEffects());
-      }
+
+    // Method register() was invoked, we should append case immediately.
+    if (this.reducer && (!isDebug() || !isProxyEnable())) {
+      this.reducer.addCase(...instance.collectEffects());
     }
 
     return instance;
