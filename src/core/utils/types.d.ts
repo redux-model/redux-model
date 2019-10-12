@@ -98,15 +98,15 @@ export interface RequestActionParamBase<Data, A extends (...args: any[]) => Http
 }
 
 export interface RequestActionParamNoMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
-  meta: false;
+  metaKey: false;
 }
 
 export interface RequestActionParamWithMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
-  meta?: true;
+  metaKey?: true;
 }
 
 export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends RequestActionParamBase<Data, A, Response, Payload> {
-  meta: M;
+  metaKey: M;
 }
 
 export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload> = false> extends RequestAction<Data, A, Response, Payload, M> {

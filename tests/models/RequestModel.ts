@@ -72,7 +72,7 @@ export class RequestModel extends BaseTestModel<Data> {
     onSuccess: (state, action) => {
       state.records[action.payload.id] = action.response;
     },
-    meta: 'id',
+    metaKey: 'id',
   });
 
   noMetaRequest = this.actionRequest({
@@ -81,7 +81,7 @@ export class RequestModel extends BaseTestModel<Data> {
         uri: this.uri<Response>('/profile.json'),
       });
     },
-    meta: false,
+    metaKey: false,
   });
 
   async orphanGetRequest() {

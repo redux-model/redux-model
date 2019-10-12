@@ -36,7 +36,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
     super(instanceName);
 
-    this.metaKey = config.meta === undefined ? true : config.meta;
+    this.metaKey = config.metaKey === undefined ? true : config.metaKey;
     this.prepareCallback = config.onPrepare;
     this.successCallback = config.onSuccess;
     this.failCallback = config.onFail;
