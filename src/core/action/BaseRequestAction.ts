@@ -15,6 +15,7 @@ import { isDebug } from '../../libs/dev';
 import { isProxyEnable } from '../utils/dev';
 import { HttpServiceHandle } from '../service/HttpServiceHandle';
 import { DEFAULT_META, DEFAULT_METAS } from '../utils/meta';
+import { NoMetaError } from '../exceptions/NoMetaError';
 
 export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends BaseAction<Data> {
   protected readonly metaKey: boolean | PayloadKey<A>;
@@ -123,6 +124,10 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public useMeta<T extends keyof Meta>(key?: T): Meta | Meta[T] {
+    if (this.metaKey === false) {
+      throw new NoMetaError(this.instanceName);
+    }
+
     return this.switchReduxSelector()((state: any) => {
       let customMeta: Meta | undefined = state[MetaReducer.getName()][this.typePrefix];
 
@@ -135,6 +140,10 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public useMetas<T extends keyof Meta>(payload?: PayloadData<Payload, M>, key?: T): Metas<Payload, M> | Meta[T] {
+    if (this.metaKey === false) {
+      throw new NoMetaError(this.instanceName);
+    }
+
     if (payload === undefined) {
       key = undefined;
     }
@@ -165,10 +174,18 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public get meta(): Meta {
+    if (this.metaKey === false) {
+      throw new NoMetaError(this.instanceName);
+    }
+
     return MetaReducer.getData<Meta>(this.typePrefix) || DEFAULT_META;
   }
 
   public get metas(): Metas<Payload, M> {
+    if (this.metaKey === false) {
+      throw new NoMetaError(this.instanceName);
+    }
+
     return MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
   }
 
