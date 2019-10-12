@@ -15,16 +15,17 @@
     * [Normal Action监听](/zh-cn/normal-action-effects.md)
 
 * 请求Action
-    * [创建Service](/zh-cn/generate-service.md)
+    * [创建Service](/zh-cn/http-service.md)
     * [定义Request Action](/zh-cn/define-request-action.md)
+    * [定义Meta](/zh-cn/define-meta.md)
+    * [定义Metas](/zh-cn/define-metas.md)
     * [Request Action监听](/zh-cn/request-action-effects.md)
-    * [使用Promise]()
-    * [定义Meta]()
-    * [渲染Loading]()
-    * [独立异步请求]()
-    * [在React中使用]()
+    * [独立异步请求](/zh-cn/orphan-request.md)
 
 * API说明
     * [Model]()
     * [Normal Action]()
     * [Request Action]()
+    * [Http Service]()
+    * [Meta]()
+    * [Metas]()
