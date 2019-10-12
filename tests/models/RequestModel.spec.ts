@@ -52,7 +52,6 @@ test('Request action has the correct meta', (done) => {
   });
 });
 
-
 test('Request action has the correct metas', (done) => {
   $api.mockResolveValue(data);
 
@@ -76,6 +75,14 @@ test('Request action has the correct metas', (done) => {
 
     done();
   });
+});
+
+test('No meta can be found when metaKey set to false', () => {
+  $api.mockResolveValue(data);
+  model.noMetaRequest();
+
+  expect(() => model.noMetaRequest.meta).toThrowError();
+  expect(() => model.noMetaRequest.loading).toThrowError();
 });
 
 test('Fetch profile by orphan request', async () => {

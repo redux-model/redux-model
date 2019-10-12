@@ -75,6 +75,15 @@ export class RequestModel extends BaseTestModel<Data> {
     meta: 'id',
   });
 
+  noMetaRequest = this.actionRequest({
+    action: () => {
+      return $api.get({
+        uri: this.uri<Response>('/profile.json'),
+      });
+    },
+    meta: false,
+  });
+
   async orphanGetRequest() {
     const profile = await $api.getAsync<Response>({
       uri: '/profile.json',
