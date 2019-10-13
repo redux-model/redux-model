@@ -23,9 +23,6 @@
     * [独立异步请求](/zh-cn/orphan-request.md)
 
 * API说明
-    * [Model]()
-    * [Normal Action]()
-    * [Request Action]()
-    * [Http Service]()
-    * [Meta]()
-    * [Metas]()
+    * [Model](/zh-cn/api-model.md)
+    * [Normal Action](/zh-cn/api-normal-action.md)
+    * [Request Action](/zh-cn/api-request-action.md)
