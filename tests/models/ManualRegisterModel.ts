@@ -5,7 +5,7 @@ interface Data {
 }
 
 export class ManualRegisterModel extends BaseTestModel<Data> {
-  modify = this.actionNormal((state) => {
+  modify = this.action((state) => {
     state.foo = 'bar';
   });
 

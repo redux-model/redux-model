@@ -10,11 +10,11 @@ interface Response {
 type Data = Response;
 
 export class BasicModel extends BaseTestModel<Data> {
-  modify = this.actionNormal((state, payload: Partial<Data>) => {
+  modify = this.action((state, payload: Partial<Data>) => {
     Object.assign(state, payload);
   });
 
-  returnNewObject = this.actionNormal(() => {
+  returnNewObject = this.action(() => {
     return {
       id: 100,
       name: 'peter',
@@ -22,8 +22,8 @@ export class BasicModel extends BaseTestModel<Data> {
     };
   });
 
-  getProfile = this.actionRequest({
-    action: () => {
+  getProfile = this.action({
+    fetch: () => {
       return $api.get({
         uri: this.uri<Response>('/profile.json'),
       });
@@ -33,9 +33,9 @@ export class BasicModel extends BaseTestModel<Data> {
     },
   });
 
-  effectOtherModel = this.actionNormal(() => {});
+  effectOtherModel = this.action(() => {});
 
-  effectWithPayload = this.actionNormal((_, __: { counter: number }) => {});
+  effectWithPayload = this.action((_, __: { counter: number }) => {});
 
   modifyByMethod(id: number) {
     this.changeReducer((state) => {

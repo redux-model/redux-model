@@ -1,25 +1,25 @@
 # Model API
 
-### actionNormal
+### action (Normal)
 
 创建Normal Action
 
 ```typescript
 class Test extends Model {
-    modify = this.actionNormal((state, payload: any) => {
+    modify = this.action((state, payload: any) => {
         state.id = payload;
     });
 }
 ```
 
-### actionRequest
+### action (Request)
 
 创建Request Action
 
 ```typescript
 class Test extends Model {
-    fetch = this.actionRequest({
-        action: ...,
+    fetch = this.action({
+        fetch: ...,
         onPrepare: ...,
         onSuccess: ...,
         onFail: ...,

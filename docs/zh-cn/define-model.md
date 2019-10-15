@@ -12,7 +12,7 @@ interface Data {
 
 class FirstModel extends Model<Data> {
     // Action
-    increase = this.actionNormal((state) => {
+    increase = this.action((state) => {
         state.counter += 1;
     });
     

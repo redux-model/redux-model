@@ -187,7 +187,72 @@ export abstract class BaseModel<Data = null> {
     }
   }
 
-  protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
+  protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
+    changeReducer: A
+  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
+
+  // When meta=false
+  // @ts-ignore
+  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    request: RequestActionParamNoMeta<Data, A, Response, Payload>
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  // When meta is undefined or true.
+  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    request: RequestActionParamWithMeta<Data, A, Response, Payload>
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  // When meta is the key of payload.
+  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
+    request: RequestActionParamWithMetas<Data, A, Response, Payload, M>
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  protected action(param: any): any {
+    if (typeof param === 'function') {
+      return this.actionNormal(param);
+    }
+
+    return this.actionRequest(param);
+  }
+
+  protected uri<Response>(uri: string): Uri<Response> {
+    return new Uri<Response>(uri);
+  }
+
+  protected effects(): Effects<Data> {
+    return [];
+  }
+
+  protected autoRegister(): boolean {
+    return true;
+  }
+
+  protected abstract initReducer(): Data;
+
+  protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
+
+  private actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    config: RequestActionParamNoMeta<Data, A, Response, Payload>
+  ): RequestAction<Data, A, Response, Payload, false> {
+    let instanceName = this.instanceName;
+    if (!isDebug() || !isProxyEnable()) {
+      this.actionCounter += 1;
+      instanceName += '_' + this.actionCounter;
+    }
+
+    const instance = new RequestAction<Data, A, Response, Payload, false>(config, instanceName);
+
+    this.actions.push(instance);
+
+    // Method register() was invoked, we should append case immediately.
+    if (this.reducer && (!isDebug() || !isProxyEnable())) {
+      this.reducer.addCase(...instance.collectEffects());
+    }
+
+    return instance;
+  }
+
+  private actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = this.instanceName;
@@ -219,57 +284,4 @@ export abstract class BaseModel<Data = null> {
 
     return instance;
   }
-
-  // When meta=false
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
-
-  // When meta is undefined or true.
-  // @ts-ignore
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamWithMeta<Data, A, Response, Payload>
-  ): RequestActionWithMeta<Data, A, Response, Payload>;
-
-  // When meta is the key of payload.
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
-    config: RequestActionParamWithMetas<Data, A, Response, Payload, M>
-  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
-
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestAction<Data, A, Response, Payload, false> {
-    let instanceName = this.instanceName;
-    if (!isDebug() || !isProxyEnable()) {
-      this.actionCounter += 1;
-      instanceName += '_' + this.actionCounter;
-    }
-
-    const instance = new RequestAction<Data, A, Response, Payload, false>(config, instanceName);
-
-    this.actions.push(instance);
-
-    // Method register() was invoked, we should append case immediately.
-    if (this.reducer && (!isDebug() || !isProxyEnable())) {
-      this.reducer.addCase(...instance.collectEffects());
-    }
-
-    return instance;
-  }
-
-  protected uri<Response>(uri: string): Uri<Response> {
-    return new Uri<Response>(uri);
-  }
-
-  protected effects(): Effects<Data> {
-    return [];
-  }
-
-  protected autoRegister(): boolean {
-    return true;
-  }
-
-  protected abstract initReducer(): Data;
-
-  protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
 }

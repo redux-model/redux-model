@@ -6,13 +6,13 @@ type Data = string;
 export class NoImmerModel extends BaseTestModel<Data> {
   public lastState?: State<Data>;
 
-  changeData = this.actionNormal((state) => {
+  changeData = this.action((state) => {
     this.lastState = state;
 
     return 'bar';
   });
 
-  dontReturnValue = this.actionNormal(() => {});
+  dontReturnValue = this.action(() => {});
 
   protected initReducer(): Data {
     return 'foo';

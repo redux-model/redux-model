@@ -13,8 +13,8 @@ interface Response {
 type Data = Partial<Response>;
 
 class ThirdModel extends Model<Data> {
-    getProfile = this.actionRequest({
-        action: (userId: number) => {
+    getProfile = this.action({
+        fetch: (userId: number) => {
             return $api.get({
                 uri: this.uri<Response>('/profile'),
                 query: {
@@ -55,8 +55,8 @@ console.log(thirdModel.data.name) // name === 'peter'
 并不是只有请求成功才能变更reducer，你也可以选择在请求之前和请求失败的时候更改Reducer
 
 ```typescript
-getProfile = this.actionRequest({
-    action: ...,
+getProfile = this.action({
+    fetch: ...,
   
     // 当准备请求
     onPrepare: (state, action) => {

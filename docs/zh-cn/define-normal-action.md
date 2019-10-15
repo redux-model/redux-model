@@ -10,17 +10,17 @@ interface Data {
 
 class FirstModel extends Model<Data> {
     // Action
-    increase = this.actionNormal((state) => {
+    increase = this.action((state) => {
         state.counter += 1;
     });
     
     // Action
-    plusStep = this.actionNormal((state, step: number) => {
+    plusStep = this.action((state, step: number) => {
         state.counter += step;
     });
     
     // Action
-    reduceStep = this.actionNormal((state, payload: { step: number }) => {
+    reduceStep = this.action((state, payload: { step: number }) => {
         state.counter -= payload.step;
     });
 

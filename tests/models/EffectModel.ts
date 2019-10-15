@@ -10,7 +10,7 @@ interface Data {
 }
 
 export class EffectModel extends BaseTestModel<Data> {
-  reset = this.actionNormal((state) => {
+  reset = this.action((state) => {
     state.counter = 0;
   });
 

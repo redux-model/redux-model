@@ -6,12 +6,12 @@ interface Data {
 }
 
 export class ProdModel extends BaseTestModel<Data> {
-  increase = this.actionNormal((state) => {
+  increase = this.action((state) => {
     state.counter += 1;
   });
 
-  fetchSomething = this.actionRequest({
-    action: () => {
+  fetchSomething = this.action({
+    fetch: () => {
       return $api.get({
         uri: this.uri('/test'),
       });

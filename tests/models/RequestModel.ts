@@ -18,8 +18,8 @@ type Data = Response & {
 };
 
 export class RequestModel extends BaseTestModel<Data> {
-  getProfile = this.actionRequest({
-    action: () => {
+  getProfile = this.action({
+    fetch: () => {
       return $api.get({
         uri: this.uri<Response>('/profile.json'),
       });
@@ -41,16 +41,16 @@ export class RequestModel extends BaseTestModel<Data> {
     },
   });
 
-  getNpmInfo = this.actionRequest({
-    action: (packageName: string) => {
+  getNpmInfo = this.action({
+    fetch: (packageName: string) => {
       return $api.get({
         uri: this.uri('https://registry.npmjs.org/' + packageName),
       });
     },
   });
 
-  getNpmInfoWithTimeout = this.actionRequest({
-    action: (packageName: string) => {
+  getNpmInfoWithTimeout = this.action({
+    fetch: (packageName: string) => {
       return $api.get({
         uri: this.uri('https://registry.npmjs.org/' + packageName),
         requestOptions: {
@@ -60,8 +60,8 @@ export class RequestModel extends BaseTestModel<Data> {
     },
   });
 
-  getProfileById = this.actionRequest({
-    action: (id: number) => {
+  getProfileById = this.action({
+    fetch: (id: number) => {
       return $api.get({
         uri: this.uri<Response>('/profile.json'),
         payload: {
@@ -75,8 +75,8 @@ export class RequestModel extends BaseTestModel<Data> {
     metaKey: 'id',
   });
 
-  noMetaRequest = this.actionRequest({
-    action: () => {
+  noMetaRequest = this.action({
+    fetch: () => {
       return $api.get({
         uri: this.uri<Response>('/profile.json'),
       });

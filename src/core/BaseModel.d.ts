@@ -51,23 +51,23 @@ export declare abstract class BaseModel<Data = null> {
 
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void;
 
-  protected actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
+  protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
   // Case meta is false. We will never create meta reducer for this action.
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamNoMeta<Data, A, Response, Payload>
+  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    request: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // Case meta is undefined or true. we will automatically register meta reducer.
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamWithMeta<Data, A, Response, Payload>
+  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    request: RequestActionParamWithMeta<Data, A, Response, Payload>
   ): RequestActionWithMeta<Data, A, Response, Payload>;
 
   // Case meta is one of payload's key. we will automatically register metas reducer.
-  protected actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
-    config: RequestActionParamWithMetas<Data, A, Response, Payload, M>
+  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
+    request: RequestActionParamWithMetas<Data, A, Response, Payload, M>
   ): RequestActionWithMetas<Data, A, Response, Payload, M>;
 
   protected uri<Response>(uri: string): Uri<Response>;
