@@ -91,7 +91,7 @@ export type RequestSubscriber<CustomData, Response, Payload> = {
 };
 
 export interface RequestActionParamBase<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> {
-  fetch: A;
+  request: A;
   onSuccess?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
   onPrepare?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
   onFail?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;

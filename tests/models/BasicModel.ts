@@ -23,7 +23,7 @@ export class BasicModel extends BaseTestModel<Data> {
   });
 
   getProfile = this.action({
-    fetch: () => {
+    request: () => {
       return $api.get({
         uri: this.uri<Response>('/profile.json'),
       });

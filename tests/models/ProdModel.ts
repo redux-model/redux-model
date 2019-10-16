@@ -11,7 +11,7 @@ export class ProdModel extends BaseTestModel<Data> {
   });
 
   fetchSomething = this.action({
-    fetch: () => {
+    request: () => {
       return $api.get({
         uri: this.uri('/test'),
       });

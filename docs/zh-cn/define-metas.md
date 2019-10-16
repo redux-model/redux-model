@@ -18,7 +18,7 @@ type Data = Partial<{
 
 class ThirdModel extends Model<Data> {
     getProfile = this.action({
-        fetch: (userId: number) => {
+        request: (userId: number) => {
             return $api.get({
                 uri: ...,
                 payload: {
@@ -87,7 +87,7 @@ const loading = thirdModel.getProfile.useLoadings(userId);
 Payload除了可以创建Metas之外，还有一个作用，就是在改变reducer时，可以根据payload传入的信息来决定变更策略。
 ```typescript
 getProfile = this.action({
-    fetch: ...,
+    request: ...,
     onSuccess: (state, action) => {
         state[action.payload.userId] = action.response;
     },

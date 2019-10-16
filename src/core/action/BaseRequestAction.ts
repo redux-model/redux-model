@@ -49,7 +49,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
     // @ts-ignore
     return this.proxy((...args: Parameters<A>) => {
-      return (config.fetch(...args) as unknown as HttpServiceHandle<Response, Payload>)
+      return (config.request(...args) as unknown as HttpServiceHandle<Response, Payload>)
         .setTypes({
           prepare: this.prepareType,
           success: this.successType,

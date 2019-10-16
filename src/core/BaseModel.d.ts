@@ -51,13 +51,9 @@ export declare abstract class BaseModel<Data = null> {
 
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void;
 
-  protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    changeReducer: A
-  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
-
   // Case meta is false. We will never create meta reducer for this action.
   protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    request: RequestActionParamNoMeta<Data, A, Response, Payload>
+    noMeta: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // Case meta is undefined or true. we will automatically register meta reducer.
@@ -67,8 +63,12 @@ export declare abstract class BaseModel<Data = null> {
 
   // Case meta is one of payload's key. we will automatically register metas reducer.
   protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
-    request: RequestActionParamWithMetas<Data, A, Response, Payload, M>
+    hasMetas: RequestActionParamWithMetas<Data, A, Response, Payload, M>
   ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
+    changeReducer: A
+  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
   protected uri<Response>(uri: string): Uri<Response>;
 

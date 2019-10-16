@@ -187,14 +187,10 @@ export abstract class BaseModel<Data = null> {
     }
   }
 
-  protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    changeReducer: A
-  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
-
   // When meta=false
   // @ts-ignore
   protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    request: RequestActionParamNoMeta<Data, A, Response, Payload>
+    noMeta: RequestActionParamNoMeta<Data, A, Response, Payload>
   ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   // When meta is undefined or true.
@@ -204,8 +200,13 @@ export abstract class BaseModel<Data = null> {
 
   // When meta is the key of payload.
   protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
-    request: RequestActionParamWithMetas<Data, A, Response, Payload, M>
+    hasMetas: RequestActionParamWithMetas<Data, A, Response, Payload, M>
   ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
+    changeReducer: A
+  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
+
 
   protected action(param: any): any {
     if (typeof param === 'function') {

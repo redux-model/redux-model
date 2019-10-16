@@ -27,7 +27,7 @@ console.log(thirdModel.getProfile.meta.loading)
 默认情况，meta是开启的。并不是每个请求action都需要记录meta，你可以手动关闭它。关闭之后，你无法再获取当前Action的meta数据
 ```typescript
 getProfile = this.action({
-    fetch: ...,
+    request: ...,
     metaKey: false,
 });
 ```

@@ -19,7 +19,7 @@ class Test extends Model {
 ```typescript
 class Test extends Model {
     fetch = this.action({
-        fetch: ...,
+        request: ...,
         onPrepare: ...,
         onSuccess: ...,
         onFail: ...,

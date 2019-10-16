@@ -14,7 +14,7 @@ type Data = Partial<Response>;
 
 class ThirdModel extends Model<Data> {
     getProfile = this.action({
-        fetch: (userId: number) => {
+        request: (userId: number) => {
             return $api.get({
                 uri: this.uri<Response>('/profile'),
                 query: {
@@ -56,7 +56,7 @@ console.log(thirdModel.data.name) // name === 'peter'
 
 ```typescript
 getProfile = this.action({
-    fetch: ...,
+    request: ...,
   
     // 当准备请求
     onPrepare: (state, action) => {
