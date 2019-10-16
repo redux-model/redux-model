@@ -1,6 +1,6 @@
 export { Model } from './Model';
 export { HttpService } from './HttpService';
-export { HttpError, HttpCanceler, ActionRequest } from './types';
+export { HttpError, HttpCanceler, ActionRequest, FetchHandle } from './types';
 
 export { METHOD } from '../core/utils/method';
 export { HTTP_STATUS_CODE } from '../core/utils/httpStatusCode';
