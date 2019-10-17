@@ -1,4 +1,11 @@
-import { HttpServiceNoMeta, HttpServiceWithMeta, HttpServiceWithMetas, RequestOptions, Types, } from '../utils/types';
+import {
+  ActionResponse,
+  HttpServiceNoMeta,
+  HttpServiceWithMeta,
+  HttpServiceWithMetas,
+  RequestOptions,
+  Types,
+} from '../utils/types';
 import { METHOD } from '../utils/method';
 import { ActionRequest } from '../../libs/types';
 
@@ -41,6 +48,12 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
 
   requestOptions(options: ActionRequest['requestOptions']): this {
     this.config.requestOptions = options;
+
+    return this;
+  }
+
+  hideError(is: boolean | ((response: ActionResponse<Data, Response, Payload>) => boolean)): this {
+    this.config.hideError = is;
 
     return this;
   }
