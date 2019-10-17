@@ -17,16 +17,11 @@ type Data = Partial<{
 }>;
 
 class ThirdModel extends Model<Data> {
-    getProfile = this.action({
-        request: (userId: number) => {
-            return $api.get({
-                uri: ...,
-                payload: {
-                    userId,
-                },
-            });
-        },
-        metaKey: 'userId',
+    getProfile = service.get((userId: number) => {
+        return this
+            .uri('...')
+            .payload({ userId })
+            .metaKey('userId');
     });
 
     protected initReducer(): Data {
@@ -86,10 +81,11 @@ const loading = thirdModel.getProfile.useLoadings(userId);
 
 Payload除了可以创建Metas之外，还有一个作用，就是在改变reducer时，可以根据payload传入的信息来决定变更策略。
 ```typescript
-getProfile = this.action({
-    request: ...,
-    onSuccess: (state, action) => {
-        state[action.payload.userId] = action.response;
-    },
+getProfile = $api.get(() => {
+    return this
+        .uri('')
+        .onSuccess((state, action) => {
+            state[action.payload.userId] = action.response;
+        });
 });
 ```

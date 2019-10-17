@@ -13,19 +13,16 @@ interface Response {
 type Data = Partial<Response>;
 
 class ThirdModel extends Model<Data> {
-    getProfile = this.action({
-        request: (userId: number) => {
-            return $api.get({
-                uri: this.uri<Response>('/profile'),
-                query: {
-                    userId,
-                },
-            });
-        },
-        // 请求成功时，变更reducer
-        onSuccess: (state, action) => {
-            return action.response;
-        },
+    getProfile = $api.get((userId: number) => {
+        return this
+            .uri<Response>('/profile')
+            .query({
+                userId,
+            })
+            // 请求成功时，变更reducer
+            .onSuccess((state, action) => {
+                return action.response;
+            })
     });
 
     protected initReducer(): Data {
@@ -55,24 +52,25 @@ console.log(thirdModel.data.name) // name === 'peter'
 并不是只有请求成功才能变更reducer，你也可以选择在请求之前和请求失败的时候更改Reducer
 
 ```typescript
-getProfile = this.action({
-    request: ...,
-  
-    // 当准备请求
-    onPrepare: (state, action) => {
-        state.id = 0;
-        state.name = 'unknown';
-    },
+getProfile = $api.get(() => {
+    return this
+        .uri(...)
+
+        // 当准备请求
+        .onPrepare((state, action) => {
+             state.id = 0;
+             state.name = 'unknown';
+        })
+
+        // 当请求成功
+        .onSuccess((state, action) => {
+             return action.response;
+        })
     
-    // 当请求成功
-    onSuccess: (state, action) => {
-        return action.response;
-    },
-  
-    // 请求失败
-    onFail: (state, action) => {
-        return {};
-    },
+        // 请求失败
+        .onFail((state, action) => {
+            return {};
+        })
 });
 ```
 

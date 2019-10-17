@@ -18,12 +18,14 @@ class Test extends Model {
 
 ```typescript
 class Test extends Model {
-    fetch = this.action({
-        request: ...,
-        onPrepare: ...,
-        onSuccess: ...,
-        onFail: ...,
-        metaKey: true,
+    fetch = service.post(() => {
+        return this
+            .uri('')
+            .query()
+            .body()
+            .onPrepare()
+            .onSuccess()
+            .metaKey();
     });
 }
 ```
