@@ -90,7 +90,7 @@ export type PayloadData<Payload, M> = M extends keyof Payload ? Payload[M] : nev
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
-  effect: (state: State<CustomData>, action: ActionResponse<Response, Payload>) => StateReturn<CustomData>;
+  effect: (state: State<CustomData>, action: ActionResponse<CustomData, Response, Payload>) => StateReturn<CustomData>;
 };
 
 export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload, M>, Response, Payload, M = false> extends RequestAction<Data, A, Response, Payload, M> {
