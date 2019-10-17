@@ -1,17 +1,13 @@
-import { ActionResponse, Metas, Reducers, Types } from '../utils/types';
+import { ActionResponse, Meta, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
 
 interface MetaDict {
-  [key: string]: {
-    name: string;
-    isMetas: boolean;
-    metaKey: any;
-  };
+  [key: string]: string;
 }
 
 interface BigMetas {
-  [key: string]: Metas;
+  [key: string]: Metas | Meta;
 }
 
 export class MetaReducer {
@@ -29,22 +25,10 @@ export class MetaReducer {
     return '__metas__';
   }
 
-  public static addCase(name: string, types: Types, isMetas: boolean, metaKey: any) {
-    MetaReducer.metaPrepare[types.prepare] = {
-      name,
-      isMetas,
-      metaKey,
-    };
-    MetaReducer.metaSuccess[types.success] = {
-      name,
-      isMetas,
-      metaKey,
-    };
-    MetaReducer.metaFail[types.fail] = {
-      name,
-      isMetas,
-      metaKey,
-    };
+  public static addCase(name: string, types: Types) {
+    MetaReducer.metaPrepare[types.prepare] = name;
+    MetaReducer.metaSuccess[types.success] = name;
+    MetaReducer.metaFail[types.fail] = name;
   }
 
   public static getData<T = any>(name: string): T | undefined {
@@ -64,20 +48,20 @@ export class MetaReducer {
           state = {};
         }
 
-        const prepareCase = MetaReducer.metaPrepare[action.type];
+        let name = MetaReducer.metaPrepare[action.type];
 
-        if (prepareCase) {
-          state = MetaReducer.modifyPrepare(state, prepareCase, action);
+        if (name) {
+          state = MetaReducer.modifyPrepare(state, name, action);
         } else {
-          const successCase = MetaReducer.metaSuccess[action.type];
+          name = MetaReducer.metaSuccess[action.type];
 
-          if (successCase) {
-            state = MetaReducer.modifySuccess(state, successCase, action);
+          if (name) {
+            state = MetaReducer.modifySuccess(state, name, action);
           } else {
-            const failCase = MetaReducer.metaFail[action.type];
+            name = MetaReducer.metaFail[action.type];
 
-            if (failCase) {
-              state = MetaReducer.modifyFail(state, failCase, action);
+            if (name) {
+              state = MetaReducer.modifyFail(state, name, action);
             }
           }
         }
@@ -89,82 +73,91 @@ export class MetaReducer {
     };
   }
 
-  protected static modifyPrepare(state: object, prepareCase: MetaDict[string], action: ActionResponse) {
-    if (prepareCase.isMetas) {
-      return {
-        ...state,
-        [prepareCase.name]: {
-          ...state[prepareCase.name],
-          [action.payload[prepareCase.metaKey]]: {
+  protected static modifyPrepare(state: BigMetas, name: string, action: ActionResponse): BigMetas {
+    switch (action.metaKey) {
+      case true:
+        return {
+          ...state,
+          [name]: {
             actionType: action.type,
             loading: true,
           },
-          ...METAS_PICK_METHOD,
-        },
-      };
+        };
+      case false:
+        return state;
+      default:
+        return {
+          ...state,
+          [name]: {
+            ...state[name],
+            [action.payload[action.metaKey]]: {
+              actionType: action.type,
+              loading: true,
+            },
+            ...METAS_PICK_METHOD,
+          } as Metas,
+        };
     }
-
-    return {
-      ...state,
-      [prepareCase.name]: {
-        actionType: action.type,
-        loading: true,
-      },
-    };
   }
 
-  protected static modifySuccess(state: object, successCase: MetaDict[string], action: ActionResponse) {
-    if (successCase.isMetas) {
-      return {
-        ...state,
-        [successCase.name]: {
-          ...state[successCase.name],
-          [action.payload[successCase.metaKey]]: {
+  protected static modifySuccess(state: BigMetas, name: string, action: ActionResponse): BigMetas {
+    switch (action.metaKey) {
+      case true:
+        return {
+          ...state,
+          [name]: {
             actionType: action.type,
             loading: false,
           },
-          ...METAS_PICK_METHOD,
-        },
-      };
+        };
+      case false:
+        return state;
+      default:
+        return {
+          ...state,
+          [name]: {
+            ...state[name],
+            [action.payload[action.metaKey]]: {
+              actionType: action.type,
+              loading: false,
+            },
+            ...METAS_PICK_METHOD,
+          } as Metas,
+        };
     }
-
-    return {
-      ...state,
-      [successCase.name]: {
-        actionType: action.type,
-        loading: false,
-      },
-    };
   }
 
-  protected static modifyFail(state: object, failCase: MetaDict[string], action: ActionResponse) {
-    if (failCase.isMetas) {
-      return {
-        ...state,
-        [failCase.name]: {
-          ...state[failCase.name],
-          [action.payload[failCase.metaKey]]: {
+  protected static modifyFail(state: BigMetas, name: string, action: ActionResponse): BigMetas {
+    switch (action.metaKey) {
+      case true:
+        return {
+          ...state,
+          [name]: {
             actionType: action.type,
             loading: false,
             errorMessage: action.errorMessage,
             httpStatus: action.httpStatus,
             businessCode: action.businessCode,
           },
-          ...METAS_PICK_METHOD,
-        },
-      };
+        };
+      case false:
+        return state;
+      default:
+        return {
+          ...state,
+          [name]: {
+            ...state[name],
+            [action.payload[action.metaKey]]: {
+              actionType: action.type,
+              loading: false,
+              errorMessage: action.errorMessage,
+              httpStatus: action.httpStatus,
+              businessCode: action.businessCode,
+            },
+            ...METAS_PICK_METHOD,
+          } as Metas,
+        };
     }
-
-    return {
-      ...state,
-      [failCase.name]: {
-        actionType: action.type,
-        loading: false,
-        errorMessage: action.errorMessage,
-        httpStatus: action.httpStatus,
-        businessCode: action.businessCode,
-      },
-    };
   }
 }
 

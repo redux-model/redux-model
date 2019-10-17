@@ -22,15 +22,12 @@ export class BasicModel extends BaseTestModel<Data> {
     };
   });
 
-  getProfile = this.action({
-    request: () => {
-      return $api.get({
-        uri: this.uri<Response>('/profile.json'),
+  getProfile = $api.get(() => {
+    return this
+      .uri<Response>('/profile.json')
+      .onSuccess((_, action) => {
+        return action.response;
       });
-    },
-    onSuccess: (_, action) => {
-      return action.response;
-    },
   });
 
   effectOtherModel = this.action(() => {});

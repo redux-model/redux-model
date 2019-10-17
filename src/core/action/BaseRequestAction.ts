@@ -1,31 +1,19 @@
 import {
-  Effects,
-  IsPayload,
   Meta, MetasLoading,
   Metas,
   PayloadData,
-  PayloadKey,
-  RequestActionParamNoMeta,
   RequestSubscriber,
   UseSelector,
 } from '../utils/types';
 import { BaseAction } from './BaseAction';
 import { MetaReducer } from '../reducer/MetaReducer';
-import { isDebug } from '../../libs/dev';
-import { isProxyEnable } from '../utils/dev';
 import { HttpServiceHandle } from '../service/HttpServiceHandle';
 import { DEFAULT_META, DEFAULT_METAS } from '../utils/meta';
-import { NoMetaError } from '../exceptions/NoMetaError';
+import { ActionRequest, FetchHandle } from '../../libs/types';
+import { isDebug } from '../../libs/dev';
+import { isProxyEnable } from '../utils/dev';
 
-export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends BaseAction<Data> {
-  protected readonly metaKey: boolean | PayloadKey<A>;
-
-  protected readonly prepareCallback?: any;
-
-  protected readonly successCallback?: any;
-
-  protected readonly failCallback?: any;
-
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Data, Response, Payload, M>, Response, Payload, M> extends BaseAction<Data> {
   protected prepareType: string;
 
   protected failType: string;
@@ -33,13 +21,9 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   // Avoid re-render component even if reducer data doesn't change.
   protected loadingsCache?: [Metas, MetasLoading<Payload, M>];
 
-  public constructor(config: RequestActionParamNoMeta<Data, A, Response, Payload>, instanceName: string) {
+  public constructor(request: A, instanceName: string, runAction: (action: ActionRequest) => FetchHandle<Response, Payload>) {
     super(instanceName);
 
-    this.metaKey = config.metaKey === undefined ? true : config.metaKey;
-    this.prepareCallback = config.onPrepare;
-    this.successCallback = config.onSuccess;
-    this.failCallback = config.onFail;
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
 
@@ -49,13 +33,14 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
     // @ts-ignore
     return this.proxy((...args: Parameters<A>) => {
-      return (config.request(...args) as unknown as HttpServiceHandle<Response, Payload>)
-        .setTypes({
+      const action = (request(...args) as unknown as HttpServiceHandle<Data, Response, Payload, M>)
+        .collect({
           prepare: this.prepareType,
           success: this.successType,
           fail: this.failType,
-        })
-        .runAction();
+        });
+
+      return runAction(action);
     }, [
       'onSuccess', 'onPrepare', 'onFail',
       'getPrepareType', 'getFailType',
@@ -86,35 +71,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     };
   }
 
-  public collectEffects(): Effects<Data> {
-    const effects = [
-      ...super.collectEffects(),
-    ];
-
-    if (this.prepareCallback) {
-      effects.push({
-        when: this.prepareType,
-        effect: this.prepareCallback,
-      });
-    }
-
-    if (this.successCallback) {
-      effects.push({
-        when: this.successType,
-        effect: this.successCallback,
-      });
-    }
-
-    if (this.failCallback) {
-      effects.push({
-        when: this.failType,
-        effect: this.failCallback,
-      });
-    }
-
-    return effects;
-  }
-
   public getPrepareType(): string {
     return this.prepareType;
   }
@@ -124,10 +80,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public useMeta<T extends keyof Meta>(key?: T): Meta | Meta[T] {
-    if (this.metaKey === false) {
-      throw new NoMetaError(this.instanceName);
-    }
-
     return this.switchReduxSelector()((state: any) => {
       let customMeta: Meta | undefined = state[MetaReducer.getName()][this.typePrefix];
 
@@ -140,10 +92,6 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public useMetas<T extends keyof Meta>(payload?: PayloadData<Payload, M>, key?: T): Metas<Payload, M> | Meta[T] {
-    if (this.metaKey === false) {
-      throw new NoMetaError(this.instanceName);
-    }
-
     if (payload === undefined) {
       key = undefined;
     }
@@ -174,18 +122,10 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public get meta(): Meta {
-    if (this.metaKey === false) {
-      throw new NoMetaError(this.instanceName);
-    }
-
     return MetaReducer.getData<Meta>(this.typePrefix) || DEFAULT_META;
   }
 
   public get metas(): Metas<Payload, M> {
-    if (this.metaKey === false) {
-      throw new NoMetaError(this.instanceName);
-    }
-
     return MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
   }
 
@@ -220,19 +160,13 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   protected registerMetas() {
-    if (this.metaKey !== false) {
-      const types = {
-        prepare: this.prepareType,
-        success: this.successType,
-        fail: this.failType,
-      };
+    const types = {
+      prepare: this.prepareType,
+      success: this.successType,
+      fail: this.failType,
+    };
 
-      if (this.metaKey === true) {
-        MetaReducer.addCase(this.typePrefix, types, false, '');
-      } else {
-        MetaReducer.addCase(this.typePrefix, types, true, this.metaKey);
-      }
-    }
+    MetaReducer.addCase(this.typePrefix, types);
   }
 
   protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;

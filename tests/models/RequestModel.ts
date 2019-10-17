@@ -18,70 +18,54 @@ type Data = Response & {
 };
 
 export class RequestModel extends BaseTestModel<Data> {
-  getProfile = this.action({
-    request: () => {
-      return $api.get({
-        uri: this.uri<Response>('/profile.json'),
-      });
-    },
-    onPrepare: (state) => {
-      Object.assign(state, {
-        id: 666,
-        name: 'iPhone',
-      });
-    },
-    onSuccess: (state, action) => {
-      Object.assign(state, action.response);
-    },
-    onFail: (state) => {
-      Object.assign(state, {
-        id: 1000,
-        name: 'nokia',
-      });
-    },
-  });
-
-  getNpmInfo = this.action({
-    request: (packageName: string) => {
-      return $api.get({
-        uri: this.uri('https://registry.npmjs.org/' + packageName),
-      });
-    },
-  });
-
-  getNpmInfoWithTimeout = this.action({
-    request: (packageName: string) => {
-      return $api.get({
-        uri: this.uri('https://registry.npmjs.org/' + packageName),
-        requestOptions: {
-          timeout: 2, // million second
-        },
+  getProfile = $api.get(() => {
+    return this
+      .uri<Response>('/profile.json')
+      .onPrepare((state) => {
+        Object.assign(state, {
+          id: 666,
+          name: 'iPhone',
+        });
       })
-    },
+      .onSuccess((state, action) => {
+        Object.assign(state, action.response);
+      })
+      .onFail((state) => {
+        Object.assign(state, {
+          id: 1000,
+          name: 'nokia',
+        });
+      });
   });
 
-  getProfileById = this.action({
-    request: (id: number) => {
-      return $api.get({
-        uri: this.uri<Response>('/profile.json'),
-        payload: {
-          id,
-        },
-      });
-    },
-    onSuccess: (state, action) => {
-      state.records[action.payload.id] = action.response;
-    },
-    metaKey: 'id',
+  getNpmInfo = $api.get((packageName: string) => {
+    return this.uri('https://registry.npmjs.org/' + packageName);
   });
 
-  noMetaRequest = this.action({
-    request: () => {
-      return $api.get({
-        uri: this.uri<Response>('/profile.json'),
-      });
-    },
-    metaKey: false,
+  getNpmInfoWithTimeout = $api.get((packageName: string) => {
+    return this
+      .uri('https://registry.npmjs.org/' + packageName)
+      .requestOptions({
+        timeout: 2, // million second
+      })
+  });
+
+  getProfileById = $api.get((id: number) => {
+    return this
+      .uri<Response>('/profile.json')
+      .payload({
+        id,
+      })
+      .onSuccess((state, action) => {
+        state.records[action.payload.id] = action.response;
+      })
+      .metaKey('id');
+  });
+
+  noMetaRequest = $api.get(() => {
+    return this
+      .uri<Response>('/profile.json')
+      .metaKey(false);
   });
 
   async orphanGetRequest() {

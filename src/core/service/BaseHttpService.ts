@@ -1,14 +1,42 @@
-import { ActionResponse, OrphanRequestOptions, RequestOptions } from '../utils/types';
+import {
+  ActionResponse,
+  EnhanceData,
+  EnhanceMeta,
+  EnhancePayload,
+  EnhanceResponse,
+  HttpServiceNoMeta,
+  HttpServiceWithMeta,
+  HttpServiceWithMetas,
+  OrphanRequestOptions,
+  RequestActionNoMeta,
+  RequestActionWithMeta,
+  RequestActionWithMetas
+} from '../utils/types';
 import { METHOD } from '../utils/method';
-import { HttpServiceHandle } from './HttpServiceHandle';
 import { OrphanHttpServiceHandle } from './OrphanHttpServiceHandle';
-import { FetchHandle } from '../../libs/types';
-import { Action } from 'redux';
+import { ActionRequest, FetchHandle } from '../../libs/types';
+import { AnyAction } from 'redux';
 import { getStore } from '../utils/createReduxStore';
+import { RequestAction } from '../../libs/RequestAction';
+import { getInstanceName, increaseActionCounter } from '../utils/instanceName';
+import { isDebug } from '../../libs/dev';
+import { isProxyEnable } from '../utils/dev';
 
 export abstract class BaseHttpService {
-  public get<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.get);
+  public get<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public get<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public get<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends keyof Payload = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public get(fn: any): any {
+    return this.actionRequest(fn, METHOD.get);
   }
 
   public getAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -17,8 +45,20 @@ export abstract class BaseHttpService {
       .runAction();
   }
 
-  public post<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.post);
+  public post<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public post<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public post<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public post(fn: any): any {
+    return this.actionRequest(fn, METHOD.post);
   }
 
   public postAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -27,8 +67,20 @@ export abstract class BaseHttpService {
       .runAction();
   }
 
-  public put<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.put);
+  public put<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public put<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public put<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public put(fn: any): any {
+    return this.actionRequest(fn, METHOD.put);
   }
 
   public putAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -37,8 +89,20 @@ export abstract class BaseHttpService {
       .runAction();
   }
 
-  public delete<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.delete);
+  public delete<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public delete<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public delete<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public delete(fn: any): any {
+    return this.actionRequest(fn, METHOD.delete);
   }
 
   public deleteAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -47,7 +111,22 @@ export abstract class BaseHttpService {
       .runAction();
   }
 
-  public abstract runAction(action: any): any;
+  // TODO: 从.d.ts移除
+  protected actionRequest(fn: any, method: METHOD): any {
+    let instanceName = getInstanceName();
+
+    if (!isDebug() || !isProxyEnable()) {
+      instanceName += '_' + increaseActionCounter();
+    }
+
+    return new RequestAction(fn, instanceName, (action: ActionRequest) => {
+      action.method = method;
+
+      return this.runAction(action);
+    });
+  }
+
+  protected abstract runAction(action: any): any;
 
   protected timeoutMessage(originalMessage: string): string {
     return originalMessage;
@@ -62,7 +141,7 @@ export abstract class BaseHttpService {
   protected abstract onShowSuccess(successText: string, action: ActionResponse): void;
   protected abstract onShowError(errorText: string, action: ActionResponse): void;
 
-  protected _next(action: Action): void {
+  protected _next(action: AnyAction): void {
     if (action.type) {
       getStore().dispatch(action);
     }

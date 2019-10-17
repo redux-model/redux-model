@@ -1,4 +1,4 @@
-import { OrphanRequestOptions } from '../utils/types';
+import { Omit, OrphanRequestOptions } from '../utils/types';
 import { BaseHttpService } from './BaseHttpService';
 import { METHOD } from '../utils/method';
 import { ActionRequest, FetchHandle } from '../../libs/types';
@@ -21,7 +21,7 @@ export class OrphanHttpServiceHandle<Response> {
 
   runAction(): FetchHandle<Response, never> {
     const config = this.config;
-    const action: ActionRequest = {
+    const action: Omit<ActionRequest, 'metaKey' | 'payload' | 'onPrepare' | 'onSuccess' | 'onFail' | 'instanceName'> = {
       body: config.body || {},
       query: config.query || {},
       successText: '',
@@ -34,10 +34,10 @@ export class OrphanHttpServiceHandle<Response> {
         success: '',
         fail: '',
       },
-      // @ts-ignore
       method: this.method,
     };
 
+    // @ts-ignore
     return this.fetchApi.runAction(action);
   }
 }

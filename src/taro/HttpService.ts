@@ -2,14 +2,40 @@ import { request } from '@tarojs/taro';
 import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
-import { ActionResponse, OrphanRequestOptions, HttpTransform, Omit, RequestOptions } from '../core/utils/types';
+import {
+  ActionResponse,
+  OrphanRequestOptions,
+  HttpTransform,
+  Omit,
+  HttpServiceNoMeta,
+  EnhanceData,
+  EnhanceResponse,
+  EnhancePayload,
+  RequestActionNoMeta,
+  HttpServiceWithMeta,
+  RequestActionWithMeta,
+  HttpServiceWithMetas,
+  EnhanceMeta,
+  RequestActionWithMetas,
+} from '../core/utils/types';
 import { METHOD } from '../core/utils/method';
-import { HttpServiceHandle } from '../core/service/HttpServiceHandle';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
 export abstract class HttpService extends BaseHttpService {
-  public connect<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.connect);
+  public connect<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public connect<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public connect<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public connect(fn: any): any {
+    return this.actionRequest(fn, METHOD.connect);
   }
 
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -18,8 +44,20 @@ export abstract class HttpService extends BaseHttpService {
       .runAction();
   }
 
-  public trace<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.trace);
+  public trace<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public trace<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public trace<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public trace(fn: any): any {
+    return this.actionRequest(fn, METHOD.trace);
   }
 
   public traceAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -56,7 +94,7 @@ export abstract class HttpService extends BaseHttpService {
 
     const requestOptions: request.Param = {
       url,
-      method: action.method,
+      method: action.method as request.Param['method'],
       ...this.requestConfig(),
       ...action.requestOptions,
       header: {
@@ -77,7 +115,11 @@ export abstract class HttpService extends BaseHttpService {
       }
     }
 
-    this._next({ ...action, type: prepare });
+    this._next({
+      ...action,
+      type: prepare,
+      effect: action.onPrepare,
+    });
 
     const task = this.request()(requestOptions);
     const canceler = task.abort;
@@ -94,6 +136,7 @@ export abstract class HttpService extends BaseHttpService {
           ...action,
           type: success,
           response: response.data,
+          effect: action.onSuccess,
         };
 
         successInvoked = true;
@@ -141,6 +184,7 @@ export abstract class HttpService extends BaseHttpService {
           errorMessage,
           httpStatus,
           businessCode,
+          effect: action.onFail,
         };
 
         this._next(errorResponse);

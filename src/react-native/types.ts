@@ -1,6 +1,5 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
 import { ActionResponse, BaseActionRequest, Types } from '../core/utils/types';
-import { METHOD } from '../core/utils/method';
 
 export type HttpCanceler = Canceler;
 
@@ -8,11 +7,10 @@ export interface HttpError<T = any> extends AxiosError {
   response: AxiosResponse<T>;
 }
 
-export interface FetchHandle<Response = any, Payload = any> extends Promise<ActionResponse<Response, Payload>> {
+export interface FetchHandle<Response = any, Payload = any> extends Promise<ActionResponse<any, Response, Payload>> {
   cancel: HttpCanceler;
 }
 
-export interface ActionRequest<Payload = any, Type = Types> extends BaseActionRequest<Payload, Type> {
-  method: METHOD.get | METHOD.post | METHOD.put | METHOD.delete | METHOD.head | METHOD.patch;
+export interface ActionRequest<Data = any, Response = any, Payload = any, Type = Types> extends BaseActionRequest<Data, Response, Payload, Type> {
   requestOptions: AxiosRequestConfig;
 }

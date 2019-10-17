@@ -2,8 +2,18 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import { METHOD } from '../core/utils/method';
-import { ActionResponse, OrphanRequestOptions, HttpTransform, RequestOptions } from '../core/utils/types';
-import { HttpServiceHandle } from '../core/service/HttpServiceHandle';
+import {
+  ActionResponse,
+  OrphanRequestOptions,
+  HttpTransform,
+  HttpServiceNoMeta,
+  EnhanceData,
+  EnhanceResponse,
+  EnhancePayload,
+  RequestActionNoMeta,
+  HttpServiceWithMeta,
+  RequestActionWithMeta, HttpServiceWithMetas, EnhanceMeta, RequestActionWithMetas
+} from '../core/utils/types';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
 export abstract class HttpService extends BaseHttpService {
@@ -20,8 +30,20 @@ export abstract class HttpService extends BaseHttpService {
     });
   }
 
-  public patch<Response, Payload>(config: RequestOptions<Response, Payload>): HttpServiceHandle<Response, Payload> {
-    return new HttpServiceHandle(config, this).setMethod(METHOD.patch);
+  public patch<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionNoMeta<Data, A, Response, Payload>;
+
+  public patch<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
+    fn: A
+  ): RequestActionWithMeta<Data, A, Response, Payload>;
+
+  public patch<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
+    fn: A
+  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
+
+  public patch(fn: any): any {
+    return this.actionRequest(fn, METHOD.patch);
   }
 
   public patchAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -49,7 +71,7 @@ export abstract class HttpService extends BaseHttpService {
       url: action.uri,
       params: action.query,
       cancelToken: source.token,
-      method: action.method,
+      method: action.method as AxiosRequestConfig['method'],
       ...action.requestOptions,
       headers: {
         ...this.headers(action),
@@ -60,7 +82,12 @@ export abstract class HttpService extends BaseHttpService {
     if ([METHOD.post, METHOD.put, METHOD.delete, METHOD.patch].includes(action.method)) {
       requestOptions.data = action.body;
     }
-    this._next({ ...action, type: prepare });
+
+    this._next({
+      ...action,
+      type: prepare,
+      effect: action.onPrepare,
+    });
     const promise = this.httpHandle.request(requestOptions)
       .then((response) => {
         // @ts-ignore
@@ -68,6 +95,7 @@ export abstract class HttpService extends BaseHttpService {
           ...action,
           type: success,
           response: response.data,
+          effect: action.onSuccess,
         };
 
         successInvoked = true;
@@ -118,6 +146,7 @@ export abstract class HttpService extends BaseHttpService {
           errorMessage,
           httpStatus,
           businessCode,
+          effect: action.onFail,
         };
 
         this._next(errorResponse);

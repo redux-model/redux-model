@@ -5,37 +5,23 @@ import {
   Effects,
   State,
   StateReturn,
-  EnhancePayload,
-  EnhanceResponse,
   ExtractNormalAction,
   ExtractNormalPayload,
   Reducers,
-  RequestActionNoMeta,
-  RequestActionParamNoMeta,
-  RequestActionParamWithMeta,
-  RequestActionParamWithMetas,
-  RequestActionWithMeta,
-  RequestActionWithMetas,
-  UseSelector, PayloadKey, IsPayload, ActionNormal, NormalActionAlias,
+  UseSelector,
+  ActionNormal,
+  NormalActionAlias, HttpServiceWithMeta,
 } from './utils/types';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
-import { Uri } from './utils/Uri';
 import { isProxyEnable } from './utils/dev';
-import { RequestAction } from '../libs/RequestAction';
 import { isDebug } from '../libs/dev';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
 import { BaseAction } from './action/BaseAction';
 import { HttpServiceHandle } from './service/HttpServiceHandle';
+import { getInstanceName, increaseActionCounter, setInstanceName } from './utils/instanceName';
 
 export abstract class BaseModel<Data = null> {
-  // In case the same classname by uglify in production mode.
-  // Do not use this variable in dev mode with hot reloading.
-  // Remember: Do not create class by the same name, or reducer will be override by another one.
-  private static PROD_CLASS_DICT = {};
-
-  private actionCounter = 0;
-
   private readonly instanceName: string;
 
   private readonly actions: Array<BaseAction<Data>> = [];
@@ -50,21 +36,7 @@ export abstract class BaseModel<Data = null> {
   private change_reducer?: NormalActionAlias<Data, () => ActionNormal, any>;
 
   constructor(alias: string = '') {
-    this.instanceName = this.constructor.name + (alias ? `.${alias}` : '');
-
-    if (!isDebug()) {
-      const dictKey = `dict_${this.instanceName}`;
-
-      if (BaseModel.PROD_CLASS_DICT[dictKey] === undefined) {
-        BaseModel.PROD_CLASS_DICT[dictKey] = 0;
-      } else {
-        BaseModel.PROD_CLASS_DICT[dictKey] += 1;
-      }
-
-      if (BaseModel.PROD_CLASS_DICT[dictKey] > 0) {
-        this.instanceName += `-${BaseModel.PROD_CLASS_DICT[dictKey]}`;
-      }
-    }
+    this.instanceName = setInstanceName(this.constructor.name, alias);
 
     this.onInit();
     onStoreCreated((store) => {
@@ -178,7 +150,7 @@ export abstract class BaseModel<Data = null> {
       if (this.change_reducer) {
         this.reducer.changeCase(this.change_reducer.getSuccessType(), fn);
       } else {
-        this.change_reducer = this.actionNormal(fn);
+        this.change_reducer = this.action(fn);
       }
 
       this.change_reducer();
@@ -187,79 +159,12 @@ export abstract class BaseModel<Data = null> {
     }
   }
 
-  // When meta=false
-  // @ts-ignore
-  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    noMeta: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
-
-  // When meta is undefined or true.
-  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    request: RequestActionParamWithMeta<Data, A, Response, Payload>
-  ): RequestActionWithMeta<Data, A, Response, Payload>;
-
-  // When meta is the key of payload.
-  protected action<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends IsPayload<Payload> = PayloadKey<A>>(
-    hasMetas: RequestActionParamWithMetas<Data, A, Response, Payload, M>
-  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
-
   protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     changeReducer: A
-  ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
-
-
-  protected action(param: any): any {
-    if (typeof param === 'function') {
-      return this.actionNormal(param);
-    }
-
-    return this.actionRequest(param);
-  }
-
-  protected uri<Response>(uri: string): Uri<Response> {
-    return new Uri<Response>(uri);
-  }
-
-  protected effects(): Effects<Data> {
-    return [];
-  }
-
-  protected autoRegister(): boolean {
-    return true;
-  }
-
-  protected abstract initReducer(): Data;
-
-  protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
-
-  private actionRequest<A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    config: RequestActionParamNoMeta<Data, A, Response, Payload>
-  ): RequestAction<Data, A, Response, Payload, false> {
-    let instanceName = this.instanceName;
-    if (!isDebug() || !isProxyEnable()) {
-      this.actionCounter += 1;
-      instanceName += '_' + this.actionCounter;
-    }
-
-    const instance = new RequestAction<Data, A, Response, Payload, false>(config, instanceName);
-
-    this.actions.push(instance);
-
-    // Method register() was invoked, we should append case immediately.
-    if (this.reducer && (!isDebug() || !isProxyEnable())) {
-      this.reducer.addCase(...instance.collectEffects());
-    }
-
-    return instance;
-  }
-
-  private actionNormal<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
-    let instanceName = this.instanceName;
+    let instanceName = getInstanceName();
     if (!isDebug() || !isProxyEnable()) {
-      this.actionCounter += 1;
-      instanceName += '_' + this.actionCounter;
+      instanceName += '_' + increaseActionCounter();
     }
 
     const instance = new NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>({
@@ -285,4 +190,24 @@ export abstract class BaseModel<Data = null> {
 
     return instance;
   }
+
+  protected uri<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
+    // @ts-ignore
+    return new HttpServiceHandle({
+      uri,
+      instanceName: this.instanceName,
+    });
+  }
+
+  protected effects(): Effects<Data> {
+    return [];
+  }
+
+  protected autoRegister(): boolean {
+    return true;
+  }
+
+  protected abstract initReducer(): Data;
+
+  protected abstract switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected>;
 }

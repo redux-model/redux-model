@@ -1,5 +1,5 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
-import { Effects, Reducers } from '../utils/types';
+import { ActionResponse, Effects, Reducers } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import { onStoreCreated } from '../utils/createReduxStore';
 
@@ -51,30 +51,19 @@ export class BaseReducer<Data> {
 
   public createData(): Reducers {
     return {
-      [this.getReducerName()]: (state, action) => {
+      [this.getReducerName()]: (state, action: ActionResponse) => {
         if (state === undefined) {
-          state = typeof this.initData === 'function' ? (this.initData as Function)() : this.initData;
+          state = this.initData;
         }
 
-        for (const { when, effect } of this.cases) {
-          if (when === action.type) {
-            if (isDraftable(state)) {
-              const draft = createDraft(state);
-              const responseDraft = effect(draft, action);
-
-              if (responseDraft === undefined) {
-                state = finishDraft(draft);
-              } else if (isDraft(responseDraft)) {
-                state = finishDraft(responseDraft);
-              } else {
-                state = responseDraft;
-              }
-            } else {
-              state = effect(state, action);
-
-              if (state === undefined) {
-                throw new StateReturnRequiredError(when);
-              }
+        if (action.instanceName === this.instanceName) {
+          if (action.effect) {
+            state = this.changeState(action.effect, state, action);
+          }
+        } else {
+          for (const { when, effect } of this.cases) {
+            if (when === action.type) {
+              state = this.changeState(effect, state, action);
             }
           }
         }
@@ -84,5 +73,28 @@ export class BaseReducer<Data> {
         return state;
       },
     };
+  }
+
+  protected changeState(effect: Function, state: any, action: ActionResponse): any {
+    if (isDraftable(state)) {
+      const draft = createDraft(state);
+      const responseDraft = effect(draft, action);
+
+      if (responseDraft === undefined) {
+        state = finishDraft(draft);
+      } else if (isDraft(responseDraft)) {
+        state = finishDraft(responseDraft);
+      } else {
+        state = responseDraft;
+      }
+    } else {
+      state = effect(state, action);
+
+      if (state === undefined) {
+        throw new StateReturnRequiredError(action.type);
+      }
+    }
+
+    return state;
   }
 }

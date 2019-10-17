@@ -4,7 +4,6 @@ import { HTTP_STATUS_CODE } from './httpStatusCode';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { RequestAction } from '../../libs/RequestAction';
 import { NormalAction } from '../action/NormalAction';
-import { Uri } from './Uri';
 import { HttpServiceHandle } from '../service/HttpServiceHandle';
 
 // Omit is a new feature since typescript 3.5+
@@ -60,60 +59,47 @@ export interface Types {
   fail: string;
 }
 
-export interface BaseActionRequest<Payload = any, Type = Types> extends ActionNormal<Payload, Type> {
+export interface BaseActionRequest<Data = any, Response = any, Payload = any, Type = Types> extends ActionNormal<Payload, Type> {
   method: METHOD;
   uri: string;
   body: object;
   query: object;
   successText: string;
   failText: string;
-  hideError: boolean | ((response: ActionResponse) => boolean);
+  hideError: boolean | ((response: ActionResponse<Data, Response, Payload>) => boolean);
   requestOptions: object;
+  metaKey: keyof Payload | boolean;
+  instanceName: string;
+  onSuccess: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
+  onPrepare: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
+  onFail: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
 }
 
-export interface ActionResponse<Response = any, Payload = any> extends ActionRequest<Payload, string> {
+export interface ActionResponse<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string> {
   response: Response;
   errorMessage?: string;
   httpStatus?: HTTP_STATUS_CODE;
   businessCode?: string;
+  effect: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
 }
 
-export type RequestOptions<Response, Payload> = Partial<Omit<ActionRequest<Payload>, 'uri' | 'type' | 'method'>> & { uri: Uri<Response> };
+export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'uri' | 'type' | 'method'>> & { uri: string; instanceName: string };
 export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' | 'body' | 'requestOptions' >> & { uri: string };
 
-export type PayloadKey<A> =  A extends (...args: any[]) => HttpServiceHandle<any, infer P> ? keyof P : never;
 export type PayloadData<Payload, M> = M extends keyof Payload ? Payload[M] : never;
-export type IsPayload<Payload> = keyof Payload | boolean;
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
   effect: (state: State<CustomData>, action: ActionResponse<Response, Payload>) => StateReturn<CustomData>;
 };
 
-export interface RequestActionParamBase<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> {
-  request: A;
-  onSuccess?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
-  onPrepare?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
-  onFail?: (state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>;
-}
-
-export interface RequestActionParamNoMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
-  metaKey: false;
-}
-
-export interface RequestActionParamWithMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionParamBase<Data, A, Response, Payload> {
-  metaKey?: true;
-}
-
-export interface RequestActionParamWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends RequestActionParamBase<Data, A, Response, Payload> {
-  metaKey: M;
-}
-
-export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload> = false> extends RequestAction<Data, A, Response, Payload, M> {
+export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload, M>, Response, Payload, M = false> extends RequestAction<Data, A, Response, Payload, M> {
   (...args: Parameters<A>): FetchHandle<Response, Payload>;
 }
 
-export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload> extends RequestActionNoMeta<Data, A, Response, Payload, true> {
+export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload, true>, Response, Payload> extends RequestAction<Data, A, Response, Payload, true> {
+  (...args: Parameters<A>): FetchHandle<Response, Payload>;
+
   loading: boolean;
   meta: Meta;
 
@@ -122,7 +108,9 @@ export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpS
   useLoading(): boolean;
 }
 
-export interface RequestActionWithMetas<Data, A extends (...args: any[]) => HttpServiceHandle<Response, Payload>, Response, Payload, M extends IsPayload<Payload>> extends RequestActionNoMeta<Data, A, Response, Payload, M> {
+export interface RequestActionWithMetas<Data, A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Response, Payload, M> extends RequestAction<Data, A, Response, Payload, M> {
+  (...args: Parameters<A>): FetchHandle<Response, Payload>;
+
   loadings: MetasLoading<Payload, M>;
   metas: Metas<Payload, M>;
 
@@ -148,8 +136,10 @@ export type NormalSubscriber<CustomData, Payload> = {
   effect: (state: State<CustomData>, action: ActionNormal<Payload>) => StateReturn<CustomData>;
 };
 
-export type EnhanceResponse<A> =A extends (...args: any[]) => HttpServiceHandle<infer R, any> ? R : never;
-export type EnhancePayload<A> = A extends (...args: any[]) => HttpServiceHandle<any, infer P> ? P : never;
+type EnhanceData<T> = T extends (...args: any[]) => HttpServiceHandle<infer D, any, any, any> ? D : never;
+type EnhanceResponse<T> = T extends (...args: any[]) => HttpServiceHandle<any, infer R, any, any> ? R : never;
+type EnhancePayload<T> = T extends (...args: any[]) => HttpServiceHandle<any, any, infer P, any> ? P : never;
+type EnhanceMeta<T> = T extends (...args: any[]) => HttpServiceHandle<any, any, any, infer P> ? P : never;
 
 export type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
 export type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
@@ -158,4 +148,19 @@ export interface HttpTransform {
   httpStatus?: HTTP_STATUS_CODE;
   errorMessage?: string;
   businessCode?: string;
+}
+
+export class HttpServiceNoMeta<Data, Response, Payload, M = false> extends HttpServiceHandle<Data, Response, Payload, M> {
+  // @ts-ignore
+  private readonly _: string = '';
+}
+
+export class HttpServiceWithMeta<Data, Response, Payload, M = true> extends HttpServiceHandle<Data, Response, Payload, M> {
+  // @ts-ignore
+  private readonly _: string = '';
+}
+
+export class HttpServiceWithMetas<Data, Response, Payload, M> extends HttpServiceHandle<Data, Response, Payload, M> {
+  // @ts-ignore
+  private readonly _: string = '';
 }
