@@ -1,3 +1,6 @@
+# 6.1.2
+[fix] Correctly request method
+
 # 6.1.1
 [feat] Exchange service method name and `uri` property
 <br>
