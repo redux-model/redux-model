@@ -1,3 +1,10 @@
+# 6.1.1
+[feat] Exchange service method name and `uri` property
+<br>
+[fix] Missing inject generics
+<br>
+[fix] Add method chain `hideError`
+
 # 6.0.0
 ## Breaking Changes
 Totally rewrite request action to reduce more code
