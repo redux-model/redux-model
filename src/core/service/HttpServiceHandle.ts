@@ -6,7 +6,6 @@ import {
   RequestOptions,
   Types,
 } from '../utils/types';
-import { METHOD } from '../utils/method';
 import { ActionRequest } from '../../libs/types';
 
 export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
@@ -102,7 +101,7 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
     const action: ActionRequest = {
       uri: config.uri,
       type: types,
-      method: METHOD.get,
+      method: config.method,
       instanceName: config.instanceName,
       payload: config.payload === undefined ? {} : config.payload,
       body: config.body || {},

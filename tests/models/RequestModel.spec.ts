@@ -2,6 +2,7 @@ import { $api } from './ApiService';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { RequestModel } from './RequestModel';
 import { ActionResponse } from '../../src/core/utils/types';
+import { METHOD } from '../../src/core/utils/method';
 
 const data = {
   id: 1463,
@@ -170,4 +171,22 @@ describe('Request action has three kinds of reducer event', () => {
       expect(model.data.id).toBe(1000);
     }
   });
+});
+
+test('Request Action has correct method', async () => {
+  $api.mockResolveValue();
+  const result1 = await model.getProfile();
+  expect(result1.method).toBe(METHOD.get);
+
+  $api.mockResolveValue();
+  const result2 = await model.withPostProfile();
+  expect(result2.method).toBe(METHOD.post);
+
+  $api.mockResolveValue();
+  const result3 = await model.withPutProfile();
+  expect(result3.method).toBe(METHOD.put);
+
+  $api.mockResolveValue();
+  const result4 = await model.withDeleteProfile();
+  expect(result4.method).toBe(METHOD.delete);
 });

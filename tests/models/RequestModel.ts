@@ -38,6 +38,18 @@ export class RequestModel extends BaseTestModel<Data> {
       });
   });
 
+  withPostProfile = $api.action(() => {
+    return this.post('/profile/create');
+  });
+
+  withPutProfile = $api.action(() => {
+    return this.put('/profile/create');
+  });
+
+  withDeleteProfile = $api.action(() => {
+    return this.delete('/profile/create');
+  });
+
   getNpmInfo = $api.action((packageName: string) => {
     return this.get('https://registry.npmjs.org/' + packageName);
   });
