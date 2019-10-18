@@ -9,31 +9,6 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 [![](https://img.shields.io/npm/dt/@redux-model/react-native.svg?label=@redux-model/react-native)](https://www.npmjs.com/package/@redux-model/react-native)
 [![](https://img.shields.io/npm/dt/@redux-model/taro.svg?label=@redux-model/taro)](https://www.npmjs.com/package/@redux-model/taro)
 
-----------
-
-```typescript
-class TestModel extends Model {
-  increase = this.action((state) => {
-    state.counter += 1;
-  });
-
-  getProfile = $api.action((userId) => {
-    return this
-      .get('/api/profile/' + userId)
-      .onSuccess((state, action) => {
-        state.users[userId] = action.response;
-      });
-  });
-
-  protected initReducer() {
-    return {
-      counter: 0,
-      users: {},
-    };
-  }
-}
-```
-
 # 特性
 
 * 纯面向对象
@@ -44,6 +19,32 @@ class TestModel extends Model {
 * 无需包裹dispatch()
 * 完美支持typescript，拥有100%无死角的代码类型提示
 * 请求操作内置loading状态
+
+-----
+
+
+```typescript
+class TestModel extends Model {
+    increase = this.action((state) => {
+        state.counter += 1;
+    });
+
+    getProfile = $api.action((userId) => {
+        return this
+            .get('/api/profile/' + userId)
+            .onSuccess((state, action) => {
+                state.users[userId] = action.response;
+            });
+    });
+
+    protected initReducer() {
+        return {
+            counter: 0,
+            users: {},
+        };
+    }
+}
+```
 
 # 文档
 
