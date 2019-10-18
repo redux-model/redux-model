@@ -2,15 +2,16 @@ import { Store } from 'redux';
 import { NormalAction } from './action/NormalAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import {
+  ActionNormal,
   Effects,
-  State,
-  StateReturn,
   ExtractNormalAction,
   ExtractNormalPayload,
+  HttpServiceWithMeta,
+  NormalActionAlias,
   Reducers,
+  State,
+  StateReturn,
   UseSelector,
-  ActionNormal,
-  NormalActionAlias, HttpServiceWithMeta,
 } from './utils/types';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
 import { isProxyEnable } from './utils/dev';
@@ -20,6 +21,7 @@ import { NullReducerError } from './exceptions/NullReducerError';
 import { BaseAction } from './action/BaseAction';
 import { HttpServiceHandle } from './service/HttpServiceHandle';
 import { getInstanceName, increaseActionCounter, setInstanceName } from './utils/instanceName';
+import { METHOD } from './utils/method';
 
 export abstract class BaseModel<Data = null> {
   private readonly instanceName: string;
@@ -191,12 +193,29 @@ export abstract class BaseModel<Data = null> {
     return instance;
   }
 
-  protected uri<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
+  protected serviceAction<Response>(uri: string, method: METHOD): HttpServiceWithMeta<Data, Response, unknown> {
     // @ts-ignore
     return new HttpServiceHandle({
       uri,
+      method,
       instanceName: this.instanceName,
     });
+  }
+
+  protected get<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
+    return this.serviceAction<Response>(uri, METHOD.get);
+  }
+
+  protected post<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
+    return this.serviceAction<Response>(uri, METHOD.post);
+  }
+
+  protected put<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
+    return this.serviceAction<Response>(uri, METHOD.put);
+  }
+
+  protected delete<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
+    return this.serviceAction<Response>(uri, METHOD.delete);
   }
 
   protected effects(): Effects<Data> {

@@ -7,57 +7,15 @@ import {
   OrphanRequestOptions,
   HttpTransform,
   Omit,
-  HttpServiceNoMeta,
-  EnhanceData,
-  EnhanceResponse,
-  EnhancePayload,
-  RequestActionNoMeta,
-  HttpServiceWithMeta,
-  RequestActionWithMeta,
-  HttpServiceWithMetas,
-  EnhanceMeta,
-  RequestActionWithMetas,
 } from '../core/utils/types';
 import { METHOD } from '../core/utils/method';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
 export abstract class HttpService extends BaseHttpService {
-  public connect<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
-
-  public connect<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionWithMeta<Data, A, Response, Payload>;
-
-  public connect<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
-    fn: A
-  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
-
-  public connect(fn: any): any {
-    return this.actionRequest(fn, METHOD.connect);
-  }
-
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     return new OrphanHttpServiceHandle<Response>(config, this)
       .setMethod(METHOD.connect)
       .runAction();
-  }
-
-  public trace<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
-
-  public trace<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionWithMeta<Data, A, Response, Payload>;
-
-  public trace<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
-    fn: A
-  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
-
-  public trace(fn: any): any {
-    return this.actionRequest(fn, METHOD.trace);
   }
 
   public traceAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {

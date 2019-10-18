@@ -18,9 +18,9 @@ class Test extends Model {
 
 ```typescript
 class Test extends Model {
-    fetch = service.post(() => {
+    fetch = service.action(() => {
         return this
-            .uri('')
+            .post('')
             .query()
             .body()
             .onPrepare()

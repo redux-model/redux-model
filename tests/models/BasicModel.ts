@@ -22,9 +22,9 @@ export class BasicModel extends BaseTestModel<Data> {
     };
   });
 
-  getProfile = $api.get(() => {
+  getProfile = $api.action(() => {
     return this
-      .uri<Response>('/profile.json')
+      .get<Response>('/profile.json')
       .onSuccess((_, action) => {
         return action.response;
       });

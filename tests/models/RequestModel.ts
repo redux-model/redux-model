@@ -18,9 +18,9 @@ type Data = Response & {
 };
 
 export class RequestModel extends BaseTestModel<Data> {
-  getProfile = $api.get(() => {
+  getProfile = $api.action(() => {
     return this
-      .uri<Response>('/profile.json')
+      .get<Response>('/profile.json')
       .onPrepare((state) => {
         Object.assign(state, {
           id: 666,
@@ -38,21 +38,21 @@ export class RequestModel extends BaseTestModel<Data> {
       });
   });
 
-  getNpmInfo = $api.get((packageName: string) => {
-    return this.uri('https://registry.npmjs.org/' + packageName);
+  getNpmInfo = $api.action((packageName: string) => {
+    return this.get('https://registry.npmjs.org/' + packageName);
   });
 
-  getNpmInfoWithTimeout = $api.get((packageName: string) => {
+  getNpmInfoWithTimeout = $api.action((packageName: string) => {
     return this
-      .uri('https://registry.npmjs.org/' + packageName)
+      .get('https://registry.npmjs.org/' + packageName)
       .requestOptions({
         timeout: 2, // million second
       })
   });
 
-  getProfileById = $api.get((id: number) => {
+  getProfileById = $api.action((id: number) => {
     return this
-      .uri<Response>('/profile.json')
+      .get<Response>('/profile.json')
       .payload({
         id,
       })
@@ -62,9 +62,9 @@ export class RequestModel extends BaseTestModel<Data> {
       .metaKey('id');
   });
 
-  noMetaRequest = $api.get(() => {
+  noMetaRequest = $api.action(() => {
     return this
-      .uri<Response>('/profile.json')
+      .get<Response>('/profile.json')
       .metaKey(false);
   });
 

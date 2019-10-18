@@ -6,13 +6,6 @@ import {
   ActionResponse,
   OrphanRequestOptions,
   HttpTransform,
-  HttpServiceNoMeta,
-  EnhanceData,
-  EnhanceResponse,
-  EnhancePayload,
-  RequestActionNoMeta,
-  HttpServiceWithMeta,
-  RequestActionWithMeta, HttpServiceWithMetas, EnhanceMeta, RequestActionWithMetas
 } from '../core/utils/types';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
@@ -28,22 +21,6 @@ export abstract class HttpService extends BaseHttpService {
       responseType: 'json',
       ...this.requestConfig(),
     });
-  }
-
-  public patch<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
-
-  public patch<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionWithMeta<Data, A, Response, Payload>;
-
-  public patch<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
-    fn: A
-  ): RequestActionWithMetas<Data, A, Response, Payload, M>;
-
-  public patch(fn: any): any {
-    return this.actionRequest(fn, METHOD.patch);
   }
 
   public patchAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {

@@ -83,7 +83,7 @@ export interface ActionResponse<Data = any, Response = any, Payload = any> exten
   effect: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
 }
 
-export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'uri' | 'type' | 'method'>> & { uri: string; instanceName: string };
+export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'type'>> & { uri: string; instanceName: string; method: METHOD };
 export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' | 'body' | 'requestOptions' >> & { uri: string };
 
 export type PayloadData<Payload, M> = M extends keyof Payload ? Payload[M] : never;

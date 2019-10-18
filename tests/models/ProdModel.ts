@@ -10,8 +10,8 @@ export class ProdModel extends BaseTestModel<Data> {
     state.counter += 1;
   });
 
-  fetchSomething = $api.get(() => {
-    return this.uri('/test');
+  fetchSomething = $api.action(() => {
+    return this.get('/test');
   });
 
   protected initReducer(): Data {

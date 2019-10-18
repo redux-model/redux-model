@@ -44,7 +44,10 @@ export declare abstract class BaseModel<Data = null> {
     changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>;
 
-  protected uri<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown>;
+  protected get<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown>;
+  protected post<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown>;
+  protected put<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown>;
+  protected delete<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown>;
 
   protected effects(): Effects<Data>;
   protected autoRegister(): boolean;
