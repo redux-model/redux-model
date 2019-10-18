@@ -1,3 +1,6 @@
+# 6.1.3
+[fix] Compatible with compression in dev environment
+
 # 6.1.2
 [fix] Correctly request method
 
