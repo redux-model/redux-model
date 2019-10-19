@@ -16,9 +16,14 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 * 完美支持typescript，拥有100%无死角的**业务**代码类型提示
 * 请求操作自带loading状态
 
------
+# 支持平台
+| 平台 | NPM |
+| ---- | ---- |
+| React H5 | @redux-model/web |
+| React Native | @redux-model/react-native |
+| Taro | @redux-model/taro |
 
-### ES6语法
+# ES6语法
 ```javascript
 class TestModel extends Model {
     increase = this.action((state) => {
@@ -52,7 +57,7 @@ class TestModel extends Model {
 }
 ```
 
-### TypeScript写法：
+# TypeScript写法
 一次注入，各处100%无死角提示。
 ```typescript
 interface Response {
