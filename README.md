@@ -11,33 +11,86 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 特性
 
-* 纯面向对象
-* 支持mvvm操作
-* 代码量比函数式redux写法少一半
-* action与reducer合体
-* 无需定义types
-* 无需包裹dispatch()
-* 完美支持typescript，拥有100%无死角的代码类型提示
-* 请求操作内置loading状态
+* 代码量极简，超高效率开发
+* 使用mvvm更改reducer，拒绝繁琐
+* 完美支持typescript，拥有100%无死角的**业务**代码类型提示
+* 请求操作自带loading状态
 
 -----
 
-
-```typescript
+### ES6语法
+```javascript
 class TestModel extends Model {
     increase = this.action((state) => {
         state.counter += 1;
     });
 
-    getProfile = $api.action((userId) => {
+    getUser = $api.action((id) => {
         return this
-            .get('/api/profile/' + userId)
+            .get('/api/user/' + id)
             .onSuccess((state, action) => {
-                state.users[userId] = action.response;
+                state.counter += 1;
+                state.users[id] = action.response;
             });
     });
 
-    protected initReducer() {
+    deleteUser = $api.action((id) => {
+        return this
+            .delete('/api/user' + id)
+            .onSuccess((state) => {
+                state.counter -= 1;
+                state.users[id] = null;
+            });
+    });
+
+    initReducer() {
+        return {
+            counter: 0,
+            users: {},
+        };
+    }
+}
+```
+
+### TypeScript写法：
+一次注入，各处100%无死角提示。
+```typescript
+interface Response {
+  id: number;
+  name: string;
+}
+
+interface Data {
+  counter: number;
+  users: Partial<{
+    [key: string]: Response;
+  }>;
+}
+
+class TestModel extends Model<Data> {
+    increase = this.action((state) => {
+        state.counter += 1;
+    });
+
+    getUser = $api.action((id) => {
+        return this
+            .get<Response>('/api/user/' + id)
+            .onSuccess((state, action) => {
+                state.counter += 1;
+                state.users[id] = action.response;
+            });
+    });
+
+    deleteUser = $api.action((id) => {
+        return this
+            .delete('/api/user' + id)
+            .onSuccess((state) => {
+                state.counter -= 1;
+                state.users[id] = null;
+            });
+    });
+
+    protected initReducer(): Data {
         return {
             counter: 0,
             users: {},
