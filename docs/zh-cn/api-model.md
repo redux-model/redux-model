@@ -25,7 +25,7 @@ class Test extends Model {
             .body()
             .onPrepare()
             .onSuccess()
-            .metaKey();
+            .withMeta();
     });
 }
 ```

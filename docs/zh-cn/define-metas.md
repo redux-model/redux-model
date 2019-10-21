@@ -1,7 +1,7 @@
 # 定义Metas
 Metas是Meta的集合。假设一个Request Action需要同时执行多次，并且业务上需要根据传入Action的参数获取不同的meta信息。如果我们仍然用Meta存储，因为请求是异步的，meta的数据也会覆盖，最终导致数据出错。
 
-此时，我们可以使用`payload`解决这个问题。
+此时，我们可以在`withMeta`中传入值解决这个问题。
 
 ```typescript
 import { Model } from '@redux-model/web';
@@ -17,11 +17,10 @@ type Data = Partial<{
 }>;
 
 class ThirdModel extends Model<Data> {
-    getProfile = service.action((userId: number) => {
+    getProfile = $api.action((userId: number) => {
         return this
             .get('...')
-            .payload({ userId })
-            .metaKey('userId');
+            .withMeta(userId);
     });
 
     protected initReducer(): Data {
@@ -32,7 +31,7 @@ class ThirdModel extends Model<Data> {
 export const thirdModel = new ThirdModel();
 ```
 
-当 `metaKey` 设置为payload的存在的一个属性名时，metas就会被启用。我们只要在使用时传入 payload 对应的值时，就能拿到Meta对象。
+当 `withMeta` 传入非布尔值时，metas就会被启用。
 
 ```typescript
 const userId = 3;
@@ -74,18 +73,4 @@ const loadings = thirdModel.getProfile.useLoadings();
 
 const loading = loadings.pick(userId);
 const loading = thirdModel.getProfile.useLoadings(userId);
-```
-
-
--------
-
-Payload除了可以创建Metas之外，还有一个作用，就是在改变reducer时，可以根据payload传入的信息来决定变更策略。
-```typescript
-getProfile = $api.action(() => {
-    return this
-        .get('')
-        .onSuccess((state, action) => {
-            state[action.payload.userId] = action.response;
-        });
-});
 ```
