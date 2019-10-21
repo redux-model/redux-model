@@ -1,4 +1,3 @@
-import { AnyAction } from 'redux';
 import {
   ActionResponse,
   EnhanceData,

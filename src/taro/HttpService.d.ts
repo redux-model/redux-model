@@ -1,7 +1,7 @@
 import { request } from '@tarojs/taro';
 import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
-import { OrphanRequestOptions, HttpTransform, Omit, HttpServiceNoMeta, EnhanceData, EnhanceResponse, EnhancePayload, RequestActionNoMeta, HttpServiceWithMeta, RequestActionWithMeta, HttpServiceWithMetas, EnhanceMeta, RequestActionWithMetas } from '../core/utils/types';
+import { OrphanRequestOptions, HttpTransform, Omit } from '../core/utils/types';
 
 export declare abstract class HttpService extends BaseHttpService {
   connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never>;
