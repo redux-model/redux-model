@@ -1,7 +1,6 @@
 import {
   Meta, MetasLoading,
   Metas,
-  PayloadData,
   RequestSubscriber,
   UseSelector,
 } from '../utils/types';
@@ -19,7 +18,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   protected failType: string;
 
   // Avoid re-render component even if reducer data doesn't change.
-  protected loadingsCache?: [Metas, MetasLoading<Payload, M>];
+  protected loadingsCache?: [Metas, MetasLoading<M>];
 
   public constructor(request: A, instanceName: string, runAction: (action: ActionRequest) => FetchHandle<Response, Payload>) {
     super(instanceName);
@@ -91,9 +90,9 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     });
   }
 
-  public useMetas<T extends keyof Meta>(payload?: PayloadData<Payload, M>, key?: T): Metas<Payload, M> | Meta[T] {
-    if (payload === undefined) {
-      key = undefined;
+  public useMetas<T extends keyof Meta>(value?: M, metaKey?: T): Metas<M> | Meta[T] {
+    if (value === undefined) {
+      metaKey = undefined;
     }
 
     return this.switchReduxSelector()((state: any) => {
@@ -103,10 +102,10 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
         customMetas = DEFAULT_METAS;
       }
 
-      const customMeta: Metas = payload === undefined ? customMetas : customMetas[payload] || DEFAULT_META;
+      const customMeta: Metas = value === undefined ? customMetas : customMetas[value] || DEFAULT_META;
 
-      return key
-        ? customMeta[key]
+      return metaKey
+        ? customMeta[metaKey]
         : customMeta;
     });
   }
@@ -115,17 +114,17 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     return this.useMeta('loading') as boolean;
   }
 
-  public useLoadings(payload?: PayloadData<Payload, M>): boolean | MetasLoading<Payload, M> {
-    return payload === undefined
+  public useLoadings(value?: M): boolean | MetasLoading<M> {
+    return value === undefined
       ? this.getLoadingHandle(<Metas>this.useMetas())
-      : this.useMetas(payload, 'loading') as boolean;
+      : this.useMetas(value, 'loading') as boolean;
   }
 
   public get meta(): Meta {
     return MetaReducer.getData<Meta>(this.typePrefix) || DEFAULT_META;
   }
 
-  public get metas(): Metas<Payload, M> {
+  public get metas(): Metas<M> {
     return MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
   }
 
@@ -133,11 +132,11 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     return this.meta.loading;
   }
 
-  public get loadings(): MetasLoading<Payload, M> {
+  public get loadings(): MetasLoading<M> {
     return this.getLoadingHandle(this.metas);
   }
 
-  protected getLoadingHandle(metas: Metas): MetasLoading<Payload, M> {
+  protected getLoadingHandle(metas: Metas): MetasLoading<M> {
     if (!this.loadingsCache || this.loadingsCache[0] !== metas) {
       this.loadingsCache = [metas, {
         pick: (payload) => {

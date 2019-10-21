@@ -16,11 +16,15 @@ export declare class HttpServiceHandle<Data, Response, Payload = unknown, M = fa
 
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>
-    : HttpServiceNoMeta<Data, Response, T>;
+    : M extends false
+      ? HttpServiceNoMeta<Data, Response, T>
+      : HttpServiceWithMetas<Data, Response, T, M>;
 
-  metaKey(is: true): HttpServiceWithMeta<Data, Response, Payload>;
-  metaKey(is: false): HttpServiceNoMeta<Data, Response, Payload>;
-  metaKey<T extends keyof Payload>(payloadKey: T): HttpServiceWithMetas<Data, Response, Payload, T>;
+  withMeta(is: true): HttpServiceWithMeta<Data, Response, Payload>;
+  withMeta(is: false): HttpServiceNoMeta<Data, Response, Payload>;
+  withMeta(value: string): HttpServiceWithMetas<Data, Response, Payload, string>;
+  withMeta(value: number): HttpServiceWithMetas<Data, Response, Payload, number>;
+  withMeta(value: symbol): HttpServiceWithMetas<Data, Response, Payload, symbol>;
 
   onPrepare(fn: NonNullable<ActionRequest<Data, Response, Payload>['onPrepare']>): this;
   onSuccess(fn: NonNullable<ActionRequest<Data, Response, Payload>['onSuccess']>): this;

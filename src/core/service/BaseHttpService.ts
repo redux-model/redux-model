@@ -23,8 +23,6 @@ import { isDebug } from '../../libs/dev';
 import { isProxyEnable } from '../utils/dev';
 
 export abstract class BaseHttpService {
-  // TODO: get / post /put /delete 放到Model中，此处统一命名为action
-  // $api.action(() => this.get().query());
   public action<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     fn: A
   ): RequestActionNoMeta<Data, A, Response, Payload>;
@@ -33,7 +31,7 @@ export abstract class BaseHttpService {
     fn: A
   ): RequestActionWithMeta<Data, A, Response, Payload>;
 
-  public action<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M extends keyof Payload = EnhanceMeta<A>>(
+  public action<A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>, M = EnhanceMeta<A>>(
     fn: A
   ): RequestActionWithMetas<Data, A, Response, Payload, M>;
 

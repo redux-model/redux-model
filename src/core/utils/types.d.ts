@@ -35,14 +35,14 @@ export type Meta = Readonly<{
   businessCode?: string | number;
 }>;
 
-export type Metas<Payload = any, M = any> = Partial<{
+export type Metas<M = any> = Partial<{
   [key: string]: Meta;
 }> & {
-  pick: (payload: PayloadData<Payload, M>) => Meta;
+  pick: (value: M) => Meta;
 };
 
-export type MetasLoading<Payload, M> = {
-  pick: (payload: PayloadData<Payload, M>) => boolean;
+export type MetasLoading<M> = {
+  pick: (value: M) => boolean;
 };
 
 export interface Reducers {
@@ -68,7 +68,7 @@ export interface BaseActionRequest<Data = any, Response = any, Payload = any, Ty
   failText: string;
   hideError: boolean | ((response: ActionResponse<Data, Response, Payload>) => boolean);
   requestOptions: object;
-  metaKey: keyof Payload | boolean;
+  metaKey: string | number | symbol | boolean;
   instanceName: string;
   onSuccess: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
   onPrepare: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
@@ -85,8 +85,6 @@ export interface ActionResponse<Data = any, Response = any, Payload = any> exten
 
 export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'type'>> & { uri: string; instanceName: string; method: METHOD };
 export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' | 'body' | 'requestOptions' >> & { uri: string };
-
-export type PayloadData<Payload, M> = M extends keyof Payload ? Payload[M] : never;
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
@@ -111,15 +109,15 @@ export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpS
 export interface RequestActionWithMetas<Data, A extends (...args: any[]) => HttpServiceWithMetas<Data, Response, Payload, M>, Response, Payload, M> extends RequestAction<Data, A, Response, Payload, M> {
   (...args: Parameters<A>): FetchHandle<Response, Payload>;
 
-  loadings: MetasLoading<Payload, M>;
-  metas: Metas<Payload, M>;
+  loadings: MetasLoading<M>;
+  metas: Metas<M>;
 
-  useMetas(): Metas<Payload, M>;
-  useMetas(payload: PayloadData<Payload, M>): Meta;
-  useMetas<T extends keyof Meta>(payload: PayloadData<Payload, M>, key: T): Meta[T];
+  useMetas(): Metas<M>;
+  useMetas(value: M): Meta;
+  useMetas<T extends keyof Meta>(value: M, metaKey: T): Meta[T];
 
-  useLoadings(): MetasLoading<Payload, M>;
-  useLoadings(payload: PayloadData<Payload, M>): boolean;
+  useLoadings(): MetasLoading<M>;
+  useLoadings(value: M): boolean;
 }
 
 export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {
@@ -139,7 +137,7 @@ export type NormalSubscriber<CustomData, Payload> = {
 type EnhanceData<T> = T extends (...args: any[]) => HttpServiceHandle<infer D, any, any, any> ? D : never;
 type EnhanceResponse<T> = T extends (...args: any[]) => HttpServiceHandle<any, infer R, any, any> ? R : never;
 type EnhancePayload<T> = T extends (...args: any[]) => HttpServiceHandle<any, any, infer P, any> ? P : never;
-type EnhanceMeta<T> = T extends (...args: any[]) => HttpServiceHandle<any, any, any, infer P> ? P : never;
+type EnhanceMeta<T> = T extends (...args: any[]) => HttpServiceWithMetas<any, any, any, infer P> ? P : never;
 
 export type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
 export type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;

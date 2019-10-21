@@ -90,7 +90,7 @@ export class MetaReducer {
           ...state,
           [name]: {
             ...state[name],
-            [action.payload[action.metaKey]]: {
+            [action.metaKey]: {
               actionType: action.type,
               loading: true,
             },
@@ -117,7 +117,7 @@ export class MetaReducer {
           ...state,
           [name]: {
             ...state[name],
-            [action.payload[action.metaKey]]: {
+            [action.metaKey]: {
               actionType: action.type,
               loading: false,
             },
@@ -147,7 +147,7 @@ export class MetaReducer {
           ...state,
           [name]: {
             ...state[name],
-            [action.payload[action.metaKey]]: {
+            [action.metaKey]: {
               actionType: action.type,
               loading: false,
               errorMessage: action.errorMessage,

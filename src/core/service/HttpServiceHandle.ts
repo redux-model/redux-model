@@ -59,7 +59,10 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
 
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>
-    : HttpServiceNoMeta<Data, Response, T> {
+    : M extends false
+      ? HttpServiceNoMeta<Data, Response, T>
+      : HttpServiceWithMetas<Data, Response, T, M>
+  {
     this.config.payload = payload;
 
     // @ts-ignore
@@ -67,11 +70,13 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
   }
 
   // @ts-ignore
-  metaKey(is: true): HttpServiceWithMeta<Data, Response, Payload>;
-  metaKey(is: false): HttpServiceNoMeta<Data, Response, Payload>;
-  metaKey<T extends keyof Payload>(payloadKey: T): HttpServiceWithMetas<Data, Response, Payload, T>;
+  withMeta(is: true): HttpServiceWithMeta<Data, Response, Payload>;
+  withMeta(is: false): HttpServiceNoMeta<Data, Response, Payload>;
+  withMeta(value: string): HttpServiceWithMetas<Data, Response, Payload, string>;
+  withMeta(value: number): HttpServiceWithMetas<Data, Response, Payload, number>;
+  withMeta(value: symbol): HttpServiceWithMetas<Data, Response, Payload, symbol>;
 
-  metaKey(param: any): HttpServiceHandle<Data, Response, Payload, M> {
+  withMeta(param: any): HttpServiceHandle<Data, Response, Payload, M> {
     this.config.metaKey = param;
 
     return this;
