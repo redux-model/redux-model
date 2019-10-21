@@ -65,19 +65,16 @@ export class RequestModel extends BaseTestModel<Data> {
   getProfileById = $api.action((id: number) => {
     return this
       .get<Response>('/profile.json')
-      .payload({
-        id,
-      })
+      .withMeta(id)
       .onSuccess((state, action) => {
-        state.records[action.payload.id] = action.response;
-      })
-      .metaKey('id');
+        state.records[id] = action.response;
+      });
   });
 
   noMetaRequest = $api.action(() => {
     return this
       .get<Response>('/profile.json')
-      .metaKey(false);
+      .withMeta(false);
   });
 
   async orphanGetRequest() {
