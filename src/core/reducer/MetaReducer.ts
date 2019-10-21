@@ -1,4 +1,4 @@
-import { ActionResponse, Meta, Metas, Reducers, Types } from '../utils/types';
+import { InternalActionResponse, Meta, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
 
@@ -43,7 +43,7 @@ export class MetaReducer {
     MetaReducer.isAppend = true;
 
     return {
-      [MetaReducer.getName()]: (state: BigMetas, action: ActionResponse) => {
+      [MetaReducer.getName()]: (state: BigMetas, action: InternalActionResponse) => {
         if (state === undefined) {
           state = {};
         }
@@ -73,7 +73,7 @@ export class MetaReducer {
     };
   }
 
-  protected static modifyPrepare(state: BigMetas, name: string, action: ActionResponse): BigMetas {
+  protected static modifyPrepare(state: BigMetas, name: string, action: InternalActionResponse): BigMetas {
     switch (action.metaKey) {
       case true:
         return {
@@ -100,7 +100,7 @@ export class MetaReducer {
     }
   }
 
-  protected static modifySuccess(state: BigMetas, name: string, action: ActionResponse): BigMetas {
+  protected static modifySuccess(state: BigMetas, name: string, action: InternalActionResponse): BigMetas {
     switch (action.metaKey) {
       case true:
         return {
@@ -127,7 +127,7 @@ export class MetaReducer {
     }
   }
 
-  protected static modifyFail(state: BigMetas, name: string, action: ActionResponse): BigMetas {
+  protected static modifyFail(state: BigMetas, name: string, action: InternalActionResponse): BigMetas {
     switch (action.metaKey) {
       case true:
         return {

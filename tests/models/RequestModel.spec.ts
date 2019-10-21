@@ -176,17 +176,17 @@ describe('Request action has three kinds of reducer event', () => {
 test('Request Action has correct method', async () => {
   $api.mockResolveValue();
   const result1 = await model.getProfile();
-  expect(result1.method).toBe(METHOD.get);
+  expect(result1).toHaveProperty('method', METHOD.get);
 
   $api.mockResolveValue();
   const result2 = await model.withPostProfile();
-  expect(result2.method).toBe(METHOD.post);
+  expect(result2).toHaveProperty('method', METHOD.post);
 
   $api.mockResolveValue();
   const result3 = await model.withPutProfile();
-  expect(result3.method).toBe(METHOD.put);
+  expect(result3).toHaveProperty('method', METHOD.put);
 
   $api.mockResolveValue();
   const result4 = await model.withDeleteProfile();
-  expect(result4.method).toBe(METHOD.delete);
+  expect(result4).toHaveProperty('method', METHOD.delete);
 });

@@ -12,7 +12,7 @@ export declare class HttpServiceHandle<Data, Response, Payload = unknown, M = fa
 
   requestOptions(options: ActionRequest['requestOptions']): this;
 
-  hideError(is: boolean | ((response: ActionResponse<Data, Response, Payload>) => boolean)): this;
+  hideError(is: boolean | ((response: ActionResponse<Response, Payload>) => boolean)): this;
 
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>

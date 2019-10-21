@@ -66,21 +66,24 @@ export interface BaseActionRequest<Data = any, Response = any, Payload = any, Ty
   query: object;
   successText: string;
   failText: string;
-  hideError: boolean | ((response: ActionResponse<Data, Response, Payload>) => boolean);
+  hideError: boolean | ((response: ActionResponse<Response, Payload>) => boolean);
   requestOptions: object;
   metaKey: string | number | symbol | boolean;
   instanceName: string;
-  onSuccess: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
-  onPrepare: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
-  onFail: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
+  onSuccess: null | ((state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>);
+  onPrepare: null | ((state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>);
+  onFail: null | ((state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>);
 }
 
-export interface ActionResponse<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string> {
+export interface InternalActionResponse<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string>, ActionResponse<Response, Payload> {
+  effect: null | ((state: State<Data>, action: InternalActionResponse<Data, Response, Payload>) => StateReturn<Data>);
+}
+
+export interface ActionResponse<Response = any, Payload = any> extends ActionNormal<Payload> {
   response: Response;
   errorMessage?: string;
   httpStatus?: HTTP_STATUS_CODE;
   businessCode?: string;
-  effect: null | ((state: State<Data>, action: ActionResponse<Data, Response, Payload>) => StateReturn<Data>);
 }
 
 export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'type'>> & { uri: string; instanceName: string; method: METHOD };
@@ -88,7 +91,7 @@ export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' |
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
-  effect: (state: State<CustomData>, action: ActionResponse<CustomData, Response, Payload>) => StateReturn<CustomData>;
+  effect: (state: State<CustomData>, action: ActionResponse<Response, Payload>) => StateReturn<CustomData>;
 };
 
 export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload, M>, Response, Payload, M = false> extends RequestAction<Data, A, Response, Payload, M> {

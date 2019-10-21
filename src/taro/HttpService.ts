@@ -3,7 +3,7 @@ import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import {
-  ActionResponse,
+  InternalActionResponse,
   OrphanRequestOptions,
   HttpTransform,
   Omit,
@@ -90,7 +90,7 @@ export abstract class HttpService extends BaseHttpService {
         }
 
         // @ts-ignore
-        const okResponse: ActionResponse = {
+        const okResponse: InternalActionResponse = {
           ...action,
           type: success,
           response: response.data,
@@ -135,7 +135,7 @@ export abstract class HttpService extends BaseHttpService {
         }
 
         // @ts-ignore
-        const errorResponse: ActionResponse = {
+        const errorResponse: InternalActionResponse = {
           ...action,
           response: error.data || {},
           type: fail,
@@ -152,6 +152,7 @@ export abstract class HttpService extends BaseHttpService {
         return Promise.reject(errorResponse);
       });
 
+    // @ts-ignore
     const wrapPromise = promise as FetchHandle;
 
     wrapPromise.cancel = canceler;

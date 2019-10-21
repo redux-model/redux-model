@@ -1,5 +1,5 @@
 import {
-  ActionResponse,
+  Business,
   EnhanceData,
   EnhanceMeta,
   EnhancePayload,
@@ -27,6 +27,6 @@ export declare abstract class BaseHttpService {
   protected timeoutMessage(originalMessage: string): string;
   protected networkErrorMessage(originalMessage: string): string;
   protected abstract baseUrl(): string;
-  protected abstract onShowSuccess(successText: string, action: ActionResponse): void;
-  protected abstract onShowError(errorText: string, action: ActionResponse): void;
+  protected abstract onShowSuccess(successText: string, action: Business): void;
+  protected abstract onShowError(errorText: string, action: Business): void;
 }

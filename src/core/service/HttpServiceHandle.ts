@@ -1,10 +1,10 @@
 import {
-  ActionResponse,
   HttpServiceNoMeta,
   HttpServiceWithMeta,
   HttpServiceWithMetas,
   RequestOptions,
   Types,
+  ActionResponse,
 } from '../utils/types';
 import { ActionRequest } from '../../libs/types';
 
@@ -51,7 +51,7 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
     return this;
   }
 
-  hideError(is: boolean | ((response: ActionResponse<Data, Response, Payload>) => boolean)): this {
+  hideError(is: boolean | ((response: ActionResponse<Response, Payload>) => boolean)): this {
     this.config.hideError = is;
 
     return this;

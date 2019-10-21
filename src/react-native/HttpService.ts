@@ -3,7 +3,7 @@ import { ActionRequest, FetchHandle, HttpError } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import { METHOD } from '../core/utils/method';
 import {
-  ActionResponse,
+  InternalActionResponse,
   OrphanRequestOptions,
   HttpTransform,
 } from '../core/utils/types';
@@ -68,7 +68,7 @@ export abstract class HttpService extends BaseHttpService {
     const promise = this.httpHandle.request(requestOptions)
       .then((response) => {
         // @ts-ignore
-        const okResponse: ActionResponse = {
+        const okResponse: InternalActionResponse = {
           ...action,
           type: success,
           response: response.data,
@@ -116,7 +116,7 @@ export abstract class HttpService extends BaseHttpService {
         }
 
         // @ts-ignore
-        const errorResponse: ActionResponse = {
+        const errorResponse: InternalActionResponse = {
           ...action,
           response: error.response || {},
           type: fail,
@@ -135,6 +135,7 @@ export abstract class HttpService extends BaseHttpService {
         return Promise.reject(errorResponse);
       });
 
+    // @ts-ignore
     const wrapPromise = promise as FetchHandle;
 
     wrapPromise.cancel = source.cancel;

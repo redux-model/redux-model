@@ -7,7 +7,7 @@ export interface HttpError<T = any> extends AxiosError {
   response: AxiosResponse<T>;
 }
 
-export interface FetchHandle<Response = any, Payload = any> extends Promise<ActionResponse<any, Response, Payload>> {
+export interface FetchHandle<Response = any, Payload = any> extends Promise<ActionResponse<Response, Payload>> {
   cancel: HttpCanceler;
 }
 

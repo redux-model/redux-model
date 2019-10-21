@@ -1,5 +1,5 @@
 import {
-  ActionResponse,
+  InternalActionResponse,
   EnhanceData,
   EnhanceMeta,
   EnhancePayload,
@@ -10,7 +10,7 @@ import {
   OrphanRequestOptions,
   RequestActionNoMeta,
   RequestActionWithMeta,
-  RequestActionWithMetas
+  RequestActionWithMetas, ActionResponse
 } from '../utils/types';
 import { METHOD } from '../utils/method';
 import { OrphanHttpServiceHandle } from './OrphanHttpServiceHandle';
@@ -90,7 +90,7 @@ export abstract class BaseHttpService {
     }
   }
 
-  protected _triggerShowError(errorResponse: ActionResponse, hideError: boolean | ((response: ActionResponse) => boolean)) {
+  protected _triggerShowError(errorResponse: InternalActionResponse, hideError: boolean | ((response: InternalActionResponse) => boolean)) {
     if (!errorResponse.errorMessage) {
       return;
     }
