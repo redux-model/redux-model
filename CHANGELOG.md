@@ -1,3 +1,9 @@
+# 6.3.0
+[feat] Add methods `clone`,`isSuccess`,`transformSuccessData` into HttpService
+
+# 6.2.0
+[feat] New property `withMeta` of request action to replace `metaKey`
+
 # 6.1.3
 [fix] Compatible with compression in dev environment
 
@@ -18,7 +24,7 @@ Totally rewrite request action to reduce more code
 # 5.12.0
 [feat] Combine actionRequest and actionNormal into `action`
 
-# 5.11.0 (2019.10.13)
+# 5.11.0
 
 ### Breaking Changes
 [feat] Rename property from `meta` to `metaKey` when creating request action
