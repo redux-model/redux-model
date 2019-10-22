@@ -15,7 +15,7 @@ class ApiService extends HttpService {
     
     // 接口请求失败时，收集错误信息到reducer
     protected onRespondError(error: HttpError<{ error: string }>, transform: HttpTransform): void {
-        transform.errorMessage = error.response.data.error;
+        transform.message = error.response.data.error;
     }
 
     // 渲染错误信息

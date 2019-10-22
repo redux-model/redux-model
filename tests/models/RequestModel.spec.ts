@@ -1,7 +1,7 @@
 import { $api } from './ApiService';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { RequestModel } from './RequestModel';
-import { ActionResponse } from '../../src/core/utils/types';
+import { ReducerAction } from '../../src/core/utils/types';
 import { METHOD } from '../../src/core/utils/method';
 
 const data = {
@@ -112,7 +112,7 @@ test('Request not found', async () => {
     await model.getNpmInfo((new Date()).toUTCString());
   } catch (e) {
     expect(e.type).toBe(model.getNpmInfo.getFailType());
-    expect(e.errorMessage).toBe('Not found');
+    expect(e.message).toBe('Not found');
     expect(e.httpStatus).toBe(404);
   }
 });
@@ -123,7 +123,7 @@ test('Request timeout', async () => {
 
     expect(false).toBeTruthy();
   } catch (e) {
-    expect(e.errorMessage).toBe('Timeout!');
+    expect(e.message).toBe('Timeout!');
   }
 });
 
@@ -131,15 +131,15 @@ test('Easy to abort request action', (done) => {
   const promise = model.getNpmInfo('redux');
 
   promise
-    .catch((e: ActionResponse) => {
+    .catch((e: ReducerAction) => {
       expect(e.type).toBe(model.getNpmInfo.getFailType());
-      expect(e.errorMessage).toBe('Abort');
+      expect(e.message).toBe('Abort');
 
       const promise = model.getNpmInfo('react-redux');
       promise
-        .catch((e: ActionResponse) => {
+        .catch((e: ReducerAction) => {
           expect(e.type).toBe(model.getNpmInfo.getFailType());
-          expect(e.errorMessage).toBe('I want to cancel by myself');
+          expect(e.message).toBe('I want to cancel by myself');
 
           done();
         });

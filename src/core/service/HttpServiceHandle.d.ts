@@ -1,4 +1,4 @@
-import { ActionResponse, HttpServiceNoMeta, HttpServiceWithMeta, HttpServiceWithMetas } from '../utils/types';
+import { ReducerAction, HttpServiceNoMeta, HttpServiceWithMeta, HttpServiceWithMetas } from '../utils/types';
 import { ActionRequest } from '../../libs/types';
 
 export declare class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
@@ -12,7 +12,7 @@ export declare class HttpServiceHandle<Data, Response, Payload = unknown, M = fa
 
   requestOptions(options: ActionRequest['requestOptions']): this;
 
-  hideError(is: boolean | ((response: ActionResponse<Response, Payload>) => boolean)): this;
+  hideError(is: boolean | ((response: ReducerAction<Response, Payload>) => boolean)): this;
 
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>

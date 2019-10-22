@@ -1,10 +1,11 @@
-import { HttpError, HttpService, HttpTransform } from '../../src/web';
+import { HttpResponse, HttpService } from '../../src/web';
+import { HttpServiceConfig } from '../../src/web/types';
 
 class ApiService extends HttpService {
   protected readonly mock: jest.Mock;
 
-  constructor() {
-    super();
+  constructor(config: HttpServiceConfig) {
+    super(config);
     this.mock = jest.fn(this.httpHandle.request);
     // @ts-ignore
     this.httpHandle.request = this.mock;
@@ -21,26 +22,22 @@ class ApiService extends HttpService {
       data,
     });
   }
-
-  protected baseUrl(): string {
-    return '';
-  }
-
-  protected headers(): object {
-    return {};
-  }
-
-  protected onRespondError(error: HttpError<{ error: string }>, transform: HttpTransform): void {
-    transform.errorMessage = error.response.data.error;
-  }
-
-  protected timeoutMessage(): string {
-    return 'Timeout!';
-  }
-
-  protected onShowError(): void {}
-
-  protected onShowSuccess(): void {}
 }
 
-export const $api = new ApiService();
+export const $api = new ApiService({
+  baseUrl: '',
+  headers: () => {
+    return {};
+  },
+  isSuccess: () => {
+    return true;
+  },
+  onRespondError: (response: HttpResponse<{ error: string }>, transform) => {
+    transform.message = response.data.error;
+  },
+  onShowSuccess: () => {},
+  onShowError: () => {},
+  timeoutMessage: () => {
+    return 'Timeout!';
+  },
+});

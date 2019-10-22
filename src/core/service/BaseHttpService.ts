@@ -1,5 +1,5 @@
 import {
-  InternalActionResponse,
+  InternalActionHandle,
   EnhanceData,
   EnhanceMeta,
   EnhancePayload,
@@ -10,7 +10,8 @@ import {
   OrphanRequestOptions,
   RequestActionNoMeta,
   RequestActionWithMeta,
-  RequestActionWithMetas, ActionResponse
+  RequestActionWithMetas,
+  BaseHttpServiceConfig,
 } from '../utils/types';
 import { METHOD } from '../utils/method';
 import { OrphanHttpServiceHandle } from './OrphanHttpServiceHandle';
@@ -23,6 +24,20 @@ import { isDebug } from '../../libs/dev';
 import { isProxyEnable } from '../utils/dev';
 
 export abstract class BaseHttpService {
+  protected readonly baseUrl: BaseHttpServiceConfig['baseUrl'];
+  protected readonly onShowSuccess: BaseHttpServiceConfig['onShowSuccess'];
+  protected readonly onShowError: BaseHttpServiceConfig['onShowError'];
+  protected readonly timeoutMessage: BaseHttpServiceConfig['timeoutMessage'];
+  protected readonly networkErrorMessage: BaseHttpServiceConfig['networkErrorMessage'];
+
+  constructor(config: BaseHttpServiceConfig) {
+    this.baseUrl = config.baseUrl;
+    this.timeoutMessage = config.timeoutMessage;
+    this.networkErrorMessage = config.networkErrorMessage;
+    this.onShowSuccess = config.onShowSuccess;
+    this.onShowError = config.onShowError;
+  }
+
   public action<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     fn: A
   ): RequestActionNoMeta<Data, A, Response, Payload>;
@@ -69,29 +84,16 @@ export abstract class BaseHttpService {
       .runAction();
   }
 
-  public abstract runAction(action: any): any;
+  protected abstract runAction(action: any): any;
 
-  protected timeoutMessage(originalMessage: string): string {
-    return originalMessage;
-  }
-
-  protected networkErrorMessage(originalMessage: string): string {
-    return originalMessage;
-  }
-
-  protected abstract baseUrl(): string;
-
-  protected abstract onShowSuccess(successText: string, action: ActionResponse): void;
-  protected abstract onShowError(errorText: string, action: ActionResponse): void;
-
-  protected _next(action: AnyAction): void {
+  protected next(action: AnyAction): void {
     if (action.type) {
       getStore().dispatch(action);
     }
   }
 
-  protected _triggerShowError(errorResponse: InternalActionResponse, hideError: boolean | ((response: InternalActionResponse) => boolean)) {
-    if (!errorResponse.errorMessage) {
+  protected triggerShowError(errorResponse: InternalActionHandle, hideError: boolean | ((response: InternalActionHandle) => boolean)) {
+    if (!errorResponse.message) {
       return;
     }
 
@@ -104,7 +106,7 @@ export abstract class BaseHttpService {
     }
 
     if (showError) {
-      this.onShowError(errorResponse.errorMessage, errorResponse);
+      this.onShowError(errorResponse.message, errorResponse);
     }
   }
 }

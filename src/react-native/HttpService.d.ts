@@ -1,19 +1,18 @@
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { ActionRequest, FetchHandle, HttpError } from './types';
+import { AxiosInstance } from 'axios';
+import { ActionRequest, FetchHandle, HttpServiceConfig } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
-import { OrphanRequestOptions, HttpTransform } from '../core/utils/types';
+import { OrphanRequestOptions } from '../core/utils/types';
 
-export declare abstract class HttpService extends BaseHttpService {
+export declare class HttpService extends BaseHttpService {
   protected readonly httpHandle: AxiosInstance;
-  constructor();
+  protected readonly onRespondError: HttpServiceConfig['onRespondError'];
+  protected readonly headers: HttpServiceConfig['headers'];
+  protected readonly beforeSend: HttpServiceConfig['beforeSend'];
+  protected readonly isSuccess: HttpServiceConfig['isSuccess'];
+
+  constructor(config: HttpServiceConfig);
 
   patchAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never>;
 
-  protected beforeSend(action: ActionRequest): void;
-
-  protected abstract onRespondError(error: HttpError, transform: HttpTransform): void;
-
-  protected abstract headers(action: ActionRequest): object;
-
-  protected requestConfig(): AxiosRequestConfig;
+  protected runAction(action: ActionRequest): FetchHandle;
 }

@@ -4,7 +4,7 @@ import {
   HttpServiceWithMetas,
   RequestOptions,
   Types,
-  ActionResponse,
+  ReducerAction,
 } from '../utils/types';
 import { ActionRequest } from '../../libs/types';
 
@@ -51,7 +51,7 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
     return this;
   }
 
-  hideError(is: boolean | ((response: ActionResponse<Response, Payload>) => boolean)): this {
+  hideError(is: boolean | ((response: ReducerAction<Response, Payload>) => boolean)): this {
     this.config.hideError = is;
 
     return this;
@@ -100,7 +100,6 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
     return this;
   }
 
-  // TODO: 从.d.ts中删除
   collect(types: Types): ActionRequest {
     const config = this.config;
     const action: ActionRequest = {

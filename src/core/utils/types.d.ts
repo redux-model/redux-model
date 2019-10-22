@@ -30,10 +30,7 @@ export type Effects<Data> = Array<{
 export type Meta = Readonly<{
   actionType: string;
   loading: boolean;
-  errorMessage?: string;
-  httpStatus?: number;
-  businessCode?: string | number;
-}>;
+} & HttpTransform>;
 
 export type Metas<M = any> = Partial<{
   [key: string]: Meta;
@@ -66,24 +63,21 @@ export interface BaseActionRequest<Data = any, Response = any, Payload = any, Ty
   query: object;
   successText: string;
   failText: string;
-  hideError: boolean | ((response: ActionResponse<Response, Payload>) => boolean);
+  hideError: boolean | ((response: ReducerAction<Response, Payload>) => boolean);
   requestOptions: object;
   metaKey: string | number | symbol | boolean;
   instanceName: string;
-  onSuccess: null | ((state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>);
-  onPrepare: null | ((state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>);
-  onFail: null | ((state: State<Data>, action: ActionResponse<Response, Payload>) => StateReturn<Data>);
+  onSuccess: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
+  onPrepare: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
+  onFail: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
 }
 
-export interface InternalActionResponse<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string>, ActionResponse<Response, Payload> {
-  effect: null | ((state: State<Data>, action: InternalActionResponse<Data, Response, Payload>) => StateReturn<Data>);
+export interface InternalActionHandle<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string>, ReducerAction<Response, Payload> {
+  effect: null | ((state: State<Data>, action: InternalActionHandle<Data, Response, Payload>) => StateReturn<Data>);
 }
 
-export interface ActionResponse<Response = any, Payload = any> extends ActionNormal<Payload> {
+export interface ReducerAction<Response = any, Payload = any> extends ActionNormal<Payload>, HttpTransform {
   response: Response;
-  errorMessage?: string;
-  httpStatus?: HTTP_STATUS_CODE;
-  businessCode?: string;
 }
 
 export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'type'>> & { uri: string; instanceName: string; method: METHOD };
@@ -91,7 +85,7 @@ export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' |
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;
-  effect: (state: State<CustomData>, action: ActionResponse<Response, Payload>) => StateReturn<CustomData>;
+  effect: (state: State<CustomData>, action: ReducerAction<Response, Payload>) => StateReturn<CustomData>;
 };
 
 export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload, M>, Response, Payload, M = false> extends RequestAction<Data, A, Response, Payload, M> {
@@ -147,7 +141,7 @@ export type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) =>
 
 export interface HttpTransform {
   httpStatus?: HTTP_STATUS_CODE;
-  errorMessage?: string;
+  message?: string;
   businessCode?: string;
 }
 
@@ -164,4 +158,12 @@ export class HttpServiceWithMeta<Data, Response, Payload, M = true> extends Http
 export class HttpServiceWithMetas<Data, Response, Payload, M> extends HttpServiceHandle<Data, Response, Payload, M> {
   // @ts-ignore
   private readonly _: string = '';
+}
+
+export interface BaseHttpServiceConfig {
+  baseUrl: string;
+  onShowSuccess: (successText: string, action: ReducerAction) => void;
+  onShowError: (errorText: string, action: ReducerAction) => void;
+  timeoutMessage?: (originalText: string) => string;
+  networkErrorMessage?: (originalText: string) => string;
 }

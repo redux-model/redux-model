@@ -37,6 +37,7 @@ export class OrphanHttpServiceHandle<Response> {
       method: this.method,
     };
 
+    // @ts-ignore
     return this.fetchApi.runAction(action);
   }
 }

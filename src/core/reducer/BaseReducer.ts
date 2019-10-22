@@ -1,5 +1,5 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
-import { InternalActionResponse, Effects, Reducers } from '../utils/types';
+import { InternalActionHandle, Effects, Reducers } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import { onStoreCreated } from '../utils/createReduxStore';
 
@@ -51,7 +51,7 @@ export class BaseReducer<Data> {
 
   public createData(): Reducers {
     return {
-      [this.getReducerName()]: (state, action: InternalActionResponse) => {
+      [this.getReducerName()]: (state, action: InternalActionHandle) => {
         if (state === undefined) {
           state = this.initData;
         }
@@ -75,7 +75,7 @@ export class BaseReducer<Data> {
     };
   }
 
-  protected changeState(effect: Function, state: any, action: InternalActionResponse): any {
+  protected changeState(effect: Function, state: any, action: InternalActionHandle): any {
     if (isDraftable(state)) {
       const draft = createDraft(state);
       const responseDraft = effect(draft, action);

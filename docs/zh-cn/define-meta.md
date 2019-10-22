@@ -11,7 +11,7 @@ thirdModel.getProfile(1)
     })
     .catch(() => {
         // 请求失败，从service中收集信息
-        console.log(thirdModel.getProfile.meta.errorMessage)
+        console.log(thirdModel.getProfile.meta.message)
     })
     .finally(() => {
         // 请求结束 false

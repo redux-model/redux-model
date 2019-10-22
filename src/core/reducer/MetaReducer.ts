@@ -1,4 +1,4 @@
-import { InternalActionResponse, Meta, Metas, Reducers, Types } from '../utils/types';
+import { InternalActionHandle, Meta, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
 
@@ -43,7 +43,7 @@ export class MetaReducer {
     MetaReducer.isAppend = true;
 
     return {
-      [MetaReducer.getName()]: (state: BigMetas, action: InternalActionResponse) => {
+      [MetaReducer.getName()]: (state: BigMetas, action: InternalActionHandle) => {
         if (state === undefined) {
           state = {};
         }
@@ -51,17 +51,17 @@ export class MetaReducer {
         let name = MetaReducer.metaPrepare[action.type];
 
         if (name) {
-          state = MetaReducer.modifyPrepare(state, name, action);
+          state = MetaReducer.modifyReducer(state, name, action, true);
         } else {
           name = MetaReducer.metaSuccess[action.type];
 
           if (name) {
-            state = MetaReducer.modifySuccess(state, name, action);
+            state = MetaReducer.modifyReducer(state, name, action, false);
           } else {
             name = MetaReducer.metaFail[action.type];
 
             if (name) {
-              state = MetaReducer.modifyFail(state, name, action);
+              state = MetaReducer.modifyReducer(state, name, action, false);
             }
           }
         }
@@ -73,87 +73,36 @@ export class MetaReducer {
     };
   }
 
-  protected static modifyPrepare(state: BigMetas, name: string, action: InternalActionResponse): BigMetas {
-    switch (action.metaKey) {
-      case true:
-        return {
-          ...state,
-          [name]: {
-            actionType: action.type,
-            loading: true,
-          },
-        };
-      case false:
-        return state;
-      default:
-        return {
-          ...state,
-          [name]: {
-            ...state[name],
-            [action.metaKey]: {
-              actionType: action.type,
-              loading: true,
-            },
-            ...METAS_PICK_METHOD,
-          } as Metas,
-        };
-    }
-  }
+  protected static modifyReducer(state: BigMetas, name: string, action: InternalActionHandle, isLoading: boolean): BigMetas {
+    let meta: Meta;
 
-  protected static modifySuccess(state: BigMetas, name: string, action: InternalActionResponse): BigMetas {
     switch (action.metaKey) {
       case true:
-        return {
-          ...state,
-          [name]: {
-            actionType: action.type,
-            loading: false,
-          },
+        meta = {
+          actionType: action.type,
+          loading: isLoading,
+          message: action.message,
+          httpStatus: action.httpStatus,
+          businessCode: action.businessCode,
         };
-      case false:
-        return state;
-      default:
-        return {
-          ...state,
-          [name]: {
-            ...state[name],
-            [action.metaKey]: {
-              actionType: action.type,
-              loading: false,
-            },
-            ...METAS_PICK_METHOD,
-          } as Metas,
-        };
-    }
-  }
 
-  protected static modifyFail(state: BigMetas, name: string, action: InternalActionResponse): BigMetas {
-    switch (action.metaKey) {
-      case true:
-        return {
-          ...state,
-          [name]: {
-            actionType: action.type,
-            loading: false,
-            errorMessage: action.errorMessage,
-            httpStatus: action.httpStatus,
-            businessCode: action.businessCode,
-          },
-        };
+        return { ...state, [name]: meta };
       case false:
         return state;
       default:
+        meta = {
+          actionType: action.type,
+          loading: isLoading,
+          message: action.message,
+          httpStatus: action.httpStatus,
+          businessCode: action.businessCode,
+        };
+
         return {
           ...state,
           [name]: {
             ...state[name],
-            [action.metaKey]: {
-              actionType: action.type,
-              loading: false,
-              errorMessage: action.errorMessage,
-              httpStatus: action.httpStatus,
-              businessCode: action.businessCode,
-            },
+            [action.metaKey]: meta,
             ...METAS_PICK_METHOD,
           } as Metas,
         };

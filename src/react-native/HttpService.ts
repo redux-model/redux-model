@@ -1,25 +1,35 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { ActionRequest, FetchHandle, HttpError } from './types';
+import { ActionRequest, FetchHandle, HttpResponse, HttpServiceConfig } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import { METHOD } from '../core/utils/method';
 import {
-  InternalActionResponse,
+  InternalActionHandle,
   OrphanRequestOptions,
   HttpTransform,
 } from '../core/utils/types';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
-export abstract class HttpService extends BaseHttpService {
+export class HttpService extends BaseHttpService {
   protected readonly httpHandle: AxiosInstance;
+  protected readonly onRespondError: HttpServiceConfig['onRespondError'];
+  protected readonly headers: HttpServiceConfig['headers'];
+  protected readonly beforeSend: HttpServiceConfig['beforeSend'];
+  protected readonly isSuccess: HttpServiceConfig['isSuccess'];
 
-  constructor() {
-    super();
+  constructor(config: HttpServiceConfig) {
+    super(config);
+
+    this.onRespondError = config.onRespondError;
+    this.headers = config.headers;
+    this.beforeSend = config.beforeSend;
+    this.isSuccess = config.isSuccess;
+
     this.httpHandle = axios.create({
-      baseURL: this.baseUrl(),
+      baseURL: this.baseUrl,
       timeout: 20000,
       withCredentials: false,
       responseType: 'json',
-      ...this.requestConfig(),
+      ...config.requestConfig,
     });
   }
 
@@ -29,19 +39,8 @@ export abstract class HttpService extends BaseHttpService {
       .runAction();
   }
 
-  // @ts-ignore
-  protected beforeSend(action: ActionRequest) {};
-
-  protected abstract onRespondError(error: HttpError, transform: HttpTransform): void;
-
-  protected abstract headers(action: ActionRequest): object;
-
-  protected requestConfig(): AxiosRequestConfig {
-    return {};
-  }
-
-  public runAction(action: ActionRequest): FetchHandle {
-    this.beforeSend(action);
+  protected runAction(action: ActionRequest): FetchHandle {
+    this.beforeSend && this.beforeSend(action);
     const { prepare, success, fail } = action.type;
     const source = axios.CancelToken.source();
     const requestOptions: AxiosRequestConfig = {
@@ -60,15 +59,20 @@ export abstract class HttpService extends BaseHttpService {
       requestOptions.data = action.body;
     }
 
-    this._next({
+    this.next({
       ...action,
       type: prepare,
       effect: action.onPrepare,
     });
     const promise = this.httpHandle.request(requestOptions)
       .then((response) => {
-        // @ts-ignore
-        const okResponse: InternalActionResponse = {
+        if (this.isSuccess && !this.isSuccess(response)) {
+          return Promise.reject({
+            response,
+          });
+        }
+
+        const okResponse: InternalActionHandle = {
           ...action,
           type: success,
           response: response.data,
@@ -76,7 +80,7 @@ export abstract class HttpService extends BaseHttpService {
         };
 
         successInvoked = true;
-        this._next(okResponse);
+        this.next(okResponse);
 
         if (action.successText) {
           this.onShowSuccess(action.successText, okResponse);
@@ -96,40 +100,39 @@ export abstract class HttpService extends BaseHttpService {
 
         if (isCancel) {
           errorMessage = error.message || 'Abort';
-        } else if (error.request && error.response) {
+        } else if (error.response) {
           const transform: HttpTransform = {
             httpStatus: error.response.status,
           };
 
-          this.onRespondError(error as HttpError, transform);
-          errorMessage = action.failText || transform.errorMessage || 'Fail to request api';
+          this.onRespondError(error.response as HttpResponse, transform);
+          errorMessage = action.failText || transform.message || 'Fail to request api';
           httpStatus = transform.httpStatus;
           businessCode = transform.businessCode;
         } else {
           errorMessage = error.message;
 
           if (/^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
-            errorMessage = this.timeoutMessage(errorMessage);
+            errorMessage = this.timeoutMessage ? this.timeoutMessage(errorMessage) : errorMessage;
           } else if (/Network\sError/i.test(errorMessage)) {
-            errorMessage = this.networkErrorMessage(errorMessage);
+            errorMessage = this.networkErrorMessage ? this.networkErrorMessage(errorMessage) : errorMessage;
           }
         }
 
-        // @ts-ignore
-        const errorResponse: InternalActionResponse = {
+        const errorResponse: InternalActionHandle = {
           ...action,
           response: error.response || {},
           type: fail,
-          errorMessage,
+          message: errorMessage,
           httpStatus,
           businessCode,
           effect: action.onFail,
         };
 
-        this._next(errorResponse);
+        this.next(errorResponse);
 
         if (!isCancel) {
-          this._triggerShowError(errorResponse, action.hideError);
+          this.triggerShowError(errorResponse, action.hideError);
         }
 
         return Promise.reject(errorResponse);
