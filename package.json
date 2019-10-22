@@ -39,6 +39,8 @@
     "jest-enzyme": "^7.1.1",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "redux-persist": "^6.0.0",
+    "redux-persist-node-storage": "^2.0.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.6.4"
   }

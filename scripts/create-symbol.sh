@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 mkdir -p src/libs
 dir=${1:-web}
