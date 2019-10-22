@@ -1,13 +1,21 @@
-import { combineReducers, createStore, DeepPartial, Store, StoreEnhancer } from 'redux';
+import { Action, combineReducers, createStore, DeepPartial, Reducer, Store, StoreEnhancer } from 'redux';
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
+
+interface ReduxStoreConfig<S = any, A extends Action = Action> {
+  reducers?: Reducers;
+  enhancer?: StoreEnhancer;
+  preloadedState?: DeepPartial<S>;
+  onCombineReducers?: (reducer: Reducer<S, A>) => Reducer<S, A>;
+}
 
 const hasEffectsReducers: string[] = [];
 const autoReducers: Reducers = {};
 let usersReducers: Reducers = {};
 let store: Store;
 let listeners: Array<(store: Store) => void> = [];
+let onCombineReducers: ReduxStoreConfig['onCombineReducers'];
 
 const combine = () => {
   if (isDebug()) {
@@ -19,10 +27,16 @@ const combine = () => {
     });
   }
 
-  return combineReducers({
+  const combined = combineReducers({
     ...autoReducers,
     ...usersReducers,
   });
+
+  if (onCombineReducers) {
+    return onCombineReducers(combined);
+  }
+
+  return combined;
 };
 
 export const watchEffectsReducer = (reducerName: string, className: string) => {
@@ -36,9 +50,11 @@ export const watchEffectsReducer = (reducerName: string, className: string) => {
 Example:
 
 const store = createReduxStore({ 
-  ...aModel.register(),
-  ...bModel.register(),
-  ...cModel.register(),
+  reducers: {
+    ...aModel.register(),
+    ...bModel.register(),
+    ...cModel.register(),
+  }
 });
 
 
@@ -56,16 +72,14 @@ export const appendReducers = (reducers: Reducers) => {
   }
 };
 
-export function createReduxStore(reducer: Reducers, enhancer?: StoreEnhancer): Store;
-export function createReduxStore<S>(reducer: Reducers, preloadedState?: DeepPartial<S>, enhancer?: StoreEnhancer): Store;
-
-export function createReduxStore(reducer: Reducers, ...args: any[]) {
-  usersReducers = reducer;
+export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S> {
+  usersReducers = config.reducers || {};
+  onCombineReducers = config.onCombineReducers;
 
   if (store) {
     store.replaceReducer(combine());
   } else {
-    store = createStore(combine(), ...args);
+    store = createStore(combine(), config.preloadedState, config.enhancer);
     listeners.forEach((listener) => listener(store));
     listeners = [];
   }

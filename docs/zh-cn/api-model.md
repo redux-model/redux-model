@@ -84,8 +84,10 @@ const loading = Model.isLoading(xx.useLoading(), yy.useLoading());
 
 ```typescript
 createReduxStore({
-    // 手动
-    ...test.register(),
+    reducers: {
+        // 手动
+        ...test.register(),
+    }
 });
 ```
 

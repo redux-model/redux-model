@@ -9,7 +9,9 @@ let model: EffectModel;
 beforeEach(() => {
   model = new EffectModel();
   createReduxStore({
-    ...model.register(),
+    reducers: {
+      ...model.register(),
+    },
   });
 });
 

@@ -92,12 +92,16 @@ test('Even if it can be register automatically, but we can register model again 
   spy = jest.spyOn(console, 'warn').mockImplementation();
 
   createReduxStore({
-    ...model.register(),
+    reducers: {
+      ...model.register(),
+    },
   });
   expect(model.data.id).toBe(44);
 
   createReduxStore({
-    ...model.register(),
+    reducers: {
+      ...model.register(),
+    },
   });
   expect(model.data.id).toBe(44);
   expect(spy).toHaveBeenCalledTimes(2);

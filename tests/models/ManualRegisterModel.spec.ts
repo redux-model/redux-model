@@ -31,7 +31,9 @@ test('Null point register is useless', () => {
 
 test('Reducer data can be found after register model to store', () => {
   createReduxStore({
-    ...model.register(),
+    reducers: {
+      ...model.register(),
+    },
   });
   expect(model.data.foo).toBe('foo');
 
@@ -39,7 +41,9 @@ test('Reducer data can be found after register model to store', () => {
   expect(model.data.foo).toBe('bar');
 
   createReduxStore({
-    ...model.register(),
+    reducers: {
+      ...model.register(),
+    },
   });
   expect(model.data.foo).toBe('bar');
 });
@@ -48,7 +52,9 @@ test('Not allowed to change reducer before register', () => {
   expect(() => model.testChangeReducer('')).toThrowError();
 
   createReduxStore({
-    ...model.register(),
+    reducers: {
+      ...model.register(),
+    },
   });
   expect(model.data.foo).toBe('foo');
 
