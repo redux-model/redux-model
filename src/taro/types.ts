@@ -22,10 +22,11 @@ export interface ActionRequest<Data = any, Response = any, Payload = any, Type =
 }
 
 export interface HttpServiceConfig extends BaseHttpServiceConfig {
-  onRespondError: (error: HttpResponse, transform: HttpTransform) => void;
+  onRespondError: (httpResponse: HttpResponse, transform: HttpTransform) => void;
   headers: (action: ActionRequest) => object;
   request: (params: request.Param<any>) => request.requestTask<any>;
   requestConfig?: AxiosRequestConfig;
   beforeSend?: (action: ActionRequest) => void;
   isSuccess?: (action: HttpResponse) => boolean;
+  transformSuccessData?: (data: any, headers: any) => any;
 }

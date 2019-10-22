@@ -24,18 +24,10 @@ import { isDebug } from '../../libs/dev';
 import { isProxyEnable } from '../utils/dev';
 
 export abstract class BaseHttpService {
-  protected readonly baseUrl: BaseHttpServiceConfig['baseUrl'];
-  protected readonly onShowSuccess: BaseHttpServiceConfig['onShowSuccess'];
-  protected readonly onShowError: BaseHttpServiceConfig['onShowError'];
-  protected readonly timeoutMessage: BaseHttpServiceConfig['timeoutMessage'];
-  protected readonly networkErrorMessage: BaseHttpServiceConfig['networkErrorMessage'];
+  protected readonly config: BaseHttpServiceConfig;
 
   constructor(config: BaseHttpServiceConfig) {
-    this.baseUrl = config.baseUrl;
-    this.timeoutMessage = config.timeoutMessage;
-    this.networkErrorMessage = config.networkErrorMessage;
-    this.onShowSuccess = config.onShowSuccess;
-    this.onShowError = config.onShowError;
+    this.config = config;
   }
 
   public action<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
@@ -106,7 +98,7 @@ export abstract class BaseHttpService {
     }
 
     if (showError) {
-      this.onShowError(errorResponse.message, errorResponse);
+      this.config.onShowError(errorResponse.message, errorResponse);
     }
   }
 }

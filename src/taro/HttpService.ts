@@ -11,25 +11,12 @@ import { METHOD } from '../core/utils/method';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
 
 export class HttpService extends BaseHttpService {
-  protected readonly onRespondError: HttpServiceConfig['onRespondError'];
-  protected readonly headers: HttpServiceConfig['headers'];
-  protected readonly beforeSend: HttpServiceConfig['beforeSend'];
-  protected readonly isSuccess: HttpServiceConfig['isSuccess'];
-  protected readonly request: HttpServiceConfig['request'];
-  protected readonly requestConfig: HttpServiceConfig['requestConfig'];
-
-  private readonly config: HttpServiceConfig;
+  protected readonly config: HttpServiceConfig;
 
   constructor(config: HttpServiceConfig) {
     super(config);
 
     this.config = config;
-    this.onRespondError = config.onRespondError;
-    this.headers = config.headers;
-    this.beforeSend = config.beforeSend;
-    this.isSuccess = config.isSuccess;
-    this.request = config.request;
-    this.requestConfig = config.requestConfig;
   }
 
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -52,23 +39,23 @@ export class HttpService extends BaseHttpService {
   }
 
   protected runAction(action: ActionRequest): FetchHandle {
-    this.beforeSend && this.beforeSend(action);
+    this.config.beforeSend && this.config.beforeSend(action);
 
     const { prepare, success, fail } = action.type;
     let url = action.uri;
 
     // Make sure url is not absolute link
     if (url.indexOf('://') === -1) {
-      url = this.baseUrl + url;
+      url = this.config.baseUrl + url;
     }
 
     const requestOptions: request.Param = {
       url,
       method: action.method as any,
-      ...this.requestConfig,
+      ...this.config.requestConfig,
       ...action.requestOptions,
       header: {
-        ...this.headers(action),
+        ...this.config.headers(action),
         ...action.requestOptions.header,
       },
     };
@@ -91,14 +78,18 @@ export class HttpService extends BaseHttpService {
       effect: action.onPrepare,
     });
 
-    const task = this.request(requestOptions);
+    const task = this.config.request(requestOptions);
     const canceler = task.abort;
     let successInvoked = false;
 
     const promise = task
       .then((response) => {
-        if (response.statusCode < 200 || response.statusCode >= 300 || (this.isSuccess && !this.isSuccess(response))) {
+        if (response.statusCode < 200 || response.statusCode >= 300 || (this.config.isSuccess && !this.config.isSuccess(response))) {
           return Promise.reject(response);
+        }
+
+        if (this.config.transformSuccessData) {
+          response.data = this.config.transformSuccessData(response.data, response.header);
         }
 
         // @ts-ignore
@@ -113,7 +104,7 @@ export class HttpService extends BaseHttpService {
         this.next(okResponse);
 
         if (action.successText) {
-          this.onShowSuccess(action.successText, okResponse);
+          this.config.onShowSuccess(action.successText, okResponse);
         }
 
         return Promise.resolve(okResponse);
@@ -132,7 +123,7 @@ export class HttpService extends BaseHttpService {
             httpStatus: error.statusCode,
           };
 
-          this.onRespondError(error, transform);
+          this.config.onRespondError(error, transform);
           errorMessage = action.failText || transform.message || 'Fail to fetch api';
           httpStatus = transform.httpStatus;
           businessCode = transform.businessCode;
@@ -140,9 +131,9 @@ export class HttpService extends BaseHttpService {
           errorMessage = 'Fail to request api';
 
           if (error.errMsg && /timeout/i.test(error.errMsg)) {
-            errorMessage = this.timeoutMessage ? this.timeoutMessage(error.errMsg): error.errMsg;
+            errorMessage = this.config.timeoutMessage ? this.config.timeoutMessage(error.errMsg): error.errMsg;
           } else if (error.errMsg && /fail/i.test(error.errMsg)) {
-            errorMessage = this.networkErrorMessage ? this.networkErrorMessage(error.errMsg) : error.errMsg;
+            errorMessage = this.config.networkErrorMessage ? this.config.networkErrorMessage(error.errMsg) : error.errMsg;
           }
         }
 

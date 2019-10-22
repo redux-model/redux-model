@@ -11,24 +11,16 @@ import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle
 
 export class HttpService extends BaseHttpService {
   protected readonly httpHandle: AxiosInstance;
-  protected readonly onRespondError: HttpServiceConfig['onRespondError'];
-  protected readonly headers: HttpServiceConfig['headers'];
-  protected readonly beforeSend: HttpServiceConfig['beforeSend'];
-  protected readonly isSuccess: HttpServiceConfig['isSuccess'];
 
-  private readonly config: HttpServiceConfig;
+  protected readonly config: HttpServiceConfig;
 
   constructor(config: HttpServiceConfig) {
     super(config);
 
     this.config = config;
-    this.onRespondError = config.onRespondError;
-    this.headers = config.headers;
-    this.beforeSend = config.beforeSend;
-    this.isSuccess = config.isSuccess;
 
     this.httpHandle = axios.create({
-      baseURL: this.baseUrl,
+      baseURL: config.baseUrl,
       timeout: 20000,
       withCredentials: false,
       responseType: 'json',
@@ -50,7 +42,7 @@ export class HttpService extends BaseHttpService {
   }
 
   protected runAction(action: ActionRequest): FetchHandle {
-    this.beforeSend && this.beforeSend(action);
+    this.config.beforeSend && this.config.beforeSend(action);
     const { prepare, success, fail } = action.type;
     const source = axios.CancelToken.source();
     const requestOptions: AxiosRequestConfig = {
@@ -60,7 +52,7 @@ export class HttpService extends BaseHttpService {
       method: action.method as AxiosRequestConfig['method'],
       ...action.requestOptions,
       headers: {
-        ...this.headers(action),
+        ...this.config.headers(action),
         ...action.requestOptions.headers,
       },
     };
@@ -76,10 +68,14 @@ export class HttpService extends BaseHttpService {
     });
     const promise = this.httpHandle.request(requestOptions)
       .then((response) => {
-        if (this.isSuccess && !this.isSuccess(response)) {
+        if (this.config.isSuccess && !this.config.isSuccess(response)) {
           return Promise.reject({
             response,
           });
+        }
+
+        if (this.config.transformSuccessData) {
+          response.data = this.config.transformSuccessData(response.data, response.headers);
         }
 
         const okResponse: InternalActionHandle = {
@@ -93,7 +89,7 @@ export class HttpService extends BaseHttpService {
         this.next(okResponse);
 
         if (action.successText) {
-          this.onShowSuccess(action.successText, okResponse);
+          this.config.onShowSuccess(action.successText, okResponse);
         }
 
         return Promise.resolve(okResponse);
@@ -115,7 +111,7 @@ export class HttpService extends BaseHttpService {
             httpStatus: error.response.status,
           };
 
-          this.onRespondError(error.response as HttpResponse, transform);
+          this.config.onRespondError(error.response as HttpResponse, transform);
           errorMessage = action.failText || transform.message || 'Fail to request api';
           httpStatus = transform.httpStatus;
           businessCode = transform.businessCode;
@@ -123,9 +119,9 @@ export class HttpService extends BaseHttpService {
           errorMessage = error.message;
 
           if (/^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
-            errorMessage = this.timeoutMessage ? this.timeoutMessage(errorMessage) : errorMessage;
+            errorMessage = this.config.timeoutMessage ? this.config.timeoutMessage(errorMessage) : errorMessage;
           } else if (/Network\sError/i.test(errorMessage)) {
-            errorMessage = this.networkErrorMessage ? this.networkErrorMessage(errorMessage) : errorMessage;
+            errorMessage = this.config.networkErrorMessage ? this.config.networkErrorMessage(errorMessage) : errorMessage;
           }
         }
 
