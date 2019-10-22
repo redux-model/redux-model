@@ -1,7 +1,7 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { InternalActionHandle, Effects, Reducers } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
-import { onStoreCreated } from '../utils/createReduxStore';
+import { getStore } from '../utils/createReduxStore';
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -10,18 +10,9 @@ export class BaseReducer<Data> {
 
   protected readonly instanceName: string;
 
-  protected currentReducerData?: Data;
-
   constructor(init: Data, instanceName: string) {
     this.initData = init;
     this.instanceName = instanceName;
-
-    // In dev mode, if user modify code in model file, New model instance will be created by HMR.
-    // We should restore reducer data into this instance.
-    // Otherwise, it's dangerous to use `xxxModel.data`
-    onStoreCreated((store) => {
-      this.currentReducerData = this.currentReducerData || store.getState()[this.getReducerName()];
-    });
   }
 
   public clear() {
@@ -46,7 +37,7 @@ export class BaseReducer<Data> {
   }
 
   public getCurrentReducerData(): Data {
-    return this.currentReducerData!;
+    return getStore().getState()[this.getReducerName()];
   }
 
   public createData(): Reducers {
@@ -67,8 +58,6 @@ export class BaseReducer<Data> {
             }
           }
         }
-
-        this.currentReducerData = state;
 
         return state;
       },

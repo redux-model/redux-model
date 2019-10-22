@@ -1,5 +1,5 @@
 import { InternalActionHandle, Meta, Metas, Reducers, Types } from '../utils/types';
-import { appendReducers } from '../utils/createReduxStore';
+import { appendReducers, getStore } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
 
 interface MetaDict {
@@ -14,12 +14,8 @@ export class MetaReducer {
   private static isAppend = false;
 
   private static metaPrepare: MetaDict = {};
-
   private static metaSuccess: MetaDict = {};
-
   private static metaFail: MetaDict = {};
-
-  private static currentState: object;
 
   public static getName() {
     return '__metas__';
@@ -32,7 +28,7 @@ export class MetaReducer {
   }
 
   public static getData<T = any>(name: string): T | undefined {
-    return MetaReducer.currentState[name];
+    return getStore().getState()[MetaReducer.getName()][name];
   }
 
   public static createData(): Reducers {
@@ -65,8 +61,6 @@ export class MetaReducer {
             }
           }
         }
-
-        MetaReducer.currentState = state;
 
         return state;
       },
