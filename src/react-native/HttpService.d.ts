@@ -14,5 +14,7 @@ export declare class HttpService extends BaseHttpService {
 
   patchAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never>;
 
+  clone(config: Partial<HttpServiceConfig>): HttpService;
+
   protected runAction(action: ActionRequest): FetchHandle;
 }

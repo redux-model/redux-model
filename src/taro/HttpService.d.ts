@@ -9,5 +9,7 @@ export declare class HttpService extends BaseHttpService {
 
   traceAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never>;
 
+  clone(config: Partial<HttpServiceConfig>): HttpService;
+
   protected runAction(action: ActionRequest): FetchHandle;
 }

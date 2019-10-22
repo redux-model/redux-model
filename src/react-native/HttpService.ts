@@ -16,9 +16,12 @@ export class HttpService extends BaseHttpService {
   protected readonly beforeSend: HttpServiceConfig['beforeSend'];
   protected readonly isSuccess: HttpServiceConfig['isSuccess'];
 
+  private readonly config: HttpServiceConfig;
+
   constructor(config: HttpServiceConfig) {
     super(config);
 
+    this.config = config;
     this.onRespondError = config.onRespondError;
     this.headers = config.headers;
     this.beforeSend = config.beforeSend;
@@ -37,6 +40,13 @@ export class HttpService extends BaseHttpService {
     return new OrphanHttpServiceHandle<Response>(config, this)
       .setMethod(METHOD.patch)
       .runAction();
+  }
+
+  public clone(config: Partial<HttpServiceConfig>): HttpService {
+    return new HttpService({
+      ...this.config,
+      ...config,
+    });
   }
 
   protected runAction(action: ActionRequest): FetchHandle {
