@@ -5,3 +5,4 @@
 * 完美支持typescript，拥有100%无死角的**业务**代码类型提示
 * 请求操作自带loading状态
 * 支持React Hooks
+* 模型自动绑定到Store，拒绝重复
