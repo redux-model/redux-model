@@ -1,4 +1,4 @@
-import { Effects } from '../../src/web';
+import { Effects } from '../../src/libs';
 import { basicModel } from './BasicModel';
 import { requestModel } from './RequestModel';
 import { BaseTestModel } from './BaseTestModel';

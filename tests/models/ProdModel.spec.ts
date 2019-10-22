@@ -1,8 +1,8 @@
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { ProdModel } from './ProdModel';
 
-jest.mock('../../src/web/dev');
-const dev = require('../../src/web/dev');
+jest.mock('../../src/libs/dev');
+const dev = require('../../src/libs/dev');
 let model: ProdModel;
 
 beforeAll(() => {
@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  jest.unmock('../../src/web/dev');
+  jest.unmock('../../src/libs/dev');
 });
 
 beforeEach(() => {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { basicModel } from '../models/BasicModel';
-import { Provider } from 'react-redux';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 import { $api } from '../models/ApiService';
 import BasicConnectComponent from './BasicConnectComponent';
@@ -12,6 +11,7 @@ for (const Component of [BasicConnectComponent, BasicHooksComponent]) {
 
   const getWrapper = () => {
     $api.mockResolveValue();
+    const { Provider } = require(process.env.TEST_PLATFORM === 'taro' ? '@tarojs/redux' : 'react-redux');
 
     return mount(
       <Provider store={createReduxStore({})}>

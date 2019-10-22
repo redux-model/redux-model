@@ -1,4 +1,4 @@
-import { Model } from '../../src/web';
+import { Model } from '../../src/libs';
 
 export abstract class BaseTestModel<Data = null> extends Model<Data> {
   clear() {

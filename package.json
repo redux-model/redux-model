@@ -1,6 +1,6 @@
 {
   "name": "redux-model",
-  "version": "6.2",
+  "version": "6.3",
   "keywords": [
     "redux-model",
     "redux",
@@ -11,7 +11,7 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "sh scripts/test.sh"
   },
   "dependencies": {
     "@tarojs/redux": "^1.3.20",

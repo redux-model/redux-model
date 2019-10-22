@@ -9,11 +9,8 @@ cache:
 install:
   - yarn install
 
-before_script:
-  - sh scripts/create-symbol.sh
-
 script:
-  - yarn jest
+  - yarn test
 
 after_script:
   - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls

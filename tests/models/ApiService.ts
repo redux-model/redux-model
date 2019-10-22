@@ -1,14 +1,30 @@
-import { HttpResponse, HttpService } from '../../src/web';
-import { HttpServiceConfig } from '../../src/web/types';
+import { request } from '@tarojs/taro';
+import { HttpResponse, HttpService } from '../../src/libs';
+import { HttpServiceConfig } from '../../src/libs/types';
 
 class ApiService extends HttpService {
   protected readonly mock: jest.Mock;
 
   constructor(config: HttpServiceConfig) {
     super(config);
-    this.mock = jest.fn(this.httpHandle.request);
-    // @ts-ignore
-    this.httpHandle.request = this.mock;
+
+    switch (process.env.TEST_PLATFORM) {
+      case 'taro':
+        // @ts-ignore
+        this.mock = jest.fn(config.request);
+        // @ts-ignore
+        config.request = this.mock;
+        break;
+      case 'rn':
+      case 'web':
+        // @ts-ignore
+        this.mock = jest.fn(this.httpHandle.request);
+        // @ts-ignore
+        this.httpHandle.request = this.mock;
+        break;
+      default:
+        throw new Error('Unknown TEST_PLATFORM');
+    }
   }
 
   public mockResolveValue(data?: any) {
@@ -40,4 +56,6 @@ export const $api = new ApiService({
   timeoutMessage: () => {
     return 'Timeout!';
   },
+  // @ts-ignore Taro
+  request: request,
 });
