@@ -22,3 +22,12 @@ export const $api = new HttpService({
     },
 });
 ```
+
+# 克隆
+你可以继续通过`new HttpService()`实例化更多的service，但有时候多个service之间可能有很多相似之处，也许只有`baseUrl`是不一样的。如果有需要，你可以使用克隆的形式，并传入配置覆盖与原来service不同之处即可
+```typescript
+export const $otherApi = $api.clone({
+    baseUrl: 'http://other.com',
+    ...
+});
+```
