@@ -1,3 +1,6 @@
+# 6.4.0
+[feat] The parameter of createReduxStore changed as object config
+
 # 6.3.0
 [feat] Add methods `clone`,`isSuccess`,`transformSuccessData` into HttpService
 
