@@ -77,6 +77,14 @@ export class RequestModel extends BaseTestModel<Data> {
       .withMeta(false);
   });
 
+  payloadRequest = $api.action((who: string) => {
+    return this
+      .get<Response>('/profile.json')
+      .payload({
+        who,
+      });
+  });
+
   async orphanGetRequest() {
     const profile = await $api.getAsync<Response>({
       uri: '/profile.json',

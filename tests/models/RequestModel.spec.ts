@@ -190,3 +190,26 @@ test('Request Action has correct method', async () => {
   const result4 = await model.withDeleteProfile();
   expect(result4).toHaveProperty('method', METHOD.delete);
 });
+
+test('Request Action has correct payload', async (done) => {
+  $api.mockResolveValue();
+  const result1 = await model.payloadRequest('jack');
+  expect(result1.payload).toStrictEqual({
+    who: 'jack',
+  });
+
+  $api.mockResolveValue();
+  const result2 = await model.payloadRequest('peter');
+  expect(result2.payload).toStrictEqual({
+    who: 'peter',
+  });
+
+  $api.mockRejectValue();
+  model.payloadRequest('boom')
+    .catch((e: ReducerAction) => {
+      expect(e.payload).toStrictEqual({
+        who: 'boom',
+      });
+      done();
+    });
+});
