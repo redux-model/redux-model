@@ -126,6 +126,10 @@ const mapStateToProps = () => {
 export default connect(mapStateToProps)(App);
 ```
 
+# Demos
+
+**For React Web:** [redux-model-web-demo](https://github.com/fwh1990/redux-model-web-demo)
+
 # Document
 
 Here is the [document](https://fwh1990.github.io/redux-model)
