@@ -11,55 +11,20 @@ Redux模型是对原生redux的一次面向对象封装，OOP方案可以实现�
 
 # 特性
 
-* 代码量极简，超高效率开发
-* 使用mvvm更改reducer，拒绝繁琐
-* 完美支持typescript，拥有100%无死角的**业务**代码类型提示
-* 请求操作自带loading状态
+* 代码量极简，超高开发效率
+* 使用mvvm更改reducer，一步到位
+* 基于typescript定制，拥有200%无死角的**业务**代码类型提示
+* 每个请求的action都自带loading状态记录
 * 支持React Hooks
-* 模型自动绑定到Store，拒绝重复
 
-# 支持平台
+# 下载
 | 平台 | NPM |
 | ---- | ---- |
-| React H5 | @redux-model/web |
+| React Web | @redux-model/web |
 | React Native | @redux-model/react-native |
 | Taro | @redux-model/taro |
 
-# ES6语法
-```javascript
-class TestModel extends Model {
-    increase = this.action((state) => {
-        state.counter += 1;
-    });
-
-    getUser = $api.action((id) => {
-        return this
-            .get('/api/user/' + id)
-            .onSuccess((state, action) => {
-                state.counter += 1;
-                state.users[id] = action.response;
-            });
-    });
-
-    deleteUser = $api.action((id) => {
-        return this
-            .delete('/api/user' + id)
-            .onSuccess((state) => {
-                state.counter -= 1;
-                state.users[id] = null;
-            });
-    });
-
-    initReducer() {
-        return {
-            counter: 0,
-            users: {},
-        };
-    }
-}
-```
-
-# TypeScript写法
+# 定义模型
 一次注入，各处100%无死角提示。
 ```typescript
 interface Response {
@@ -104,6 +69,62 @@ class TestModel extends Model<Data> {
         };
     }
 }
+
+export const testModel = new TestModel();
+```
+
+# React Hooks
+```typescript
+import React, { FC } from 'react';
+
+const App: FC = () => {
+    const counter = testModel.useData((data) => data.counter);
+    const loading = testModel.getUser.useLoading();
+
+    const increase = () => {
+        testModel.increase();
+        testModel.getUser(3);
+    };
+
+    return (
+        <button onClick={increase}>
+            {loading ? 'Waiting...' : `You clicked ${counter} times`}
+        </button>
+    );
+};
+
+export default App;
+```
+
+# Redux connect
+```typescript
+import React, { FC } from 'react';
+
+type Props = ReturnType<typeof mapStateToProps>;
+
+const App: FC<Props> = (props) => {
+    const { loading, counter } = props;
+
+    const increase = () => {
+        testModel.increase();
+        testModel.getUser(3);
+    };
+
+    return (
+        <button onClick={increase}>
+            {loading ? 'Waiting...' : `You clicked ${counter} times`}
+        </button>
+    );
+};
+
+const mapStateToProps = () => {
+    return {
+        counter: testModel.data.counter,
+        loading: testModel.getUser.loading,
+    };
+};
+
+export default connect(mapStateToProps)(App);
 ```
 
 # 文档

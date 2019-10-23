@@ -1,8 +1,8 @@
 # 特性
 
-* 代码量极简，超高效率开发
-* 使用mvvm更改reducer，拒绝繁琐
-* 完美支持typescript，拥有100%无死角的**业务**代码类型提示
-* 请求操作自带loading状态
+* 代码量极简，超高开发效率
+* 使用mvvm更改reducer，一步到位
+* 基于typescript定制，拥有200%无死角的**业务**代码类型提示
+* 每个请求的action都自带loading状态记录
 * 支持React Hooks
-* 模型自动绑定到Store，拒绝重复
+
