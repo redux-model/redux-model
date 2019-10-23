@@ -12,7 +12,7 @@ import { ActionRequest, FetchHandle } from '../../libs/types';
 import { isDebug } from '../../libs/dev';
 import { isProxyEnable } from '../utils/dev';
 
-export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Data, Response, Payload, M>, Response, Payload, M> extends BaseAction<Data> {
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Data, Response, Payload, M>, Response, Payload, M> extends BaseAction {
   protected prepareType: string;
 
   protected failType: string;

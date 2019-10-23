@@ -1,21 +1,29 @@
 import { BaseAction } from './BaseAction';
-import { ActionNormal, Effects, NormalActionParam, NormalSubscriber } from '../utils/types';
+import { ActionNormalHandle, NormalSubscriber } from '../utils/types';
 import { getStore } from '../utils/createReduxStore';
 
-export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> extends BaseAction<Data> {
-  protected readonly successCallback?: any;
+export class NormalAction<Data, A extends (...args: any[]) => ActionNormalHandle<Data, Payload>, Payload> extends BaseAction {
+  private effect: ReturnType<A>['effect'] | undefined = undefined;
 
-  constructor(config: NormalActionParam<Data, A, Payload>, instanceName: string) {
+  constructor(action: A, instanceName: string) {
     super(instanceName);
-    this.successCallback = config.onSuccess;
 
     // @ts-ignore
     return this.proxy((...args: any[]) => {
-      return getStore().dispatch({
-        ...config.action(...args),
-        type: this.successType,
-      });
-    }, ['onSuccess'], []);
+      const normal: ActionNormalHandle<Data, Payload> = action(...args);
+
+      normal.type = this.successType;
+
+      if (this.effect) {
+        normal.effect = this.effect;
+      }
+
+      return getStore().dispatch(normal);
+    }, ['onSuccess', 'changeEffect'], []);
+  }
+
+  public changeEffect(effect: ReturnType<A>['effect']) {
+    this.effect = effect;
   }
 
   public onSuccess<CustomData>(effect: NormalSubscriber<CustomData, Payload>['effect']): NormalSubscriber<CustomData, Payload> {
@@ -23,20 +31,5 @@ export class NormalAction<Data, A extends (...args: any[]) => ActionNormal<Paylo
       when: this.successType,
       effect,
     };
-  }
-
-  public collectEffects(): Effects<Data> {
-    const effects = [
-      ...super.collectEffects(),
-    ];
-
-    if (this.successCallback) {
-      effects.push({
-        when: this.successType,
-        effect: this.successCallback,
-      });
-    }
-
-    return effects;
   }
 }

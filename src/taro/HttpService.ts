@@ -3,7 +3,7 @@ import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpServiceConfig } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import {
-  InternalActionHandle,
+  ActionResponseHandle,
   OrphanRequestOptions,
   HttpTransform,
 } from '../core/utils/types';
@@ -93,7 +93,7 @@ export class HttpService extends BaseHttpService {
         }
 
         // @ts-ignore
-        const okResponse: InternalActionHandle = {
+        const okResponse: ActionResponseHandle = {
           ...action,
           type: success,
           response: response.data,
@@ -138,7 +138,7 @@ export class HttpService extends BaseHttpService {
         }
 
         // @ts-ignore
-        const errorResponse: InternalActionHandle = {
+        const errorResponse: ActionResponseHandle = {
           ...action,
           response: error.data || {},
           type: fail,

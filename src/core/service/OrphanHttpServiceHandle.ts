@@ -21,7 +21,7 @@ export class OrphanHttpServiceHandle<Response> {
 
   runAction(): FetchHandle<Response, never> {
     const config = this.config;
-    const action: Omit<ActionRequest, 'metaKey' | 'payload' | 'onPrepare' | 'onSuccess' | 'onFail' | 'instanceName'> = {
+    const action: Omit<ActionRequest, 'metaKey' | 'payload' | 'onPrepare' | 'onSuccess' | 'onFail' | 'reducerName'> = {
       body: config.body || {},
       query: config.query || {},
       successText: '',

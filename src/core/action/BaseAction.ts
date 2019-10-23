@@ -1,6 +1,4 @@
-import { Effects } from '../utils/types';
-
-export abstract class BaseAction<Data> {
+export abstract class BaseAction {
   protected readonly instanceName: string;
 
   protected successType: string;
@@ -17,10 +15,6 @@ export abstract class BaseAction<Data> {
     return this.successType;
   }
 
-  public collectEffects(): Effects<Data> {
-    return [];
-  }
-
   public setActionName(actionName: string | number) {
     this.typePrefix += `_${actionName}`;
     this.onTypePrefixChanged();
@@ -29,7 +23,7 @@ export abstract class BaseAction<Data> {
   // Only public method is required.
   protected proxy(fn: Function, publicMethods: string[], publicProperties: string[]) {
     const handles = {};
-    const methodNames = publicMethods.concat(['getSuccessType', 'collectEffects', 'setActionName']);
+    const methodNames = publicMethods.concat(['getSuccessType', 'setActionName']);
 
     for (const method of methodNames) {
       handles[method] = this[method].bind(this);

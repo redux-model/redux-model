@@ -1,5 +1,5 @@
 import {
-  InternalActionHandle,
+  ActionResponseHandle,
   EnhanceData,
   EnhanceMeta,
   EnhancePayload,
@@ -84,7 +84,7 @@ export abstract class BaseHttpService {
     }
   }
 
-  protected triggerShowError(errorResponse: InternalActionHandle, hideError: boolean | ((response: InternalActionHandle) => boolean)) {
+  protected triggerShowError(errorResponse: ActionResponseHandle, hideError: boolean | ((response: ActionResponseHandle) => boolean)) {
     if (!errorResponse.message) {
       return;
     }

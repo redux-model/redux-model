@@ -2,7 +2,7 @@ import { Store } from 'redux';
 import { NormalAction } from './action/NormalAction';
 import { BaseReducer } from './reducer/BaseReducer';
 import {
-  ActionNormal,
+  ActionNormalHandle,
   Effects,
   ExtractNormalAction,
   ExtractNormalPayload,
@@ -26,8 +26,6 @@ import { METHOD } from './utils/method';
 export abstract class BaseModel<Data = null> {
   private readonly instanceName: string;
 
-  private readonly actions: Array<BaseAction<Data>> = [];
-
   private reducer?: BaseReducer<Data>;
   private reducerHasEffects: boolean = false;
 
@@ -35,7 +33,7 @@ export abstract class BaseModel<Data = null> {
 
   // Property name will be displayed into action.type, we just make it readable by developer.
   // Therefore, we use snake case to define name.
-  private change_reducer?: NormalActionAlias<Data, () => ActionNormal, any>;
+  private change_reducer?: NormalActionAlias<Data, () => ActionNormalHandle<Data, any>, any>;
 
   constructor(alias: string = '') {
     this.instanceName = setInstanceName(this.constructor.name, alias);
@@ -58,13 +56,8 @@ export abstract class BaseModel<Data = null> {
         set: (model, property: string, value) => {
           model[property] = value;
           if (typeof value === 'function' && value.__isAction__ === true) {
-            const instance = value as BaseAction<Data>;
+            const instance = value as BaseAction;
             instance.setActionName(property);
-
-            if (this.reducer) {
-              // Method register() was invoked, we should append case immediately.
-              this.reducer.addCase(...instance.collectEffects());
-            }
           }
 
           return true;
@@ -98,10 +91,6 @@ export abstract class BaseModel<Data = null> {
       this.reducer.clear();
       this.reducer.addCase(...sideEffects);
       this.reducerHasEffects = sideEffects.length > 0;
-
-      for (const action of this.actions) {
-        this.reducer.addCase(...action.collectEffects());
-      }
 
       return this.reducer.createData();
     }
@@ -150,7 +139,7 @@ export abstract class BaseModel<Data = null> {
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void {
     if (this.reducer) {
       if (this.change_reducer) {
-        this.reducer.changeCase(this.change_reducer.getSuccessType(), fn);
+        this.change_reducer.changeEffect(fn);
       } else {
         this.change_reducer = this.action(fn);
       }
@@ -165,32 +154,29 @@ export abstract class BaseModel<Data = null> {
     changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = getInstanceName();
+
     if (!isDebug() || !isProxyEnable()) {
       instanceName += '_' + increaseActionCounter();
     }
 
-    const instance = new NormalAction<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>>({
+    type Payload = ExtractNormalPayload<A>;
+
+    return  new NormalAction<Data, ExtractNormalAction<A>, Payload>(
       // @ts-ignore
-      // FIXME: Incompatible with ExtractNormalAction<A>
-      action: (payload) => {
-        return {
+      (payload) => {
+        const normal: ActionNormalHandle<Data, Payload> = {
           type: '',
           payload: payload === undefined ? {} : payload,
+          reducerName: this.reducerName,
+          effect: (state, action) => {
+            return changeReducer(state, action.payload);
+          },
         };
+
+        return normal;
       },
-      onSuccess: (state, action) => {
-        return changeReducer(state, action.payload);
-      },
-    }, instanceName);
-
-    this.actions.push(instance);
-
-    // Method register() was invoked, we should append case immediately.
-    if (this.reducer && (!isDebug() || !isProxyEnable())) {
-      this.reducer.addCase(...instance.collectEffects());
-    }
-
-    return instance;
+      instanceName,
+    );
   }
 
   protected serviceAction<Response>(uri: string, method: METHOD): HttpServiceWithMeta<Data, Response, unknown> {

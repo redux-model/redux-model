@@ -50,6 +50,11 @@ export interface ActionNormal<Payload = any, Type = string> extends Action<Type>
   payload: Payload;
 }
 
+export interface ActionNormalHandle<Data = any, Payload = any> extends ActionNormal<Payload, string> {
+  reducerName: string;
+  effect: (state: State<Data>, action: ActionNormal<Payload, string>) => StateReturn<Data>;
+}
+
 export interface Types {
   prepare: string;
   success: string;
@@ -66,14 +71,14 @@ export interface BaseActionRequest<Data = any, Response = any, Payload = any, Ty
   hideError: boolean | ((response: ReducerAction<Response, Payload>) => boolean);
   requestOptions: object;
   metaKey: string | number | symbol | boolean;
-  instanceName: string;
+  reducerName: string;
   onSuccess: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
   onPrepare: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
   onFail: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
 }
 
-export interface InternalActionHandle<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string>, ReducerAction<Response, Payload> {
-  effect: null | ((state: State<Data>, action: InternalActionHandle<Data, Response, Payload>) => StateReturn<Data>);
+export interface ActionResponseHandle<Data = any, Response = any, Payload = any> extends ActionRequest<Data, Response, Payload, string>, ReducerAction<Response, Payload> {
+  effect: null | ((state: State<Data>, action: ActionResponseHandle<Data, Response, Payload>) => StateReturn<Data>);
 }
 
 export interface ReducerAction<Response = any, Payload = any> extends ActionNormal<Payload>, HttpTransform {
@@ -117,12 +122,7 @@ export interface RequestActionWithMetas<Data, A extends (...args: any[]) => Http
   useLoadings(value: M): boolean;
 }
 
-export interface NormalActionParam<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> {
-  action: A;
-  onSuccess?: (state: State<Data>, action: ActionNormal<Payload>) => StateReturn<Data>;
-}
-
-export interface NormalActionAlias<Data, A extends (...args: any[]) => ActionNormal<Payload>, Payload> extends NormalAction<Data, A, Payload> {
+export interface NormalActionAlias<Data, A extends (...args: any[]) => ActionNormalHandle<Data, Payload>, Payload> extends NormalAction<Data, A, Payload> {
   (...args: Parameters<A>): ReturnType<A>;
 }
 
@@ -137,7 +137,7 @@ type EnhancePayload<T> = T extends (...args: any[]) => HttpServiceHandle<any, an
 type EnhanceMeta<T> = T extends (...args: any[]) => HttpServiceWithMetas<any, any, any, infer P> ? P : never;
 
 export type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
-export type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormal<P[0]> : never;
+export type ExtractNormalAction<A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => ActionNormalHandle<any, P[0]> : never;
 
 export interface HttpTransform {
   httpStatus?: HTTP_STATUS_CODE;

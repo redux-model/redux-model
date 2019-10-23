@@ -1,4 +1,4 @@
-import { InternalActionHandle, Meta, Metas, Reducers, Types } from '../utils/types';
+import { ActionResponseHandle, Meta, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers, getStore } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
 
@@ -39,7 +39,7 @@ export class MetaReducer {
     MetaReducer.isAppend = true;
 
     return {
-      [MetaReducer.getName()]: (state: BigMetas, action: InternalActionHandle) => {
+      [MetaReducer.getName()]: (state: BigMetas, action: ActionResponseHandle) => {
         if (state === undefined) {
           state = {};
         }
@@ -67,7 +67,7 @@ export class MetaReducer {
     };
   }
 
-  protected static modifyReducer(state: BigMetas, name: string, action: InternalActionHandle, isLoading: boolean): BigMetas {
+  protected static modifyReducer(state: BigMetas, name: string, action: ActionResponseHandle, isLoading: boolean): BigMetas {
     let meta: Meta;
 
     switch (action.metaKey) {

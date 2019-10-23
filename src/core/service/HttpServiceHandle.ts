@@ -106,7 +106,7 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
       uri: config.uri,
       type: types,
       method: config.method,
-      instanceName: config.instanceName,
+      reducerName: config.instanceName,
       payload: config.payload === undefined ? {} : config.payload,
       body: config.body || {},
       query: config.query || {},

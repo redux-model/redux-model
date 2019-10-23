@@ -1,5 +1,5 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
-import { InternalActionHandle, Effects, Reducers } from '../utils/types';
+import { ActionResponseHandle, Effects, Reducers, ActionNormalHandle } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import { getStore } from '../utils/createReduxStore';
 
@@ -23,15 +23,6 @@ export class BaseReducer<Data> {
     this.cases.push(...config);
   }
 
-  public changeCase(when: Effects<Data>[number]['when'], effect: Effects<Data>[number]['effect']) {
-    for (const item of this.cases) {
-      if (item.when === when) {
-        item.effect = effect;
-        break;
-      }
-    }
-  }
-
   public getReducerName() {
     return this.instanceName;
   }
@@ -41,20 +32,24 @@ export class BaseReducer<Data> {
   }
 
   public createData(): Reducers {
+    const reducerName = this.getReducerName();
+
     return {
-      [this.getReducerName()]: (state, action: InternalActionHandle) => {
+      [reducerName]: (state, action: ActionResponseHandle | ActionNormalHandle) => {
         if (state === undefined) {
-          state = this.initData;
+          return this.initData;
         }
 
-        if (action.instanceName === this.instanceName) {
+        // Actions
+        if (action.reducerName === reducerName) {
           if (action.effect) {
-            state = this.changeState(action.effect, state, action);
+            return this.changeState(action.effect, state, action);
           }
-        } else {
+        } else if (this.cases.length) {
+          // Effects
           for (const { when, effect } of this.cases) {
             if (when === action.type) {
-              state = this.changeState(effect, state, action);
+              return this.changeState(effect, state, action);
             }
           }
         }
@@ -64,7 +59,7 @@ export class BaseReducer<Data> {
     };
   }
 
-  protected changeState(effect: Function, state: any, action: InternalActionHandle): any {
+  protected changeState(effect: Function, state: any, action: ActionResponseHandle | ActionNormalHandle): any {
     if (isDraftable(state)) {
       const draft = createDraft(state);
       const responseDraft = effect(draft, action);

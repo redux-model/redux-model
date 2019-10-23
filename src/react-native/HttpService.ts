@@ -3,7 +3,7 @@ import { ActionRequest, FetchHandle, HttpResponse, HttpServiceConfig } from './t
 import { BaseHttpService } from '../core/service/BaseHttpService';
 import { METHOD } from '../core/utils/method';
 import {
-  InternalActionHandle,
+  ActionResponseHandle,
   OrphanRequestOptions,
   HttpTransform,
 } from '../core/utils/types';
@@ -78,7 +78,7 @@ export class HttpService extends BaseHttpService {
           response.data = this.config.transformSuccessData(response.data, response.headers);
         }
 
-        const okResponse: InternalActionHandle = {
+        const okResponse: ActionResponseHandle = {
           ...action,
           type: success,
           response: response.data,
@@ -125,7 +125,7 @@ export class HttpService extends BaseHttpService {
           }
         }
 
-        const errorResponse: InternalActionHandle = {
+        const errorResponse: ActionResponseHandle = {
           ...action,
           response: error.response || {},
           type: fail,
