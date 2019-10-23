@@ -11,15 +11,13 @@ interface BigMetas {
 }
 
 export class MetaReducer {
+  public static reducerName: string = '__metas__';
+
   private static isAppend = false;
 
   private static metaPrepare: MetaDict = {};
   private static metaSuccess: MetaDict = {};
   private static metaFail: MetaDict = {};
-
-  public static getName() {
-    return '__metas__';
-  }
 
   public static addCase(name: string, types: Types) {
     MetaReducer.metaPrepare[types.prepare] = name;
@@ -28,7 +26,7 @@ export class MetaReducer {
   }
 
   public static getData<T = any>(name: string): T | undefined {
-    return getStore().getState()[MetaReducer.getName()][name];
+    return getStore().getState()[MetaReducer.reducerName][name];
   }
 
   public static createData(): Reducers {
@@ -39,7 +37,7 @@ export class MetaReducer {
     MetaReducer.isAppend = true;
 
     return {
-      [MetaReducer.getName()]: (state: BigMetas, action: ActionResponseHandle) => {
+      [MetaReducer.reducerName]: (state: BigMetas, action: ActionResponseHandle) => {
         if (state === undefined) {
           state = {};
         }
