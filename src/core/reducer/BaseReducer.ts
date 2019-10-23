@@ -8,11 +8,11 @@ export class BaseReducer<Data> {
 
   protected cases: Effects<Data> = [];
 
-  protected readonly instanceName: string;
+  protected readonly reducerName: string;
 
   constructor(init: Data, instanceName: string) {
     this.initData = init;
-    this.instanceName = instanceName;
+    this.reducerName = instanceName;
   }
 
   public clear() {
@@ -23,25 +23,19 @@ export class BaseReducer<Data> {
     this.cases.push(...config);
   }
 
-  public getReducerName() {
-    return this.instanceName;
-  }
-
-  public getCurrentReducerData(): Data {
-    return getStore().getState()[this.getReducerName()];
+  public getData(): Data {
+    return getStore().getState()[this.reducerName];
   }
 
   public createData(): Reducers {
-    const reducerName = this.getReducerName();
-
     return {
-      [reducerName]: (state, action: ActionResponseHandle | ActionNormalHandle) => {
+      [this.reducerName]: (state, action: ActionResponseHandle | ActionNormalHandle) => {
         if (state === undefined) {
           return this.initData;
         }
 
         // Actions
-        if (action.reducerName === reducerName) {
+        if (action.reducerName === this.reducerName) {
           if (action.effect) {
             return this.changeState(action.effect, state, action);
           }

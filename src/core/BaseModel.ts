@@ -29,8 +29,6 @@ export abstract class BaseModel<Data = null> {
   private reducer?: BaseReducer<Data>;
   private reducerHasEffects: boolean = false;
 
-  private reducerName: string = '';
-
   // Property name will be displayed into action.type, we just make it readable by developer.
   // Therefore, we use snake case to define name.
   private change_reducer?: NormalActionAlias<Data, () => ActionNormalHandle<Data, any>, any>;
@@ -46,7 +44,7 @@ export abstract class BaseModel<Data = null> {
     if (this.autoRegister()) {
       appendReducers(this.register());
       if (this.reducer && this.reducerHasEffects) {
-        watchEffectsReducer(this.reducer.getReducerName(), this.constructor.name);
+        watchEffectsReducer(this.instanceName, this.constructor.name);
       }
     }
 
@@ -81,7 +79,6 @@ export abstract class BaseModel<Data = null> {
 
       if (initData !== null) {
         this.reducer = new BaseReducer<Data>(initData, this.instanceName);
-        this.reducerName = this.reducer.getReducerName();
       }
     }
 
@@ -101,7 +98,7 @@ export abstract class BaseModel<Data = null> {
   public useData<T = Data>(filter?: (data: Data) => T): T {
     if (this.reducer) {
       return this.switchReduxSelector()((state) => {
-        const customData = state[this.reducerName];
+        const customData = state[this.instanceName];
 
         if (customData === undefined) {
           throw new ForgetRegisterError(this.constructor.name);
@@ -116,7 +113,7 @@ export abstract class BaseModel<Data = null> {
 
   public get data(): Data {
     if (this.reducer) {
-      const customData = this.reducer.getCurrentReducerData();
+      const customData = this.reducer.getData();
 
       if (customData === undefined) {
         throw new ForgetRegisterError(this.constructor.name);
@@ -167,7 +164,7 @@ export abstract class BaseModel<Data = null> {
         const normal: ActionNormalHandle<Data, Payload> = {
           type: '',
           payload: payload === undefined ? {} : payload,
-          reducerName: this.reducerName,
+          reducerName: this.instanceName,
           effect: (state, action) => {
             return changeReducer(state, action.payload);
           },
