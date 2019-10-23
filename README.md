@@ -4,9 +4,11 @@
   </a>
 </h1>
 
-Redux Model的存在是为了弥补原生Redux繁琐的开发流程，开发者生产力低下，代码量臃肿，以及因action和reducer文件分散造成代码追踪困难的问题。
+Redux Model is created to make up original redux which has complex development flow and cause low efficiency for the developer. also, the business code in your project will be larger than expected.
 
-Redux Model同时弥补了在typescript项目中，每个地方都需要类型注入，而且异步请求和middleware的关系难以使用类型定义的问题，让业务代码以最少的类型注入得到最大化的智能提示。
+With typescript, you are required to define type or inject interface for every action and reducer. In addition, it's difficult to build relation between request action and middleware by inject type definition.
+
+However, Redux Model has resolved these problems. Simplify development flow, reduce code and smart type checking.
 
 ![License](https://img.shields.io/github/license/fwh1990/redux-model?color=blue)
 ![Travis (.com)](https://img.shields.io/travis/com/fwh1990/redux-model)
@@ -16,23 +18,22 @@ Redux Model同时弥补了在typescript项目中，每个地方都需要类型�
 [![](https://img.shields.io/npm/dt/@redux-model/react-native.svg?label=@redux-model/react-native)](https://www.npmjs.com/package/@redux-model/react-native)
 [![](https://img.shields.io/npm/dt/@redux-model/taro.svg?label=@redux-model/taro)](https://www.npmjs.com/package/@redux-model/taro)
 
-# 特性
+# Features
 
-* 代码量极简，超高开发效率
-* 使用mvvm更改reducer，一步到位
-* 基于typescript定制，拥有200%无死角的**业务**代码类型提示
-* 每个请求的action都自带loading状态记录
-* 支持React Hooks
+* Less code and high efficiency
+* Modify reducer by mvvm
+* 100% type checking with typescript
+* Trace loading status for each request action
+* Support react hooks
 
-# 下载
-| 平台 | NPM |
+# Installation
+| Platform | Npm Package |
 | ---- | ---- |
 | React Web | @redux-model/web |
 | React Native | @redux-model/react-native |
 | Taro | @redux-model/taro |
 
-# 定义模型
-一次注入，各处100%无死角提示。
+# Define Model
 ```typescript
 interface Response {
   id: number;
@@ -60,15 +61,6 @@ class TestModel extends Model<Data> {
             });
     });
 
-    deleteUser = $api.action((id) => {
-        return this
-            .delete('/api/user' + id)
-            .onSuccess((state) => {
-                state.counter -= 1;
-                state.users[id] = null;
-            });
-    });
-
     protected initReducer(): Data {
         return {
             counter: 0,
@@ -80,7 +72,7 @@ class TestModel extends Model<Data> {
 export const testModel = new TestModel();
 ```
 
-# React Hooks
+# For React Hooks
 ```typescript
 import React, { FC } from 'react';
 
@@ -103,7 +95,7 @@ const App: FC = () => {
 export default App;
 ```
 
-# Redux connect
+# For Redux connect
 ```typescript
 import React, { FC } from 'react';
 
@@ -134,10 +126,10 @@ const mapStateToProps = () => {
 export default connect(mapStateToProps)(App);
 ```
 
-# 文档
+# Document
 
-点击查看[在线文档](https://fwh1990.github.io/redux-model)
+Here is the [document](https://fwh1990.github.io/redux-model)
 
 ---------------------
 
-欢迎您自由使用并随时创建issue和PR。
+Feel free to use it and welcome to send PR to me.
