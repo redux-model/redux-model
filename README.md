@@ -4,7 +4,7 @@
   </a>
 </h1>
 
-Redux Model is created to make up original redux, which has complex development flow and then cause low efficiency. Additionally, the business code in your project will be larger than expected.
+Redux Model is created to enhance original redux framework, which has complex development flow and then cause low efficiency. Additionally, the business code in your project will be larger than expected.
 
 With typescript, you are required to define type or inject interface for every action and reducer. In addition, it's difficult to build relation between request action and middleware through type definition.
 
