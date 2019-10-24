@@ -3,7 +3,7 @@ import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
 
-interface ReduxStoreConfig<S = any, A extends Action = Action> {
+export interface ReduxStoreConfig<S = any, A extends Action = Action> {
   reducers?: Reducers;
   enhancer?: StoreEnhancer;
   preloadedState?: DeepPartial<S>;

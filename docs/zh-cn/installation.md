@@ -15,6 +15,15 @@ npm install @redux-model/react-native
 npm install redux react-redux
 ```
 
+#### [Vue](https://github.com/vuejs/vue)
+
+```bash
+# 使用 npm 或者 yarn
+npm install @redux-model/vue
+npm install redux
+```
+
+
 #### [Taro](https://github.com/NervJS/taro)
 ```bash
 # 使用 npm 或者 yarn

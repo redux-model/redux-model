@@ -1,0 +1,30 @@
+{
+  "name": "@redux-model/vue",
+  "version": "6.4.0",
+  "keywords": [
+    "vue",
+    "redux-model",
+    "redux",
+    "model",
+    "typescript",
+    "web",
+    "h5",
+    "html5",
+    "browser"
+  ],
+  "main": "libs/index.js",
+  "types": "libs/index.d.ts",
+  "repository": "https://github.com/fwh1990/redux-model",
+  "author": "范文华 <531362022@qq.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "*",
+    "redux": "*"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "immer": "^4.0.1",
+    "vue-hooks": "^0.3.2",
+    "tslib": "^1.10.0"
+  }
+}

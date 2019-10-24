@@ -24,7 +24,7 @@ However, Redux Model has resolved these whole problems. Simplify development flo
 * Modify reducer by MVVM
 * Absolutely 100% static type checking with typescript
 * Trace loading status for each request action
-* Support react hooks
+* Support hooks
 
 # Define Model
 ```typescript
