@@ -33,7 +33,7 @@
 
   <script type="text/javascript">
     if (/^#?\/?$/.test(window.location.hash)) {
-      window.location.hash = '#/zh-cn/';
+        window.location.hash = /zh-cn/i.test(navigator.language) ? '#/zh-cn/' : '#/en/';
     }
   </script>
 </head>
@@ -52,5 +52,6 @@
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/prismjs/components/prism-typescript.min.js"></script>
   <script src="//unpkg.com/prismjs/components/prism-jsx.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
 </body>
 </html>

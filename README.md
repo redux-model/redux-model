@@ -26,13 +26,6 @@ However, Redux Model has resolved these whole problems. Simplify development flo
 * Trace loading status for each request action
 * Support react hooks
 
-# Installation
-| Platforms | Npm Package |
-| ---- | ---- |
-| React Web | @redux-model/web |
-| React Native | @redux-model/react-native |
-| Taro | @redux-model/taro |
-
 # Define Model
 ```typescript
 interface Response {
