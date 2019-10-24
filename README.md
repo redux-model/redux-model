@@ -119,6 +119,35 @@ const mapStateToProps = () => {
 export default connect(mapStateToProps)(App);
 ```
 
+# With Vue
+```html
+<template>
+  <button @click="increase">
+    {{loading ? 'Waiting...' : `You clicked ${counter} times`}}
+  </button>
+</template>
+
+<script>
+export default {
+  name: 'HelloWorld',
+  methods: {
+    increase() {
+      testModel.increase();
+      testModel.getUser(3);
+    },
+  },
+  computed: {
+    counter() {
+      return testModel.data.counter;
+    },
+    loading() {
+        return testModel.getUser.loading;
+    },
+  },
+};
+</script>
+```
+
 # Demos
 
 **React Web:** [redux-model-web-demo](https://github.com/fwh1990/redux-model-web-demo)
