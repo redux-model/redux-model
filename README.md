@@ -4,11 +4,11 @@
   </a>
 </h1>
 
-Redux Model is created to make up original redux which has complex development flow and cause low efficiency for the developer. also, the business code in your project will be larger than expected.
+Redux Model is created to make up original redux, which has complex development flow and then cause low efficiency. Additionally, the business code in your project will be larger than expected.
 
-With typescript, you are required to define type or inject interface for every action and reducer. In addition, it's difficult to build relation between request action and middleware by inject type definition.
+With typescript, you are required to define type or inject interface for every action and reducer. In addition, it's difficult to build relation between request action and middleware through type definition.
 
-However, Redux Model has resolved these problems. Simplify development flow, reduce code and smart type checking.
+However, Redux Model has resolved these whole problems. Simplify development flow, reduce lots of code, smart type checking, and so on.
 
 ![License](https://img.shields.io/github/license/fwh1990/redux-model?color=blue)
 ![Travis (.com)](https://img.shields.io/travis/com/fwh1990/redux-model)
@@ -20,14 +20,14 @@ However, Redux Model has resolved these problems. Simplify development flow, red
 
 # Features
 
-* Less code and high efficiency
-* Modify reducer by mvvm
-* 100% type checking with typescript
+* Less code and higher efficiency
+* Modify reducer by MVVM
+* Absolutely 100% static type checking with typescript
 * Trace loading status for each request action
 * Support react hooks
 
 # Installation
-| Platform | Npm Package |
+| Platforms | Npm Package |
 | ---- | ---- |
 | React Web | @redux-model/web |
 | React Native | @redux-model/react-native |
@@ -72,7 +72,7 @@ class TestModel extends Model<Data> {
 export const testModel = new TestModel();
 ```
 
-# For React Hooks
+# With React Hooks
 ```typescript
 import React, { FC } from 'react';
 
@@ -95,7 +95,7 @@ const App: FC = () => {
 export default App;
 ```
 
-# For Redux connect
+# With Redux connect
 ```typescript
 import React, { FC } from 'react';
 
@@ -128,9 +128,9 @@ export default connect(mapStateToProps)(App);
 
 # Demos
 
-**For React Web:** [redux-model-web-demo](https://github.com/fwh1990/redux-model-web-demo)
+**React Web:** [redux-model-web-demo](https://github.com/fwh1990/redux-model-web-demo)
 
-# Document
+# Documents
 
 Here is the [document](https://fwh1990.github.io/redux-model)
 
