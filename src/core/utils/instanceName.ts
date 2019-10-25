@@ -11,7 +11,7 @@ function isCrushed() {}
 
 const isCompressed = (className: string) => {
   if (typeof isCrushed.name === 'string') {
-    return isCrushed.name === 'isCrushed';
+    return isCrushed.name !== 'isCrushed';
   } else {
     return className.length === 1;
   }
