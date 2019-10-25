@@ -1,3 +1,6 @@
+# 6.4.2
+[fix] Redux state doesn't trigger observer in vue
+
 # 6.4.0
 [feat] The parameter of createReduxStore changed as object config
 
