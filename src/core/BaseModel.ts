@@ -1,6 +1,6 @@
 import { Store } from 'redux';
 import { NormalAction } from './action/NormalAction';
-import { BaseReducer } from '../libs/BaseReducer';
+import { BaseReducer } from './reducer/BaseReducer';
 import {
   ActionNormalHandle,
   Effects,
