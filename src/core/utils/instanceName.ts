@@ -1,33 +1,43 @@
 import { isDebug } from '../../libs/dev';
 
-let className: string = '';
+let instanceName: string = '';
 let actionCounter: number = 0;
 
 // In case the same classname is compressed even when it's dev environment
 // The program can be look as compressed if the length of classname is less than 2 characters.
 const CLASS_DICT = {};
 
-export const setInstanceName = (name: string, alias: string): string => {
-  className = name + (alias ? `.${alias}` : '');
+function isCrushed() {}
+
+const isCompressed = (className: string) => {
+  if (typeof isCrushed.name === 'string') {
+    return isCrushed.name === 'isCrushed';
+  } else {
+    return className.length === 1;
+  }
+};
+
+export const setInstanceName = (className: string, alias: string): string => {
+  instanceName = className + (alias ? `.${alias}` : '');
   actionCounter = 0;
 
-  const dictKey = `dict_${className}`;
+  const dictKey = `dict_${instanceName}`;
 
   if (CLASS_DICT[dictKey] === undefined) {
     CLASS_DICT[dictKey] = 0;
-  } else if (className.length <= 2 || !isDebug()) {
+  } else if (!isDebug() || isCompressed(className)) {
     CLASS_DICT[dictKey] += 1;
   }
 
   if (CLASS_DICT[dictKey] > 0) {
-    className += `-${CLASS_DICT[dictKey]}`;
+    instanceName += `-${CLASS_DICT[dictKey]}`;
   }
 
-  return className;
+  return instanceName;
 };
 
 export const getInstanceName = (): string => {
-  return className;
+  return instanceName;
 };
 
 export const increaseActionCounter = (): number => {
