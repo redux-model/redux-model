@@ -14,3 +14,4 @@ However, Redux Model has resolved these whole problems. Simplify development flo
 [![](https://img.shields.io/npm/dt/@redux-model/web.svg?label=@redux-model/web)](https://www.npmjs.com/package/@redux-model/web)
 [![](https://img.shields.io/npm/dt/@redux-model/react-native.svg?label=@redux-model/react-native)](https://www.npmjs.com/package/@redux-model/react-native)
 [![](https://img.shields.io/npm/dt/@redux-model/taro.svg?label=@redux-model/taro)](https://www.npmjs.com/package/@redux-model/taro)
+[![](https://img.shields.io/npm/dt/@redux-model/vue.svg?label=@redux-model/vue)](https://www.npmjs.com/package/@redux-model/vue)
