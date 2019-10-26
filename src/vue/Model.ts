@@ -6,7 +6,9 @@ import { getStore } from '../core/utils/createReduxStore';
 
 export abstract class Model<Data = null> extends BaseModel<Data> {
   protected switchReduxSelector<TState = any, TSelected = any>(): UseSelector<TState, TSelected> {
-    return useComputed.bind(getStore().getState());
+    return (selector: (state: TState) => TSelected): TSelected => {
+      return useComputed(() => selector(getStore().getState()));
+    };
   }
 
   protected patch<Response>(uri: string): HttpServiceWithMeta<Data, Response, unknown> {
