@@ -1,3 +1,6 @@
+# 6.5.0
+[feat] Add cache option to request action
+
 # 6.4.2
 [fix] Redux state doesn't trigger observer in vue
 
