@@ -1,5 +1,5 @@
 # 6.5.2
-[fix] Ignore additional options from service
+[fix] Ignore additional options from service for cache
 
 # 6.5.0
 [feat] Add cache option to request action
