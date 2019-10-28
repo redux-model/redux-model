@@ -14,6 +14,8 @@ export declare class HttpServiceHandle<Data, Response, Payload = unknown, M = fa
 
   hideError(is: boolean | ((response: ReducerAction<Response, Payload>) => boolean)): this;
 
+  cache(millSeconds: number, useCache?: boolean): this;
+
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>
     : M extends false

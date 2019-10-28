@@ -72,6 +72,8 @@ export interface BaseActionRequest<Data = any, Response = any, Payload = any, Ty
   requestOptions: object;
   metaKey: string | number | symbol | boolean;
   reducerName: string;
+  useCache: boolean;
+  cacheMillSeconds: number;
   onSuccess: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
   onPrepare: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
   onFail: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
@@ -86,7 +88,7 @@ export interface ReducerAction<Response = any, Payload = any> extends ActionNorm
 }
 
 export type RequestOptions<Data, Response, Payload> = Partial<Omit<ActionRequest<Data, Response, Payload>, 'type'>> & { uri: string; instanceName: string; method: METHOD };
-export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' | 'body' | 'requestOptions' >> & { uri: string };
+export type OrphanRequestOptions = Partial<Pick<ActionRequest, 'uri' | 'query' | 'body' | 'requestOptions' | 'useCache' | 'cacheMillSeconds' >> & { uri: string };
 
 export type RequestSubscriber<CustomData, Response, Payload> = {
   when: string;

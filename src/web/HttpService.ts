@@ -29,9 +29,9 @@ export class HttpService extends BaseHttpService {
   }
 
   public patchAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.patch)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.patch, this);
+
+    return this.withCache(service.collect());
   }
 
   public clone(config: Partial<HttpServiceConfig>): HttpService {
@@ -86,11 +86,9 @@ export class HttpService extends BaseHttpService {
         };
 
         successInvoked = true;
+        this.collectResponse(okResponse);
         this.next(okResponse);
-
-        if (action.successText) {
-          this.config.onShowSuccess(action.successText, okResponse);
-        }
+        this.triggerShowSuccess(okResponse, action.successText);
 
         return Promise.resolve(okResponse);
       })

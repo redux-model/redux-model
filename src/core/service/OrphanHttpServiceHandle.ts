@@ -1,27 +1,22 @@
-import { Omit, OrphanRequestOptions } from '../utils/types';
+import { OrphanRequestOptions } from '../utils/types';
 import { BaseHttpService } from './BaseHttpService';
 import { METHOD } from '../utils/method';
-import { ActionRequest, FetchHandle } from '../../libs/types';
+import { ActionRequest } from '../../libs/types';
 
-export class OrphanHttpServiceHandle<Response> {
+export class OrphanHttpServiceHandle {
   protected readonly fetchApi: BaseHttpService;
   protected readonly config: OrphanRequestOptions;
-  protected method: METHOD = METHOD.get;
+  protected readonly method: METHOD = METHOD.get;
 
-  constructor(config: OrphanRequestOptions, fetchApi: BaseHttpService) {
+  constructor(config: OrphanRequestOptions, method: METHOD, fetchApi: BaseHttpService) {
     this.config = config;
     this.fetchApi = fetchApi;
-  }
-
-  setMethod(method: METHOD): this {
     this.method = method;
-
-    return this;
   }
 
-  runAction(): FetchHandle<Response, never> {
+  collect(): ActionRequest {
     const config = this.config;
-    const action: Omit<ActionRequest, 'metaKey' | 'payload' | 'onPrepare' | 'onSuccess' | 'onFail' | 'reducerName'> = {
+    const action: ActionRequest = {
       body: config.body || {},
       query: config.query || {},
       successText: '',
@@ -35,9 +30,16 @@ export class OrphanHttpServiceHandle<Response> {
         fail: '',
       },
       method: this.method,
+      useCache: config.useCache || false,
+      cacheMillSeconds: config.cacheMillSeconds || 0,
+      metaKey: false,
+      payload: {},
+      onPrepare: null,
+      onSuccess: null,
+      onFail: null,
+      reducerName: '',
     };
 
-    // @ts-ignore
-    return this.fetchApi.runAction(action);
+    return action;
   }
 }

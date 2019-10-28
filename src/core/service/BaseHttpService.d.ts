@@ -11,8 +11,10 @@ import {
   RequestActionNoMeta,
   RequestActionWithMeta,
   RequestActionWithMetas,
+  ActionResponseHandle,
 } from '../utils/types';
-import { FetchHandle } from '../../libs/types';
+import { ActionRequest, FetchHandle } from '../../libs/types';
+import { AnyAction } from 'redux';
 
 export declare abstract class BaseHttpService {
   constructor(config: BaseHttpServiceConfig);
@@ -27,4 +29,12 @@ export declare abstract class BaseHttpService {
   deleteAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never>;
 
   protected abstract runAction(action: any): any;
+
+  protected getCacheKey(action: ActionRequest | ActionResponseHandle): string;
+  protected withCache<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload>;
+  protected collectResponse(action: ActionResponseHandle): void;
+
+  protected next(action: AnyAction): void;
+  protected triggerShowSuccess(okResponse: ActionResponseHandle, successText: string): void;
+  protected triggerShowError(errorResponse: ActionResponseHandle, hideError: boolean | ((response: ActionResponseHandle) => boolean)): void;
 }

@@ -57,6 +57,13 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
     return this;
   }
 
+  cache(millSeconds: number, useCache: boolean = true): this {
+    this.config.useCache = useCache;
+    this.config.cacheMillSeconds = millSeconds;
+
+    return this;
+  }
+
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>
     : M extends false
@@ -118,6 +125,8 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
       onPrepare: config.onPrepare || null,
       onSuccess: config.onSuccess || null,
       onFail: config.onFail || null,
+      useCache: config.useCache || false,
+      cacheMillSeconds: config.cacheMillSeconds || 0,
     };
 
     return action;

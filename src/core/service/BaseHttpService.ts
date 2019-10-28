@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep';
 import {
   ActionResponseHandle,
   EnhanceData,
@@ -15,7 +16,7 @@ import {
 } from '../utils/types';
 import { METHOD } from '../utils/method';
 import { OrphanHttpServiceHandle } from './OrphanHttpServiceHandle';
-import { FetchHandle } from '../../libs/types';
+import { ActionRequest, FetchHandle } from '../../libs/types';
 import { AnyAction } from 'redux';
 import { getStore } from '../utils/createReduxStore';
 import { RequestAction } from '../../libs/RequestAction';
@@ -25,6 +26,13 @@ import { isProxyEnable } from '../utils/dev';
 
 export abstract class BaseHttpService {
   protected readonly config: BaseHttpServiceConfig;
+
+  protected caches: Partial<{
+    [key: string]: {
+      timestamp: number;
+      response: any;
+    };
+  }> = {};
 
   constructor(config: BaseHttpServiceConfig) {
     this.config = config;
@@ -49,31 +57,90 @@ export abstract class BaseHttpService {
       instanceName += '_' + increaseActionCounter();
     }
 
-    return new RequestAction(fn, instanceName, this.runAction.bind(this));
+    return new RequestAction(fn, instanceName, this.withCache.bind(this));
   }
 
   public getAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.get)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.get, this);
+
+    return this.withCache(service.collect());
   }
 
   public postAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.post)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.post, this);
+
+    return this.withCache(service.collect());
   }
 
   public putAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.put)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.put, this);
+
+    return this.withCache(service.collect());
   }
 
   public deleteAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.delete)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.delete, this);
+
+    return this.withCache(service.collect());
+  }
+
+  protected getCacheKey(action: ActionRequest | ActionResponseHandle): string {
+    const actionType = typeof action.type === 'string' ? action.type : action.type.success;
+
+    return JSON.stringify([
+      // type includes both class name and method name
+      actionType,
+      action.uri,
+      action.method,
+      action.body,
+      action.query,
+      action.requestOptions,
+    ]);
+  }
+
+  protected withCache<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
+    const key = this.getCacheKey(action);
+
+    if (action.useCache && action.cacheMillSeconds > 0) {
+      const item = this.caches[key];
+
+      if (item && Date.now() - item.timestamp <= action.cacheMillSeconds) {
+        const promise = new Promise((resolve) => {
+          const fakeAction: ActionResponseHandle = {
+            ...action,
+            type: action.type.success,
+            response: cloneDeep(item.response),
+            effect: action.onSuccess,
+          };
+
+          this.next(fakeAction);
+          this.triggerShowSuccess(fakeAction, action.successText);
+          resolve(fakeAction);
+        });
+        const wrapPromise = promise as FetchHandle;
+
+        wrapPromise.cancel = () => {};
+
+        return wrapPromise;
+      }
+    }
+
+    // In case user toggle cache flag
+    // In case data is expired
+    Reflect.deleteProperty(caches, key);
+
+    return this.runAction(action);
+  }
+
+  protected collectResponse(action: ActionResponseHandle): void {
+    if (action.useCache && action.cacheMillSeconds > 0) {
+      const key = this.getCacheKey(action);
+
+      this.caches[key] = {
+        timestamp: Date.now(),
+        response: cloneDeep(action.response),
+      };
+    }
   }
 
   protected abstract runAction(action: any): any;
@@ -84,7 +151,13 @@ export abstract class BaseHttpService {
     }
   }
 
-  protected triggerShowError(errorResponse: ActionResponseHandle, hideError: boolean | ((response: ActionResponseHandle) => boolean)) {
+  protected triggerShowSuccess(okResponse: ActionResponseHandle, successText: string): void {
+    if (successText) {
+      this.config.onShowSuccess(successText, okResponse);
+    }
+  }
+
+  protected triggerShowError(errorResponse: ActionResponseHandle, hideError: boolean | ((response: ActionResponseHandle) => boolean)): void {
     if (!errorResponse.message) {
       return;
     }

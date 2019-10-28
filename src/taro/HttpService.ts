@@ -20,15 +20,15 @@ export class HttpService extends BaseHttpService {
   }
 
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.connect)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.connect, this);
+
+    return this.withCache(service.collect());
   }
 
   public traceAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
-    return new OrphanHttpServiceHandle<Response>(config, this)
-      .setMethod(METHOD.trace)
-      .runAction();
+    const service = new OrphanHttpServiceHandle(config, METHOD.trace, this);
+
+    return this.withCache(service.collect());
   }
 
   public clone(config: Partial<HttpServiceConfig>): HttpService {
@@ -101,11 +101,9 @@ export class HttpService extends BaseHttpService {
         };
 
         successInvoked = true;
+        this.collectResponse(okResponse);
         this.next(okResponse);
-
-        if (action.successText) {
-          this.config.onShowSuccess(action.successText, okResponse);
-        }
+        this.triggerShowSuccess(okResponse, action.successText);
 
         return Promise.resolve(okResponse);
       })

@@ -1,3 +1,3 @@
-export declare abstract class BaseAction<Data> {
+export declare abstract class BaseAction {
   getSuccessType(): string;
 }
