@@ -84,9 +84,9 @@ export abstract class BaseHttpService {
     return this.withCache(service.collect());
   }
 
-  protected getCacheKey(action: ActionRequest): string {
+  protected generateCacheKey(action: ActionRequest): string {
     return JSON.stringify([
-      // type includes both class name and method name
+      action.reducerName,
       action.type,
       action.uri,
       action.method,
@@ -97,9 +97,9 @@ export abstract class BaseHttpService {
   }
 
   protected withCache<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
-    action.cacheKey = this.getCacheKey(action);
-
-    if (action.useCache && action.cacheMillSeconds > 0) {
+    if (action.useCache) {
+      // The cacheKey only will be generated when useCache is set to true to improve performance
+      action.cacheKey = this.generateCacheKey(action);
       const item = this.caches[action.cacheKey];
 
       if (item && Date.now() <= item.timestamp) {
