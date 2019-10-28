@@ -30,7 +30,9 @@ export class OrphanHttpServiceHandle {
         fail: '',
       },
       method: this.method,
-      useCache: config.useCache || false,
+      useCache: typeof config.useCache === 'boolean'
+        ? config.useCache
+        : config.cacheMillSeconds !== undefined && config.cacheMillSeconds > 0,
       cacheMillSeconds: config.cacheMillSeconds || 0,
       cacheKey: '',
       metaKey: false,
