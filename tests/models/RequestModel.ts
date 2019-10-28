@@ -62,6 +62,18 @@ export class RequestModel extends BaseTestModel<Data> {
       })
   });
 
+  enableCacheProfile = $api.action(() => {
+    return this
+      .get<{ id: number }>('/profile/manage')
+      .cache(3000);
+  });
+
+  disableCacheProfile = $api.action(() => {
+    return this
+      .get('/profile/manage')
+      .cache(3000, false);
+  });
+
   getProfileById = $api.action((id: number) => {
     return this
       .get<Response>('/profile.json')

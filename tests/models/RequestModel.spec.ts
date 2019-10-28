@@ -213,3 +213,36 @@ test('Request Action has correct payload', async (done) => {
       done();
     });
 });
+
+test('Cache action can return remote data without real fetch', async () => {
+  $api.mockResolveValue({ id: 123 });
+  const result1 = await model.enableCacheProfile();
+  expect(result1.response.id).toBe(123);
+
+  // From cache
+  const result2 = await model.enableCacheProfile();
+  expect(result2.response.id).toBe(123);
+
+  // From cache
+  const result3 = await model.enableCacheProfile();
+  expect(result3.response.id).toBe(123);
+
+  // Cache is expired
+  await new Promise((resolve) => {
+    setTimeout(resolve, 3000);
+  });
+
+  $api.mockResolveValue({ id: 987 });
+  const result4 = await model.enableCacheProfile();
+  expect(result4.response.id).toBe(987);
+});
+
+test('Cache action always fetch remote data if the second parameter set to false', async () => {
+  $api.mockResolveValue({ id: 123 });
+  const result1 = await model.disableCacheProfile();
+  expect(result1.response.id).toBe(123);
+
+  $api.mockResolveValue({ id: 456 });
+  const result2 = await model.disableCacheProfile();
+  expect(result2.response.id).toBe(456);
+});
