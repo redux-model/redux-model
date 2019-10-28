@@ -127,7 +127,7 @@ export abstract class BaseHttpService {
 
     // In case user toggle cache flag
     // In case data is expired
-    Reflect.deleteProperty(caches, key);
+    Reflect.deleteProperty(this.caches, key);
 
     return this.runAction(action);
   }
