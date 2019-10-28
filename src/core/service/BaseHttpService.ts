@@ -104,7 +104,7 @@ export abstract class BaseHttpService {
     if (action.useCache && action.cacheMillSeconds > 0) {
       const item = this.caches[key];
 
-      if (item && Date.now() - item.timestamp <= action.cacheMillSeconds) {
+      if (item && Date.now() <= item.timestamp) {
         const promise = new Promise((resolve) => {
           const fakeAction: ActionResponseHandle = {
             ...action,
@@ -137,7 +137,7 @@ export abstract class BaseHttpService {
       const key = this.getCacheKey(action);
 
       this.caches[key] = {
-        timestamp: Date.now(),
+        timestamp: Date.now() + action.cacheMillSeconds,
         response: cloneDeep(action.response),
       };
     }
