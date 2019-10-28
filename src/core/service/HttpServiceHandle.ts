@@ -127,6 +127,7 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
       onFail: config.onFail || null,
       useCache: config.useCache || false,
       cacheMillSeconds: config.cacheMillSeconds || 0,
+      cacheKey: '',
     };
 
     return action;

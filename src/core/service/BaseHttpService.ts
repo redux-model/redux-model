@@ -84,12 +84,10 @@ export abstract class BaseHttpService {
     return this.withCache(service.collect());
   }
 
-  protected getCacheKey(action: ActionRequest | ActionResponseHandle): string {
-    const actionType = typeof action.type === 'string' ? action.type : action.type.success;
-
+  protected getCacheKey(action: ActionRequest): string {
     return JSON.stringify([
       // type includes both class name and method name
-      actionType,
+      action.type,
       action.uri,
       action.method,
       action.body,
@@ -99,10 +97,10 @@ export abstract class BaseHttpService {
   }
 
   protected withCache<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
-    const key = this.getCacheKey(action);
+    action.cacheKey = this.getCacheKey(action);
 
     if (action.useCache && action.cacheMillSeconds > 0) {
-      const item = this.caches[key];
+      const item = this.caches[action.cacheKey];
 
       if (item && Date.now() <= item.timestamp) {
         const promise = new Promise((resolve) => {
@@ -127,16 +125,14 @@ export abstract class BaseHttpService {
 
     // In case user toggle cache flag
     // In case data is expired
-    Reflect.deleteProperty(this.caches, key);
+    Reflect.deleteProperty(this.caches, action.cacheKey);
 
     return this.runAction(action);
   }
 
   protected collectResponse(action: ActionResponseHandle): void {
     if (action.useCache && action.cacheMillSeconds > 0) {
-      const key = this.getCacheKey(action);
-
-      this.caches[key] = {
+      this.caches[action.cacheKey] = {
         timestamp: Date.now() + action.cacheMillSeconds,
         response: cloneDeep(action.response),
       };

@@ -32,6 +32,7 @@ export class OrphanHttpServiceHandle {
       method: this.method,
       useCache: config.useCache || false,
       cacheMillSeconds: config.cacheMillSeconds || 0,
+      cacheKey: '',
       metaKey: false,
       payload: {},
       onPrepare: null,

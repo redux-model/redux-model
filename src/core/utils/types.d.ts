@@ -74,6 +74,7 @@ export interface BaseActionRequest<Data = any, Response = any, Payload = any, Ty
   reducerName: string;
   useCache: boolean;
   cacheMillSeconds: number;
+  cacheKey: string;
   onSuccess: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
   onPrepare: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
   onFail: null | ((state: State<Data>, action: ReducerAction<Response, Payload>) => StateReturn<Data>);
