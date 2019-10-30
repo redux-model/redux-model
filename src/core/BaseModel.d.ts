@@ -30,7 +30,7 @@ export declare abstract class BaseModel<Data = null> {
   // method `useData` is specific used in function component base on hooks.
   // Make sure React version >=16.8 and react-redux version >=7.1.0
   useData(): Data;
-  useData<T = Data>(filter?: (data: Data) => T): T;
+  useData<T = Data>(filter: (data: Data) => T): T;
 
   // Do anything as in constructor.
   protected onInit(): void;
