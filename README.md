@@ -156,7 +156,7 @@ export default {
 
 # Documents
 
-Here is the [document](https://fwh1990.github.io/redux-model)
+Here is the [document](https://redux-model.github.io/redux-model)
 
 ---------------------
 
