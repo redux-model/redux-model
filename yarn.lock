@@ -293,25 +293,25 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@tarojs/redux@^1.3.20":
-  version "1.3.20"
-  resolved "https://registry.npmjs.org/@tarojs/redux/-/redux-1.3.20.tgz#3c9ae1200a48f5b76a442cb44fb73ff44c3bb693"
-  integrity sha512-rGmyeUnjqV3Bydhl14mTN66ES+ljvxrP4aRHJmM71ObVV7c6K/utAuW8OVYXBep/tcGs7pZvVsiuFGdN5siK6g==
+"@tarojs/redux@^1.3.22":
+  version "1.3.22"
+  resolved "https://registry.npmjs.org/@tarojs/redux/-/redux-1.3.22.tgz#2d400dd2675074f40b87d3219d8c690931ec2b26"
+  integrity sha512-XKz5AZol9IWGiUsqoYSi/dTnojI3boFJ+gK3gJ0PZ9WjZ2C4WhJME4CZIf6zNkAsqx8YAX9MBhwHD+YrvpeRKw==
   dependencies:
-    "@tarojs/taro" "1.3.20"
-    "@tarojs/utils" "1.3.20"
+    "@tarojs/taro" "1.3.22"
+    "@tarojs/utils" "1.3.22"
 
-"@tarojs/taro@1.3.20":
-  version "1.3.20"
-  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-1.3.20.tgz#7db4e697b7c3b1ef18bdc9a5a9df0f057587dd33"
-  integrity sha512-cUwW8wG6iMAO7vz3EbbZHz5EYnyoGdLj5jrOyV5x2UNpdfFqiz5wnwJg+s4vCTbTAp4ykXfoHdtTetbTNO099A==
+"@tarojs/taro@1.3.22":
+  version "1.3.22"
+  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-1.3.22.tgz#b953b6405de44e1eddc71b14e27738f88c92b3be"
+  integrity sha512-tdRaG94M2E20MHuCQNObvaRkGdiaSr74K3dbTLQ+rRYHg3cPm7iAZ4+jyPFGONUw/DcNeVgVijwwkci7Zuz+SA==
   dependencies:
-    "@tarojs/utils" "1.3.20"
+    "@tarojs/utils" "1.3.22"
 
-"@tarojs/utils@1.3.20":
-  version "1.3.20"
-  resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-1.3.20.tgz#9c8d245818ef10653b78687e412641c855e6b7f0"
-  integrity sha512-3/NyIFszsc2ZlZtKfD5NR43luWTqUSYiGiGD3lM9q+8prc2jiKTZ699//0gZOP4G09hopAQMb8nghDvdo39HzA==
+"@tarojs/utils@1.3.22":
+  version "1.3.22"
+  resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-1.3.22.tgz#38d473fc538a7ad6d7b2eab93eba3552794037d9"
+  integrity sha512-Af4SqG5Y5elRwLQte6p82eFYUfF9s0HXEXlw8NRpQkEkNQEJchrMOa8YGoAwTR8+3SxaP8soWtuYbnVHCDDL3g==
 
 "@types/babel__core@^7.1.0":
   version "7.1.3"
@@ -399,10 +399,10 @@
   resolved "https://registry.npmjs.org/@types/jest-diff/-/jest-diff-20.0.1.tgz#35cc15b9c4f30a18ef21852e255fdb02f6d59b89"
   integrity sha512-yALhelO3i0hqZwhjtcr6dYyaLoCHbAMshwtj6cGxTvHZAKXHsYGdff6E8EPw3xLKY0ELUTQ69Q1rQiJENnccMA==
 
-"@types/jest@^24.0.19":
-  version "24.0.19"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-24.0.19.tgz#f7036058d2a5844fe922609187c0ad8be430aff5"
-  integrity sha512-YYiqfSjocv7lk5H/T+v5MjATYjaTMsUkbDnjGqSMoO88jWdtJXJV4ST/7DKZcoMHMBvB2SeSfyOzZfkxXHR5xg==
+"@types/jest@^24.0.21":
+  version "24.0.21"
+  resolved "https://registry.npmjs.org/@types/jest/-/jest-24.0.21.tgz#2c0a25440e025bb265f4a17d8b79b11b231426bf"
+  integrity sha512-uyqFvx78Tuy0h5iLCPWRCvi5HhWwEqhIj30doitp191oYLqlCxUyAJHdWVm5+Nr271/vPnkyt6rWeEIjGowBTg==
   dependencies:
     "@types/jest-diff" "*"
 
@@ -418,10 +418,15 @@
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.144.tgz#12e57fc99064bce45e5ab3c8bc4783feb75eab8e"
   integrity sha512-ogI4g9W5qIQQUhXAclq6zhqgqNUr7UlFaqDHbch7WLSLeeM/7d3CRaw7GLajxvyFvhJqw4Rpcz5bhoaYtIx6Tg==
 
-"@types/node@*", "@types/node@^12.7.12":
+"@types/node@*":
   version "12.7.12"
   resolved "https://registry.npmjs.org/@types/node/-/node-12.7.12.tgz#7c6c571cc2f3f3ac4a59a5f2bd48f5bdbc8653cc"
   integrity sha512-KPYGmfD0/b1eXurQ59fXD1GBzhSQfz6/lKBxkaHX9dKTzjXbK68Zt7yGUxUsCS1jeTy/8aL+d9JEr+S54mpkWQ==
+
+"@types/node@^12.12.3":
+  version "12.12.3"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.12.3.tgz#ebfe83507ac506bc3486314a8aa395be66af8d23"
+  integrity sha512-opgSsy+cEF9N8MgaVPnWVtdJ3o4mV2aMHvDq7thkQUFt0EuOHJon4rQpJfhjmNHB+ikl0Cd6WhWIErOyQ+f7tw==
 
 "@types/prop-types@*":
   version "15.7.3"
@@ -433,10 +438,10 @@
   resolved "https://registry.npmjs.org/@types/qs/-/qs-6.5.3.tgz#1c3b71b091eaeaf5924538006b7f70603ce63d38"
   integrity sha512-Jugo5V/1bS0fRhy2z8+cUAHEyWOATaz4rbyLVvcFs7+dXp5HfwpEwzF1Q11bB10ApUqHf+yTauxI0UXQDwGrbA==
 
-"@types/react-redux@^7.1.4":
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-7.1.4.tgz#e0d02a073e730b8b58a6341bddca2ea692ff0bce"
-  integrity sha512-SUV/7d+4L7C1Db/D4pqASgN1V1U2HnDEhEol9lYpPSguS76xFboZzf5ha2hTz6v31cUewyC7WksMh1q8JxhebQ==
+"@types/react-redux@^7.1.5":
+  version "7.1.5"
+  resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-7.1.5.tgz#c7a528d538969250347aa53c52241051cf886bd3"
+  integrity sha512-ZoNGQMDxh5ENY7PzU7MVonxDzS1l/EWiy8nUhDqxFqUZn4ovboCyvk4Djf68x6COb7vhGTKjyjxHxtFdAA5sUA==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.0"
     "@types/react" "*"
@@ -1627,10 +1632,10 @@ enzyme-adapter-utils@^1.12.1:
     prop-types "^15.7.2"
     semver "^5.7.0"
 
-enzyme-matchers@^7.1.1:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/enzyme-matchers/-/enzyme-matchers-7.1.1.tgz#d1210ce0bd55b55d61af1ff72777bd8b1fa5176e"
-  integrity sha512-fw/FxwpEg6n1KYpEHnhA44iFduYHDUVVePXSMmf883q/JDMXb+sIU55maSw2oFWqt9zd7rcGqmSV8sHQO5pReg==
+enzyme-matchers@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.npmjs.org/enzyme-matchers/-/enzyme-matchers-7.1.2.tgz#d80530a61f22d28bb993dd7588abba38bd4de282"
+  integrity sha512-03WqAg2XDl7id9rARIO97HQ1JIw9F2heJ3R4meGu/13hx0ULTDEgl0E67MGl2Uq1jq1DyRnJfto1/VSzskdV5A==
   dependencies:
     circular-json-es6 "^2.0.1"
     deep-equal-ident "^1.1.1"
@@ -2354,10 +2359,10 @@ ignore-walk@^3.0.1:
   dependencies:
     minimatch "^3.0.4"
 
-immer@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/immer/-/immer-4.0.1.tgz#9108c1ece7fdd7efb91d21e5eb4bac26f7c3a8ba"
-  integrity sha512-qZFpWApnbubcJ03gvWa6zUQz2OTkDc6yINdFXI1lm2IoMYsiVVMrxvfeLDURFhUGJfsQysDUjHSXYnJfMMHAwQ==
+immer@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/immer/-/immer-5.0.0.tgz#07f462b7d95f7e86c214a861ecacd766d42b8c0a"
+  integrity sha512-G7gRqKbi9NE025XVyqyTV98dxUOtdKvu/P1QRaVZfA55aEcXgjbxPdm+TlWdcSMNPKijlaHNz61DGPyelouRlA==
 
 import-lazy@^2.1.0:
   version "2.1.0"
@@ -2857,10 +2862,10 @@ jest-each@^24.9.0:
     jest-util "^24.9.0"
     pretty-format "^24.9.0"
 
-jest-environment-enzyme@^7.1.1:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/jest-environment-enzyme/-/jest-environment-enzyme-7.1.1.tgz#d9dd7b6b72ed37d213ba77e05ab7f9062aa62402"
-  integrity sha512-k+QJkK0iRtjWbNfKdtj1QQIs12JbbvPmHW30cSbDoIgOFO7Bd1lLo6qOabM+PdhPCeLWQ1D1ZoTrHPauXdYpzA==
+jest-environment-enzyme@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.npmjs.org/jest-environment-enzyme/-/jest-environment-enzyme-7.1.2.tgz#4561f26a719e8e87ce8c9a6d3f540a92663ba8d5"
+  integrity sha512-3tfaYAzO7qZSRrv+srQnfK16Vu5XwH/pHi8FpoqSHjKKngbHzXf7aBCBuWh8y3w0OtknHRfDMFrC60Khj+g1hA==
   dependencies:
     jest-environment-jsdom "^24.0.0"
 
@@ -2887,14 +2892,14 @@ jest-environment-node@^24.9.0:
     jest-mock "^24.9.0"
     jest-util "^24.9.0"
 
-jest-enzyme@^7.1.1:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/jest-enzyme/-/jest-enzyme-7.1.1.tgz#7684720b795636503c7660e8c6f70bd644a485fd"
-  integrity sha512-ujMi/2OF16rsjsS2ozdZCukfRZGC/Sb3MoJjINXITTvZM6lTL14lDliJr1kYIlUZVrphw0fmZkTNVTP7DnJ+Xw==
+jest-enzyme@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.npmjs.org/jest-enzyme/-/jest-enzyme-7.1.2.tgz#91a10b2d3be1b56c0d65b34286e5bdc41ab4ba3d"
+  integrity sha512-j+jkph3t5hGBS12eOldpfsnERYRCHi4c/0KWPMnqRPoJJXvCpLIc5th1MHl0xDznQDXVU0AHUXg3rqMrf8vGpA==
   dependencies:
-    enzyme-matchers "^7.1.1"
+    enzyme-matchers "^7.1.2"
     enzyme-to-json "^3.3.0"
-    jest-environment-enzyme "^7.1.1"
+    jest-environment-enzyme "^7.1.2"
 
 jest-get-type@^24.9.0:
   version "24.9.0"
@@ -4406,15 +4411,15 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-dom@^16.10.2:
-  version "16.10.2"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.10.2.tgz#4840bce5409176bc3a1f2bd8cb10b92db452fda6"
-  integrity sha512-kWGDcH3ItJK4+6Pl9DZB16BXYAZyrYQItU4OMy0jAkv5aNqc+mAKb4TpFtAteI6TJZu+9ZlNhaeNQSVQDHJzkw==
+react-dom@^16.11.0:
+  version "16.11.0"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.11.0.tgz#7e7c4a5a85a569d565c2462f5d345da2dd849af5"
+  integrity sha512-nrRyIUE1e7j8PaXSPtyRKtz+2y9ubW/ghNgqKFHHAHaeP0fpF5uXR+sq8IMRHC+ZUxw7W9NyCDTBtwWxvkb0iA==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
-    scheduler "^0.16.2"
+    scheduler "^0.17.0"
 
 react-is@^16.10.2, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6, react-is@^16.9.0:
   version "16.10.2"
@@ -4443,10 +4448,10 @@ react-test-renderer@^16.0.0-0:
     react-is "^16.8.6"
     scheduler "^0.16.2"
 
-react@^16.10.2:
-  version "16.10.2"
-  resolved "https://registry.npmjs.org/react/-/react-16.10.2.tgz#a5ede5cdd5c536f745173c8da47bda64797a4cf0"
-  integrity sha512-MFVIq0DpIhrHFyqLU0S3+4dIcBhhOvBE8bJ/5kHPVOVaGdo0KuiQzpcjCPsf585WvhypqtrMILyoE2th6dT+Lw==
+react@^16.11.0:
+  version "16.11.0"
+  resolved "https://registry.npmjs.org/react/-/react-16.11.0.tgz#d294545fe62299ccee83363599bf904e4a07fdbb"
+  integrity sha512-M5Y8yITaLmU0ynd0r1Yvfq98Rmll6q8AxaEe88c8e7LxO8fZ2cNgmFt0aGAS9wzf1Ao32NKXtCl+/tVVtkxq6g==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
@@ -4791,6 +4796,14 @@ scheduler@^0.16.2:
   version "0.16.2"
   resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.16.2.tgz#f74cd9d33eff6fc554edfb79864868e4819132c1"
   integrity sha512-BqYVWqwz6s1wZMhjFvLfVR5WXP7ZY32M/wYPo04CcuPM7XZEbV2TBNW7Z0UkguPTl0dWMA59VbNXxK6q+pHItg==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+
+scheduler@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.17.0.tgz#7c9c673e4ec781fac853927916d1c426b6f3ddfe"
+  integrity sha512-7rro8Io3tnCPuY4la/NuI5F2yfESpnfZyT6TtkXnSWVkcu0BCDJ+8gk5ozUaFaxpIyNuWAPXrH0yFcSi28fnDA==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
