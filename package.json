@@ -7,7 +7,7 @@
     "typescript",
     "react-redux"
   ],
-  "repository": "https://github.com/fwh1990/redux-model",
+  "repository": "https://github.com/redux-model/redux-model",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
