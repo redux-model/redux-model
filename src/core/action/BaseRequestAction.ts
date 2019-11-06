@@ -6,12 +6,12 @@ import {
 } from '../utils/types';
 import { BaseAction } from './BaseAction';
 import { MetaReducer } from '../reducer/MetaReducer';
-import { HttpServiceHandle } from '../service/HttpServiceHandle';
+import { HttpServiceBuilder } from '../service/HttpServiceBuilder';
 import { DEFAULT_META, DEFAULT_METAS } from '../utils/meta';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { useProxy } from '../utils/dev';
 
-export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Data, Response, Payload, M>, Response, Payload, M> extends BaseAction {
+export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, M>, Response, Payload, M> extends BaseAction {
   protected prepareType: string;
 
   protected failType: string;
@@ -31,7 +31,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
     // @ts-ignore
     return this.proxy((...args: Parameters<A>) => {
-      const action = (request(...args) as unknown as HttpServiceHandle<Data, Response, Payload, M>)
+      const action = (request(...args) as unknown as HttpServiceBuilder<Data, Response, Payload, M>)
         .collect({
           prepare: this.prepareType,
           success: this.successType,

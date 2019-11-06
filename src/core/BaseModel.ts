@@ -18,7 +18,7 @@ import { useProxy } from './utils/dev';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
 import { BaseAction } from './action/BaseAction';
-import { HttpServiceHandle } from './service/HttpServiceHandle';
+import { HttpServiceBuilder } from './service/HttpServiceBuilder';
 import { getInstanceName, increaseActionCounter, setInstanceName } from './utils/instanceName';
 import { METHOD } from './utils/method';
 
@@ -34,11 +34,8 @@ export abstract class BaseModel<Data = null> {
 
   constructor(alias: string = '') {
     this.__instanceName = setInstanceName(this.constructor.name, alias);
-
     this.onInit();
-    onStoreCreated((store) => {
-      this.onReducerCreated(store);
-    });
+    onStoreCreated(this.onReducerCreated);
 
     if (this.autoRegister()) {
       appendReducers(this.register());
@@ -54,8 +51,7 @@ export abstract class BaseModel<Data = null> {
         set: (model, property: string, value) => {
           model[property] = value;
           if (typeof value === 'function' && value.__isAction__ === true) {
-            const instance = value as BaseAction;
-            instance.setActionName(property);
+            (value as BaseAction).setActionName(property);
           }
 
           return true;
@@ -178,7 +174,7 @@ export abstract class BaseModel<Data = null> {
 
   protected serviceAction<Response>(uri: string, method: METHOD): HttpServiceWithMeta<Data, Response, unknown> {
     // @ts-ignore
-    return new HttpServiceHandle({
+    return new HttpServiceBuilder({
       uri,
       method,
       instanceName: this.__instanceName,

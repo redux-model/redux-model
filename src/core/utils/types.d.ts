@@ -4,7 +4,7 @@ import { HTTP_STATUS_CODE } from './httpStatusCode';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { RequestAction } from '../../libs/RequestAction';
 import { NormalAction } from '../action/NormalAction';
-import { HttpServiceHandle } from '../service/HttpServiceHandle';
+import { HttpServiceBuilder } from '../service/HttpServiceBuilder';
 
 // Omit is a new feature since typescript 3.5+
 export type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
@@ -134,9 +134,9 @@ export type NormalSubscriber<CustomData, Payload> = {
   effect: (state: State<CustomData>, action: ActionNormal<Payload>) => StateReturn<CustomData>;
 };
 
-type EnhanceData<T> = T extends (...args: any[]) => HttpServiceHandle<infer D, any, any, any> ? D : never;
-type EnhanceResponse<T> = T extends (...args: any[]) => HttpServiceHandle<any, infer R, any, any> ? R : never;
-type EnhancePayload<T> = T extends (...args: any[]) => HttpServiceHandle<any, any, infer P, any> ? P : never;
+type EnhanceData<T> = T extends (...args: any[]) => HttpServiceBuilder<infer D, any, any, any> ? D : never;
+type EnhanceResponse<T> = T extends (...args: any[]) => HttpServiceBuilder<any, infer R, any, any> ? R : never;
+type EnhancePayload<T> = T extends (...args: any[]) => HttpServiceBuilder<any, any, infer P, any> ? P : never;
 type EnhanceMeta<T> = T extends (...args: any[]) => HttpServiceWithMetas<any, any, any, infer P> ? P : never;
 
 export type ExtractNormalPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
@@ -148,17 +148,17 @@ export interface HttpTransform {
   businessCode?: string;
 }
 
-export class HttpServiceNoMeta<Data, Response, Payload, M = false> extends HttpServiceHandle<Data, Response, Payload, M> {
+export class HttpServiceNoMeta<Data, Response, Payload, M = false> extends HttpServiceBuilder<Data, Response, Payload, M> {
   // @ts-ignore
   private readonly _: string = '';
 }
 
-export class HttpServiceWithMeta<Data, Response, Payload, M = true> extends HttpServiceHandle<Data, Response, Payload, M> {
+export class HttpServiceWithMeta<Data, Response, Payload, M = true> extends HttpServiceBuilder<Data, Response, Payload, M> {
   // @ts-ignore
   private readonly _: string = '';
 }
 
-export class HttpServiceWithMetas<Data, Response, Payload, M> extends HttpServiceHandle<Data, Response, Payload, M> {
+export class HttpServiceWithMetas<Data, Response, Payload, M> extends HttpServiceBuilder<Data, Response, Payload, M> {
   // @ts-ignore
   private readonly _: string = '';
 }

@@ -8,7 +8,7 @@ import {
 } from '../utils/types';
 import { ActionRequest } from '../../libs/types';
 
-export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
+export class HttpServiceBuilder<Data, Response, Payload = unknown, M = false> {
   protected readonly config: RequestOptions<Data, Response, Payload>;
 
   protected types: Types = {
@@ -83,7 +83,7 @@ export class HttpServiceHandle<Data, Response, Payload = unknown, M = false> {
   withMeta(value: number): HttpServiceWithMetas<Data, Response, Payload, number>;
   withMeta(value: symbol): HttpServiceWithMetas<Data, Response, Payload, symbol>;
 
-  withMeta(param: any): HttpServiceHandle<Data, Response, Payload, M> {
+  withMeta(param: any): HttpServiceBuilder<Data, Response, Payload, M> {
     this.config.metaKey = param;
 
     return this;
