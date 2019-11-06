@@ -23,17 +23,17 @@ import { getInstanceName, increaseActionCounter, setInstanceName } from './utils
 import { METHOD } from './utils/method';
 
 export abstract class BaseModel<Data = null> {
-  private readonly instanceName: string;
+  private readonly __instanceName: string;
 
-  private reducer?: BaseReducer<Data>;
-  private reducerHasEffects: boolean = false;
+  private __reducer?: BaseReducer<Data>;
+  private __reducerHasEffects: boolean = false;
 
   // Property name will be displayed into action.type, we just make it readable by developer.
   // Therefore, we use snake case to define name.
-  private change_reducer?: NormalActionAlias<Data, () => ActionNormalHandle<Data, any>, any>;
+  private __change_reducer?: NormalActionAlias<Data, () => ActionNormalHandle<Data, any>, any>;
 
   constructor(alias: string = '') {
-    this.instanceName = setInstanceName(this.constructor.name, alias);
+    this.__instanceName = setInstanceName(this.constructor.name, alias);
 
     this.onInit();
     onStoreCreated((store) => {
@@ -42,8 +42,8 @@ export abstract class BaseModel<Data = null> {
 
     if (this.autoRegister()) {
       appendReducers(this.register());
-      if (this.reducer && this.reducerHasEffects) {
-        watchEffectsReducer(this.instanceName, this.constructor.name);
+      if (this.__reducer && this.__reducerHasEffects) {
+        watchEffectsReducer(this.__instanceName, this.constructor.name);
       }
     }
 
@@ -74,31 +74,31 @@ export abstract class BaseModel<Data = null> {
   public register(): Reducers {
     // Only create class once.
     // For effects model, register() will be invoked twice.
-    if (!this.reducer) {
+    if (!this.__reducer) {
       const initData = this.initReducer();
 
       if (initData !== null) {
-        this.reducer = new BaseReducer<Data>(initData, this.instanceName);
+        this.__reducer = new BaseReducer<Data>(initData, this.__instanceName);
       }
     }
 
-    if (this.reducer) {
+    if (this.__reducer) {
       const sideEffects = this.effects();
 
-      this.reducer.clear();
-      this.reducer.addCase(...sideEffects);
-      this.reducerHasEffects = sideEffects.length > 0;
+      this.__reducer.clear();
+      this.__reducer.addCase(...sideEffects);
+      this.__reducerHasEffects = sideEffects.length > 0;
 
-      return this.reducer.createData();
+      return this.__reducer.createData();
     }
 
     return {};
   }
 
   public useData<T = Data>(filter?: (data: Data) => T): T {
-    if (this.reducer) {
+    if (this.__reducer) {
       return this.switchReduxSelector()((state) => {
-        const customData = state[this.instanceName];
+        const customData = state[this.__instanceName];
 
         if (customData === undefined) {
           throw new ForgetRegisterError(this.constructor.name);
@@ -112,8 +112,8 @@ export abstract class BaseModel<Data = null> {
   }
 
   public get data(): Data {
-    if (this.reducer) {
-      const customData = this.reducer.getData();
+    if (this.__reducer) {
+      const customData = this.__reducer.getData();
 
       if (customData === undefined) {
         throw new ForgetRegisterError(this.constructor.name);
@@ -134,16 +134,16 @@ export abstract class BaseModel<Data = null> {
   }
 
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void {
-    if (this.reducer) {
-      if (this.change_reducer) {
-        this.change_reducer.changeEffect(fn);
+    if (this.__reducer) {
+      if (this.__change_reducer) {
+        this.__change_reducer.changeEffect(fn);
       } else {
-        this.change_reducer = this.action(fn);
+        this.__change_reducer = this.action(fn);
       }
 
-      this.change_reducer();
+      this.__change_reducer();
     } else {
-      throw new NullReducerError(this.instanceName);
+      throw new NullReducerError(this.__instanceName);
     }
   }
 
@@ -164,7 +164,7 @@ export abstract class BaseModel<Data = null> {
         const normal: ActionNormalHandle<Data, Payload> = {
           type: '',
           payload: payload === undefined ? {} : payload,
-          reducerName: this.instanceName,
+          reducerName: this.__instanceName,
           effect: (state, action) => {
             return changeReducer(state, action.payload);
           },
@@ -181,7 +181,7 @@ export abstract class BaseModel<Data = null> {
     return new HttpServiceHandle({
       uri,
       method,
-      instanceName: this.instanceName,
+      instanceName: this.__instanceName,
     });
   }
 
