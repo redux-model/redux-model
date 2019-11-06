@@ -42,7 +42,7 @@ export class HttpService extends BaseHttpService {
   }
 
   protected runAction(action: ActionRequest): FetchHandle {
-    this.config.beforeSend && this.config.beforeSend(action);
+    this.config.beforeSend?.(action);
     const { prepare, success, fail } = action.type;
     const source = axios.CancelToken.source();
     const requestOptions: AxiosRequestConfig = {

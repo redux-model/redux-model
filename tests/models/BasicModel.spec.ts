@@ -2,14 +2,14 @@ import { BasicModel } from './BasicModel';
 import { createReduxStore } from '../../src/core/utils/createReduxStore';
 
 let model: BasicModel;
-let spy: jest.SpyInstance;
+let spy: jest.SpyInstance | undefined;
 
 beforeAll(() => {
   createReduxStore({});
 });
 
 afterAll(() => {
-  spy && spy.mockRestore();
+  spy?.mockRestore();
 });
 
 beforeEach(() => {

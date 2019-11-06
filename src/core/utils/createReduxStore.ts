@@ -13,7 +13,7 @@ export interface ReduxStoreConfig<S = any, A extends Action = Action> {
 const hasEffectsReducers: string[] = [];
 const autoReducers: Reducers = {};
 let usersReducers: Reducers = {};
-let store: Store;
+let store: Store | undefined;
 let listeners: Array<(store: Store) => void> = [];
 let onCombineReducers: ReduxStoreConfig['onCombineReducers'];
 
@@ -67,9 +67,7 @@ const store = createReduxStore({
 export const appendReducers = (reducers: Reducers) => {
   Object.assign(autoReducers, reducers);
 
-  if (store) {
-    store.replaceReducer(combine());
-  }
+  store?.replaceReducer(combine());
 };
 
 export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S> {
@@ -80,7 +78,7 @@ export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S>
     store.replaceReducer(combine());
   } else {
     store = createStore(combine(), config.preloadedState, config.enhancer);
-    listeners.forEach((listener) => listener(store));
+    listeners.forEach((listener) => listener(store!));
     listeners = [];
   }
 
