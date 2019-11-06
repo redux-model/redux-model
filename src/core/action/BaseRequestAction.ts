@@ -9,8 +9,7 @@ import { MetaReducer } from '../reducer/MetaReducer';
 import { HttpServiceHandle } from '../service/HttpServiceHandle';
 import { DEFAULT_META, DEFAULT_METAS } from '../utils/meta';
 import { ActionRequest, FetchHandle } from '../../libs/types';
-import { isDebug } from '../../libs/dev';
-import { isProxyEnable } from '../utils/dev';
+import { useProxy } from '../utils/dev';
 
 export abstract class BaseRequestAction<Data, A extends (...args: any[]) => HttpServiceHandle<Data, Response, Payload, M>, Response, Payload, M> extends BaseAction {
   protected prepareType: string;
@@ -26,7 +25,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
 
-    if (!isDebug() || !isProxyEnable()) {
+    if (!useProxy()) {
       this.registerMetas();
     }
 
@@ -153,7 +152,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
 
-    if (isDebug() && isProxyEnable()) {
+    if (useProxy()) {
       this.registerMetas();
     }
   }

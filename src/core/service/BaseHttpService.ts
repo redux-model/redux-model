@@ -21,8 +21,7 @@ import { AnyAction } from 'redux';
 import { getStore } from '../utils/createReduxStore';
 import { RequestAction } from '../../libs/RequestAction';
 import { getInstanceName, increaseActionCounter } from '../utils/instanceName';
-import { isDebug } from '../../libs/dev';
-import { isProxyEnable } from '../utils/dev';
+import { useProxy } from '../utils/dev';
 
 export abstract class BaseHttpService {
   protected readonly config: BaseHttpServiceConfig;
@@ -53,7 +52,7 @@ export abstract class BaseHttpService {
   public action(fn: any): any {
     let instanceName = getInstanceName();
 
-    if (!isDebug() || !isProxyEnable()) {
+    if (!useProxy()) {
       instanceName += '_' + increaseActionCounter();
     }
 

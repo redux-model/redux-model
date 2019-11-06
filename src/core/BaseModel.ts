@@ -14,8 +14,7 @@ import {
   UseSelector,
 } from './utils/types';
 import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
-import { isProxyEnable } from './utils/dev';
-import { isDebug } from '../libs/dev';
+import { useProxy } from './utils/dev';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
 import { BaseAction } from './action/BaseAction';
@@ -48,8 +47,9 @@ export abstract class BaseModel<Data = null> {
       }
     }
 
-    if (isDebug() && isProxyEnable()) {
-      // Proxy is es6 syntax, and it can't be transformed to es5.
+    if (useProxy()) {
+      // es6 syntax without polyfill, be careful to use Proxy
+      // We are not consider using Proxy in prod mode
       return new Proxy(this, {
         set: (model, property: string, value) => {
           model[property] = value;
@@ -152,7 +152,7 @@ export abstract class BaseModel<Data = null> {
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
     let instanceName = getInstanceName();
 
-    if (!isDebug() || !isProxyEnable()) {
+    if (!useProxy()) {
       instanceName += '_' + increaseActionCounter();
     }
 

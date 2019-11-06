@@ -1,3 +1,5 @@
-export const isProxyEnable = () => {
-  return typeof Proxy === 'function';
+import { isDebug } from '../../libs/dev';
+
+export const useProxy = (): boolean => {
+  return isDebug() && typeof Proxy === 'function';
 };
