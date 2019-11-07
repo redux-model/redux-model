@@ -21,10 +21,14 @@ export class MetaReducer {
 
   private static usedMetaNames: Set<string> = new Set();
   private static stash: Record<string, object> = {};
+  private static RESTORE = 'lazy meta restore - ' + Math.round(Math.random() * 100) + Math.round(Math.random() * 100);
 
   public static record(name: string) {
     if (MetaReducer.stash[name]) {
-      getStore().getState()[MetaReducer.reducerName][name] = MetaReducer.stash[name];
+      getStore().dispatch({
+        type: MetaReducer.RESTORE,
+        payload: MetaReducer.stash[name],
+      });
       delete MetaReducer.stash[name];
     }
 
@@ -51,7 +55,11 @@ export class MetaReducer {
     return {
       [MetaReducer.reducerName]: (state: BigMetas, action: ActionResponseHandle) => {
         if (state === undefined) {
-          state = {};
+          return {};
+        }
+
+        if (action.type === MetaReducer.RESTORE) {
+          return action.payload;
         }
 
         let name: string;
