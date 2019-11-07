@@ -19,6 +19,18 @@ export class MetaReducer {
   private static metaSuccess: MetaDict = {};
   private static metaFail: MetaDict = {};
 
+  private static usedMetaNames: Set<string> = new Set();
+  private static stash: Record<string, object> = {};
+
+  public static record(name: string) {
+    if (MetaReducer.stash[name]) {
+      getStore().getState()[MetaReducer.reducerName][name] = MetaReducer.stash[name];
+      delete MetaReducer.stash[name];
+    }
+
+    MetaReducer.usedMetaNames.add(name);
+  }
+
   public static addCase(name: string, types: Types) {
     MetaReducer.metaPrepare[types.prepare] = name;
     MetaReducer.metaSuccess[types.success] = name;
@@ -42,22 +54,21 @@ export class MetaReducer {
           state = {};
         }
 
-        let name = MetaReducer.metaPrepare[action.type];
+        let name: string;
 
+        name = MetaReducer.metaPrepare[action.type];
         if (name) {
-          state = MetaReducer.modifyReducer(state, name, action, true);
-        } else {
-          name = MetaReducer.metaSuccess[action.type];
+          return MetaReducer.modifyReducer(state, name, action, true);
+        }
 
-          if (name) {
-            state = MetaReducer.modifyReducer(state, name, action, false);
-          } else {
-            name = MetaReducer.metaFail[action.type];
+        name = MetaReducer.metaSuccess[action.type];
+        if (name) {
+          return MetaReducer.modifyReducer(state, name, action, false);
+        }
 
-            if (name) {
-              state = MetaReducer.modifyReducer(state, name, action, false);
-            }
-          }
+        name = MetaReducer.metaFail[action.type];
+        if (name) {
+          return MetaReducer.modifyReducer(state, name, action, false);
         }
 
         return state;
@@ -66,38 +77,43 @@ export class MetaReducer {
   }
 
   protected static modifyReducer(state: BigMetas, name: string, action: ActionResponseHandle, isLoading: boolean): BigMetas {
-    let meta: Meta;
-
     switch (action.metaKey) {
       case true:
-        meta = {
+        const meta: Meta = {
           actionType: action.type,
           loading: isLoading,
           message: action.message,
           httpStatus: action.httpStatus,
           businessCode: action.businessCode,
         };
+
+        if (!MetaReducer.usedMetaNames.has(name)) {
+          MetaReducer.stash[name] = meta;
+          return state;
+        }
 
         return { ...state, [name]: meta };
       case false:
         return state;
       default:
-        meta = {
-          actionType: action.type,
-          loading: isLoading,
-          message: action.message,
-          httpStatus: action.httpStatus,
-          businessCode: action.businessCode,
-        };
+        const metas = {
+          ...state[name],
+          [action.metaKey]: {
+            actionType: action.type,
+            loading: isLoading,
+            message: action.message,
+            httpStatus: action.httpStatus,
+            businessCode: action.businessCode,
+          },
+          ...METAS_PICK_METHOD,
+        } as Metas;
 
-        return {
-          ...state,
-          [name]: {
-            ...state[name],
-            [action.metaKey]: meta,
-            ...METAS_PICK_METHOD,
-          } as Metas,
-        };
+        if (!MetaReducer.usedMetaNames.has(name)) {
+          MetaReducer.stash[name] = metas;
+          return state;
+        }
+
+        return { ...state, [name]: metas };
     }
   }
 }

@@ -78,6 +78,8 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public useMeta<T extends keyof Meta>(key?: T): Meta | Meta[T] {
+    MetaReducer.record(this.typePrefix);
+
     return this.switchReduxSelector()((state: any) => {
       let customMeta: Meta | undefined = state[MetaReducer.reducerName][this.typePrefix];
 
@@ -90,6 +92,8 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public useMetas<T extends keyof Meta>(value?: M, metaKey?: T): Metas<M> | Meta[T] {
+    MetaReducer.record(this.typePrefix);
+
     if (value === undefined) {
       metaKey = undefined;
     }
@@ -120,10 +124,14 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   }
 
   public get meta(): Meta {
+    MetaReducer.record(this.typePrefix);
+
     return MetaReducer.getData<Meta>(this.typePrefix) || DEFAULT_META;
   }
 
   public get metas(): Metas<M> {
+    MetaReducer.record(this.typePrefix);
+
     return MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
   }
 
