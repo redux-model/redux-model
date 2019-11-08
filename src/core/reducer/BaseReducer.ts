@@ -1,7 +1,7 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { ActionResponseHandle, Effects, Reducers, ActionNormalHandle } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
-import { getStore } from '../utils/createReduxStore';
+import { getState } from '../utils/createReduxStore';
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -24,7 +24,7 @@ export class BaseReducer<Data> {
   }
 
   public getData(): Data {
-    return getStore().getState()[this.reducerName];
+    return getState()[this.reducerName];
   }
 
   public createData(): Reducers {

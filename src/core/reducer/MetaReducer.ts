@@ -1,5 +1,5 @@
 import { ActionResponseHandle, Meta, Metas, Reducers, Types } from '../utils/types';
-import { appendReducers, getStore } from '../utils/createReduxStore';
+import { appendReducers, getState, getStore } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
 
 interface MetaDict {
@@ -45,7 +45,7 @@ export class MetaReducer {
   }
 
   public static getData<T = any>(name: string): T | undefined {
-    return getStore().getState()[MetaReducer.reducerName][name];
+    return getState()[MetaReducer.reducerName][name];
   }
 
   public static createData(): Reducers {
