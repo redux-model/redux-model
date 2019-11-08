@@ -70,7 +70,7 @@ export class RequestModel extends BaseTestModel<Data> {
 
   disableCacheProfile = $api.action(() => {
     return this
-      .get('/profile/manage')
+      .get<{ id: number }>('/profile/manage')
       .cache(3000, false);
   });
 

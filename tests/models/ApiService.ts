@@ -1,4 +1,3 @@
-import { request } from '@tarojs/taro';
 import { HttpResponse, HttpService } from '../../src/libs';
 import { HttpServiceConfig } from '../../src/libs/types';
 
@@ -56,6 +55,4 @@ export const $api = new ApiService({
   timeoutMessage: () => {
     return 'Timeout!';
   },
-  // @ts-ignore Taro
-  request: request,
 });
