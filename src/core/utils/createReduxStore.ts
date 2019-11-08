@@ -29,13 +29,13 @@ const combine = () => {
     });
   }
 
-  const combined = combineReducers({
+  const combined = extendReducer(combineReducers({
     ...autoReducers,
     ...usersReducers,
-  });
+  }));
 
   if (onCombineReducers) {
-    return onCombineReducers(extendReducer(combined));
+    return onCombineReducers(combined);
   }
 
   return combined;
@@ -44,22 +44,10 @@ const combine = () => {
 const extendReducer = (reducer: Reducer) => {
   return (state, action) => {
     isDispatching = true;
+    stateWhenDispatching = state;
     const result = reducer(state, action);
     isDispatching = false;
     return result;
-  };
-};
-
-const extendDispatch = () => {
-  if (!store) {
-    return;
-  }
-
-  const originalDispatch = store.dispatch.bind(store);
-
-  store.dispatch = (action) => {
-    stateWhenDispatching = store?.getState();
-    return originalDispatch(action);
   };
 };
 
@@ -102,7 +90,6 @@ export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S>
     store.replaceReducer(combine());
   } else {
     store = createStore(combine(), config.preloadedState, config.enhancer);
-    extendDispatch();
     listeners.forEach((listener) => listener(store!));
     listeners = [];
   }
@@ -119,7 +106,7 @@ export const getStore = () => {
 };
 
 export const getState = () => {
-  return isDispatching && stateWhenDispatching || getStore().getState();
+  return isDispatching ? stateWhenDispatching : getStore().getState();
 };
 
 export const onStoreCreated = (fn: (store: Store) => void): void => {
