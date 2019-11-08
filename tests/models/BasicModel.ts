@@ -1,5 +1,6 @@
 import { $api } from './ApiService';
 import { BaseTestModel } from './BaseTestModel';
+import { noImmerModel } from './NoImmerModel';
 
 interface Response {
   id: number;
@@ -39,6 +40,11 @@ export class BasicModel extends BaseTestModel<Data> {
       state.id = id;
     });
   }
+
+  allowGetData = this.action(() => {
+    //this.data;
+    noImmerModel.data;
+  });
 
   protected initReducer(): Data {
     return {
