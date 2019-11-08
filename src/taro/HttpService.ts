@@ -1,4 +1,4 @@
-import { request } from '@tarojs/taro';
+import * as Taro from '@tarojs/taro';
 import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpServiceConfig } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
@@ -49,7 +49,7 @@ export class HttpService extends BaseHttpService {
       url = this.config.baseUrl + url;
     }
 
-    const requestOptions: request.Param = {
+    const requestOptions: Taro.request.Param = {
       url,
       method: action.method as any,
       ...this.config.requestConfig,
@@ -78,7 +78,7 @@ export class HttpService extends BaseHttpService {
       effect: action.onPrepare,
     });
 
-    const task = this.config.request(requestOptions);
+    const task = Taro.request(requestOptions);
     const canceler = task.abort;
     let successInvoked = false;
 
@@ -107,7 +107,7 @@ export class HttpService extends BaseHttpService {
 
         return Promise.resolve(okResponse);
       })
-      .catch((error: request.Promised & { errMsg: string }) => {
+      .catch((error: Taro.request.Promised & { errMsg: string }) => {
         if (successInvoked) {
           return Promise.reject(error);
         }
