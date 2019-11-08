@@ -47,7 +47,7 @@ class TestModel extends Model<Data> {
         state.counter += 1;
     });
 
-    getUser = $api.action((id) => {
+    getUser = $api.action((id: number) => {
         return this
             .get<Response>('/api/user/' + id)
             .onSuccess((state, action) => {
