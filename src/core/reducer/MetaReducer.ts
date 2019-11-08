@@ -25,7 +25,6 @@ export class MetaReducer {
 
   public static record(name: string) {
     if (MetaReducer.stash[name]) {
-      console.log('----------------------restore ' + name);
       getStore().dispatch({
         type: MetaReducer.RESTORE,
         payload: {
@@ -33,7 +32,6 @@ export class MetaReducer {
           data: MetaReducer.stash[name],
         },
       });
-      console.log(MetaReducer.getData(name));
       delete MetaReducer.stash[name];
     }
 
