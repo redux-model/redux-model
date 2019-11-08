@@ -35,7 +35,7 @@ export abstract class BaseModel<Data = null> {
   constructor(alias: string = '') {
     this.__instanceName = setInstanceName(this.constructor.name, alias);
     this.onInit();
-    onStoreCreated(this.onReducerCreated);
+    onStoreCreated(this.onReducerCreated.bind(this));
 
     if (this.autoRegister()) {
       appendReducers(this.register());
