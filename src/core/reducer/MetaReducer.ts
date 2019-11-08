@@ -19,7 +19,7 @@ export class MetaReducer {
   private static metaSuccess: MetaDict = {};
   private static metaFail: MetaDict = {};
 
-  private static usedMetaNames: Set<string> = new Set();
+  private static usedNames: Set<string> = new Set();
   private static stash: Record<string, object> = {};
   private static RESTORE = 'lazy meta restore - ' + Math.round(Math.random() * 100) + Math.round(Math.random() * 100);
 
@@ -37,7 +37,7 @@ export class MetaReducer {
       delete MetaReducer.stash[name];
     }
 
-    MetaReducer.usedMetaNames.add(name);
+    MetaReducer.usedNames.add(name);
   }
 
   public static addCase(name: string, types: Types) {
@@ -103,33 +103,37 @@ export class MetaReducer {
           businessCode: action.businessCode,
         };
 
-        if (!MetaReducer.usedMetaNames.has(name)) {
-          MetaReducer.stash[name] = meta;
-          return state;
+        if (MetaReducer.usedNames.has(name)) {
+          return { ...state, [name]: meta };
         }
 
-        return { ...state, [name]: meta };
+        MetaReducer.stash[name] = meta;
+        return state;
       case false:
         return state;
       default:
-        const metas = {
-          ...state[name],
-          [action.metaKey]: {
-            actionType: action.type,
-            loading: isLoading,
-            message: action.message,
-            httpStatus: action.httpStatus,
-            businessCode: action.businessCode,
-          },
-          ...METAS_PICK_METHOD,
-        } as Metas;
+        const singleMeta: Meta = {
+          actionType: action.type,
+          loading: isLoading,
+          message: action.message,
+          httpStatus: action.httpStatus,
+          businessCode: action.businessCode,
+        };
 
-        if (!MetaReducer.usedMetaNames.has(name)) {
-          MetaReducer.stash[name] = metas;
-          return state;
+        if (MetaReducer.usedNames.has(name)) {
+          return {
+            ...state,
+            [name]: {
+              ...state[name],
+              [action.metaKey]: singleMeta,
+              ...METAS_PICK_METHOD,
+            } as Metas,
+          };
         }
 
-        return { ...state, [name]: metas };
+        MetaReducer.stash[name] = MetaReducer.stash[name] || { ...METAS_PICK_METHOD };
+        MetaReducer.stash[name][action.metaKey] = singleMeta;
+        return state;
     }
   }
 }
