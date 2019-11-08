@@ -25,10 +25,15 @@ export class MetaReducer {
 
   public static record(name: string) {
     if (MetaReducer.stash[name]) {
+      console.log('----------------------restore ' + name);
       getStore().dispatch({
         type: MetaReducer.RESTORE,
-        payload: MetaReducer.stash[name],
+        payload: {
+          name,
+          data: MetaReducer.stash[name],
+        },
       });
+      console.log(MetaReducer.getData(name));
       delete MetaReducer.stash[name];
     }
 
@@ -59,7 +64,10 @@ export class MetaReducer {
         }
 
         if (action.type === MetaReducer.RESTORE) {
-          return action.payload;
+          return {
+            ...state,
+            [action.payload.name]: action.payload.data,
+          };
         }
 
         let name: string;
