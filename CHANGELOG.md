@@ -1,3 +1,6 @@
+# 6.5.6
+[feat] Lazy meta to improve performance
+
 # 6.5.2
 [fix] Ignore additional options from service for cache
 
