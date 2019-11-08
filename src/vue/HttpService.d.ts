@@ -5,10 +5,7 @@ import { OrphanRequestOptions } from '../core/utils/types';
 
 export declare class HttpService extends BaseHttpService {
   protected readonly httpHandle: AxiosInstance;
-  protected readonly onRespondError: HttpServiceConfig['onRespondError'];
-  protected readonly headers: HttpServiceConfig['headers'];
-  protected readonly beforeSend: HttpServiceConfig['beforeSend'];
-  protected readonly isSuccess: HttpServiceConfig['isSuccess'];
+  protected readonly config: HttpServiceConfig;
 
   constructor(config: HttpServiceConfig);
 

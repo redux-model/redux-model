@@ -11,7 +11,6 @@ import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle
 
 export class HttpService extends BaseHttpService {
   protected readonly httpHandle: AxiosInstance;
-
   protected readonly config: HttpServiceConfig;
 
   constructor(config: HttpServiceConfig) {

@@ -3,6 +3,8 @@ import { BaseHttpService } from '../core/service/BaseHttpService';
 import { OrphanRequestOptions } from '../core/utils/types';
 
 export declare class HttpService extends BaseHttpService {
+  protected readonly config: HttpServiceConfig;
+
   constructor(config: HttpServiceConfig);
 
   connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never>;

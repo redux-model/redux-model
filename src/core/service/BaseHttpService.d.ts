@@ -17,6 +17,8 @@ import { ActionRequest, FetchHandle } from '../../libs/types';
 import { AnyAction } from 'redux';
 
 export declare abstract class BaseHttpService {
+  protected readonly config: BaseHttpServiceConfig;
+
   constructor(config: BaseHttpServiceConfig);
 
   action<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(fn: A): RequestActionNoMeta<Data, A, Response, Payload>;
