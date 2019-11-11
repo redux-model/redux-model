@@ -1,11 +1,12 @@
 import {
-  Meta, MetasLoading,
+  Meta,
+  MetasLoading,
   Metas,
   RequestSubscriber,
   UseSelector,
 } from '../utils/types';
 import { BaseAction } from './BaseAction';
-import { MetaReducer } from '../reducer/MetaReducer';
+import MetaReducer from '../reducer/MetaReducer';
 import { HttpServiceBuilder } from '../service/HttpServiceBuilder';
 import { DEFAULT_META, DEFAULT_METAS } from '../utils/meta';
 import { ActionRequest, FetchHandle } from '../../libs/types';

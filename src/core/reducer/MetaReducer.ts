@@ -10,7 +10,7 @@ interface BigMetas {
   [key: string]: Metas | Meta;
 }
 
-export class MetaReducer {
+class MetaReducer {
   public static reducerName: string = '__metas__';
 
   private static isAppend = false;
@@ -138,3 +138,5 @@ export class MetaReducer {
 
 // Register metas automatically
 appendReducers(MetaReducer.createData());
+
+export default MetaReducer;
