@@ -1,6 +1,14 @@
 language: node_js
 
-node_js: "10.16.3"
+node_js:
+  - 8.11.4
+  - 10.16.3
+
+env:
+  - TEST_PLATFORM=vue
+  - TEST_PLATFORM=taro
+  - TEST_PLATFORM=react-native
+  - TEST_PLATFORM=web
 
 cache:
   directories:
@@ -10,10 +18,19 @@ install:
   - yarn install
 
 script:
-  - yarn test
+  - sh ./scripts/test.sh
 
-after_script:
-  - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+jobs:
+  exclude:
+    - node_js: 10.16.3
+      env: TEST_PLATFORM=web
+  include:
+    - node_js: 10.16.3
+      env: TEST_PLATFORM=web
+      script:
+        - sh ./scripts/test.sh
+      after_script:
+        - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
 
 branches:
   only:

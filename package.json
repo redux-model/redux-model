@@ -11,7 +11,7 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
-    "test": "sh scripts/test.sh"
+    "test": "sh scripts/test.sh vue && sh scripts/test.sh taro && sh scripts/test.sh react-native && sh scripts/test.sh web"
   },
   "dependencies": {
     "@tarojs/redux": "^1.3.22",

@@ -2,15 +2,10 @@
 
 set -e
 
-function test() {
-    rm -rf src/libs
-    cp -r src/$1 src/libs
-    export TEST_PLATFORM=$1 && yarn jest
-}
+export TEST_PLATFORM=${1:-$TEST_PLATFORM}
 
-test vue
-test react-native
-test taro
-test web
+rm -rf src/libs
+cp -r src/$TEST_PLATFORM src/libs
+yarn jest
 
 sh scripts/create-symbol.sh
