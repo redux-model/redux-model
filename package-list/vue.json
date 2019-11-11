@@ -26,7 +26,6 @@
     "deep-diff": "^1.0.2",
     "immer": "^5.0.0",
     "lodash.clonedeep": "^4.5.0",
-    "vue-hooks": "^0.3.2",
     "tslib": "^1.10.0"
   }
 }
