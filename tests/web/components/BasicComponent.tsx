@@ -1,5 +1,5 @@
 import React, { Fragment, FunctionComponent } from 'react';
-import { basicModel } from '../models/BasicModel';
+import { basicModel } from '../../models/BasicModel';
 
 interface Props {
   id: number;

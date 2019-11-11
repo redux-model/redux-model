@@ -2,9 +2,9 @@ import React from 'react';
 import { AsyncNodeStorage } from 'redux-persist-node-storage'
 import { persistStore, persistReducer } from 'redux-persist';
 import { render } from 'enzyme';
-import { basicModel } from '../models/BasicModel';
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
-import { $api } from '../models/ApiService';
+import { basicModel } from '../../models/BasicModel';
+import { createReduxStore } from '../../../src/core/utils/createReduxStore';
+import { $api } from '../../models/ApiService';
 import BasicConnectComponent from './BasicConnectComponent';
 import BasicHooksComponent from './BasicHooksComponent';
 import { PersistGate } from 'redux-persist/integration/react';

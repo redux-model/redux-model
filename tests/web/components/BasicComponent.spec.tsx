@@ -1,8 +1,8 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import { basicModel } from '../models/BasicModel';
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
-import { $api } from '../models/ApiService';
+import { basicModel } from '../../models/BasicModel';
+import { createReduxStore } from '../../../src/core/utils/createReduxStore';
+import { $api } from '../../models/ApiService';
 import BasicConnectComponent from './BasicConnectComponent';
 import BasicHooksComponent from './BasicHooksComponent';
 

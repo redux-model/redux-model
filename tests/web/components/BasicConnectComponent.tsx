@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { basicModel } from '../models/BasicModel';
+import { basicModel } from '../../models/BasicModel';
 import BasicComponent from './BasicComponent';
-import { requestModel } from '../models/RequestModel';
+import { requestModel } from '../../models/RequestModel';
 
 interface OwnProps {
   userId: number;

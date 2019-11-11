@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect } from 'react';
-import { basicModel } from '../models/BasicModel';
+import { basicModel } from '../../models/BasicModel';
 import BasicComponent from './BasicComponent';
-import { requestModel } from '../models/RequestModel';
+import { requestModel } from '../../models/RequestModel';
 
 interface OwnProps {
   userId: number;
