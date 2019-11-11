@@ -21,7 +21,7 @@ class MetaReducer {
 
   private static usedNames: Set<string> = new Set();
   private static stash: Record<string, object> = {};
-  private static RESTORE = 'lazy meta restore - ' + Math.round(Math.random() * 100) + Math.round(Math.random() * 100);
+  private static RESTORE = 'ReduxModel^LazyMeta';
 
   public static record(name: string) {
     if (MetaReducer.stash[name]) {
