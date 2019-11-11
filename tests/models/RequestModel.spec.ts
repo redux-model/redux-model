@@ -72,7 +72,7 @@ test('Request action has the correct metas', (done) => {
     expect(model.getProfileById.loadings.pick(data.id)).toBeFalsy();
 
     expect(profile.response).toBe(data);
-    expect(model.data.records[data.id]).toBe(data);
+    expect(model.data.records[data.id]).toStrictEqual(data);
 
     done();
   });
