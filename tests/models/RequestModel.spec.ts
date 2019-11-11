@@ -227,9 +227,9 @@ test('Cache action can return remote data without real fetch', async () => {
   const result3 = await model.enableCacheProfile();
   expect(result3.response.id).toBe(123);
 
-  // Cache is expired
+  // Cache is expired absolutely
   await new Promise((resolve) => {
-    setTimeout(resolve, 3000);
+    setTimeout(resolve, 3010);
   });
 
   $api.mockResolveValue({ id: 987 });
