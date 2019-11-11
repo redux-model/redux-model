@@ -152,7 +152,7 @@ export default {
 
 # Demos
 
-**React Web:** [redux-model-web-demo](https://github.com/redux-model/redux-model-web-demo)
+* [React Web](https://github.com/redux-model/redux-model-web-demo)
 
 # Documents
 
