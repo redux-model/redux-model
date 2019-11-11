@@ -5491,11 +5491,6 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vue-hooks@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.npmjs.org/vue-hooks/-/vue-hooks-0.3.2.tgz#60feb7401811758fdf0aa63dc8da1771dc8ded5c"
-  integrity sha512-yLNLPdEjtSNbGCICajRRJ6JcYNbQK3jvfr8PPpB4Tg0+9hBNaRk50+ZYNtlAy7xXBGLHbR8/h2Gjao5SZYZW4w==
-
 vue@*, vue@^2.6.10:
   version "2.6.10"
   resolved "https://registry.npmjs.org/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"

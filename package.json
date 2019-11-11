@@ -48,7 +48,6 @@
     "redux-persist-node-storage": "^2.0.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.7.2",
-    "vue": "^2.6.10",
-    "vue-hooks": "^0.3.2"
+    "vue": "^2.6.10"
   }
 }
