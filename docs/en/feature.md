@@ -4,4 +4,4 @@
 * Modify reducer by MVVM
 * Absolutely 100% static type checking with typescript
 * Trace loading status for each request action
-* Support hooks
+* Support react/vue hooks

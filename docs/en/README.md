@@ -1,11 +1,7 @@
 # Why Model
 
 
-Redux Model is created to enhance original redux framework, which has complex development flow and lots of template fragments, and then cause low efficiency.
-
-With typescript, you are required to define type or inject interface for every action and reducer. Additionally, it's difficult to build relation between request action and middleware through type definition.
-
-Fortunately, **Redux Model** has resolved the whole problems. Simplify development flow, reduce code size, smart type checking, and so on.
+Redux Model is created to enhance original redux framework, which has complex development flow and lots of template fragments.
 
 ![License](https://img.shields.io/github/license/redux-model/redux-model?color=blue)
 ![Travis (.com)](https://img.shields.io/travis/com/redux-model/redux-model)

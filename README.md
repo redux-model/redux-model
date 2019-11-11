@@ -4,11 +4,7 @@
   </a>
 </h1>
 
-Redux Model is created to enhance original redux framework, which has complex development flow and lots of template fragments, and then cause low efficiency.
-
-With typescript, you are required to define type or inject interface for every action and reducer. Additionally, it's difficult to build relation between request action and middleware through type definition.
-
-Fortunately, **Redux Model** has resolved the whole problems. Simplify development flow, reduce code size, smart type checking, and so on.
+Redux Model is created to enhance original redux framework, which has complex development flow and lots of template fragments.
 
 ![License](https://img.shields.io/github/license/redux-model/redux-model?color=blue)
 ![Travis (.com)](https://img.shields.io/travis/com/redux-model/redux-model)
@@ -26,7 +22,7 @@ Fortunately, **Redux Model** has resolved the whole problems. Simplify developme
 * Modify reducer by MVVM
 * Absolutely 100% static type checking with typescript
 * Trace loading status for each request action
-* Support hooks
+* Support react/vue hooks
 
 # Define Model
 ```typescript
@@ -49,7 +45,7 @@ class TestModel extends Model<Data> {
 
     getUser = $api.action((id: number) => {
         return this
-            .get<Response>('/api/user/' + id)
+            .get<Response>(`/api/user/${id}`)
             .onSuccess((state, action) => {
                 state.counter += 1;
                 state.users[id] = action.response;
@@ -68,7 +64,7 @@ export const testModel = new TestModel();
 ```
 
 # With React Hooks
-```typescript
+```typescript jsx
 import React, { FC } from 'react';
 
 const App: FC = () => {
@@ -91,25 +87,27 @@ export default App;
 ```
 
 # With Redux connect
-```typescript
-import React, { FC } from 'react';
+```typescript jsx
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 type Props = ReturnType<typeof mapStateToProps>;
 
-const App: FC<Props> = (props) => {
-    const { loading, counter } = props;
-
-    const increase = () => {
+class App extends Component<Props> {
+    increase() {
         testModel.increase();
         testModel.getUser(3);
-    };
-
-    return (
-        <button onClick={increase}>
-            {loading ? 'Waiting...' : `You clicked ${counter} times`}
-        </button>
-    );
-};
+    }
+ 
+    render() {
+        const { loading, counter } = this.props;
+        return (
+            <button onClick={this.increase}>
+                {loading ? 'Waiting...' : `You clicked ${counter} times`}
+            </button>
+        );
+    }
+}
 
 const mapStateToProps = () => {
     return {
@@ -122,7 +120,7 @@ export default connect(mapStateToProps)(App);
 ```
 
 # With Vue
-```html
+```vue
 <template>
   <button @click="increase">
     {{loading ? 'Waiting...' : `You clicked ${counter} times`}}
