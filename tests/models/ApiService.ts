@@ -1,4 +1,3 @@
-import * as Taro from '@tarojs/taro';
 import { HttpResponse, HttpService } from '../../src/libs';
 import { HttpServiceConfig } from '../../src/libs/types';
 
@@ -9,11 +8,6 @@ class ApiService extends HttpService {
     super(config);
 
     switch (process.env.TEST_PLATFORM) {
-      case 'taro':
-        this.mock = jest.fn(Taro.request);
-        // @ts-ignore
-        Taro.request = this.mock;
-        break;
       case 'react-native':
       case 'web':
       case 'vue':
