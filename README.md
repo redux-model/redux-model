@@ -24,6 +24,31 @@ Redux Model is created to enhance original redux framework, which has complex de
 * Trace loading status for each request action
 * Support react/vue hooks
 
+# Installation
+
+#### Web
+```bash
+npm install @redux-model/web   redux react-redux
+```
+
+#### React-Native
+
+```bash
+npm install @redux-model/react-native   redux react-redux
+```
+
+#### Vue
+
+```bash
+npm install @redux-model/vue   redux
+```
+
+
+#### Taro
+```bash
+npm install @redux-model/taro redux   @tarojs/redux @tarojs/redux-h5
+```
+
 # Define Model
 ```typescript
 interface Response {
@@ -98,7 +123,7 @@ class App extends Component<Props> {
         testModel.increase();
         testModel.getUser(3);
     }
- 
+
     render() {
         const { loading, counter } = this.props;
         return (
