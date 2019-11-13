@@ -1,3 +1,6 @@
+# 6.5.11
+[fix] `changeReducer()` bind wrong instance name
+
 # 6.5.6
 [feat] Lazy meta to improve performance
 
