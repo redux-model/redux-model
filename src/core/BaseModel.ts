@@ -19,7 +19,7 @@ import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';
 import { BaseAction } from './action/BaseAction';
 import { HttpServiceBuilder } from './service/HttpServiceBuilder';
-import { getInstanceName, increaseActionCounter, setInstanceName } from './utils/instanceName';
+import { increaseActionCounter, setInstanceName } from './utils/instanceName';
 import { METHOD } from './utils/method';
 
 export abstract class BaseModel<Data = null> {
@@ -146,7 +146,9 @@ export abstract class BaseModel<Data = null> {
   protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(
     changeReducer: A
   ): NormalActionAlias<Data, ExtractNormalAction<A>, ExtractNormalPayload<A>> {
-    let instanceName = getInstanceName();
+    // It's dangerous to use getInstanceName() here.
+    // Because __change_reducer may be initialized few minutes later and instanceName have pointed to other model already.
+    let instanceName = this.__instanceName;
 
     if (!useProxy()) {
       instanceName += '_' + increaseActionCounter();
