@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://fwh1990.github.io/redux-model">
+  <a href="https://redux-model.github.io/redux-model">
     Redux Model
   </a>
 </h1>
