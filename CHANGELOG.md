@@ -1,3 +1,6 @@
+# 6.6.0
+[feat] Request actions always have meta or metas
+
 # 6.5.11
 [fix] `changeReducer()` bind wrong instance name
 

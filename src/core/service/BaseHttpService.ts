@@ -5,11 +5,9 @@ import {
   EnhanceMeta,
   EnhancePayload,
   EnhanceResponse,
-  HttpServiceNoMeta,
   HttpServiceWithMeta,
   HttpServiceWithMetas,
   OrphanRequestOptions,
-  RequestActionNoMeta,
   RequestActionWithMeta,
   RequestActionWithMetas,
   BaseHttpServiceConfig,
@@ -36,10 +34,6 @@ export abstract class BaseHttpService {
   constructor(config: BaseHttpServiceConfig) {
     this.config = config;
   }
-
-  public action<A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
-    fn: A
-  ): RequestActionNoMeta<Data, A, Response, Payload>;
 
   public action<A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload>, Data = EnhanceData<A>, Response = EnhanceResponse<A>, Payload = EnhancePayload<A>>(
     fn: A

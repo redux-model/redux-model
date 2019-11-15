@@ -22,15 +22,6 @@ thirdModel.getProfile(1)
 console.log(thirdModel.getProfile.meta.loading)
 ```
 
-### 关闭Meta
-
-默认情况，meta是开启的。并不是每个请求action都需要记录meta，你可以手动关闭它。关闭之后，你无法再获取当前Action的meta数据
-```typescript
-getProfile = service.action(() => {
-    return this.get('').withMeta(false);
-});
-```
-
 ### 使用Loading
 Loading是存储的在Meta中一个属性，因为经常会被用到，所以我们定义了快捷方式去拿
 ```typescript

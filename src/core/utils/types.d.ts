@@ -96,10 +96,6 @@ export type RequestSubscriber<CustomData, Response, Payload> = {
   effect: (state: State<CustomData>, action: ReducerAction<Response, Payload>) => StateReturn<CustomData>;
 };
 
-export interface RequestActionNoMeta<Data, A extends (...args: any[]) => HttpServiceNoMeta<Data, Response, Payload, M>, Response, Payload, M = false> extends RequestAction<Data, A, Response, Payload, M> {
-  (...args: Parameters<A>): FetchHandle<Response, Payload>;
-}
-
 export interface RequestActionWithMeta<Data, A extends (...args: any[]) => HttpServiceWithMeta<Data, Response, Payload, true>, Response, Payload> extends RequestAction<Data, A, Response, Payload, true> {
   (...args: Parameters<A>): FetchHandle<Response, Payload>;
 
@@ -146,11 +142,6 @@ export interface HttpTransform {
   httpStatus?: HTTP_STATUS_CODE;
   message?: string;
   businessCode?: string;
-}
-
-export class HttpServiceNoMeta<Data, Response, Payload, M = false> extends HttpServiceBuilder<Data, Response, Payload, M> {
-  // @ts-ignore
-  private readonly _: string = '';
 }
 
 export class HttpServiceWithMeta<Data, Response, Payload, M = true> extends HttpServiceBuilder<Data, Response, Payload, M> {

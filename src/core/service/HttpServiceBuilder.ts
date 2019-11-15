@@ -1,5 +1,4 @@
 import {
-  HttpServiceNoMeta,
   HttpServiceWithMeta,
   HttpServiceWithMetas,
   RequestOptions,
@@ -66,9 +65,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, M = false> {
 
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>
-    : M extends false
-      ? HttpServiceNoMeta<Data, Response, T>
-      : HttpServiceWithMetas<Data, Response, T, M>
+    : HttpServiceWithMetas<Data, Response, T, M>
   {
     this.config.payload = payload;
 
@@ -77,13 +74,11 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, M = false> {
   }
 
   // @ts-ignore
-  withMeta(is: true): HttpServiceWithMeta<Data, Response, Payload>;
-  withMeta(is: false): HttpServiceNoMeta<Data, Response, Payload>;
-  withMeta(value: string): HttpServiceWithMetas<Data, Response, Payload, string>;
-  withMeta(value: number): HttpServiceWithMetas<Data, Response, Payload, number>;
-  withMeta(value: symbol): HttpServiceWithMetas<Data, Response, Payload, symbol>;
+  metas(value: string): HttpServiceWithMetas<Data, Response, Payload, string>;
+  metas(value: number): HttpServiceWithMetas<Data, Response, Payload, number>;
+  metas(value: symbol): HttpServiceWithMetas<Data, Response, Payload, symbol>;
 
-  withMeta(param: any): HttpServiceBuilder<Data, Response, Payload, M> {
+  metas(param: string | number | symbol): HttpServiceBuilder<Data, Response, Payload, M> {
     this.config.metaKey = param;
 
     return this;

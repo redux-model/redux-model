@@ -1,7 +1,7 @@
 # 定义Metas
 Metas是Meta的集合。假设一个Request Action需要同时执行多次，并且业务上需要根据传入Action的参数获取不同的meta信息。如果我们仍然用Meta存储，因为请求是异步的，meta的数据也会覆盖，最终导致数据出错。
 
-此时，我们可以在`withMeta`中传入值解决这个问题。
+此时，我们可以在`metas`中传入值解决这个问题。
 
 ```typescript
 import { Model } from '@redux-model/web';
@@ -20,7 +20,7 @@ class ThirdModel extends Model<Data> {
     getProfile = $api.action((userId: number) => {
         return this
             .get('...')
-            .withMeta(userId);
+            .metas(userId);
     });
 
     protected initReducer(): Data {
@@ -31,7 +31,7 @@ class ThirdModel extends Model<Data> {
 export const thirdModel = new ThirdModel();
 ```
 
-当 `withMeta` 传入非布尔值时，metas就会被启用。
+当 `metas(...)` 传入非布尔值时，metas就会被启用。
 
 ```typescript
 const userId = 3;

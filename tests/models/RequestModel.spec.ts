@@ -78,27 +78,6 @@ test('Request action has the correct metas', (done) => {
   });
 });
 
-test('No meta can be found when metaKey set to false', (done) => {
-  $api.mockResolveValue(data);
-
-  const promise = model.noMetaRequest();
-
-  expect(model.noMetaRequest.loading).toBeFalsy();
-  expect(model.noMetaRequest.meta.loading).toBeFalsy();
-
-  expect(model.data.records[data.id]).toBeUndefined();
-
-  promise.then((profile) => {
-    expect(profile.type).toBe(model.noMetaRequest.getSuccessType());
-    expect(model.noMetaRequest.loading).toBeFalsy();
-    expect(model.noMetaRequest.meta.loading).toBeFalsy();
-
-    expect(profile.response).toBe(data);
-
-    done();
-  });
-});
-
 test('Fetch profile by orphan request', async () => {
   $api.mockResolveValue(data);
 
