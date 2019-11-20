@@ -1,5 +1,3 @@
-import { isDebug } from '../../libs/dev';
-
 let instanceName: string = '';
 let actionCounter: number = 0;
 
@@ -25,7 +23,7 @@ export const setInstanceName = (className: string, alias: string): string => {
 
   if (CLASS_COUNTER[dictKey] === undefined) {
     CLASS_COUNTER[dictKey] = 0;
-  } else if (!isDebug() || isCompressed(className)) {
+  } else if (isCompressed(className)) {
     CLASS_COUNTER[dictKey] += 1;
   }
 
