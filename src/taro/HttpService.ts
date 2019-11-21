@@ -22,13 +22,13 @@ export class HttpService extends BaseHttpService {
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     const service = new OrphanHttpServiceHandle(config, METHOD.connect, this);
 
-    return this.withCache(service.collect());
+    return this.withThrottle(service.collect());
   }
 
   public traceAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     const service = new OrphanHttpServiceHandle(config, METHOD.trace, this);
 
-    return this.withCache(service.collect());
+    return this.withThrottle(service.collect());
   }
 
   public clone(config: Partial<HttpServiceConfig>): HttpService {

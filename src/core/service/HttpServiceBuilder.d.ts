@@ -14,7 +14,7 @@ export declare class HttpServiceBuilder<Data, Response, Payload = unknown, M = t
 
   hideError(is: boolean | ((response: ReducerAction<Response, Payload>) => boolean)): this;
 
-  cache(millSeconds: number, useCache?: boolean): this;
+  throttle(millSeconds: number, useCache?: boolean): this;
 
   payload<T extends Payload>(payload: T): M extends true
     ? HttpServiceWithMeta<Data, Response, T>

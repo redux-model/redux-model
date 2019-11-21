@@ -193,17 +193,17 @@ test('Request Action has correct payload', async (done) => {
     });
 });
 
-test('Cache action can return remote data without real fetch', async () => {
+test('Throttle action can return remote data without real fetch', async () => {
   $api.mockResolveValue({ id: 123 });
-  const result1 = await model.enableCacheProfile();
+  const result1 = await model.enableThrottleProfile();
   expect(result1.response.id).toBe(123);
 
   // From cache
-  const result2 = await model.enableCacheProfile();
+  const result2 = await model.enableThrottleProfile();
   expect(result2.response.id).toBe(123);
 
   // From cache
-  const result3 = await model.enableCacheProfile();
+  const result3 = await model.enableThrottleProfile();
   expect(result3.response.id).toBe(123);
 
   // Cache is expired absolutely
@@ -212,7 +212,7 @@ test('Cache action can return remote data without real fetch', async () => {
   });
 
   $api.mockResolveValue({ id: 987 });
-  const result4 = await model.enableCacheProfile();
+  const result4 = await model.enableThrottleProfile();
   expect(result4.response.id).toBe(987);
 });
 

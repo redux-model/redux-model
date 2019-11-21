@@ -50,34 +50,34 @@ export abstract class BaseHttpService {
       instanceName += '_' + increaseActionCounter();
     }
 
-    return new RequestAction(fn, instanceName, this.withCache.bind(this));
+    return new RequestAction(fn, instanceName, this.withThrottle.bind(this));
   }
 
   public getAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     const service = new OrphanHttpServiceHandle(config, METHOD.get, this);
 
-    return this.withCache(service.collect());
+    return this.withThrottle(service.collect());
   }
 
   public postAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     const service = new OrphanHttpServiceHandle(config, METHOD.post, this);
 
-    return this.withCache(service.collect());
+    return this.withThrottle(service.collect());
   }
 
   public putAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     const service = new OrphanHttpServiceHandle(config, METHOD.put, this);
 
-    return this.withCache(service.collect());
+    return this.withThrottle(service.collect());
   }
 
   public deleteAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
     const service = new OrphanHttpServiceHandle(config, METHOD.delete, this);
 
-    return this.withCache(service.collect());
+    return this.withThrottle(service.collect());
   }
 
-  protected generateCacheKey(action: ActionRequest): string {
+  protected generateThrottleKey(action: ActionRequest): string {
     return JSON.stringify([
       action.reducerName,
       action.type,
@@ -89,11 +89,11 @@ export abstract class BaseHttpService {
     ]);
   }
 
-  protected withCache<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
-    if (action.useCache) {
+  protected withThrottle<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
+    if (action.useThrottle) {
       // The cacheKey only will be generated when useCache is set to true to improve performance
-      action.cacheKey = this.generateCacheKey(action);
-      const item = this.caches[action.cacheKey];
+      action.throttleKey = this.generateThrottleKey(action);
+      const item = this.caches[action.throttleKey];
 
       if (item && Date.now() <= item.timestamp) {
         const promise = new Promise((resolve) => {
@@ -118,15 +118,15 @@ export abstract class BaseHttpService {
 
     // In case user toggle cache flag
     // In case data is expired
-    Reflect.deleteProperty(this.caches, action.cacheKey);
+    Reflect.deleteProperty(this.caches, action.throttleKey);
 
     return this.runAction(action);
   }
 
   protected collectResponse(action: ActionResponseHandle): void {
-    if (action.useCache && action.cacheMillSeconds > 0) {
-      this.caches[action.cacheKey] = {
-        timestamp: Date.now() + action.cacheMillSeconds,
+    if (action.useThrottle && action.throttleMillSeconds > 0) {
+      this.caches[action.throttleKey] = {
+        timestamp: Date.now() + action.throttleMillSeconds,
         response: cloneDeep(action.response),
       };
     }

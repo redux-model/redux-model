@@ -62,16 +62,16 @@ export class RequestModel extends BaseTestModel<Data> {
       })
   });
 
-  enableCacheProfile = $api.action(() => {
+  enableThrottleProfile = $api.action(() => {
     return this
       .get<{ id: number }>('/profile/manage')
-      .cache(3000);
+      .throttle(3000);
   });
 
   disableCacheProfile = $api.action(() => {
     return this
       .get<{ id: number }>('/profile/manage')
-      .cache(3000, false);
+      .throttle(3000, false);
   });
 
   getProfileById = $api.action((id: number) => {

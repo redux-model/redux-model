@@ -56,9 +56,9 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, M = true> {
     return this;
   }
 
-  cache(millSeconds: number, useCache: boolean = true): this {
-    this.config.useCache = useCache;
-    this.config.cacheMillSeconds = millSeconds;
+  throttle(millSeconds: number, useThrottle: boolean = true): this {
+    this.config.useThrottle = useThrottle;
+    this.config.throttleMillSeconds = millSeconds;
 
     return this;
   }
@@ -120,9 +120,9 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, M = true> {
       onPrepare: config.onPrepare || null,
       onSuccess: config.onSuccess || null,
       onFail: config.onFail || null,
-      useCache: config.useCache || false,
-      cacheMillSeconds: config.cacheMillSeconds || 0,
-      cacheKey: '',
+      useThrottle: config.useThrottle || false,
+      throttleMillSeconds: config.throttleMillSeconds || 0,
+      throttleKey: '',
     };
 
     return action;

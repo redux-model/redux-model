@@ -30,11 +30,11 @@ export class OrphanHttpServiceHandle {
         fail: '',
       },
       method: this.method,
-      useCache: typeof config.useCache === 'boolean'
-        ? config.useCache
-        : config.cacheMillSeconds !== undefined && config.cacheMillSeconds > 0,
-      cacheMillSeconds: config.cacheMillSeconds || 0,
-      cacheKey: '',
+      useThrottle: typeof config.useThrottle === 'boolean'
+        ? config.useThrottle
+        : config.throttleMillSeconds !== undefined && config.throttleMillSeconds > 0,
+      throttleMillSeconds: config.throttleMillSeconds || 0,
+      throttleKey: '',
       metaKey: false,
       payload: {},
       onPrepare: null,
