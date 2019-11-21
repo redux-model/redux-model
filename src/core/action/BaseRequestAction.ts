@@ -8,7 +8,7 @@ import {
 import { BaseAction } from './BaseAction';
 import MetaReducer from '../reducer/MetaReducer';
 import { HttpServiceBuilder } from '../service/HttpServiceBuilder';
-import { DEFAULT_META, DEFAULT_METAS } from '../utils/meta';
+import { DEFAULT_META, DEFAULT_METAS, METAS_PICK_METHOD } from '../utils/meta';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { useProxy } from '../utils/dev';
 
@@ -92,25 +92,25 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     });
   }
 
-  public useMetas<T extends keyof Meta>(value?: M, metaKey?: T): Metas<M> | Meta[T] {
+  public useMetas<T extends keyof Meta>(value?: M, metaKey?: T): Metas<M> | Meta | Meta[T] {
     MetaReducer.record(this.typePrefix);
 
-    if (value === undefined) {
-      metaKey = undefined;
-    }
-
     return this.switchReduxSelector()((state: any) => {
-      let customMetas = state[MetaReducer.reducerName][this.typePrefix];
+      let customMetas: Metas<M> = state[MetaReducer.reducerName][this.typePrefix] || DEFAULT_METAS;
 
-      if (customMetas === undefined) {
-        customMetas = DEFAULT_METAS;
+      // Parameter `metaKey` is useless here.
+      if (value === undefined) {
+        if (!customMetas.pick) {
+          Object.assign(customMetas, METAS_PICK_METHOD);
+        }
+
+        return customMetas;
       }
 
-      const customMeta: Metas = value === undefined ? customMetas : customMetas[value] || DEFAULT_META;
+      // @ts-ignore
+      const customMeta: Meta = customMetas[value] || DEFAULT_META;
 
-      return metaKey
-        ? customMeta[metaKey]
-        : customMeta;
+      return metaKey ? customMeta[metaKey] : customMeta;
     });
   }
 
@@ -132,8 +132,13 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
   public get metas(): Metas<M> {
     MetaReducer.record(this.typePrefix);
+    const metas: Metas<M> = MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
 
-    return MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
+    if (!metas.pick) {
+      Object.assign(metas, METAS_PICK_METHOD);
+    }
+
+    return metas;
   }
 
   public get loading(): boolean {
