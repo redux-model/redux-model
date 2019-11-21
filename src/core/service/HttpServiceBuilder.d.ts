@@ -1,7 +1,7 @@
 import { ReducerAction, HttpServiceWithMeta, HttpServiceWithMetas } from '../utils/types';
 import { ActionRequest } from '../../libs/types';
 
-export declare class HttpServiceBuilder<Data, Response, Payload = unknown, M = false> {
+export declare class HttpServiceBuilder<Data, Response, Payload = unknown, M = true> {
   query(query: object): this;
 
   body(body: object): this;

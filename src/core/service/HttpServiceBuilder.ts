@@ -7,7 +7,7 @@ import {
 } from '../utils/types';
 import { ActionRequest } from '../../libs/types';
 
-export class HttpServiceBuilder<Data, Response, Payload = unknown, M = false> {
+export class HttpServiceBuilder<Data, Response, Payload = unknown, M = true> {
   protected readonly config: RequestOptions<Data, Response, Payload>;
 
   protected types: Types = {
