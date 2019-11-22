@@ -21,5 +21,3 @@ onStoreCreated((store) => {
     }
   });
 });
-
-export { createReduxStore } from '../core/utils/createReduxStore';

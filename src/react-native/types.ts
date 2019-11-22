@@ -1,4 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
+import { AsyncStorageStatic } from '@react-native-community/async-storage';
 import { ReducerAction, BaseActionRequest, BaseHttpServiceConfig, HttpTransform, Types } from '../core/utils/types';
 
 export type HttpCanceler = Canceler;
@@ -21,3 +22,5 @@ export interface HttpServiceConfig extends BaseHttpServiceConfig {
   isSuccess?: (action: HttpResponse) => boolean;
   transformSuccessData?: (data: any, headers: any) => any;
 }
+
+export type PersistStorage = AsyncStorageStatic;

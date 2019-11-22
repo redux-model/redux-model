@@ -24,6 +24,8 @@ export declare abstract class BaseModel<Data = null> {
 
   constructor(alias?: string);
 
+  getReducerName(): string;
+
   register(): Reducers;
 
   // Remember:

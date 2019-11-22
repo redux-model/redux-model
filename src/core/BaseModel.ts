@@ -67,6 +67,10 @@ export abstract class BaseModel<Data = null> {
     return fromUseLoading.some((is) => is);
   }
 
+  public getReducerName(): string {
+    return this.__instanceName;
+  }
+
   public register(): Reducers {
     // Only create class once.
     // For effects model, register() will be invoked twice.

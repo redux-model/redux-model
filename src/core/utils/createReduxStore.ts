@@ -2,12 +2,22 @@ import { Action, combineReducers, createStore, DeepPartial, Reducer, Store, Stor
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
+import { PersistStorage } from '../../libs/types';
+import { handlePersist, setPersistConfig, TYPE_PERSIST, updatePersistState } from './persist';
+import { BaseModel } from '../BaseModel';
 
 export interface ReduxStoreConfig<S = any, A extends Action = Action> {
   reducers?: Reducers;
   enhancer?: StoreEnhancer;
   preloadedState?: DeepPartial<S>;
   onCombineReducers?: (reducer: Reducer<S, A>) => Reducer<S, A>;
+  persist?: false | {
+    version: string | number;
+    key: string;
+    storage: PersistStorage;
+    whitelist?: Array<BaseModel<any>>;
+    blacklist?: Array<BaseModel<any>>;
+  };
 }
 
 const hasEffectsReducers: string[] = [];
@@ -47,6 +57,11 @@ const extendReducer = (reducer: Reducer) => {
     stateWhenDispatching = state;
     const result = reducer(state, action);
     isDispatching = false;
+
+    if (action.type !== TYPE_PERSIST && stateWhenDispatching !== result) {
+      updatePersistState(result);
+    }
+
     return result;
   };
 };
@@ -86,6 +101,8 @@ export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S>
   usersReducers = config.reducers || {};
   onCombineReducers = config.onCombineReducers;
 
+  setPersistConfig(config.persist);
+
   if (store) {
     store.replaceReducer(combine());
   } else {
@@ -93,6 +110,8 @@ export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S>
     listeners.forEach((listener) => listener(store!));
     listeners = [];
   }
+
+  handlePersist(store);
 
   return store;
 }

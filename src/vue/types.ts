@@ -21,3 +21,5 @@ export interface HttpServiceConfig extends BaseHttpServiceConfig {
   isSuccess?: (action: HttpResponse) => boolean;
   transformSuccessData?: (data: any, headers: any) => any;
 }
+
+export type PersistStorage = Storage;

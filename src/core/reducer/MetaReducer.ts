@@ -1,6 +1,7 @@
 import { ActionResponseHandle, Meta, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers, getState, getStore } from '../utils/createReduxStore';
 import { METAS_PICK_METHOD } from '../utils/meta';
+import { switchInitData, TYPE_PERSIST } from '../utils/persist';
 
 interface MetaDict {
   [key: string]: string;
@@ -21,7 +22,7 @@ class MetaReducer {
 
   private static usedNames: Set<string> = new Set();
   private static stash: Record<string, object> = {};
-  private static RESTORE = 'ReduxModel^LazyMeta';
+  private static RESTORE = 'ReduxModel/LazyMeta';
 
   public static record(name: string) {
     if (MetaReducer.stash[name]) {
@@ -58,7 +59,12 @@ class MetaReducer {
     return {
       [MetaReducer.reducerName]: (state: BigMetas, action: ActionResponseHandle) => {
         if (state === undefined) {
-          return {};
+          return switchInitData(MetaReducer.reducerName, {});
+        }
+
+        // For async storage, we should dispatch action to inject persist data into reducer
+        if (action.type === TYPE_PERSIST && action.payload[MetaReducer.reducerName] !== undefined) {
+          return action.payload[MetaReducer.reducerName];
         }
 
         if (action.type === MetaReducer.RESTORE) {
