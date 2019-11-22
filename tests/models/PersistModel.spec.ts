@@ -7,6 +7,7 @@ beforeEach(() => {
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
 
   createReduxStore({
+    // @ts-ignore react-native use async storage
     persist: {
       version: 1,
       key: 'test-persist',
@@ -38,6 +39,7 @@ test('Clear the persist data when the json data invalid', () => {
 
   const spy = jest.spyOn(console, 'error').mockImplementation();
   createReduxStore({
+    // @ts-ignore react-native use async storage
     persist: {
       version: 1,
       key: 'test-persist',
@@ -54,6 +56,7 @@ test('Clear the persist data when version is not matched', () => {
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
 
   createReduxStore({
+    // @ts-ignore react-native use async storage
     persist: {
       version: 2,
       key: 'test-persist',
@@ -69,6 +72,7 @@ test('No persist data in storage', () => {
   localStorage.removeItem('ReduxModel:Persist:test-persist');
 
   createReduxStore({
+    // @ts-ignore react-native use async storage
     persist: {
       version: 1,
       key: 'test-persist',
@@ -84,6 +88,7 @@ test('Reducer data is not hint', () => {
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"__metas__":"{}","__persist":{"version":1}}');
 
   createReduxStore({
+    // @ts-ignore react-native use async storage
     persist: {
       version: 1,
       key: 'test-persist',

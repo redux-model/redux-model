@@ -9,6 +9,7 @@ beforeEach(() => {
   model = new PersistModel();
 
   createReduxStore({
+    // @ts-ignore react-native use async storage
     persist: {
       version: 1,
       key: 'test-persist',
