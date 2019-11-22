@@ -20,17 +20,8 @@ install:
 script:
   - sh ./scripts/test.sh
 
-jobs:
-  exclude:
-    - node_js: 10.16.3
-      env: TEST_PLATFORM=web
-  include:
-    - node_js: 10.16.3
-      env: TEST_PLATFORM=web
-      script:
-        - sh ./scripts/test.sh
-      after_script:
-        - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+after_script:
+  - if [ $TEST_PLATFORM = 'web' -a $(node -v) = 'v10.16.3' ]; then cat ./coverage/lcov.info | ./node_modules/.bin/coveralls; fi
 
 branches:
   only:
