@@ -1,3 +1,9 @@
+# 6.7.0
+[feat] Add persist for reducer
+
+## Breaking Changes
+Rename `cache()` to `throttle()` in chains of request action
+
 # 6.6.0
 [feat] Request actions always have meta or metas
 
