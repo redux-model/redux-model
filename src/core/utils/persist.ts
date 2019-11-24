@@ -191,3 +191,7 @@ export const onPersistReady = (fn: () => void): void => {
     readyEvents.push(fn);
   }
 };
+
+export const isPersistReady = (): boolean => {
+  return ready;
+}
