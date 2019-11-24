@@ -1,5 +1,6 @@
 import { Store } from 'redux';
 import { ReduxStoreConfig } from './createReduxStore';
+import { getStorageItem, setStorage, setStorageItem } from '../../libs/storage';
 
 export const TYPE_PERSIST = 'ReduxModel/Persist';
 
@@ -32,7 +33,7 @@ const restorePersist = (): void => {
     finalReducers[key] = objectStrings[key];
   });
 
-  config.storage.setItem(KEY_PREFIX + config.key, JSON.stringify({
+  setStorageItem(KEY_PREFIX + config.key, JSON.stringify({
     ...finalReducers,
     ...defaultPersistOption,
   }));
@@ -97,6 +98,7 @@ export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => 
   config = persist;
 
   if (persist) {
+    setStorage(persist.storage);
     whiteList = persist.whitelist ? persist.whitelist.map((item) => item.getReducerName()) : [];
     blackList = persist.blacklist ? persist.blacklist.map((item) => item.getReducerName()) : [];
     defaultPersistOption.__persist.version = persist.version;
@@ -107,7 +109,7 @@ export const handlePersist = (store: Store) => {
   globalStore = store;
 
   if (config) {
-    const storageData = config.storage.getItem(KEY_PREFIX + config.key) as string | null | Promise<string | null>;
+    const storageData = getStorageItem(KEY_PREFIX + config.key) as string | null | Promise<string | null>;
 
     if (storageData === null || typeof storageData === 'string') {
       parseStorageData(storageData);

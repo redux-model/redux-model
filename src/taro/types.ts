@@ -1,4 +1,4 @@
-import { request } from '@tarojs/taro';
+import * as Taro from '@tarojs/taro';
 import {
   ReducerAction,
   BaseActionRequest,
@@ -11,14 +11,14 @@ import { AxiosRequestConfig } from 'axios';
 
 export type HttpCanceler = () => void;
 
-export type HttpResponse<T = any> = request.Promised<T>;
+export type HttpResponse<T = any> = Taro.request.Promised<T>;
 
 export interface FetchHandle<Response = any, Payload = any> extends Promise<ReducerAction<Response, Payload>> {
   cancel: HttpCanceler;
 }
 
 export interface ActionRequest<Data = any, Response = any, Payload = any, Type = Types> extends BaseActionRequest<Data, Response, Payload, Type> {
-  requestOptions: Omit<request.Param, 'url'>;
+  requestOptions: Omit<Taro.request.Param, 'url'>;
 }
 
 export interface HttpServiceConfig extends BaseHttpServiceConfig {
@@ -30,4 +30,4 @@ export interface HttpServiceConfig extends BaseHttpServiceConfig {
   transformSuccessData?: (data: any, headers: any) => any;
 }
 
-export type PersistStorage = Storage;
+export type PersistStorage = typeof Taro;
