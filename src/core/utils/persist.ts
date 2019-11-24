@@ -16,10 +16,20 @@ let persistReducers: Record<string, any> = {};
 let objectStrings: Record<string, string> = {};
 let config: ReduxStoreConfig['persist'] = false;
 let ready: boolean = false;
+let readyEvents: Function[] = [];
 
 const resetPersist = (): void => {
   persistReducers = {};
   restorePersist();
+};
+
+const persistIsReady = () => {
+  ready = true;
+
+  if (readyEvents.length) {
+    readyEvents.forEach(item => item());
+    readyEvents = [];
+  }
 };
 
 const restorePersist = (): void => {
@@ -75,8 +85,6 @@ const parseStorageData = (data: string | null) => {
     }
   }
 
-  ready = true;
-
   if (subscription.length) {
     const payload: Record<string, any> = {};
 
@@ -92,6 +100,8 @@ const parseStorageData = (data: string | null) => {
       payload,
     });
   }
+
+  persistIsReady();
 };
 
 export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => {
@@ -117,7 +127,7 @@ export const handlePersist = (store: Store) => {
       storageData.then(parseStorageData);
     }
   } else {
-    ready = true;
+    persistIsReady();
   }
 };
 
@@ -172,4 +182,12 @@ export const updatePersistState = (state: any): void => {
 
   persistReducers = finalReducers;
   restorePersist();
+};
+
+export const onPersistReady = (fn: () => void): void => {
+  if (ready) {
+    fn();
+  } else {
+    readyEvents.push(fn);
+  }
 };

@@ -56,11 +56,12 @@ const extendReducer = (reducer: Reducer) => {
     isDispatching = true;
     stateWhenDispatching = state;
     const result = reducer(state, action);
-    isDispatching = false;
 
     if (action.type !== TYPE_PERSIST && stateWhenDispatching !== result) {
       updatePersistState(result);
     }
+
+    isDispatching = false;
 
     return result;
   };
