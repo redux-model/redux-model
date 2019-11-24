@@ -14,6 +14,6 @@ export const setStorageItem = (key: string, value: any): Promise<void> => {
   return persistStorage.setItem(key, value);
 };
 
-export const remoteStorageItem = (key: string): Promise<void> => {
+export const removeStorageItem = (key: string): Promise<void> => {
   return persistStorage.removeItem(key);
 };

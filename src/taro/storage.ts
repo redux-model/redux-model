@@ -29,7 +29,7 @@ export const setStorageItem = (key: string, value: any) => {
   return persistStorage.setStorageSync(key, value);
 };
 
-export const remoteStorageItem = (key: string) => {
+export const removeStorageItem = (key: string) => {
   if (isRn) {
     return persistStorage.removeStorage({ key });
   }
