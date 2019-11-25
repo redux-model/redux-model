@@ -122,6 +122,7 @@ test('Easy to abort request action', (done) => {
 
           done();
         });
+      // @ts-ignore
       promise.cancel('I want to cancel by myself');
     });
 

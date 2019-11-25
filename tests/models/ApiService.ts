@@ -11,6 +11,7 @@ class ApiService extends HttpService {
       case 'react-native':
       case 'web':
       case 'vue':
+        // @ts-ignore
         this.mock = jest.fn(this.httpHandle.request);
         // @ts-ignore
         this.httpHandle.request = this.mock;

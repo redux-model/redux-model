@@ -26,5 +26,11 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": [
+    "./src/react-native",
+    "./src/taro",
+    "./src/vue",
+    "./src/web"
+  ]
 }
