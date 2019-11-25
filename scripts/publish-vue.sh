@@ -4,6 +4,7 @@ set -e
 
 package_name=vue
 
+sh ./scripts/create-symbol.sh $package_name
 rm -rf ./build
 node_modules/.bin/tsc
 
