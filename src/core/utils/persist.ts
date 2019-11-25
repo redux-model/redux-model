@@ -1,6 +1,7 @@
 import { Store } from 'redux';
 import { ReduxStoreConfig } from './store';
 import { getStorageItem, setStorage, setStorageItem } from '../../libs/storage';
+import { isDebug } from '../../libs/dev';
 
 export const TYPE_PERSIST = 'ReduxModel/Persist';
 
@@ -17,6 +18,7 @@ let objectStrings: Record<string, string> = {};
 let config: ReduxStoreConfig['persist'] = false;
 let ready: boolean = false;
 let readyEvents: Function[] = [];
+let timer: NodeJS.Timeout | undefined;
 
 const resetPersist = (): void => {
   persistReducers = {};
@@ -189,7 +191,21 @@ export const updatePersistState = (state: any): void => {
   });
 
   persistReducers = finalReducers;
-  changed && restorePersist();
+
+  if (!changed) {
+    return;
+  }
+
+  if (isDebug()) {
+    return restorePersist();
+  }
+
+  if (timer === undefined) {
+    timer = setTimeout(() => {
+      restorePersist();
+      timer = undefined;
+    }, 300);
+  }
 };
 
 export const onPersistReady = (fn: () => void): void => {
