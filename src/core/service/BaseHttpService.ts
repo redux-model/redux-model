@@ -16,7 +16,7 @@ import { METHOD } from '../utils/method';
 import { OrphanHttpServiceHandle } from './OrphanHttpServiceHandle';
 import { ActionRequest, FetchHandle } from '../../libs/types';
 import { AnyAction } from 'redux';
-import { getStore } from '../utils/createReduxStore';
+import { getStore } from '../utils/store';
 import { RequestAction } from '../../libs/RequestAction';
 import { getInstanceName, increaseActionCounter } from '../utils/instanceName';
 import { useProxy } from '../utils/dev';

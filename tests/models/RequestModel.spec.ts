@@ -1,5 +1,5 @@
 import { $api } from './ApiService';
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
+import { createReduxStore } from '../../src/core/utils/store';
 import { RequestModel } from './RequestModel';
 import { ReducerAction } from '../../src/core/utils/types';
 import { METHOD } from '../../src/core/utils/method';

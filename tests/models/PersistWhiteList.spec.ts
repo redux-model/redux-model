@@ -1,5 +1,5 @@
 import { PersistModel } from './PersistModel';
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
+import { createReduxStore } from '../../src/core/utils/store';
 
 let model: PersistModel;
 

@@ -13,7 +13,7 @@ import {
   StateReturn,
   UseSelector,
 } from './utils/types';
-import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/createReduxStore';
+import { appendReducers, onStoreCreated, watchEffectsReducer } from './utils/store';
 import { useProxy } from './utils/dev';
 import { ForgetRegisterError } from './exceptions/ForgetRegisterError';
 import { NullReducerError } from './exceptions/NullReducerError';

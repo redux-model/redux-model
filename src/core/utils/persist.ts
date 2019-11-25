@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { ReduxStoreConfig } from './createReduxStore';
+import { ReduxStoreConfig } from './store';
 import { getStorageItem, setStorage, setStorageItem } from '../../libs/storage';
 
 export const TYPE_PERSIST = 'ReduxModel/Persist';
@@ -194,4 +194,4 @@ export const onPersistReady = (fn: () => void): void => {
 
 export const isPersistReady = (): boolean => {
   return ready;
-}
+};

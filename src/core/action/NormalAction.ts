@@ -1,6 +1,6 @@
 import { BaseAction } from './BaseAction';
 import { ActionNormalHandle, NormalSubscriber } from '../utils/types';
-import { getStore } from '../utils/createReduxStore';
+import { getStore } from '../utils/store';
 
 export class NormalAction<Data, A extends (...args: any[]) => ActionNormalHandle<Data, Payload>, Payload> extends BaseAction {
   private effect: ReturnType<A>['effect'] | undefined = undefined;

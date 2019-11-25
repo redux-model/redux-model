@@ -1,5 +1,5 @@
 import { BasicModel } from './BasicModel';
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
+import { createReduxStore } from '../../src/core/utils/store';
 
 let model: BasicModel;
 let spy: jest.SpyInstance | undefined;

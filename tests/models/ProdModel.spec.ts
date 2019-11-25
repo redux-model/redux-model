@@ -1,4 +1,4 @@
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
+import { createReduxStore } from '../../src/core/utils/store';
 import { ProdModel } from './ProdModel';
 
 jest.mock('../../src/libs/dev');

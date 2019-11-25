@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import cloneDeep from 'lodash.clonedeep';
 import { applyPatch } from './diff';
-import { onStoreCreated } from '../core/utils/createReduxStore';
+import { onStoreCreated } from '../core/utils/store';
 
 onStoreCreated((store) => {
   const getCurrentState = store.getState as () => object;

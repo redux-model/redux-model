@@ -1,4 +1,4 @@
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
+import { createReduxStore } from '../../src/core/utils/store';
 import { ManualRegisterModel } from './ManualRegisterModel';
 
 let model: ManualRegisterModel;

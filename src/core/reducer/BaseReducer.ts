@@ -1,7 +1,7 @@
 import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { ActionResponseHandle, Effects, Reducers, ActionNormalHandle } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
-import { getState } from '../utils/createReduxStore';
+import { getState } from '../utils/store';
 import { switchInitData, TYPE_PERSIST } from '../utils/persist';
 
 export class BaseReducer<Data> {

@@ -1,5 +1,5 @@
 import { ActionResponseHandle, Meta, Metas, Reducers, Types } from '../utils/types';
-import { appendReducers, getState, getStore } from '../utils/createReduxStore';
+import { appendReducers, getState, getStore } from '../utils/store';
 import { METAS_PICK_METHOD } from '../utils/meta';
 import { switchInitData, TYPE_PERSIST } from '../utils/persist';
 

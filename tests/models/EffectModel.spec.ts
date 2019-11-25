@@ -1,6 +1,6 @@
 import { basicModel } from './BasicModel';
 import { EffectModel } from './EffectModel';
-import { createReduxStore } from '../../src/core/utils/createReduxStore';
+import { createReduxStore } from '../../src/core/utils/store';
 import { $api } from './ApiService';
 import { requestModel } from './RequestModel';
 
