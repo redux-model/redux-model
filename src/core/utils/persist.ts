@@ -168,20 +168,28 @@ export const updatePersistState = (state: any): void => {
     return;
   }
 
+  // Sync models + async models
   const finalReducers: Record<string, any> = { ...persistReducers };
+  let changed: boolean = false;
 
   Object.keys(state).forEach((key) => {
     if (passPersistReducerName(key)) {
       finalReducers[key] = state[key];
 
       if (state[key] !== persistReducers[key]) {
-        objectStrings[key] = JSON.stringify(state[key]);
+        const tempString = JSON.stringify(state[key]);
+
+        if (!changed && objectStrings[key] !== tempString) {
+          changed = true;
+        }
+
+        objectStrings[key] = tempString;
       }
     }
   });
 
   persistReducers = finalReducers;
-  restorePersist();
+  changed && restorePersist();
 };
 
 export const onPersistReady = (fn: () => void): void => {
