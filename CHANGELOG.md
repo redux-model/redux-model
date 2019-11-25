@@ -1,3 +1,6 @@
+# 6.7.1
+[refactor] Improve performance of persist
+
 # 6.7.0
 [feat] Add persist for reducer
 
