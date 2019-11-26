@@ -14,6 +14,10 @@ export class PersistModel extends BaseTestModel<Data> {
       counter: 0,
     };
   }
+
+  protected autoRegister(): boolean {
+    return false;
+  }
 }
 
 export const persistModel = new PersistModel();
