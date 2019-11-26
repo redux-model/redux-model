@@ -39,23 +39,15 @@ const combine = () => {
     });
   }
 
-  const combined = extendReducer(combineReducers({
-    ...autoReducers,
-    ...usersReducers,
-  }));
-
+  let combined = combineReducers({ ...autoReducers, ...usersReducers });
   if (onCombineReducers) {
-    return onCombineReducers(combined);
+    combined = onCombineReducers(combined);
   }
 
-  return combined;
-};
-
-const extendReducer = (reducer: Reducer) => {
   return (state, action) => {
     isDispatching = true;
     stateWhenDispatching = state;
-    const result = reducer(state, action);
+    const result = combined(state, action);
 
     if (action.type !== TYPE_REHYDRATE && stateWhenDispatching !== result) {
       updatePersistState(result);
