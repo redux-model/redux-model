@@ -3,7 +3,7 @@ import { ReduxStoreConfig } from './store';
 import { getStorageItem, setStorage, setStorageItem } from '../../libs/storage';
 import { isDebug } from '../../libs/dev';
 
-export const TYPE_PERSIST = 'ReduxModel/Persist';
+export const TYPE_REHYDRATE = 'ReduxModel/rehydrate';
 
 let globalStore: Store | undefined;
 const defaultPersistOption: { __persist: { version: number | string } } = {
@@ -22,6 +22,7 @@ let timer: NodeJS.Timeout | undefined;
 
 const resetPersist = (): void => {
   persistReducers = {};
+  subscription = [];
   restorePersist();
 };
 
@@ -39,14 +40,14 @@ const restorePersist = (): void => {
     return;
   }
 
-  const finalReducers = {};
+  const strings = {};
 
   Object.keys(persistReducers).forEach((key) => {
-    finalReducers[key] = objectStrings[key];
+    strings[key] = objectStrings[key];
   });
 
   setStorageItem(KEY_PREFIX + config.key, JSON.stringify({
-    ...finalReducers,
+    ...strings,
     ...defaultPersistOption,
   }));
 };
@@ -96,24 +97,27 @@ const parseStorageData = (data: string | null) => {
       }
     });
     subscription = [];
-
-    globalStore?.dispatch({
-      type: TYPE_PERSIST,
+    globalStore!.dispatch({
+      type: TYPE_REHYDRATE,
       payload,
     });
   }
 
   persistIsReady();
+  // We don't need to collect initial data. Because they are useless.
 };
 
 export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => {
   config = persist;
 
   if (persist) {
+    ready = false;
     setStorage(persist.storage);
     whiteList = persist.whitelist ? persist.whitelist.map((item) => item.getReducerName()) : [];
     blackList = persist.blacklist ? persist.blacklist.map((item) => item.getReducerName()) : [];
     defaultPersistOption.__persist.version = persist.version;
+  } else {
+    persistIsReady();
   }
 };
 
@@ -171,12 +175,12 @@ export const updatePersistState = (state: any): void => {
   }
 
   // Sync models + async models
-  const finalReducers: Record<string, any> = { ...persistReducers };
+  const reducers: Record<string, any> = { ...persistReducers };
   let changed: boolean = false;
 
   Object.keys(state).forEach((key) => {
     if (passPersistReducerName(key)) {
-      finalReducers[key] = state[key];
+      reducers[key] = state[key];
 
       if (state[key] !== persistReducers[key]) {
         const tempString = JSON.stringify(state[key]);
@@ -190,7 +194,7 @@ export const updatePersistState = (state: any): void => {
     }
   });
 
-  persistReducers = finalReducers;
+  persistReducers = reducers;
 
   if (!changed) {
     return;

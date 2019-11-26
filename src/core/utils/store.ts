@@ -3,7 +3,7 @@ import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
 import { PersistStorage } from '../../libs/types';
-import { handlePersist, setPersistConfig, TYPE_PERSIST, updatePersistState } from './persist';
+import { handlePersist, setPersistConfig, TYPE_REHYDRATE, updatePersistState } from './persist';
 import { BaseModel } from '../BaseModel';
 
 export interface ReduxStoreConfig<S = any, A extends Action = Action> {
@@ -57,7 +57,7 @@ const extendReducer = (reducer: Reducer) => {
     stateWhenDispatching = state;
     const result = reducer(state, action);
 
-    if (action.type !== TYPE_PERSIST && stateWhenDispatching !== result) {
+    if (action.type !== TYPE_REHYDRATE && stateWhenDispatching !== result) {
       updatePersistState(result);
     }
 

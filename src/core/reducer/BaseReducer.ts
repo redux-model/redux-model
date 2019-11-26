@@ -2,7 +2,7 @@ import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { ActionResponseHandle, Effects, Reducers, ActionNormalHandle } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import { getState } from '../utils/store';
-import { switchInitData, TYPE_PERSIST } from '../utils/persist';
+import { switchInitData, TYPE_REHYDRATE } from '../utils/persist';
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -36,7 +36,7 @@ export class BaseReducer<Data> {
         }
 
         // For async storage, we should dispatch action to inject persist data into reducer
-        if (action.type === TYPE_PERSIST && action.payload[this.reducerName] !== undefined) {
+        if (action.type === TYPE_REHYDRATE && action.payload[this.reducerName] !== undefined) {
           return action.payload[this.reducerName];
         }
 
