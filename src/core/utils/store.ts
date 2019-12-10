@@ -61,15 +61,21 @@ const combine = () => {
 
 export const watchEffectsReducer = (reducerName: string, className: string) => {
   hasEffectsReducers.push(reducerName);
-  setTimeout(() => {
-    if (!usersReducers[reducerName]) {
-      console.error(
-`Model '${className}' has override protected method 'effects()', consider register its instance manually:
+
+  if (usersReducers[reducerName]) {
+    return;
+  }
+
+  onStoreCreated(() => {
+    setTimeout(() => {
+      if (!usersReducers[reducerName]) {
+        console.error(
+          `Model '${className}' has override protected method 'effects()', consider register its instance manually:
 
 
 Example:
 
-const store = createReduxStore({ 
+const store = createReduxStore({
   reducers: {
     ...aModel.register(),
     ...bModel.register(),
@@ -79,8 +85,9 @@ const store = createReduxStore({
 
 
 `
-      );
-    }
+        );
+      }
+    });
   });
 };
 
