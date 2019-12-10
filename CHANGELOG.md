@@ -1,3 +1,6 @@
+# 6.7.3
+[fix] Get correct reducer name for instance one class several times
+
 # 6.7.2
 [fix] Don't check register before store is created
 
