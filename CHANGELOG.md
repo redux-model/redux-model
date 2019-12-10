@@ -1,3 +1,6 @@
+# 6.7.2
+[fix] Don't check register before store is created
+
 # 6.7.1
 [refactor] Improve performance of persist
 
