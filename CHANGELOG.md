@@ -1,3 +1,6 @@
+# 6.7.4
+[fix] Compare persist config before rehydrate
+
 # 6.7.3
 [fix] Get correct reducer name for instance one class several times
 
