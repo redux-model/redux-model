@@ -109,18 +109,18 @@ const parseStorageData = (data: string | null) => {
 };
 
 export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => {
-  if (shallowEqualObjects(config, persist)) {
+  if (config && shallowEqualObjects(config, persist)) {
     return;
   }
 
   config = persist;
 
-  if (persist) {
+  if (config) {
     ready = false;
-    setStorage(persist.storage);
-    whiteList = persist.whitelist ? persist.whitelist.map((item) => item.getReducerName()) : [];
-    blackList = persist.blacklist ? persist.blacklist.map((item) => item.getReducerName()) : [];
-    defaultPersistOption.__persist.version = persist.version;
+    setStorage(config.storage);
+    whiteList = config.whitelist ? config.whitelist.map((item) => item.getReducerName()) : [];
+    blackList = config.blacklist ? config.blacklist.map((item) => item.getReducerName()) : [];
+    defaultPersistOption.__persist.version = config.version;
   } else {
     persistIsReady();
   }
@@ -137,8 +137,6 @@ export const handlePersist = (store: Store) => {
     } else {
       storageData.then(parseStorageData);
     }
-  } else {
-    persistIsReady();
   }
 };
 
