@@ -44,7 +44,7 @@ test('Restore persist data from storage', async () => {
 
 test('Clear the persist data when the json data invalid', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}}}}}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":2}}}}}}}');
   model = new PersistModel();
 
   const spy = jest.spyOn(console, 'error').mockImplementation();
@@ -54,7 +54,7 @@ test('Clear the persist data when the json data invalid', async () => {
     },
     // @ts-ignore react-native use async storage
     persist: {
-      version: 1,
+      version: 2,
       key: 'test-persist',
       storage: localStorage,
     },
@@ -62,7 +62,7 @@ test('Clear the persist data when the json data invalid', async () => {
   expect(spy).toHaveBeenCalledTimes(1);
 
   expect(model.data.counter).toBe(0);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":2}}');
 });
 
 test('Clear the persist data when version is not matched', async () => {
@@ -76,14 +76,14 @@ test('Clear the persist data when version is not matched', async () => {
     },
     // @ts-ignore react-native use async storage
     persist: {
-      version: 2,
+      version: 3,
       key: 'test-persist',
       storage: localStorage,
     },
   });
 
   expect(model.data.counter).toBe(0);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":2}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":3}}');
 });
 
 test('No persist data in storage', async () => {

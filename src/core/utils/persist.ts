@@ -1,4 +1,5 @@
 import { Store } from 'redux';
+import { shallowEqualObjects } from 'shallow-equal';
 import { ReduxStoreConfig } from './store';
 import { getStorageItem, setStorage, setStorageItem } from '../../libs/storage';
 import { isDebug } from '../../libs/dev';
@@ -108,6 +109,10 @@ const parseStorageData = (data: string | null) => {
 };
 
 export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => {
+  if (shallowEqualObjects(config, persist)) {
+    return;
+  }
+
   config = persist;
 
   if (persist) {
@@ -124,7 +129,7 @@ export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => 
 export const handlePersist = (store: Store) => {
   globalStore = store;
 
-  if (config) {
+  if (config && !ready) {
     const storageData = getStorageItem(KEY_PREFIX + config.key) as string | null | Promise<string | null>;
 
     if (storageData === null || typeof storageData === 'string') {
