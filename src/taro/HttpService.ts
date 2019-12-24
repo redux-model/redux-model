@@ -60,16 +60,17 @@ export class HttpService extends BaseHttpService {
       },
     };
 
-    if (action.method === METHOD.get) {
-      requestOptions.data = action.query;
-    } else {
+    if (action.method !== METHOD.get && action.body) {
       requestOptions.data = action.body;
+    }
 
-      if (action.query) {
-        const isArg = requestOptions.url.includes('?') ? '' : '?';
+    if (action.query) {
+      const isArg = requestOptions.url.includes('?') ? '&' : '?';
 
-        requestOptions.url += `${isArg}${stringify(action.query)}`;
-      }
+      requestOptions.url += `${isArg}${stringify(action.query, {
+        arrayFormat: 'brackets',
+        encodeValuesOnly: true,
+      })}`;
     }
 
     this.next({
