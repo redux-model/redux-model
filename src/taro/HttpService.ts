@@ -1,4 +1,4 @@
-import * as Taro from '@tarojs/taro';
+import Taro from '@tarojs/taro';
 import { stringify } from 'qs';
 import { ActionRequest, FetchHandle, HttpServiceConfig } from './types';
 import { BaseHttpService } from '../core/service/BaseHttpService';
@@ -12,11 +12,13 @@ import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle
 
 export class HttpService extends BaseHttpService {
   protected readonly config: HttpServiceConfig;
+  protected readonly request: typeof Taro.request;
 
   constructor(config: HttpServiceConfig) {
     super(config);
 
     this.config = config;
+    this.request = require(`@tarojs/taro-${process.env.TARO_ENV}`).request;
   }
 
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -79,7 +81,7 @@ export class HttpService extends BaseHttpService {
       effect: action.onPrepare,
     });
 
-    const task = Taro.request(requestOptions);
+    const task = this.request(requestOptions);
     const canceler = task.abort;
     let successInvoked = false;
 
