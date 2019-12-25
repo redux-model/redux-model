@@ -1,3 +1,6 @@
+# 6.7.5
+[fix:Taro] Format array query string to brackets type
+
 # 6.7.4
 [fix] Compare persist config before rehydrate
 
