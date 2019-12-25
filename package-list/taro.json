@@ -20,7 +20,7 @@
     "redux": "*"
   },
   "dependencies": {
-    "immer": "^5.0.1",
+    "immer": "^5.1.0",
     "lodash.clonedeep": "^4.5.0",
     "qs": "^6.9.1",
     "shallow-equal": "^1.2.1",
