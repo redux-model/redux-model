@@ -28,25 +28,26 @@ Redux Model is created to enhance original redux framework, which has complex de
 
 #### Web
 ```bash
-npm install @redux-model/web   redux react-redux
+npm install @redux-model/web redux react-redux
 ```
 
 #### React-Native
 
 ```bash
-npm install @redux-model/react-native   redux react-redux
+npm install @redux-model/react-native redux react-redux
 ```
 
 #### Vue
 
 ```bash
-npm install @redux-model/vue   redux
+npm install @redux-model/vue redux
 ```
 
 
 #### Taro
+
 ```bash
-npm install @redux-model/taro redux   @tarojs/redux @tarojs/redux-h5
+npm install @redux-model/taro redux @tarojs/redux
 ```
 
 # Define Model

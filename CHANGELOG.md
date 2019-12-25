@@ -1,3 +1,7 @@
+# 6.7.8
+[fix:Taro] Use @tarojs/taro instead of react
+[fix:Taro] Taro doesn't compile node_modules for h5 env
+
 # 6.7.5
 [fix:Taro] Format array query string to brackets type
 

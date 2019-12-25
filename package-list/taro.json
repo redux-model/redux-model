@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/taro",
-  "version": "6.7.5",
+  "version": "6.7.8",
   "keywords": [
     "react",
     "redux-model",
@@ -16,7 +16,6 @@
   "license": "MIT",
   "peerDependencies": {
     "@tarojs/redux": "*",
-    "@tarojs/redux-h5": "*",
     "redux": "*"
   },
   "dependencies": {
