@@ -1,11 +1,11 @@
-import { PureComponent, ReactNode } from 'react';
+import { Component } from '@tarojs/taro';
 import { isPersistReady, onPersistReady } from '../core/utils/persist';
 
 type State = Readonly<{
   isReady: boolean;
 }>;
 
-export class PersistGate extends PureComponent<{}, State> {
+export class PersistGate extends Component<object, State> {
   readonly state: State = {
     isReady: isPersistReady(),
   };
@@ -22,7 +22,7 @@ export class PersistGate extends PureComponent<{}, State> {
     }
   }
 
-  render(): ReactNode {
+  render() {
     const { children } = this.props;
     const { isReady } = this.state;
 
