@@ -20,9 +20,17 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
   // Avoid re-render component even if reducer data doesn't change.
   protected loadingsCache?: [Metas, MetasLoading<M>];
 
-  public constructor(request: A, instanceName: string, runAction: (action: ActionRequest) => FetchHandle<Response, Payload>) {
-    super(instanceName);
+  protected readonly clearThrottleFunc: (key: string) => void;
 
+  public constructor(config: {
+    request: A
+    instanceName: string;
+    runAction: (action: ActionRequest) => FetchHandle<Response, Payload>;
+    clearThrottle: (key: string) => void;
+  }) {
+    super(config.instanceName);
+
+    this.clearThrottleFunc = config.clearThrottle;
     this.prepareType = `${this.typePrefix} prepare`;
     this.failType = `${this.typePrefix} fail`;
 
@@ -32,21 +40,26 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
 
     // @ts-ignore
     return this.proxy((...args: Parameters<A>) => {
-      const action = (request(...args) as unknown as HttpServiceBuilder<Data, Response, Payload, M>)
+      const action = (config.request(...args) as unknown as HttpServiceBuilder<Data, Response, Payload, M>)
         .collect({
           prepare: this.prepareType,
           success: this.successType,
           fail: this.failType,
         });
 
-      return runAction(action);
+      return config.runAction(action);
     }, [
       'onSuccess', 'onPrepare', 'onFail',
       'getPrepareType', 'getFailType',
       'useMeta', 'useMetas', 'useLoading', 'useLoadings',
+      'clearThrottle',
     ], [
       'meta', 'metas', 'loading', 'loadings',
     ]);
+  }
+
+  public clearThrottle(): void {
+    this.clearThrottleFunc(this.successType);
   }
 
   public onSuccess<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {

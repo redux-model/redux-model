@@ -25,10 +25,12 @@ export abstract class BaseHttpService {
   protected readonly config: BaseHttpServiceConfig;
 
   protected caches: Partial<{
-    [key: string]: {
-      timestamp: number;
-      response: any;
-    };
+    [key: string]: Partial<{
+      [key: string]: {
+        timestamp: number;
+        response: any;
+      };
+    }>;
   }> = {};
 
   constructor(config: BaseHttpServiceConfig) {
@@ -50,7 +52,12 @@ export abstract class BaseHttpService {
       instanceName += '_' + increaseActionCounter();
     }
 
-    return new RequestAction(fn, instanceName, this.withThrottle.bind(this));
+    return new RequestAction({
+      request: fn,
+      instanceName,
+      runAction: this.withThrottle.bind(this),
+      clearThrottle: this.clearThrottle.bind(this),
+    });
   }
 
   public getAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
@@ -89,13 +96,21 @@ export abstract class BaseHttpService {
     ]);
   }
 
-  protected withThrottle<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
-    if (action.useThrottle) {
-      // The cacheKey only will be generated when useCache is set to true to improve performance
-      action.throttleKey = this.generateThrottleKey(action);
-      const item = this.caches[action.throttleKey];
+  protected clearThrottle(key: string): void {
+    Reflect.deleteProperty(this.caches, key);
+  }
 
-      if (item && Date.now() <= item.timestamp) {
+  protected withThrottle<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
+    if (!action.useThrottle) {
+      return this.runAction(action);
+    }
+
+    action.throttleKey = this.generateThrottleKey(action);
+    const key = action.type.success;
+    const item = this.caches[key]?.[action.throttleKey];
+
+    if (item) {
+      if (Date.now() <= item.timestamp) {
         const promise = new Promise((resolve) => {
           const fakeAction: ActionResponseHandle = {
             ...action,
@@ -108,24 +123,25 @@ export abstract class BaseHttpService {
           this.triggerShowSuccess(fakeAction, action.successText);
           resolve(fakeAction);
         });
+
         const wrapPromise = promise as FetchHandle;
-
         wrapPromise.cancel = () => {};
-
         return wrapPromise;
+      } else {
+        Reflect.deleteProperty(this.caches[key]!, action.throttleKey);
       }
     }
-
-    // In case user toggle cache flag
-    // In case data is expired
-    Reflect.deleteProperty(this.caches, action.throttleKey);
 
     return this.runAction(action);
   }
 
   protected collectResponse(action: ActionResponseHandle): void {
     if (action.useThrottle && action.throttleMillSeconds > 0) {
-      this.caches[action.throttleKey] = {
+      if (!this.caches[action.type]) {
+        this.caches[action.type] = {};
+      }
+
+      this.caches[action.type]![action.throttleKey] = {
         timestamp: Date.now() + action.throttleMillSeconds,
         response: cloneDeep(action.response),
       };

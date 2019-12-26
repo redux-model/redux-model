@@ -217,7 +217,7 @@ test('Throttle action can return remote data without real fetch', async () => {
   expect(result4.response.id).toBe(987);
 });
 
-test('Cache action always fetch remote data if the second parameter set to false', async () => {
+test('Throttle action always fetch remote data if the second parameter set to false', async () => {
   $api.mockResolveValue({ id: 123 });
   const result1 = await model.disableCacheProfile();
   expect(result1.response.id).toBe(123);
@@ -225,4 +225,24 @@ test('Cache action always fetch remote data if the second parameter set to false
   $api.mockResolveValue({ id: 456 });
   const result2 = await model.disableCacheProfile();
   expect(result2.response.id).toBe(456);
+});
+
+test('Clear Throttle action by hand', async () => {
+  $api.mockResolveValue({ id: 123 });
+  const result1 = await model.enableThrottleProfile();
+  expect(result1.response.id).toBe(123);
+
+  // Cache
+  $api.mockResolveValue({ id: 666 });
+  const result2 = await model.enableThrottleProfile();
+  expect(result2.response.id).toBe(123);
+
+  model.enableThrottleProfile.clearThrottle();
+
+  const result3 = await model.enableThrottleProfile();
+  expect(result3.response.id).toBe(666);
+
+  // Cache
+  const result4 = await model.enableThrottleProfile();
+  expect(result4.response.id).toBe(666);
 });
