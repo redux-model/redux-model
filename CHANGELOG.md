@@ -1,3 +1,18 @@
+# 6.7.9
+[fix] Clear throttle supported
+
+```typescript```
+class Test extends Model {
+  getList = api.action(() => {
+    return this.get('/api/').throttle(5000);
+  });
+}
+const test = new Test();
+
+// Clear by invoke method
+test.getList.clearThrottle();
+```
+
 # 6.7.8
 [fix:Taro] Use @tarojs/taro instead of react
 [fix:Taro] Taro doesn't compile node_modules for h5 env
