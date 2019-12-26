@@ -1,7 +1,7 @@
 # 6.7.9
 [fix] Clear throttle supported
 
-```typescript```
+```typescript
 class Test extends Model {
   getList = api.action(() => {
     return this.get('/api/').throttle(5000);
