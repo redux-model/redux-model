@@ -9,4 +9,6 @@ export declare abstract class BaseRequestAction<Data, A extends (...args: any[])
 
   getPrepareType(): string;
   getFailType(): string;
+  // Clear all throttle cache in this action
+  clearThrottle(): void;
 }
