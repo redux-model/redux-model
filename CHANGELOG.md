@@ -1,4 +1,4 @@
-#6.7.10
+# 6.7.10
 [fix] Add type definition: clearThrottle(): void
 <br>
 [fix] Delete cache for toggle throttle
