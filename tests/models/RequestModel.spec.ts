@@ -227,6 +227,20 @@ test('Throttle action always fetch remote data if the second parameter set to fa
   expect(result2.response.id).toBe(456);
 });
 
+test('Current throttle will be removed when toggle', async () => {
+  $api.mockResolveValue({ id: 123 });
+  const result1 = await model.configurableThrottle(true);
+  expect(result1.response.id).toBe(123);
+
+  $api.mockResolveValue({ id: 456 });
+  const result2 = await model.configurableThrottle(false);
+  expect(result2.response.id).toBe(456);
+
+  $api.mockResolveValue({ id: 789 });
+  const result3 = await model.configurableThrottle(true);
+  expect(result3.response.id).toBe(789);
+});
+
 test('Clear Throttle action by hand', async () => {
   $api.mockResolveValue({ id: 123 });
   const result1 = await model.enableThrottleProfile();

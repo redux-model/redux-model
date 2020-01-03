@@ -74,6 +74,12 @@ export class RequestModel extends BaseTestModel<Data> {
       .throttle(3000, false);
   });
 
+  configurableThrottle = $api.action((useCache: boolean) => {
+    return this
+    .get<{ id: number }>('/profile/manage')
+    .throttle(3000, useCache);
+  });
+
   getProfileById = $api.action((id: number) => {
     return this
       .get<Response>('/profile.json')

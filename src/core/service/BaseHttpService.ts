@@ -101,13 +101,22 @@ export abstract class BaseHttpService {
   }
 
   protected withThrottle<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
+    const throttleKey = this.generateThrottleKey(action);
+    const key = action.type.success;
+    const cacheData = this.caches[key];
+
     if (!action.useThrottle) {
+      if (cacheData) {
+        // Delete cache in case of toggle throttle
+        Reflect.deleteProperty(cacheData, throttleKey);
+      }
+
       return this.runAction(action);
     }
 
-    action.throttleKey = this.generateThrottleKey(action);
-    const key = action.type.success;
-    const item = this.caches[key]?.[action.throttleKey];
+    const item = cacheData?.[throttleKey];
+
+    action.throttleKey = throttleKey;
 
     if (item) {
       if (Date.now() <= item.timestamp) {
@@ -127,8 +136,8 @@ export abstract class BaseHttpService {
         const wrapPromise = promise as FetchHandle;
         wrapPromise.cancel = () => {};
         return wrapPromise;
-      } else {
-        Reflect.deleteProperty(this.caches[key]!, action.throttleKey);
+      } else if (cacheData) {
+        Reflect.deleteProperty(cacheData, action.throttleKey);
       }
     }
 
