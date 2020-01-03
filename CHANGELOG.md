@@ -1,3 +1,8 @@
+#6.7.10
+[fix] Add type definition: clearThrottle(): void
+<br>
+[fix] Delete cache for toggle throttle
+
 # 6.7.9
 [fix] Clear throttle supported
 
