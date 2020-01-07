@@ -15,8 +15,9 @@ export interface ReduxStoreConfig<S = any, A extends Action = Action> {
     version: string | number;
     key: string;
     storage: PersistStorage;
-    whitelist?: Array<BaseModel<any>>;
-    blacklist?: Array<BaseModel<any>>;
+    whitelist: Record<string, BaseModel<any>>;
+    // When to restore data to storage, Set 0(default) to make the data restore immediately.
+    restoreDelay?: number;
   };
 }
 

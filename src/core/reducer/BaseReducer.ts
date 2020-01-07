@@ -2,7 +2,7 @@ import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { ActionResponseHandle, Effects, Reducers, ActionNormalHandle } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import { getState } from '../utils/store';
-import { switchInitData, TYPE_REHYDRATE } from '../utils/persist';
+import { TYPE_REHYDRATE, subscribePersistRehydrate } from '../utils/persist';
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -32,7 +32,8 @@ export class BaseReducer<Data> {
     return {
       [this.reducerName]: (state, action: ActionResponseHandle | ActionNormalHandle) => {
         if (state === undefined) {
-          return switchInitData(this.reducerName, this.initData);
+          subscribePersistRehydrate(this.reducerName);
+          return this.initData;
         }
 
         // For async storage, we should dispatch action to inject persist data into reducer

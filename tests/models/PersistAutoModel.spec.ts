@@ -18,8 +18,8 @@ test('Initial data will be used if persist data is missing', () => {
   expect(model.data.counter).toBe(0);
   model.increase();
   expect(model.data.counter).toBe(1);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__metas__":"{}","PersistAutoModel":"{\\"counter\\":1}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":1}}');
   model.increase();
   expect(model.data.counter).toBe(2);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__metas__":"{}","PersistAutoModel":"{\\"counter\\":2}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":1}}');
 });

@@ -18,7 +18,7 @@ afterEach(() => {
 
 test('Restore persist data from storage', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
   model = new PersistModel();
 
   createReduxStore({
@@ -30,21 +30,24 @@ test('Restore persist data from storage', async () => {
       version: 1,
       key: 'test-persist',
       storage: localStorage,
+      whitelist: {
+        model,
+      },
     },
   });
 
   expect(model.data.counter).toBe(2);
   model.increase();
   expect(model.data.counter).toBe(3);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":3}","__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":3}","__persist":{"version":1}}');
   model.increase();
   expect(model.data.counter).toBe(4);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":4}","__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":4}","__persist":{"version":1}}');
 });
 
 test('Clear the persist data when the json data invalid', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":2}}}}}}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":2}}}}}}}');
   model = new PersistModel();
 
   const spy = jest.spyOn(console, 'error').mockImplementation();
@@ -57,6 +60,9 @@ test('Clear the persist data when the json data invalid', async () => {
       version: 2,
       key: 'test-persist',
       storage: localStorage,
+      whitelist: {
+        model,
+      },
     },
   });
   expect(spy).toHaveBeenCalledTimes(1);
@@ -67,7 +73,7 @@ test('Clear the persist data when the json data invalid', async () => {
 
 test('Clear the persist data when version is not matched', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
   model = new PersistModel();
 
   createReduxStore({
@@ -79,6 +85,9 @@ test('Clear the persist data when version is not matched', async () => {
       version: 3,
       key: 'test-persist',
       storage: localStorage,
+      whitelist: {
+        model,
+      },
     },
   });
 
@@ -100,6 +109,9 @@ test('No persist data in storage', async () => {
       version: 1,
       key: 'test-persist',
       storage: localStorage,
+      whitelist: {
+        model,
+      },
     },
   });
 
@@ -109,7 +121,7 @@ test('No persist data in storage', async () => {
 
 test('Reducer data is not hint', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"__metas__":"{}","__persist":{"version":1}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"__persist":{"version":1}}');
   model = new PersistModel();
 
   createReduxStore({
@@ -121,18 +133,21 @@ test('Reducer data is not hint', async () => {
       version: 1,
       key: 'test-persist',
       storage: localStorage,
+      whitelist: {
+        model,
+      },
     },
   });
 
   expect(model.data.counter).toBe(0);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":1}}');
   model.increase();
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__metas__":"{}","PersistModel":"{\\"counter\\":1}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":1}","__persist":{"version":1}}');
 });
 
-test('Restore data from storage with blacklist', async () => {
+test('Restore data from storage without whitelist', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
   model = new PersistModel();
 
@@ -145,22 +160,22 @@ test('Restore data from storage with blacklist', async () => {
       version: 1,
       key: 'test-persist',
       storage: localStorage,
-      blacklist: [model],
+      whitelist: {},
     },
   });
 
   expect(model.data.counter).toBe(0);
   model.increase();
   expect(model.data.counter).toBe(1);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":1}}');
   model.increase();
   expect(model.data.counter).toBe(2);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"__persist":{"version":1}}');
 });
 
 test('Restore data from storage with whitelist', async () => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
   model = new PersistModel();
 
@@ -173,22 +188,24 @@ test('Restore data from storage with whitelist', async () => {
       version: 1,
       key: 'test-persist',
       storage: localStorage,
-      whitelist: [model],
+      whitelist: {
+        model,
+      },
     },
   });
 
   expect(model.data.counter).toBe(2);
   model.increase();
   expect(model.data.counter).toBe(3);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":3}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":3}","__persist":{"version":1}}');
   model.increase();
   expect(model.data.counter).toBe(4);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":4}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":4}","__persist":{"version":1}}');
 });
 
-test('Delay to persist data in production', async (done) => {
+test('Delay to persist data', async (done) => {
   await sleep();
-  localStorage.setItem('ReduxModel:Persist:test-persist', '{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
   const dev = require('../../src/libs/dev');
   const spy = jest.spyOn(dev, 'isDebug').mockImplementation(() => false);
@@ -204,24 +221,28 @@ test('Delay to persist data in production', async (done) => {
       version: 1,
       key: 'test-persist',
       storage: localStorage,
+      whitelist: {
+        model,
+      },
+      restoreDelay: 200,
     },
   });
 
   expect(model.data.counter).toBe(2);
   model.increase();
   expect(model.data.counter).toBe(3);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
   setTimeout(() => {
-    expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":4}","__metas__":"{}","__persist":{"version":1}}');
+    expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":4}","__persist":{"version":1}}');
   }, 301);
 
   model.increase();
   expect(model.data.counter).toBe(4);
-  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":2}","__metas__":"{}","__persist":{"version":1}}');
+  expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
   setTimeout(() => {
-    expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"PersistModel":"{\\"counter\\":4}","__metas__":"{}","__persist":{"version":1}}');
+    expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":4}","__persist":{"version":1}}');
     done();
   }, 301);
 

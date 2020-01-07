@@ -1,7 +1,6 @@
 import { ActionResponseHandle, Meta, Metas, Reducers, Types } from '../utils/types';
 import { appendReducers, getState, getStore } from '../utils/store';
 import { METAS_PICK_METHOD } from '../utils/meta';
-import { switchInitData, TYPE_REHYDRATE } from '../utils/persist';
 
 interface MetaDict {
   [key: string]: string;
@@ -59,12 +58,7 @@ class MetaReducer {
     return {
       [MetaReducer.reducerName]: (state: BigMetas, action: ActionResponseHandle) => {
         if (state === undefined) {
-          return switchInitData(MetaReducer.reducerName, {});
-        }
-
-        // For async storage, we should dispatch action to inject persist data into reducer
-        if (action.type === TYPE_REHYDRATE && action.payload[MetaReducer.reducerName] !== undefined) {
-          return action.payload[MetaReducer.reducerName];
+          return {};
         }
 
         if (action.type === MetaReducer.RESTORE) {
