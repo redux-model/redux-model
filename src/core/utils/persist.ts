@@ -1,5 +1,4 @@
 import { Store } from 'redux';
-import { shallowEqualObjects } from 'shallow-equal';
 import { ReduxStoreConfig } from './store';
 import { getStorageItem, setStorage, setStorageItem } from '../../libs/storage';
 import { BaseModel } from '../BaseModel';
@@ -94,19 +93,24 @@ const parseStorageData = (data: string | null) => {
 
   if (subscription.length) {
     const payload: Record<string, any> = {};
+    let canDispatch = false;
 
     subscription.forEach((reducerName) => {
       const persistKey = model2persistDict[reducerName];
 
       if (persistKey) {
+        canDispatch = true;
         payload[reducerName] = persistReducers[persistKey];
       }
     });
     subscription = [];
-    globalStore!.dispatch({
-      type: TYPE_REHYDRATE,
-      payload,
-    });
+
+    if (canDispatch) {
+      globalStore!.dispatch({
+        type: TYPE_REHYDRATE,
+        payload,
+      });
+    }
   }
 
   persistIsReady();
@@ -114,10 +118,6 @@ const parseStorageData = (data: string | null) => {
 };
 
 export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => {
-  if (config && shallowEqualObjects(config, persist)) {
-    return;
-  }
-
   config = persist;
 
   if (config) {
