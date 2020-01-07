@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/taro",
-  "version": "6.7.10",
+  "version": "6.8.0",
   "keywords": [
     "react",
     "redux-model",
@@ -22,7 +22,6 @@
     "immer": "^5.1.0",
     "lodash.clonedeep": "^4.5.0",
     "qs": "^6.9.1",
-    "shallow-equal": "^1.2.1",
     "tslib": "^1.10.0"
   }
 }
