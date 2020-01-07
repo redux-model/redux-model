@@ -1,3 +1,7 @@
+# 6.8.0
+[feat] New persist api to against compression
+[feat] Persist data can be filtered by model now
+
 # 6.7.10
 [fix] Add type definition: clearThrottle(): void
 <br>
