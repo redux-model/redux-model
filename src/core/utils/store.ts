@@ -3,7 +3,7 @@ import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
 import { PersistStorage } from '../../libs/types';
-import { handlePersist, setPersistConfig, TYPE_REHYDRATE, updatePersistState } from './persist';
+import { handlePersist, setPersistConfig, TYPE_REHYDRATE, updatePersistState, persistContainReducer } from './persist';
 import { BaseModel } from '../BaseModel';
 
 export interface ReduxStoreConfig<S = any, A extends Action = Action> {
@@ -68,6 +68,10 @@ export const watchEffectsReducer = (reducerName: string, className: string) => {
   }
 
   onStoreCreated(() => {
+    if (persistContainReducer(reducerName)) {
+      return;
+    }
+
     setTimeout(() => {
       if (!usersReducers[reducerName]) {
         console.error(

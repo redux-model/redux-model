@@ -229,3 +229,7 @@ export const onPersistReady = (fn: () => void): void => {
 export const isPersistReady = (): boolean => {
   return ready;
 };
+
+export const persistContainReducer = (reducerName: string): boolean => {
+  return whiteList[reducerName] !== undefined;
+}
