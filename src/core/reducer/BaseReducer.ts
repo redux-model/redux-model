@@ -2,7 +2,7 @@ import { createDraft, finishDraft, isDraft, isDraftable } from 'immer';
 import { ActionResponseHandle, Effects, Reducers, ActionNormalHandle } from '../utils/types';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import { getState } from '../utils/store';
-import { TYPE_REHYDRATE, subscribePersistRehydrate } from '../utils/persist';
+import { TYPE_REHYDRATE, switchInitData } from '../utils/persist';
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -11,9 +11,12 @@ export class BaseReducer<Data> {
 
   protected readonly reducerName: string;
 
-  constructor(init: Data, instanceName: string) {
+  protected readonly filterPersistData?: (data: Data) => Data | void;
+
+  constructor(init: Data, instanceName: string, filterPersistData?: (data: Data) => Data | void) {
     this.initData = init;
     this.reducerName = instanceName;
+    this.filterPersistData = filterPersistData;
   }
 
   public clear() {
@@ -32,13 +35,14 @@ export class BaseReducer<Data> {
     return {
       [this.reducerName]: (state, action: ActionResponseHandle | ActionNormalHandle) => {
         if (state === undefined) {
-          subscribePersistRehydrate(this.reducerName);
-          return this.initData;
+          const newState = switchInitData(this.reducerName, this.initData);
+
+          return newState === this.initData ? newState : this.persistState(newState);
         }
 
         // For async storage, we should dispatch action to inject persist data into reducer
         if (action.type === TYPE_REHYDRATE && action.payload[this.reducerName] !== undefined) {
-          return action.payload[this.reducerName];
+          return this.persistState(action.payload[this.reducerName]);
         }
 
         // Actions
@@ -59,6 +63,33 @@ export class BaseReducer<Data> {
       },
     };
   }
+
+  protected persistState(state: any): any {
+    if (!this.filterPersistData) {
+      return state;
+    }
+
+    if (isDraftable(state)) {
+      const draft = createDraft(state);
+      const responseDraft = this.filterPersistData(draft);
+
+      if (responseDraft === undefined) {
+        state = finishDraft(draft);
+      } else if (isDraft(responseDraft)) {
+        state = finishDraft(responseDraft);
+      } else {
+        state = responseDraft;
+      }
+    } else {
+      state = this.filterPersistData(state);
+
+      if (state === undefined) {
+        throw new StateReturnRequiredError('filterPersistData');
+      }
+    }
+
+    return state;
+  };
 
   protected changeState(effect: Function, state: any, action: ActionResponseHandle | ActionNormalHandle): any {
     if (isDraftable(state)) {

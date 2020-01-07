@@ -12,6 +12,10 @@ const sleep = async () => {
   });
 };
 
+const getAlias = (): string => {
+  return duration.toString();
+};
+
 afterEach(() => {
   model.clear();
 });
@@ -19,7 +23,7 @@ afterEach(() => {
 test('Restore persist data from storage', async () => {
   await sleep();
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -74,7 +78,7 @@ test('Clear the persist data when the json data invalid', async () => {
 test('Clear the persist data when version is not matched', async () => {
   await sleep();
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -98,7 +102,7 @@ test('Clear the persist data when version is not matched', async () => {
 test('No persist data in storage', async () => {
   await sleep();
   localStorage.removeItem('ReduxModel:Persist:test-persist');
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -122,7 +126,7 @@ test('No persist data in storage', async () => {
 test('Reducer data is not hint', async () => {
   await sleep();
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"__persist":{"version":1}}');
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -149,7 +153,7 @@ test('Restore data from storage without whitelist', async () => {
   await sleep();
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -177,7 +181,7 @@ test('Restore data from storage with whitelist', async () => {
   await sleep();
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -203,14 +207,11 @@ test('Restore data from storage with whitelist', async () => {
   expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":4}","__persist":{"version":1}}');
 });
 
-test('Delay to persist data', async (done) => {
+test('Delay to restore data', async (done) => {
   await sleep();
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":2}","__persist":{"version":1}}');
 
-  const dev = require('../../src/libs/dev');
-  const spy = jest.spyOn(dev, 'isDebug').mockImplementation(() => false);
-
-  model = new PersistModel();
+  model = new PersistModel(getAlias());
 
   createReduxStore({
     reducers: {
@@ -245,6 +246,4 @@ test('Delay to persist data', async (done) => {
     expect(localStorage.getItem('ReduxModel:Persist:test-persist')).toBe('{"model":"{\\"counter\\":4}","__persist":{"version":1}}');
     done();
   }, 301);
-
-  spy.mockRestore();
 });

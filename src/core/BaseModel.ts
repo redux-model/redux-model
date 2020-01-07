@@ -32,6 +32,8 @@ export abstract class BaseModel<Data = null> {
   // Therefore, we use snake case to define name.
   private __change_reducer?: NormalActionAlias<Data, () => ActionNormalHandle<Data, any>, any>;
 
+  declare protected filterPersistData: (data: Data) => Data | void;
+
   constructor(alias: string = '') {
     this.__instanceName = setInstanceName(this.constructor.name, alias);
     this.onInit();
@@ -78,7 +80,11 @@ export abstract class BaseModel<Data = null> {
       const initData = this.initReducer();
 
       if (initData !== null) {
-        this.__reducer = new BaseReducer<Data>(initData, this.__instanceName);
+        this.__reducer = new BaseReducer<Data>(
+          initData,
+          this.__instanceName,
+          this.filterPersistData?.bind(this)
+        );
       }
     }
 

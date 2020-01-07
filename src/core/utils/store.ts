@@ -50,8 +50,8 @@ const combine = () => {
     stateWhenDispatching = state;
     const result = combined(state, action);
 
-    if (action.type !== TYPE_REHYDRATE && stateWhenDispatching !== result) {
-      updatePersistState(result);
+    if (stateWhenDispatching !== result) {
+      updatePersistState(result, action.type === TYPE_REHYDRATE);
     }
 
     isDispatching = false;
@@ -105,14 +105,15 @@ export function createReduxStore<S = any>(config: ReduxStoreConfig<S>): Store<S>
   setPersistConfig(config.persist);
 
   if (store) {
+    // Avoid to dispatch persist data for @@redux/x.y.z
+    handlePersist(store);
     store.replaceReducer(combine());
   } else {
     store = createStore(combine(), config.preloadedState, config.enhancer);
     listeners.forEach((listener) => listener(store!));
     listeners = [];
+    handlePersist(store);
   }
-
-  handlePersist(store);
 
   return store;
 }

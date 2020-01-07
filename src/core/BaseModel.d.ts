@@ -40,6 +40,8 @@ export declare abstract class BaseModel<Data = null> {
   // Do anything after reducer is generated.
   protected onReducerCreated(store: Store): void;
 
+  protected filterPersistData(data: Data): Data | void;
+
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void;
 
   protected action<A extends (state: State<Data>, payload: any) => StateReturn<Data>>(

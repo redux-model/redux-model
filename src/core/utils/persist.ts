@@ -114,7 +114,6 @@ const parseStorageData = (data: string | null) => {
   }
 
   persistIsReady();
-  // We don't need to collect initial data. Because they are useless.
 };
 
 export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => {
@@ -150,14 +149,36 @@ export const handlePersist = (store: Store) => {
 };
 
 // Since whitelist is required, model instances who want to link persist are always created before store.
-export const subscribePersistRehydrate = (reducerName: string): void => {
-  if (!ready) {
+export const switchInitData = (reducerName: string, state: any): any => {
+  if (!config) {
+    return state;
+  }
+
+  const persistKey = model2persistDict[reducerName];
+
+  if (!persistKey) {
+    return state;
+  }
+
+  if (ready) {
+    const persistState = persistReducers[persistKey];
+    return persistState === undefined ? state : persistState;
+  }
+
+  if (!subscription.includes(reducerName)) {
     subscription.push(reducerName);
   }
+
+  return state;
 };
 
-export const updatePersistState = (state: any): void => {
-  if (!config || !ready) {
+export const updatePersistState = (state: any, force: boolean): void => {
+  if (!config) {
+    return;
+  }
+
+  // Persist is not ready before TYPE_REHYDRATE
+  if (!ready && !force) {
     return;
   }
 
