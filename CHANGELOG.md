@@ -1,3 +1,6 @@
+# 6.8.2
+[feat] Downgrade es6 syntax to support low version browser
+
 # 6.8.0
 [feat] New persist api to against compression
 [feat] Persist data can be filtered by model now

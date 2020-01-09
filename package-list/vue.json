@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/vue",
-  "version": "6.8.0",
+  "version": "6.8.2",
   "keywords": [
     "vue",
     "redux-model",
@@ -26,6 +26,7 @@
     "deep-diff": "^1.0.2",
     "immer": "^5.1.0",
     "lodash.clonedeep": "^4.5.0",
+    "object-assign": "^4.1.1",
     "tslib": "^1.10.0"
   }
 }
