@@ -1,3 +1,4 @@
+import assign from 'object-assign';
 import { Action, combineReducers, createStore, DeepPartial, Reducer, Store, StoreEnhancer } from 'redux';
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
@@ -97,7 +98,7 @@ const store = createReduxStore({
 };
 
 export const appendReducers = (reducers: Reducers) => {
-  Object.assign(autoReducers, reducers);
+  assign(autoReducers, reducers);
 
   store?.replaceReducer(combine());
 };

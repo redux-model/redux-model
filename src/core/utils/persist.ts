@@ -12,6 +12,7 @@ const defaultPersistOption: { __persist: { version: number | string } } = {
 const KEY_PREFIX = 'ReduxModel:Persist:';
 let whiteList: Record<string, BaseModel<any>> = {};
 let model2persistDict: Record<string, string> = {};
+let persistKeys: string[] = [];
 let restoreDelay: number = 0;
 let subscription: string[] = [];
 let persistReducers: Record<string, any> = {};
@@ -65,13 +66,11 @@ const parseStorageData = (data: string | null) => {
       const tempReducers = JSON.parse(data);
       if (tempReducers.__persist.version === config.version) {
         let shouldRestore = false;
-        const persistKeys = Object.values(model2persistDict);
-
         delete tempReducers.__persist;
 
         persistReducers = {};
         Object.keys(tempReducers).forEach((key) => {
-          if (persistKeys.includes(key)) {
+          if (persistKeys.indexOf(key) >= 0) {
             objectStrings[key] = tempReducers[key];
             persistReducers[key] = JSON.parse(tempReducers[key]);
           } else {
@@ -123,7 +122,9 @@ export const setPersistConfig = (persist: ReduxStoreConfig['persist']): void => 
     ready = false;
     setStorage(config.storage);
     whiteList = config.whitelist || {};
+    persistKeys = [];
     model2persistDict = Object.keys(whiteList).reduce((carry, persistKey) => {
+      persistKeys.push(persistKey);
       carry[whiteList[persistKey].getReducerName()] = persistKey;
       return carry;
     }, {});
@@ -165,7 +166,7 @@ export const switchInitData = (reducerName: string, state: any): any => {
     return persistState === undefined ? state : persistState;
   }
 
-  if (!subscription.includes(reducerName)) {
+  if (subscription.indexOf(reducerName) === -1) {
     subscription.push(reducerName);
   }
 
@@ -186,7 +187,9 @@ export const updatePersistState = (state: any, force: boolean): void => {
   const tempPersistReducers: Record<string, any> = { ...persistReducers };
   let changed: boolean = false;
 
-  Object.entries(model2persistDict).forEach(([reducerName, persistKey]) => {
+  Object.keys(model2persistDict).forEach((reducerName) => {
+    const persistKey = model2persistDict[reducerName];
+
     tempPersistReducers[persistKey] = state[reducerName];
 
     if (state[reducerName] !== persistReducers[persistKey]) {
@@ -231,5 +234,5 @@ export const isPersistReady = (): boolean => {
 };
 
 export const persistContainReducer = (reducerName: string): boolean => {
-  return whiteList[reducerName] !== undefined;
+  return model2persistDict[reducerName] !== undefined;
 }

@@ -56,7 +56,7 @@ export class HttpService extends BaseHttpService {
       },
     };
     let successInvoked = false;
-    if ([METHOD.post, METHOD.put, METHOD.delete, METHOD.patch].includes(action.method)) {
+    if ([METHOD.post, METHOD.put, METHOD.delete, METHOD.patch].indexOf(action.method) >= 0) {
       requestOptions.data = action.body;
     }
 

@@ -67,7 +67,7 @@ export class HttpService extends BaseHttpService {
     }
 
     if (action.query) {
-      const isArg = requestOptions.url.includes('?') ? '&' : '?';
+      const isArg = requestOptions.url.indexOf('?') >= 0 ? '&' : '?';
 
       requestOptions.url += `${isArg}${stringify(action.query, {
         arrayFormat: 'brackets',

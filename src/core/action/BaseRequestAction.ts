@@ -1,3 +1,4 @@
+import assign from 'object-assign';
 import {
   Meta,
   MetasLoading,
@@ -114,7 +115,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
       // Parameter `metaKey` is useless here.
       if (value === undefined) {
         if (!customMetas.pick) {
-          Object.assign(customMetas, METAS_PICK_METHOD);
+          assign(customMetas, METAS_PICK_METHOD);
         }
 
         return customMetas;
@@ -148,7 +149,7 @@ export abstract class BaseRequestAction<Data, A extends (...args: any[]) => Http
     const metas: Metas<M> = MetaReducer.getData<Metas>(this.typePrefix) || DEFAULT_METAS;
 
     if (!metas.pick) {
-      Object.assign(metas, METAS_PICK_METHOD);
+      assign(metas, METAS_PICK_METHOD);
     }
 
     return metas;
