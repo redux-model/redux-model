@@ -29,8 +29,10 @@ export declare abstract class BaseHttpService {
 
   protected abstract runAction(action: any): any;
 
-  protected getCacheKey(action: ActionRequest | ActionResponseHandle): string;
-  protected withCache<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload>;
+  protected generateThrottleKey(action: ActionRequest | ActionResponseHandle): string;
+  protected clearThrottle(key: string): void;
+  protected withThrottle<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload>;
+  
   protected collectResponse(action: ActionResponseHandle): void;
 
   protected next(action: AnyAction): void;
