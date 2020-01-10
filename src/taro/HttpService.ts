@@ -51,6 +51,16 @@ export class HttpService extends BaseHttpService {
       url = this.config.baseUrl + url;
     }
 
+    if (action.query) {
+      const isArg = url.indexOf('?') >= 0 ? '&' : '?';
+      const args = stringify(action.query, {
+        arrayFormat: 'brackets',
+        encodeValuesOnly: true,
+      });
+
+      url += `${isArg}${args}`;
+    }
+
     const requestOptions: Taro.request.Param = {
       url,
       method: action.method as any,
@@ -62,17 +72,9 @@ export class HttpService extends BaseHttpService {
       },
     };
 
+    // For query request, `requestOptions.data` will be considered as queryString.
     if (action.method !== METHOD.get && action.body) {
       requestOptions.data = action.body;
-    }
-
-    if (action.query) {
-      const isArg = requestOptions.url.indexOf('?') >= 0 ? '&' : '?';
-
-      requestOptions.url += `${isArg}${stringify(action.query, {
-        arrayFormat: 'brackets',
-        encodeValuesOnly: true,
-      })}`;
     }
 
     this.next({

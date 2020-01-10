@@ -42,10 +42,12 @@ export class HttpService extends BaseHttpService {
 
   protected runAction(action: ActionRequest): FetchHandle {
     this.config.beforeSend?.(action);
+
     const { prepare, success, fail } = action.type;
     const source = axios.CancelToken.source();
     const requestOptions: AxiosRequestConfig = {
       url: action.uri,
+      data: action.body,
       params: action.query,
       cancelToken: source.token,
       method: action.method as AxiosRequestConfig['method'],
@@ -56,9 +58,6 @@ export class HttpService extends BaseHttpService {
       },
     };
     let successInvoked = false;
-    if ([METHOD.post, METHOD.put, METHOD.delete, METHOD.patch].indexOf(action.method) >= 0) {
-      requestOptions.data = action.body;
-    }
 
     this.next({
       ...action,
