@@ -1,3 +1,6 @@
+# 6.8.3
+[fix] Compatible with taro http status and statusCode [#6](https://github.com/redux-model/redux-model/issues/6)
+
 # 6.8.2
 [feat] Downgrade es6 syntax to support low version browser
 

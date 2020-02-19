@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/taro",
-  "version": "6.8.2",
+  "version": "6.8.3",
   "keywords": [
     "react",
     "redux-model",
@@ -19,7 +19,7 @@
     "redux": "*"
   },
   "dependencies": {
-    "immer": "^5.1.0",
+    "immer": "^5.3.6",
     "lodash.clonedeep": "^4.5.0",
     "object-assign": "^4.1.1",
     "qs": "^6.9.1",
