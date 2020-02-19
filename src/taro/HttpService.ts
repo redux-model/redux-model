@@ -112,7 +112,7 @@ export class HttpService extends BaseHttpService {
 
         return Promise.resolve(okResponse);
       })
-      .catch((error: Taro.request.Promised & { errMsg: string }) => {
+      .catch((error: Taro.request.Promised & { errMsg?: string, status?: number }) => {
         if (successInvoked) {
           return Promise.reject(error);
         }
@@ -121,9 +121,12 @@ export class HttpService extends BaseHttpService {
         let httpStatus;
         let businessCode;
 
-        if (error.statusCode) {
+        // H5     ok => statusCode | error => status
+        // Weapp  ok => statusCode | error => statusCode
+        // ...
+        if (error.statusCode || error.status) {
           const transform: HttpTransform = {
-            httpStatus: error.statusCode,
+            httpStatus: error.statusCode || error.status,
           };
 
           this.config.onRespondError(error, transform);
