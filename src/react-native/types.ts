@@ -19,7 +19,7 @@ export interface HttpServiceConfig extends BaseHttpServiceConfig {
   headers: (action: ActionRequest) => object;
   requestConfig?: AxiosRequestConfig;
   beforeSend?: (action: ActionRequest) => void;
-  isSuccess?: (action: HttpResponse) => boolean;
+  isSuccess?: (response: HttpResponse) => boolean;
   transformSuccessData?: (data: any, headers: any) => any;
 }
 
