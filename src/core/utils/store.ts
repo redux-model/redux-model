@@ -1,5 +1,5 @@
 import assign from 'object-assign';
-import { Action, combineReducers, createStore, DeepPartial, Reducer, Store, StoreEnhancer } from 'redux';
+import { Action, combineReducers, createStore, PreloadedState, Reducer, Store, StoreEnhancer } from 'redux';
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { Reducers } from './types';
 import { isDebug } from '../../libs/dev';
@@ -10,7 +10,7 @@ import { BaseModel } from '../BaseModel';
 export interface ReduxStoreConfig<S = any, A extends Action = Action> {
   reducers?: Reducers;
   enhancer?: StoreEnhancer;
-  preloadedState?: DeepPartial<S>;
+  preloadedState?: PreloadedState<S>;
   onCombineReducers?: (reducer: Reducer<S, A>) => Reducer<S, A>;
   persist?: false | {
     version: string | number;
@@ -46,7 +46,7 @@ const combine = () => {
     combined = onCombineReducers(combined);
   }
 
-  return (state, action) => {
+  return (state: any, action: any): any => {
     isDispatching = true;
     stateWhenDispatching = state;
     const result = combined(state, action);
