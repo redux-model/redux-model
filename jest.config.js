@@ -22,4 +22,5 @@ module.exports = {
   verbose: true,
   collectCoverage: true,
   coverageReporters: ['text-summary', 'lcov'],
+  testURL: 'https://registry.npmjs.org',
 };
