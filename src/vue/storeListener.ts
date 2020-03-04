@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'clone';
 import { applyPatch } from './diff';
 import { onStoreCreated } from '../core/utils/store';
 

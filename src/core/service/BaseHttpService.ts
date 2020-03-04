@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'clone';
 import {
   ActionResponseHandle,
   EnhanceData,
@@ -124,7 +124,7 @@ export abstract class BaseHttpService {
           const fakeAction: ActionResponseHandle = {
             ...action,
             type: action.type.success,
-            response: cloneDeep(item.response),
+            response: cloneDeep(item.response, false),
             effect: action.onSuccess,
           };
 
@@ -152,7 +152,7 @@ export abstract class BaseHttpService {
 
       this.caches[action.type]![action.throttleKey] = {
         timestamp: Date.now() + action.throttleMillSeconds,
-        response: cloneDeep(action.response),
+        response: cloneDeep(action.response, false),
       };
     }
   }

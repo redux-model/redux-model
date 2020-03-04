@@ -1,5 +1,5 @@
 import * as diff from 'deep-diff';
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'clone';
 
 enum PATCH_KIND {
   array = 'A',
@@ -38,7 +38,7 @@ export const applyPatch = (original: object, current: object, vmState: object) =
           throw new TypeError(`Unknown diff kind '${patch.item.kind}' in array`);
         }
 
-        getDeepState(vmState, patchPath, false)[patch.index] = cloneDeep(patch.item.rhs);
+        getDeepState(vmState, patchPath, false)[patch.index] = cloneDeep(patch.item.rhs, false);
         break;
       case PATCH_KIND.trash:
         Reflect.deleteProperty(
@@ -48,7 +48,7 @@ export const applyPatch = (original: object, current: object, vmState: object) =
         break;
       case PATCH_KIND.edit:
       case PATCH_KIND.new:
-        getDeepState(vmState, patchPath, true)[getLastPath(patchPath)] = cloneDeep(patch.rhs);
+        getDeepState(vmState, patchPath, true)[getLastPath(patchPath)] = cloneDeep(patch.rhs, false);
         break;
       default:
         throw new TypeError('Unknown diff kind: ' + patch.kind);

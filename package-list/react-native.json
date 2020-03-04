@@ -20,7 +20,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "immer": "^5.3.6",
-    "lodash.clonedeep": "^4.5.0",
+    "clone": "^2.1.2",
     "object-assign": "^4.1.1",
     "redux": "^4.0.5",
     "tslib": "^1.11.1"
