@@ -22,32 +22,32 @@ Redux Model is created to enhance original redux framework, which has complex de
 * Modify reducer by MVVM
 * Absolutely 100% static type checking with typescript
 * Trace loading status for each request action
-* Support react/vue hooks
+* Support react hooks
 
 # Installation
 
 #### Web
 ```bash
-npm install @redux-model/web redux react-redux
+npm install @redux-model/web react-redux
 ```
 
 #### React-Native
 
 ```bash
-npm install @redux-model/react-native redux react-redux
+npm install @redux-model/react-native react-redux
 ```
 
 #### Vue
 
 ```bash
-npm install @redux-model/vue redux
+npm install @redux-model/vue
 ```
 
 
 #### Taro
 
 ```bash
-npm install @redux-model/taro redux @tarojs/redux
+npm install @redux-model/taro @tarojs/redux
 ```
 
 # Define Model

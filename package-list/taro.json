@@ -15,14 +15,14 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "peerDependencies": {
-    "@tarojs/redux": "*",
-    "redux": "*"
+    "@tarojs/redux": "*"
   },
   "dependencies": {
     "immer": "^5.3.6",
     "lodash.clonedeep": "^4.5.0",
     "object-assign": "^4.1.1",
     "qs": "^6.9.1",
+    "redux": "^4.0.5",
     "tslib": "^1.10.0"
   }
 }
