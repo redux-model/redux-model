@@ -46,7 +46,6 @@ export class HttpService extends BaseHttpService {
     const source = axios.CancelToken.source();
     const requestOptions: AxiosRequestConfig = {
       url: action.uri,
-      data: action.body,
       params: action.query,
       cancelToken: source.token,
       method: action.method as AxiosRequestConfig['method'],
@@ -56,6 +55,11 @@ export class HttpService extends BaseHttpService {
         ...action.requestOptions.headers,
       },
     };
+
+    if (action.method !== METHOD.get && action.body) {
+      requestOptions.data = action.body;
+    }
+
     let successInvoked = false;
 
     this.next({
