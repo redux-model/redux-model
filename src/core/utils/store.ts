@@ -51,34 +51,47 @@ const combine = () => {
     stateWhenDispatching = state;
 
     const originalDispatch = store?.dispatch;
-    let subResult: object | undefined;
+    let subResults: object[] = [];
     // Hack dispatch method
     if (store) {
       store.dispatch = (subAction: any): any => {
-        subResult = combined(stateWhenDispatching, subAction);
+        subResults.push(combined(stateWhenDispatching, subAction));
       };
     }
-    const result = combined(state, action);
+    let mainResult = combined(state, action);
     // Restore dispatch method
     if (store) {
       store.dispatch = originalDispatch!;
     }
 
-    if (subResult && subResult !== stateWhenDispatching) {
-      for (const key of Object.keys(subResult)) {
-        if (subResult[key] !== stateWhenDispatching[key]) {
-          result[key] = subResult[key];
+    if (subResults.length) {
+      let resultChanged = mainResult !== state;
+
+      subResults.forEach((subResult) => {
+        if (subResult === stateWhenDispatching) {
+          return;
         }
-      }
+
+        for (const key of Object.keys(subResult)) {
+          if (subResult[key] !== stateWhenDispatching[key]) {
+            if (!resultChanged) {
+              mainResult = { ...mainResult };
+              resultChanged = true;
+            }
+
+            mainResult[key] = subResult[key];
+          }
+        }
+      });
     }
 
-    if (stateWhenDispatching !== result) {
-      updatePersistState(result, action.type === TYPE_REHYDRATE);
+    if (stateWhenDispatching !== mainResult) {
+      updatePersistState(mainResult, action.type === TYPE_REHYDRATE);
     }
 
     isDispatching = false;
 
-    return result;
+    return mainResult;
   };
 };
 

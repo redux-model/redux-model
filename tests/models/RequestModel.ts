@@ -114,4 +114,4 @@ export class RequestModel extends BaseTestModel<Data> {
   }
 }
 
-export const requestModel = new RequestModel();
+export const requestModel = new RequestModel('default');

@@ -57,6 +57,18 @@ export class SubDispatchModel extends BaseTestModel<Data> {
     });
   });
 
+  callMultiOtherModelAction = this.action((state, id: number) => {
+    state.id = id;
+
+    basicModel.modify({ id });
+    requestModel.getProfileById(id);
+  });
+
+  onlyCallOtherModelAction = this.action((_, id: number) => {
+    basicModel.modify({ id });
+    requestModel.getProfileById(id);
+  });
+
   protected initReducer(): Data {
     return {
       id: 0,

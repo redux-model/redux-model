@@ -4,6 +4,11 @@ import { basicModel } from './BasicModel';
 import { $api } from './ApiService';
 import { requestModel } from './RequestModel';
 
+const data = {
+  id: 1463,
+  name: 'Join',
+  age: 30,
+};
 
 let model: SubDispatchModel;
 
@@ -49,15 +54,27 @@ test('Call sub action from other model', () => {
   expect(basicModel.data.id).toBe(5656);
 });
 
-test('Run sub request action', () => {
-  const data = {
-    id: 1463,
-    name: 'Join',
-    age: 30,
-  };
-
+test('Call multi sub actions from other model', () => {
   $api.mockResolveValue(data);
 
+  model.callMultiOtherModelAction(data.id);
+
+  expect(model.data.id).toBe(data.id);
+  expect(basicModel.data.id).toBe(data.id);
+  expect(requestModel.getProfileById.loadings.pick(data.id)).toBeTruthy();
+});
+
+test('Only call multi sub actions from other model', () => {
+  $api.mockResolveValue(data);
+
+  model.onlyCallOtherModelAction(data.id);
+
+  expect(basicModel.data.id).toBe(data.id);
+  expect(requestModel.getProfileById.loadings.pick(data.id)).toBeTruthy();
+});
+
+test('Run sub request action', () => {
+  $api.mockResolveValue(data);
 
   expect(requestModel.getProfileById.loadings.pick(data.id)).toBeFalsy();
   model.requestActionInNormalAction(data.id);
