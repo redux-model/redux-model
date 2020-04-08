@@ -13,6 +13,8 @@ export class BaseReducer<Data> {
 
   protected readonly filterPersistData?: (data: Data) => Data | void;
 
+  protected sharingState?: Data;
+
   constructor(init: Data, instanceName: string, filterPersistData?: (data: Data) => Data | void) {
     this.initData = init;
     this.reducerName = instanceName;
@@ -71,7 +73,9 @@ export class BaseReducer<Data> {
 
     if (isDraftable(state)) {
       const draft = createDraft(state);
+      this.sharingState = draft;
       const responseDraft = this.filterPersistData(draft);
+      this.sharingState = undefined;
 
       if (responseDraft === undefined) {
         state = finishDraft(draft);
@@ -81,7 +85,9 @@ export class BaseReducer<Data> {
         state = responseDraft;
       }
     } else {
+      this.sharingState = state;
       state = this.filterPersistData(state);
+      this.sharingState = undefined;
 
       if (state === undefined) {
         throw new StateReturnRequiredError('filterPersistData');
@@ -92,9 +98,25 @@ export class BaseReducer<Data> {
   };
 
   protected changeState(effect: Function, state: any, action: ActionResponseHandle | ActionNormalHandle): any {
+    if (this.sharingState) {
+      if (!isDraftable(state)) {
+        throw new ReferenceError(`[${this.reducerName}] Reducer data is not draftable, don't dispatch action in action.`);
+      }
+
+      const response = effect(this.sharingState, action);
+
+      if (response !== undefined && response !== this.sharingState) {
+        throw new Error(`[${this.reducerName}] Don't respond new reducer data in sub action when editing the same reducer.`);
+      }
+
+      return state;
+    }
+
     if (isDraftable(state)) {
       const draft = createDraft(state);
+      this.sharingState = draft;
       const responseDraft = effect(draft, action);
+      this.sharingState = undefined;
 
       if (responseDraft === undefined) {
         state = finishDraft(draft);
@@ -104,7 +126,9 @@ export class BaseReducer<Data> {
         state = responseDraft;
       }
     } else {
+      this.sharingState = state;
       state = effect(state, action);
+      this.sharingState = undefined;
 
       if (state === undefined) {
         throw new StateReturnRequiredError(action.type);

@@ -49,7 +49,28 @@ const combine = () => {
   return (state: any, action: any): any => {
     isDispatching = true;
     stateWhenDispatching = state;
+
+    const originalDispatch = store?.dispatch;
+    let subResult: object | undefined;
+    // Hack dispatch method
+    if (store) {
+      store.dispatch = (subAction: any): any => {
+        subResult = combined(stateWhenDispatching, subAction);
+      };
+    }
     const result = combined(state, action);
+    // Restore dispatch method
+    if (store) {
+      store.dispatch = originalDispatch!;
+    }
+
+    if (subResult && subResult !== stateWhenDispatching) {
+      for (const key of Object.keys(subResult)) {
+        if (subResult[key] !== stateWhenDispatching[key]) {
+          result[key] = subResult[key];
+        }
+      }
+    }
 
     if (stateWhenDispatching !== result) {
       updatePersistState(result, action.type === TYPE_REHYDRATE);
