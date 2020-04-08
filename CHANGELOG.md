@@ -1,3 +1,6 @@
+# 6.9.1
+[fix] Query request doesn't work in react-native
+
 # 6.9.0
 [feat] Support dispatch action in action, I call it "sub action"
 
