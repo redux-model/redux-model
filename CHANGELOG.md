@@ -1,3 +1,6 @@
+# 6.9.0
+[feat] Support dispatch action in action, I call it "sub action"
+
 # 6.8.3
 [fix] Compatible with taro http status and statusCode [#6](https://github.com/redux-model/redux-model/issues/6)
 
@@ -6,6 +9,7 @@
 
 # 6.8.0
 [feat] New persist api to against compression
+<br>
 [feat] Persist data can be filtered by model now
 
 # 6.7.10
@@ -30,6 +34,7 @@ test.getList.clearThrottle();
 
 # 6.7.8
 [fix:Taro] Use @tarojs/taro instead of react
+<br>
 [fix:Taro] Taro doesn't compile node_modules for h5 env
 
 # 6.7.5
