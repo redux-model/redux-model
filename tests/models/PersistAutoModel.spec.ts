@@ -9,6 +9,7 @@ test('Initial data will be used if persist data is missing', () => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
     },
   });

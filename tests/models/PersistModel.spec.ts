@@ -33,6 +33,7 @@ test('Restore persist data from storage', async () => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
@@ -63,6 +64,7 @@ test('Clear the persist data when the json data invalid', async () => {
     persist: {
       version: 2,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
@@ -88,6 +90,7 @@ test('Clear the persist data when version is not matched', async () => {
     persist: {
       version: 3,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
@@ -112,6 +115,7 @@ test('No persist data in storage', async () => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
@@ -136,6 +140,7 @@ test('Reducer data is not hint', async () => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
@@ -163,6 +168,7 @@ test('Restore data from storage without whitelist', async () => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {},
     },
@@ -191,6 +197,7 @@ test('Restore data from storage with whitelist', async () => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
@@ -221,6 +228,7 @@ test('Delay to restore data', async (done) => {
     persist: {
       version: 1,
       key: 'test-persist',
+      // @ts-ignore react-native use async storage
       storage: localStorage,
       whitelist: {
         model,
