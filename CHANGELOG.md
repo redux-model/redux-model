@@ -1,3 +1,6 @@
+# 6.9.2
+[fix] Use builtin delete keyword to compatible with lower version device and browser
+
 # 6.9.1
 [fix] Query request doesn't work in react-native
 
