@@ -97,7 +97,7 @@ export abstract class BaseHttpService {
   }
 
   protected clearThrottle(key: string): void {
-    Reflect.deleteProperty(this.caches, key);
+    delete this.caches[key];
   }
 
   protected withThrottle<Response, Payload>(action: ActionRequest): FetchHandle<Response, Payload> {
@@ -108,7 +108,7 @@ export abstract class BaseHttpService {
     if (!action.useThrottle) {
       if (cacheData) {
         // Delete cache in case of toggle throttle
-        Reflect.deleteProperty(cacheData, throttleKey);
+        delete cacheData[throttleKey];
       }
 
       return this.runAction(action);
@@ -137,7 +137,7 @@ export abstract class BaseHttpService {
         wrapPromise.cancel = () => {};
         return wrapPromise;
       } else if (cacheData) {
-        Reflect.deleteProperty(cacheData, action.throttleKey);
+        delete cacheData[action.throttleKey];
       }
     }
 

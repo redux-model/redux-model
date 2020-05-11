@@ -41,10 +41,7 @@ export const applyPatch = (original: object, current: object, vmState: object) =
         getDeepState(vmState, patchPath, false)[patch.index] = cloneDeep(patch.item.rhs, false);
         break;
       case PATCH_KIND.trash:
-        Reflect.deleteProperty(
-          getDeepState(vmState, patchPath, true),
-          getLastPath(patchPath),
-        );
+        delete getDeepState(vmState, patchPath, true)[getLastPath(patchPath)];
         break;
       case PATCH_KIND.edit:
       case PATCH_KIND.new:
