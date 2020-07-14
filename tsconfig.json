@@ -3,6 +3,7 @@
     "target": "ES5",
     "module": "commonjs",
     "allowJs": false,
+    "lib": ["ES2015", "DOM"],
     "declaration": true,
     "removeComments": false,
     "outDir": "./build",
@@ -26,11 +27,5 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
-  },
-  "exclude": [
-    "./src/react-native",
-    "./src/taro",
-    "./src/vue",
-    "./src/web"
-  ]
+  }
 }

@@ -1,0 +1,20 @@
+{
+  "packages": [
+    "packages/react",
+    "packages/taro",
+    "packages/vue"
+  ],
+  "version": "7.0.0-alpha.5",
+  "npmClient": "yarn",
+  "command": {
+    "version": {
+      "message": "chore: Bump version %s"
+    }
+  },
+  "ignoreChanges": [
+    "**/tests/**",
+    "**/.gitignore",
+    "**/*.md"
+  ],
+  "registry": "https://registry.npmjs.org"
+}

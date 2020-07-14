@@ -2,7 +2,7 @@
 *.log
 node_modules/
 build/
-.history/
-src/libs
 .DS_Store
 coverage/
+packages/*/src/core
+TODO
