@@ -58,7 +58,7 @@ export interface IMetaStash {
 
 export class MetaModel extends BaseModel<Data> {
   // All metas will be stored here before user need them.
-  protected readonly stash: IMetaStash = {};
+  declare private __stash: IMetaStash;
 
   public getReducerName() {
     return '__metas__';
@@ -67,6 +67,12 @@ export class MetaModel extends BaseModel<Data> {
   public register(): IReducers {
     const reducer = new MetaReducer(this.stash, this);
     return reducer.createReducer();
+  }
+
+  // register() may be called from super constructor,
+  // therefor __stash should initialize earlier than current constructor
+  get stash() {
+    return this.__stash || (this.__stash = {}, this.__stash);
   }
 
   public/*protected*/ getMeta<T extends Meta | Metas>(name: string): T | undefined {
