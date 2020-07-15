@@ -1,4 +1,4 @@
-import { AnyAction, Store } from 'redux';
+import { Store } from 'redux';
 import { setInstanceName } from '../utils/setModelName';
 import { NormalAction, IActionNormal } from '../actions/NormalAction';
 import { setCurrentModel } from '../utils/setModel';
@@ -10,9 +10,11 @@ import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import { NullReducerError } from '../exceptions/NullReducerError';
 import { storeHelper } from '../stores/StoreHelper';
 
+export type FilterPersist<Data> = (state: State<Data>) => StateReturn<Data>;
+
 export type AnyModel = BaseModel<any>;
 
-export type State<Data> = Data extends object ? Data & {
+export type State<Data> = Data & {
   /**
    * `Modify data directly like this:`
    * ```javascript
@@ -25,16 +27,16 @@ export type State<Data> = Data extends object ? Data & {
    * });
    * ```
    */
-  readonly __mvvm: null;
-} : Data;
+  readonly __mvvm: 'Modify data directly';
+};
 
-export type StateReturn<Data> = Data extends object ? Data : void | (Data & {
+export type StateReturn<Data> = void | (Data & {
   readonly __mvvm?: 'Don\'t return state unless it\'s new';
 });
 
 export type Effects<Data> = Array<{
   when: string;
-  effect: (state: State<Data>, action: AnyAction) => StateReturn<Data>;
+  effect: (state: State<Data>, action: any) => StateReturn<Data>;
 }>;
 
 export type CreateNormalActionPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;
@@ -43,7 +45,25 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly __name: string;
   private readonly __alias: string;
+  private __initData?: Data;
   private __anonymousAction?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
+
+  /**
+   * Filter data from storage. Assign model to allowlist before you can use persist:
+   * ```javascript
+   * const store = createReduxStore({
+   *   persist: {
+   *     allowlist: {
+   *       xxxModel,
+   *       yyyModel,
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * MVVM is allowed here.
+   */
+  declare public/*protected*/ filterPersistData?: FilterPersist<Data>;
 
   constructor(alias: string = '') {
     setCurrentModel(this);
@@ -65,8 +85,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     const data = storeHelper.getState()[this.__name];
 
     if (data === undefined) {
-      const initData = this.initReducer();
-      if (initData === null) {
+      if (this.__getInitData() === null) {
         throw new NullReducerError(this.__name);
       } else {
         throw new ForgetRegisterError(this.__name);
@@ -76,11 +95,16 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return data;
   }
 
-  protected clearData(): void {
-    // TODO
+  public reset(): void {
+    this.changeReducer(() => {
+      return this.initReducer() as StateReturn<Data>;
+    });
   }
 
   protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void {
+    // Make sure reducer is registered and initData not null.
+    this.data;
+
     if (this.__anonymousAction) {
       this.__anonymousAction.changeCallback(fn);
     } else {
@@ -134,7 +158,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public register(): IReducers {
-    const reducer = new BaseReducer(this);
+    const reducer = new BaseReducer(this, this.__getInitData());
     return reducer.createReducer();
   }
 
@@ -142,29 +166,12 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return true;
   }
 
-  /**
-   * Filter data from storage. Assign model to allowlist before you can use persist:
-   * ```javascript
-   * const store = createReduxStore({
-   *   persist: {
-   *     allowlist: {
-   *       xxxModel,
-   *       yyyModel,
-   *     }
-   *   }
-   * });
-   * ```
-   *
-   * MVVM is allowed here.
-   */
-  declare public/*protected*/ filterPersistData?: (data: State<Data>) => StateReturn<Data>;
-
   protected onStoreCreated(
     // @ts-ignore
     store: Store
   ): void {}
 
-  public/*protected*/ abstract initReducer(): Data;
+  protected abstract initReducer(): Data;
 
   private __createHttpServiceBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     const builder = new HttpServiceBuilder<Data, Response>({
@@ -176,5 +183,9 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     // @ts-ignore
     // @ts-expect-error
     return builder;
+  }
+
+  private __getInitData() {
+    return this.__initData === undefined ? this.initReducer() : this.__initData;
   }
 }

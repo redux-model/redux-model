@@ -10,7 +10,7 @@ export const setInstanceName = (className: string, alias: string): string => {
 
   resetActionCounter();
 
-  if (isCompressed) {
+  if (isCompressed()) {
     instanceName = 'm' + aliasName + modelCounter;
     modelCounter += 1;
 

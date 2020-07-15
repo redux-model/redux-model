@@ -16,7 +16,7 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
     version: string | number;
     key: string;
     storage: PersistStorage | Engine;
-    allowlist: Record<string, BaseModel<any>>;
+    allowlist: Record<string, BaseModel<any> | string>;
   };
 }
 
@@ -46,6 +46,8 @@ export class StoreHelper {
     const combined = this.combindReducers();
 
     if (this.__store) {
+      // Avoid to dispatch persist data for @@redux/x.y.z triggerred by replaceReducer()
+      this.persist.rehydrate();
       this.store.replaceReducer(combined);
     } else {
       this.__store = createStore(
@@ -54,6 +56,7 @@ export class StoreHelper {
         customCompose(applyMiddleware(this.__dynamicMiddleware.create(), ...middleware))
       );
       this.publish();
+      this.persist.rehydrate();
     }
 
     return this.__store!;

@@ -66,7 +66,12 @@ export const requestActionProxyKeys: {
   methods: (keyof BaseRequestAction<any, any, any, any, any>)[];
   getters: (keyof BaseRequestAction<any, any, any, any, any>)[];
 } = {
-  methods: ['onSuccess', 'onPrepare', 'onFail', 'getPrepareType', 'getFailType', ...actionProxyKeys.methods],
+  methods: [
+    'onSuccess', 'onPrepare', 'onFail',
+    'getPrepareType', 'getFailType',
+    'clearThrottle',
+    ...actionProxyKeys.methods,
+  ],
   getters: [
     'meta', 'metas',
     'loading', 'loadings',

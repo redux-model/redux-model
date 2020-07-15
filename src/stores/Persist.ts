@@ -22,6 +22,8 @@ export class Persist {
   // @ts-ignore It will exists by setConfig()
   protected storage: PersistStorage;
 
+  protected restoreTimer: number = -1;
+
   constructor(storeHelper: StoreHelper) {
     this.storeHelper = storeHelper;
     this.schema = {
@@ -44,7 +46,7 @@ export class Persist {
         this.storage = config.storage;
     }
 
-    const { allowlist = {}, version } = config;
+    const { allowlist, version } = config;
 
     this.bootstrapped = false;
     this.schema.__persist.version = version;
@@ -52,8 +54,10 @@ export class Persist {
     this.mapFromModelToKey = {};
 
     Object.keys(allowlist).forEach((key) => {
+      const model = allowlist[key];
+
       this.allowKeys.push(key);
-      this.mapFromModelToKey[allowlist[key].getReducerName()] = key;
+      this.mapFromModelToKey[typeof model === 'string' ? model : model.getReducerName()] = key;
     });
 
     return this;
@@ -225,6 +229,7 @@ export class Persist {
       return this;
     }
 
+    const { key } = this.config;
     const strings = {};
 
     // Restore existing reducers
@@ -232,10 +237,16 @@ export class Persist {
       strings[key] = this.serializedStrings[key];
     });
 
-    this.storage.setItem(this.keyPrefix + this.config.key, JSON.stringify({
-      ...strings,
-      ...this.schema,
-    }));
+    const timer = this.restoreTimer = setTimeout(() => {
+      if (timer !== this.restoreTimer) {
+        return;
+      }
+
+      this.storage.setItem(this.keyPrefix + key, JSON.stringify({
+        ...strings,
+        ...this.schema,
+      }));
+    });
 
     return this;
   };

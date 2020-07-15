@@ -127,7 +127,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
       }
 
       if (this.isClearAction(action)) {
-        this.caches[action.key] === undefined;
+        this.caches[action.key] = undefined;
         return action;
       }
 

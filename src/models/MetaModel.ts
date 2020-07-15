@@ -65,7 +65,7 @@ export class MetaModel extends BaseModel<Data> {
   }
 
   public register(): IReducers {
-    const reducer = new MetaReducer(this.stash, this);
+    const reducer = new MetaReducer(this.stash, this, this.initReducer());
     return reducer.createReducer();
   }
 
@@ -96,7 +96,7 @@ export class MetaModel extends BaseModel<Data> {
     return this.data[name] as T;
   }
 
-  public/*protected*/ initReducer(): Data {
+  protected initReducer(): Data {
     return {};
   }
 }

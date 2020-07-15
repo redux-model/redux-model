@@ -16,9 +16,9 @@ export class BaseReducer<Data> {
   protected readonly reducerName: string;
   protected readonly sideEffects: Record<string, Effects<Data>[number]['effect']> = {};
 
-  constructor(model: BaseModel<Data>) {
+  constructor(model: BaseModel<Data>, initData: Data) {
     this.model = model;
-    this.initData = model.initReducer();
+    this.initData = initData;
     this.reducerName = model.getReducerName();
     this.sideEffects = model.effects().reduce((carry, { when, effect }) => {
       carry[when] = effect;

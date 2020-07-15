@@ -59,7 +59,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
   public throttle(options: number | ThrottleOptionns): this {
     const obj = typeof options === 'number' ? { duration: options } : options;
 
-    this.config.useThrottle = obj.enable;
+    this.config.useThrottle = obj.enable !== false;
     this.config.throttleMillSeconds = obj.duration;
     this.config.throttleDeps = obj.deps;
 

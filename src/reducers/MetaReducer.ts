@@ -9,8 +9,8 @@ export const USED_FLAG = '@flus/used';
 export class MetaReducer<Data = any> extends BaseReducer<Data> {
   protected readonly stash: IMetaStash = {};
 
-  constructor(stash: IMetaStash, model: BaseModel<Data>) {
-    super(model);
+  constructor(stash: IMetaStash, model: BaseModel<Data>, initData: Data) {
+    super(model, initData);
     this.stash = stash;
   }
 
@@ -64,6 +64,7 @@ export class MetaReducer<Data = any> extends BaseReducer<Data> {
         };
       }
 
+      // @ts-ignore
       this.stash[actionName] = this.stash[actionName] || { ...METAS_PICK_METHOD };
       this.stash[actionName][metaKey] = meta;
     }

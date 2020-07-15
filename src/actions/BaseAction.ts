@@ -25,7 +25,7 @@ export abstract class BaseAction<Data> {
   protected constructor(model: BaseModel<Data>) {
     this.model = model;
 
-    if (isCompressed) {
+    if (isCompressed()) {
       this.setName(increaseActionCounter());
     }
   }

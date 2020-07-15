@@ -20,9 +20,9 @@
   "scripts": {
     "build": "sh ../../scripts/build.sh",
     "prepublishOnly": "yarn run build",
-    "prebuild": "yarn link",
+    "prebuild": "yarn run link",
     "link": "sh ../../scripts/link.sh",
-    "forcelink": "rm -rf src/core && ln -s $(dirname $PWD)/core src/core",
+    "forcelink": "sh ../../scripts/forcelink.sh",
     "clean": "rm -rf ./build",
     "outdated": "yarn outdated"
   },
@@ -37,11 +37,12 @@
     "tslib": "2.0.0"
   },
   "devDependencies": {
-    "@types/clone": "^0.1.30",
     "@types/react-redux": "^7.1.9",
     "public-refactor": "^0.5.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5",
+    "react-test-renderer": "^16.13.1",
     "typescript": "^3.9.6"
   },
   "publishConfig": {
