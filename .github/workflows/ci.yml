@@ -27,6 +27,7 @@ jobs:
         npx lerna bootstrap
         npx lerna run link
         yarn add typescript@${{ matrix.ts-version }} --dev
+        sh ./scripts/vue.sh
     - run: yarn test
     - name: Coverage
       uses: codecov/codecov-action@v1
