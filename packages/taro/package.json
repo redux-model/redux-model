@@ -39,12 +39,16 @@
     "@types/qs": "^6.9.3",
     "@types/react-redux": "^7.1.9",
     "@types/vue": "^2.0.0",
-    "public-refactor": "^0.5.1",
-    "react-redux": "^7.2.0",
-    "typescript": "^3.9.6"
+    "react-redux": "^7.2.0"
   },
   "publishConfig": {
     "access": "public",
     "directory": "build"
-  }
+  },
+  "files": [
+    "libs",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ]
 }

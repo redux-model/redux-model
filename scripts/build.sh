@@ -3,8 +3,8 @@
 set -e
 
 rm -rf ./build/*
-tsc
+../../node_modules/.bin/tsc
 mv ./build/src ./build/libs
 cp ../../README.md ../../LICENSE ./package.json ./build
 
-./node_modules/.bin/public-refactor --src ./src --dist ./build/libs
+../../node_modules/.bin/public-refactor --src ./src --dist ./build/libs
