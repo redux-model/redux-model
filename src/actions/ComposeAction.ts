@@ -7,6 +7,7 @@ import { storeHelper } from '../stores/StoreHelper';
 
 export interface IActionCompose extends Action<string>, IMetaAction {
   message?: string;
+  loading: boolean;
 }
 
 export interface ComposeSubscriber<CustomData>{
@@ -71,6 +72,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
         type: this.getPrepareType(),
         metaKey: true,
         metaActionName: this.instanceName,
+        loading: true,
       });
 
       try {
@@ -80,6 +82,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
           type: this.getSuccessType(),
           metaKey: true,
           metaActionName: this.instanceName,
+          loading: false,
         });
       } catch (e) {
         storeHelper.dispatch<IActionCompose>({
@@ -87,6 +90,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
           metaKey: true,
           metaActionName: this.instanceName,
           message: e.message,
+          loading: false,
         });
 
         throw e;
