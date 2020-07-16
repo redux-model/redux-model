@@ -22,22 +22,24 @@ Redux Model is created to enhance original redux framework, which has complex de
 
 # Installation
 
-#### React or React-Native
+### React or React-Native
 ```bash
 npm install @redux-model/react redux react-redux
 ```
 
-#### Taro 3.0+
+### Taro v3
 ```bash
 npm install @redux-model/taro redux react-redux
 ```
-For `taro@2`, install @redux-model/taro@6.9.2
 
-#### Vue 3.0+
+### Vue v3
 ```bash
 npm install @redux-model/vue redux
 ```
-For `vue@2`, install @redux-model/vue@6.9.2
+
+### Others
+* For `taro < 3`, install @redux-model/taro@6.9.2 instead
+* For `vue < 3`, install @redux-model/vue@6.9.2 instead
 
 # Define Model
 ```typescript
