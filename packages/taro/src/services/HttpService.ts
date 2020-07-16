@@ -29,7 +29,9 @@ export class HttpService extends BaseHttpService<HttpServiceConfig, HttpCanceler
 
   constructor(config: HttpServiceConfig) {
     super(config);
-    this.request = require(`@tarojs/taro-${process.env.TARO_ENV}`).request;
+    this.request = `${process.env.TARO_ENV}` === 'h5'
+      ? require('@tarojs/taro-h5').request
+      : Taro.request;
   }
 
   public clone(config: Partial<HttpServiceConfig>): HttpService {
