@@ -97,7 +97,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   public reset(): void {
     this.changeReducer(() => {
-      return this.initReducer() as StateReturn<Data>;
+      return this.__getInitData() as StateReturn<Data>;
     });
   }
 
