@@ -1,4 +1,4 @@
-import Taro, {  } from '@tarojs/taro';
+import Taro from '@tarojs/taro';
 import { stringify } from 'qs';
 import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse, HttpServiceBuilderWithMetas, PickData, PickMeta, IBaseRequestAction, BaseHttpServiceConfig, HttpTransform, METHOD, InternalSuccessAction, InternalPrepareAction, FetchHandle as SuperFetchHandle, storeHelper } from '../core';
 import { RequestAction } from '../actions/RequestAction';
@@ -25,10 +25,11 @@ export interface IRequestAction<Data = any, Response = any, Payload = any> exten
 }
 
 export class HttpService extends BaseHttpService<HttpServiceConfig, HttpCanceler> {
+  protected readonly request: typeof Taro.request;
+
   constructor(config: HttpServiceConfig) {
     super(config);
-
-    // TODO: 检查Taro.request是否需要处理环境变量
+    this.request = require(`@tarojs/taro-${process.env.TARO_ENV}`).request;
   }
 
   public clone(config: Partial<HttpServiceConfig>): HttpService {
@@ -98,7 +99,7 @@ export class HttpService extends BaseHttpService<HttpServiceConfig, HttpCanceler
       effect: action.onPrepare,
     });
 
-    const task = Taro.request(requestOptions);
+    const task = this.request(requestOptions);
     const canceler = task.abort;
     let successInvoked = false;
 
