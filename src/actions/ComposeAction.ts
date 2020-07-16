@@ -45,7 +45,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   public get meta(): Meta {
-    return metaModel.getMeta(this.instanceName) || DEFAULT_META;
+    return metaModel.getMeta(this.getActionName()) || DEFAULT_META;
   }
 
   public get loading(): boolean {
@@ -68,10 +68,12 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
 
   protected getProxyFn(): Function {
     return async (...args: Parameters<Runner>) => {
+      const actionName = this.getActionName();
+
       storeHelper.dispatch<IActionCompose>({
         type: this.getPrepareType(),
         metaKey: true,
-        metaActionName: this.instanceName,
+        metaActionName: actionName,
         loading: true,
       });
 
@@ -81,14 +83,14 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
         storeHelper.dispatch<IActionCompose>({
           type: this.getSuccessType(),
           metaKey: true,
-          metaActionName: this.instanceName,
+          metaActionName: actionName,
           loading: false,
         });
       } catch (e) {
         storeHelper.dispatch<IActionCompose>({
           type: this.getFailType(),
           metaKey: true,
-          metaActionName: this.instanceName,
+          metaActionName: actionName,
           message: e.message,
           loading: false,
         });
@@ -103,8 +105,8 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
    */
   public/*protected*/ setName(name: string | number): void {
     super.setName(name);
-    this.__prepareType = this.instanceName + ' prepare';
-    this.__failType = this.instanceName + ' fail';
+    this.__prepareType = this.__actionName + ' prepare';
+    this.__failType = this.__actionName + ' fail';
   }
 
   public getPrepareType(): string {

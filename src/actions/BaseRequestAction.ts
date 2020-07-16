@@ -104,7 +104,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public get meta(): Meta {
-    return metaModel.getMeta(this.instanceName) || DEFAULT_META;
+    return metaModel.getMeta(this.getActionName()) || DEFAULT_META;
   }
 
   public get loading(): boolean {
@@ -112,7 +112,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public get metas(): Metas {
-    return metaModel.getMeta(this.instanceName) || DEFAULT_METAS;
+    return metaModel.getMeta(this.getActionName()) || DEFAULT_METAS;
   }
 
   public get loadings(): MetasLoading<any> {
@@ -188,7 +188,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
    */
   public/*protected*/ setName(name: string | number): void {
     super.setName(name);
-    this.__prepareType = this.instanceName + ' prepare';
-    this.__failType = this.instanceName + ' fail';
+    this.__prepareType = this.__actionName + ' prepare';
+    this.__failType = this.__actionName + ' fail';
   }
 }

@@ -17,7 +17,7 @@ export const actionProxyKeys: {
 
 export abstract class BaseAction<Data> {
   public/*protected*/ readonly model: BaseModel<Data>;
-  protected instanceName: string = '';
+  protected __actionName: string = '';
   protected __successType?: string;
 
   declare public/*private*/ readonly __isAction__: boolean;
@@ -35,12 +35,12 @@ export abstract class BaseAction<Data> {
   }
 
   public/*protected*/ getActionName(): string {
-    return this.instanceName || (setActionName(this), this.instanceName);
+    return this.__actionName || (setActionName(this), this.__actionName);
   }
 
   public/*protected*/ setName(name: string | number): void {
-    this.instanceName = this.model.getReducerName() + '_' + name;
-    this.__successType = this.instanceName + ' success';
+    this.__actionName = this.model.getReducerName() + '_' + name;
+    this.__successType = this.__actionName + ' success';
   }
 
   protected proxy(): this {
