@@ -3,14 +3,6 @@ import cloneDeep from 'clone';
 import { applyPatch } from './diff';
 import { storeHelper } from '../core';
 
-const state = Vue.reactive({
-  count: 0,
-})
-
-const ok = Vue.computed(() => { state.count + 1 })
-
-ok.value
-
 storeHelper.listenOnce((helper) => {
   const getCurrentState = helper.store.getState as () => object;
   let originalState = getCurrentState();
