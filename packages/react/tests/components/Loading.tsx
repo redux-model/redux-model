@@ -1,9 +1,17 @@
 import React, { FunctionComponent } from 'react';
 import { basicModel } from '../models/BasicModel';
 import { $api } from '../libs/ApiService';
+import { Model } from '../../src';
+import { requestModel } from '../models/RequestModel';
 
 export const Loading: FunctionComponent = () => {
   const loading = basicModel.getProfile.useLoading();
+
+  const combineLoading = Model.useLoading(
+    loading,
+    requestModel.getProfile.useLoading(),
+    requestModel.getProfileById.useLoadings().pick(1),
+  );
 
   const getProfile = () => {
     $api.mockResolveValue({
@@ -15,6 +23,6 @@ export const Loading: FunctionComponent = () => {
   };
 
   return (
-    <div id="boolean" onClick={getProfile}>{String(loading)}</div>
+    <div id="boolean" onClick={getProfile}>{String(combineLoading)}</div>
   );
 };

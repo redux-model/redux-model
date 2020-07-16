@@ -4,13 +4,10 @@ import * as ReactRedux from 'react-redux';
 import { ComposeAction } from '../actions/ComposeAction';
 
 export abstract class Model<Data = null> extends BaseModel<Data, AxiosRequestConfig> {
-  public static useLoading(...actions: { useLoading(): boolean }[]): boolean {
-    return actions.reduce((carry: boolean, action) => {
-      // Hooks shouldn't be in condition statement
-      const useLoading = action.useLoading();
-
-      return carry || useLoading;
-    }, false);
+  // Hooks can't be used in condition statement like: x.useLoading() || y.useLoading()
+  // So we provide a quick way to combine all loading values.
+  public static useLoading(...useLoading: boolean[]): boolean {
+    return useLoading.some((is) => is);
   }
 
   public useData(): Data;
