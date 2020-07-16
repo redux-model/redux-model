@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { basicModel } from '../models/BasicModel';
-import { $api } from '../models/ApiService';
+import { $api } from '../libs/ApiService';
 
 export const Loading: FunctionComponent = () => {
   const loading = basicModel.getProfile.useLoading();

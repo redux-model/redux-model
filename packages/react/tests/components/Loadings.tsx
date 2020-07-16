@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { $api } from '../models/ApiService';
+import { $api } from '../libs/ApiService';
 import { requestModel } from '../models/RequestModel';
 
 interface OwnProps {
