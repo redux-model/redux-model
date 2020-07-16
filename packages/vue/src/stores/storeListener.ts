@@ -1,18 +1,26 @@
-import Vue from 'vue';
+import * as Vue from 'vue';
 import cloneDeep from 'clone';
 import { applyPatch } from './diff';
 import { storeHelper } from '../core';
 
-storeHelper.listenOnce(({ store }) => {
-  const getCurrentState = store.getState as () => object;
-  let originalState = getCurrentState();
-  const observer = Vue.observable(cloneDeep(originalState));
+const state = Vue.reactive({
+  count: 0,
+})
 
-  store.getState = () => {
+const ok = Vue.computed(() => { state.count + 1 })
+
+ok.value
+
+storeHelper.listenOnce((helper) => {
+  const getCurrentState = helper.store.getState as () => object;
+  let originalState = getCurrentState();
+  const observer = Vue.reactive(cloneDeep(originalState));
+
+  helper.getState = helper.store.getState = () => {
     return observer;
   };
 
-  store.subscribe(() => {
+  helper.store.subscribe(() => {
     const currentState = getCurrentState();
 
     if (currentState !== originalState) {
