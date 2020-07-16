@@ -224,6 +224,13 @@ export class Persist {
     };
   };
 
+  listenOnce(fn: () => void): void {
+    const unlisten = this.listen(() => {
+      unlisten();
+      fn();
+    });
+  }
+
   protected restore(): this {
     if (!this.config) {
       return this;

@@ -1,19 +1,12 @@
 import React from 'react';
 import { create, act } from 'react-test-renderer';
-import { Store } from 'redux';
 import { createReduxStore } from '../../src/stores/createReduxStore';
 import { Provider } from 'react-redux';
 import { Loadings } from './Loadings';
-//import sleep from 'sleep-promise';
 import sleep from 'sleep-promise';
 
-let store: Store;
-
-beforeAll(() => {
-  store = createReduxStore({});
-});
-
 test('Request with useLoadings()', async () => {
+  const store = createReduxStore({});
   const testRenderer = create(
     <Provider store={store}>
       <Loadings userId={10} />

@@ -1,19 +1,12 @@
 import React from 'react';
 import { create, act } from 'react-test-renderer';
-import { Store } from 'redux';
-import { createReduxStore } from '../../src/stores/createReduxStore';
-import { Provider } from 'react-redux';
-import { Loading } from './Loading';
-//import sleep from 'sleep-promise';
 import sleep from 'sleep-promise';
-
-let store: Store;
-
-beforeAll(() => {
-  store = createReduxStore({});
-});
+import { Provider } from 'react-redux';
+import { createReduxStore } from '../../src/stores/createReduxStore';
+import { Loading } from './Loading';
 
 test('Request with useLoading()', async () => {
+  const store = createReduxStore({});
   const testRenderer = create(
     <Provider store={store}>
       <Loading />

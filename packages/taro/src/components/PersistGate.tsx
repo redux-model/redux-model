@@ -10,6 +10,10 @@ type State = Readonly<{
 }>;
 
 export class PersistGate extends PureComponent<Props, State> {
+  static defaultProps = {
+    loading: null,
+  };
+
   protected unlisten?: Function;
 
   readonly state: State = {
