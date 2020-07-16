@@ -1,10 +1,10 @@
-import { HttpServiceConfig, HttpService, HttpResponse } from '../../src/services/HttpService';
+import { HttpServiceConfig, HttpService } from '../../src/services/HttpService';
 import sleep from 'sleep-promise';
 
-class ApiService extends HttpService {
+class ApiService<T> extends HttpService<T> {
   protected readonly mock: jest.Mock;
 
-  constructor(config: HttpServiceConfig) {
+  constructor(config: HttpServiceConfig<T>) {
     super(config);
 
     this.mock = jest.fn(this.httpHandler.request);
@@ -30,7 +30,7 @@ class ApiService extends HttpService {
   }
 }
 
-export const $api = new ApiService({
+export const $api = new ApiService<{ error: string }>({
   baseUrl: '',
   headers: () => {
     return {};
@@ -38,7 +38,7 @@ export const $api = new ApiService({
   isSuccess: () => {
     return true;
   },
-  onRespondError: (response: HttpResponse<{ error: string }>, transform) => {
+  onRespondError: (response, transform) => {
     transform.message = response.data.error;
   },
   onShowSuccess: () => {},

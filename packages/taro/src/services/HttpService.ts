@@ -11,9 +11,9 @@ export type HttpCanceler = () => void;
 
 export interface FetchHandle<Response = any, Payload = any> extends SuperFetchHandle<Response, Payload, HttpCanceler> {}
 
-export interface HttpServiceConfig extends BaseHttpServiceConfig {
+export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
   requestConfig?: TaroRequestConfig;
-  onRespondError: (httpResponse: HttpResponse, transform: HttpTransform) => void;
+  onRespondError: (httpResponse: HttpResponse<ErrorData>, transform: HttpTransform) => void;
   headers: (action: IRequestAction) => object;
   beforeSend?: (action: IRequestAction) => void;
   isSuccess?: (response: HttpResponse) => boolean;
@@ -24,17 +24,19 @@ export interface IRequestAction<Data = any, Response = any, Payload = any> exten
   requestOptions: TaroRequestConfig;
 }
 
-export class HttpService extends BaseHttpService<HttpServiceConfig, HttpCanceler> {
+export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceConfig<ErrorData>, HttpCanceler> {
   protected readonly request: typeof Taro.request;
 
-  constructor(config: HttpServiceConfig) {
+  constructor(config: HttpServiceConfig<ErrorData>) {
     super(config);
     this.request = `${process.env.TARO_ENV}` === 'h5'
       ? require('@tarojs/taro-h5').request
       : Taro.request;
   }
 
-  public clone(config: Partial<HttpServiceConfig>): HttpService {
+  public clone<NewErrorData = ErrorData>(config: Partial<HttpServiceConfig<NewErrorData>>): HttpService<NewErrorData> {
+    // @ts-ignore
+    // @ts-expect-error
     return new HttpService({
       ...this.config,
       ...config,
