@@ -2,9 +2,10 @@ import { BaseReducer } from './BaseReducer';
 import { InternalSuccessAction } from '../actions/BaseRequestAction';
 import { IMetaRestore, Meta, METAS_PICK_METHOD, Metas, IMetaStash } from '../models/MetaModel';
 import { BaseModel } from '../models/BaseModel';
+import { createActionType } from '../utils/createActionType';
 
-export const META_RESTORE = '@flus/meta/restore';
-export const USED_FLAG = '@flus/used';
+export const META_RESTORE = createActionType('meta', 'restore');
+export const USED_FLAG = 'meta-used';
 
 export class MetaReducer<Data = any> extends BaseReducer<Data> {
   protected readonly stash: IMetaStash = {};

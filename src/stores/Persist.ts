@@ -1,8 +1,9 @@
 import { StoreHelper, ReduxStoreConfig } from './StoreHelper';
 import { PersistStorage } from './PersistStorage';
 import memory from '../storages/memoryStorage';
+import { createActionType } from '../utils/createActionType';
 
-export const TYPE_REHYDRATE = 'ReduxModel/rehydrate';
+export const TYPE_REHYDRATE = createActionType('rehydrate');
 
 export class Persist {
   protected readonly keyPrefix = 'ReduxModel:Persist:';

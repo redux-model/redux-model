@@ -53,7 +53,7 @@ export interface IMetaRestore extends IActionPayload<{
 }> {}
 
 export interface IMetaStash {
-  [key: string]: Metas | Meta | '@flus/used';
+  [key: string]: Metas | Meta | 'meta-used';
 }
 
 export class MetaModel extends BaseModel<Data> {

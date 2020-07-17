@@ -5,6 +5,7 @@ import cloneDeep from 'clone';
 import { OrphanHttpService, OrphanRequestOptions } from './OrphanHttpService';
 import { METHOD } from '../utils/method';
 import { storeHelper } from '../stores/StoreHelper';
+import { createActionType } from '../utils/createActionType';
 
 export interface FetchHandle<Response = any, Payload = any, CancelFn = () => void> extends Promise<IResponseAction<Response, Payload>> {
   cancel: CancelFn;
@@ -24,7 +25,7 @@ export interface BaseHttpServiceConfig {
   networkErrorMessage?: (originalText: string) => string;
 }
 
-export const CLEAR_THROTTLE = '@flus/clear/throttle';
+export const CLEAR_THROTTLE = createActionType('clear', 'throttle');
 
 export interface IClearThrottleAction extends Action<string> {
   uniqueId: number;
