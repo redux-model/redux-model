@@ -1,9 +1,7 @@
 import { StoreHelper, ReduxStoreConfig } from './StoreHelper';
 import { PersistStorage } from './PersistStorage';
 import memory from '../storages/memoryStorage';
-import { createActionType } from '../utils/createActionType';
-
-export const TYPE_REHYDRATE = createActionType('rehydrate');
+import { ACTION_TYPE_REHYDRATE } from '../utils/actionType';
 
 export class Persist {
   protected readonly keyPrefix = 'ReduxModel:Persist:';
@@ -181,7 +179,7 @@ export class Persist {
 
       if (canDispatch) {
         this.storeHelper.dispatch({
-          type: TYPE_REHYDRATE,
+          type: ACTION_TYPE_REHYDRATE,
           payload,
         });
       }

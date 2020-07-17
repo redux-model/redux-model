@@ -1,9 +1,10 @@
 import { BaseModel } from './BaseModel';
 import { HttpTransform } from '../actions/BaseRequestAction';
 import { IActionPayload } from '../actions/BaseAction';
-import { MetaReducer, USED_FLAG, META_RESTORE } from '../reducers/MetaReducer';
+import { MetaReducer, USED_FLAG } from '../reducers/MetaReducer';
 import { IReducers } from '../reducers/BaseReducer';
 import { storeHelper } from '../stores/StoreHelper';
+import { ACTION_TYPE_META_RESTORE } from '../utils/actionType';
 
 export interface IMetaAction {
   metaKey: string | number | symbol | boolean;
@@ -80,7 +81,7 @@ export class MetaModel extends BaseModel<Data> {
 
     if (!this.data[name] && stash && stash !== USED_FLAG) {
       const action: IMetaRestore = {
-        type: META_RESTORE,
+        type: ACTION_TYPE_META_RESTORE,
         payload: {
           key: name,
           value: stash,

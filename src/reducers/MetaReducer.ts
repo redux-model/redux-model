@@ -2,9 +2,8 @@ import { BaseReducer } from './BaseReducer';
 import { InternalSuccessAction } from '../actions/BaseRequestAction';
 import { IMetaRestore, Meta, METAS_PICK_METHOD, Metas, IMetaStash } from '../models/MetaModel';
 import { BaseModel } from '../models/BaseModel';
-import { createActionType } from '../utils/createActionType';
+import { ACTION_TYPE_META_RESTORE } from '../utils/actionType';
 
-export const META_RESTORE = createActionType('meta', 'restore');
 export const USED_FLAG = 'meta-used';
 
 export class MetaReducer<Data = any> extends BaseReducer<Data> {
@@ -16,7 +15,7 @@ export class MetaReducer<Data = any> extends BaseReducer<Data> {
   }
 
   protected isRestore(action: InternalSuccessAction | IMetaRestore): action is IMetaRestore {
-    return action.type === META_RESTORE;
+    return action.type === ACTION_TYPE_META_RESTORE;
   }
 
   protected reducer(state: Data | undefined, action: InternalSuccessAction | IMetaRestore): Data {

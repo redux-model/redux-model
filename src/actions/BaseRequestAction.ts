@@ -6,8 +6,9 @@ import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
 import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
 import { setActionName } from '../utils/setActionName';
-import { IClearThrottleAction, CLEAR_THROTTLE } from '../services/BaseHttpService';
+import { IClearThrottleAction } from '../services/BaseHttpService';
 import { storeHelper } from '../stores/StoreHelper';
+import { ACTION_TYPE_CLEAR_THROTTLE } from '../utils/actionType';
 
 export interface Types {
   prepare: string;
@@ -97,7 +98,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
 
   public clearThrottle(): void {
     storeHelper.dispatch<IClearThrottleAction>({
-      type: CLEAR_THROTTLE,
+      type: ACTION_TYPE_CLEAR_THROTTLE,
       key: this.getSuccessType(),
       uniqueId: this.uniqueId,
     });

@@ -4,7 +4,7 @@ import { IActionNormal } from '../actions/NormalAction';
 import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
-import { TYPE_REHYDRATE } from '../stores/Persist';
+import { ACTION_TYPE_REHYDRATE } from '../utils/actionType';
 
 export interface IReducers {
   [key: string]: (state: any, action: any) => any;
@@ -43,7 +43,7 @@ export class BaseReducer<Data> {
     }
 
     // For async storage, we should dispatch action to inject persist data into reducer
-    if (action.type === TYPE_REHYDRATE && action.payload && action.payload[this.reducerName] !== undefined) {
+    if (action.type === ACTION_TYPE_REHYDRATE && action.payload && action.payload[this.reducerName] !== undefined) {
       return this.initFromPersist(action.payload[this.reducerName]);
     }
 

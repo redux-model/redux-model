@@ -1,7 +1,7 @@
 import { METHOD } from '../utils/method';
 import { IBaseRequestAction } from '../actions/BaseRequestAction';
 import { ThrottleOptionns } from './HttpServiceBuilder';
-import { createActionType } from '../utils/createActionType';
+import { ACTION_TYPE_ORPHAN_REQUEST } from '../utils/actionType';
 
 export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | 'query' | 'body' | 'requestOptions' >> &
   {
@@ -44,7 +44,7 @@ export class OrphanHttpService<T = object> {
       uri: config.uri,
       type: {
         prepare: '',
-        success: createActionType('orphan', 'http', 'request'),
+        success: ACTION_TYPE_ORPHAN_REQUEST,
         fail: '',
       },
       method: this.method,

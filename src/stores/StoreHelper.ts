@@ -3,8 +3,9 @@ import { IReducers } from '../reducers/BaseReducer';
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { PersistStorage } from './PersistStorage';
 import { BaseModel } from '../models/BaseModel';
-import { Persist, TYPE_REHYDRATE } from './Persist';
+import { Persist } from './Persist';
 import { DynamicMiddleware } from './DynamicMiddleware';
+import { ACTION_TYPE_REHYDRATE } from '../utils/actionType';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   reducers?: IReducers;
@@ -132,7 +133,7 @@ export class StoreHelper {
       let mainResult = combined(state, action);
 
       if (this.stateWhenDispatching !== mainResult) {
-        this.persist.update(mainResult, action.type === TYPE_REHYDRATE);
+        this.persist.update(mainResult, action.type === ACTION_TYPE_REHYDRATE);
       }
 
       this.isDispatching = false;
