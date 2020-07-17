@@ -5,7 +5,6 @@ module.exports = {
     "<rootDir>/packages/**/tests/**/*.spec.ts?(x)"
   ],
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts?(x)',
     '<rootDir>/packages/**/src/**/*.ts?(x)',
     '!**/build/**',
   ],

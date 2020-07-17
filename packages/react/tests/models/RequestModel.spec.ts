@@ -1,8 +1,8 @@
 import { $api } from '../libs/ApiService';
 import { RequestModel } from './RequestModel';
-import { METHOD } from '../../src/core/utils/method';
+import { METHOD } from '@redux-model/core';
 import { createReduxStore } from '../../src/stores/createReduxStore';
-import { IResponseAction } from '../../src/core';
+import { IResponseAction } from '@redux-model/core';
 
 const data = {
   id: 1463,

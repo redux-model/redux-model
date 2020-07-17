@@ -1,4 +1,4 @@
-import { ReduxStoreConfig, storeHelper } from '../core';
+import { ReduxStoreConfig, storeHelper } from '@redux-model/core';
 import taro from '../storages/taroStorage';
 
 /**

@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro';
-import { PersistStorage } from '../core';
+import { PersistStorage } from '@redux-model/core';
 
 const taro: PersistStorage = {
   async getItem(key) {

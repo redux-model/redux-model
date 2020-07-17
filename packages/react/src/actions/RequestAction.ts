@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { BaseRequestAction, Meta, Metas, MetasLoading, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys } from '../core';
+import { BaseRequestAction, Meta, Metas, MetasLoading, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
 
 export const requestActionProxyKeys: {

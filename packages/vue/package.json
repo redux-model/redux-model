@@ -12,25 +12,23 @@
     "html5",
     "browser"
   ],
-  "main": "libs/index.js",
-  "types": "libs/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/redux-model/redux-model",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
     "build": "sh ../../scripts/build.sh",
     "prepublishOnly": "yarn run build",
-    "prebuild": "yarn run link",
-    "link": "sh ../../scripts/link.sh",
-    "forcelink": "sh ../../scripts/forcelink.sh",
-    "clean": "rm -rf ./build",
-    "outdated": "yarn outdated"
+    "outdated": "yarn outdated",
+    "tsc": "../../node_modules/.bin/tsc"
   },
   "peerDependencies": {
     "redux": "^4.0.0",
     "vue": "^3.0.0"
   },
   "dependencies": {
+    "@redux-model/core": "^7.0.0-beta.9",
     "axios": "0.19.2",
     "clone": "2.1.2",
     "deep-diff": "1.0.2",
@@ -46,7 +44,7 @@
     "directory": "build"
   },
   "files": [
-    "libs",
+    "lib",
     "LICENSE",
     "package.json",
     "README.md"

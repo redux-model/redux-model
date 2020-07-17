@@ -1,5 +1,5 @@
 import * as ReactRedux from 'react-redux';
-import { BaseModel } from '../core';
+import { BaseModel } from '@redux-model/core';
 import { ComposeAction } from '../actions/ComposeAction';
 import { TaroRequestConfig } from '../services/HttpService';
 

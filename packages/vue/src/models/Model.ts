@@ -1,6 +1,6 @@
 import * as Vue from 'vue';
 import { AxiosRequestConfig } from 'axios';
-import { BaseModel } from '../core';
+import { BaseModel } from '@redux-model/core';
 import { ComposeAction } from '../actions/ComposeAction';
 
 export abstract class Model<Data = null> extends BaseModel<Data, AxiosRequestConfig> {

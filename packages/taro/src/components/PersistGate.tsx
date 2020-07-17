@@ -1,5 +1,5 @@
 import { PureComponent, ReactNode } from 'react';
-import { storeHelper, isCompressed } from '../core';
+import { storeHelper, isCompressed } from '@redux-model/core';
 
 interface Props {
   loading?: ReactNode;

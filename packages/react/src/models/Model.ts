@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { BaseModel } from '../core';
+import { BaseModel } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
 import { ComposeAction } from '../actions/ComposeAction';
 

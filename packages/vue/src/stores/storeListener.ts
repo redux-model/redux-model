@@ -1,7 +1,7 @@
 import * as Vue from 'vue';
 import cloneDeep from 'clone';
 import { applyPatch } from './diff';
-import { storeHelper } from '../core';
+import { storeHelper } from '@redux-model/core';
 
 storeHelper.listenOnce((helper) => {
   const getCurrentState = helper.store.getState as () => object;

@@ -1,6 +1,6 @@
 import * as Vue from 'vue';
 import { AxiosRequestConfig } from 'axios';
-import { BaseRequestAction, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys, Meta, Metas } from '../core';
+import { BaseRequestAction, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys, Meta, Metas } from '@redux-model/core';
 
 export const requestActionProxyKeys: {
   methods: (keyof RequestAction<any, any, any, any, any>)[];

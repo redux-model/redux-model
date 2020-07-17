@@ -1,4 +1,4 @@
-import { ReduxStoreConfig, storeHelper } from '../core';
+import { ReduxStoreConfig, storeHelper } from '@redux-model/core';
 import local from '../storages/localStorage';
 import session from '../storages/sessionStorage';
 

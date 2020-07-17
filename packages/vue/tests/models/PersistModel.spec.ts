@@ -1,7 +1,7 @@
 import sleep from 'sleep-promise';
 import { PersistModel } from './PersistModel';
 import { createReduxStore } from '../../src/stores/createReduxStore';
-import { storeHelper } from '../../src/core';
+import { storeHelper } from '@redux-model/core';
 
 let model: PersistModel;
 let persistKey: string;

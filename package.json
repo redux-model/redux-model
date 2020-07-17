@@ -5,12 +5,9 @@
   "license": "MIT",
   "scripts": {
     "next": "lerna publish --dist-tag=next",
-    "test": "tsc && jest",
-    "pretest": "lerna run link"
-  },
-  "dependencies": {
-    "clone": "2.1.2",
-    "immer": "7.0.5"
+    "test": "lerna run tsc && jest",
+    "pretest": "rm -rf packages/*/build",
+    "bootstrap": "lerna clean -y && lerna bootstrap"
   },
   "devDependencies": {
     "@types/clone": "^0.1.30",

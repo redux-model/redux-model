@@ -1,5 +1,5 @@
 import * as Vue from 'vue';
-import { ComposeAction as BaseComponseAction, composeActionProxyKeys as superProxyKeys, Meta } from '../core';
+import { ComposeAction as BaseComponseAction, composeActionProxyKeys as superProxyKeys, Meta } from '@redux-model/core';
 
 export const composeActionProxyKeys: {
   methods: (keyof ComposeAction<any, any>)[];

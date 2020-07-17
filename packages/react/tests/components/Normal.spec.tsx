@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { Normal } from './Normal';
 import sleep from 'sleep-promise';
 import { PersistGate } from '../../src';
-import { storeHelper } from '../../src/core';
+import { storeHelper } from '@redux-model/core';
 
 test('Increase id with useData()', (done) => {
   const store = createReduxStore({

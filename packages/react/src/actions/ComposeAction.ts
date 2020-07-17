@@ -1,4 +1,4 @@
-import { ComposeAction as BaseComponseAction, Meta, composeActionProxyKeys as superProxyKeys } from '../core';
+import { ComposeAction as BaseComponseAction, Meta, composeActionProxyKeys as superProxyKeys } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
 
 export const composeActionProxyKeys: {

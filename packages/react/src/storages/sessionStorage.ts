@@ -1,4 +1,4 @@
-import { PersistStorage } from '../core';
+import { PersistStorage } from '@redux-model/core';
 
 const session: PersistStorage = {
   async getItem(key) {

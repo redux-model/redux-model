@@ -1,5 +1,5 @@
 import { restoreCompressed } from '../libs/mockCompress';
-import * as methods from '../../src/core/utils/setActionName';
+import * as methods from '@redux-model/core/src/utils/setActionName';
 import { ProdModel } from './ProdModel';
 
 afterAll(() => {

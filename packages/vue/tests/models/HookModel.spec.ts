@@ -1,4 +1,4 @@
-import { createReduxStore } from '../../src/core';
+import { createReduxStore } from '@redux-model/core';
 import { HookModel } from './HookModel';
 import { $api } from '../libs/ApiService';
 

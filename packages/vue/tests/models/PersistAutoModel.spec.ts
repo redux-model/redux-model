@@ -1,7 +1,7 @@
 import sleep from 'sleep-promise';
 import { PersistAutoModel } from './PersistAutoModel';
 import { createReduxStore } from '../../src/stores/createReduxStore';
-import { storeHelper } from '../../src/core';
+import { storeHelper } from '@redux-model/core';
 
 test('Initial data will be used if persist data is missing', (done) => {
   localStorage.setItem('ReduxModel:Persist:test-persist', '{"model":"{\\"counter\\":5}","__persist":{"version":1}}');

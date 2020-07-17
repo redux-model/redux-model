@@ -1,4 +1,4 @@
-import { PersistStorage } from '../core';
+import { PersistStorage } from '@redux-model/core';
 
 const local: PersistStorage = {
   async getItem(key) {
