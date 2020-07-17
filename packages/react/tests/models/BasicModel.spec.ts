@@ -100,3 +100,14 @@ test('Not allowed to use methods which have prefix useXXX() outside hooks-style 
 test('User can get redux data when changing reducer', () => {
   expect(() => model.allowGetData()).not.toThrowError();
 });
+
+test('can reset reducer by model instance', () => {
+  expect(model.data.id).toBe(1);
+  model.modify({
+    id: 15,
+  });
+  expect(model.data.id).toBe(15);
+
+  model.resetReducer();
+  expect(model.data.id).toBe(1);
+});
