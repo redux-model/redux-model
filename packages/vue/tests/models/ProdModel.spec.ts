@@ -11,4 +11,5 @@ test('getInstanceName will not call for product mode', () => {
 
   new ProdModel(Math.random().toString());
   expect(increseSpier).toHaveBeenCalledTimes(2);
+  increseSpier.mockRestore();
 });
