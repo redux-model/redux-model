@@ -95,7 +95,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return data;
   }
 
-  public reset(): void {
+  public/*protected*/ resetReducer(): void {
     this.changeReducer(() => {
       return this.__getInitData() as StateReturn<Data>;
     });
