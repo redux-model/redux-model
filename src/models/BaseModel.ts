@@ -129,7 +129,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return action as Fn & typeof action;
   }
 
-  public/*protected*/ effects(): Effects<Data> {
+  protected effects(): Effects<Data> {
     return [];
   }
 
@@ -158,7 +158,8 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public register(): IReducers {
-    const reducer = new BaseReducer(this, this.__getInitData());
+    // TODO: 查看是否多次执行？
+    const reducer = new BaseReducer(this.getReducerName(), this.__getInitData(), this.effects());
     return reducer.createReducer();
   }
 

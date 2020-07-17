@@ -1,4 +1,4 @@
-import { Effects, BaseModel } from '../models/BaseModel';
+import { Effects, FilterPersist } from '../models/BaseModel';
 import { InternalSuccessAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
 import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
@@ -11,19 +11,19 @@ export interface IReducers {
 }
 
 export class BaseReducer<Data> {
-  protected readonly model: BaseModel<Data>;
   protected readonly initData: Data;
   protected readonly reducerName: string;
   protected readonly sideEffects: Record<string, Effects<Data>[number]['effect']> = {};
+  protected readonly filterPersistData?: FilterPersist<Data>;
 
-  constructor(model: BaseModel<Data>, initData: Data) {
-    this.model = model;
+  constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData?: FilterPersist<Data>) {
     this.initData = initData;
-    this.reducerName = model.getReducerName();
-    this.sideEffects = model.effects().reduce((carry, { when, effect }) => {
+    this.reducerName = reducerName;
+    this.sideEffects = effects.reduce((carry, { when, effect }) => {
       carry[when] = effect;
       return carry;
     }, {} as Record<string, Effects<Data>[number]['effect']>);
+    this.filterPersistData = filterPersistData;
   }
 
   public createReducer(): IReducers {
@@ -59,15 +59,15 @@ export class BaseReducer<Data> {
   }
 
   protected initFromPersist(state: any): any {
-    if (this.initData === state || !this.model.filterPersistData) {
+    if (this.initData === state || !this.filterPersistData) {
       return state;
     }
 
-    return this.changeState(this.model.filterPersistData, state, {
+    return this.changeState(this.filterPersistData, state, {
       type: 'filterPersistData',
       modelName: this.reducerName,
       payload: undefined,
-      effect: this.model.filterPersistData,
+      effect: this.filterPersistData,
     });
   };
 

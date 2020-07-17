@@ -1,4 +1,4 @@
-export * from './models/MetaModel';
+export * from './reducers/MetaReducer';
 export * from './models/BaseModel';
 export * from './actions/BaseAction';
 export * from './actions/BaseRequestAction';

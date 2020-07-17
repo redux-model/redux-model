@@ -1,9 +1,10 @@
 import { BaseAction, actionProxyKeys } from './BaseAction';
-import { Meta, metaModel, DEFAULT_META, IMetaAction } from '../models/MetaModel';
+import { Meta, metaReducer, IMetaAction } from '../reducers/MetaReducer';
 import { BaseModel, State, StateReturn } from '../models/BaseModel';
 import { setActionName } from '../utils/setActionName';
 import { Action } from 'redux';
 import { storeHelper } from '../stores/StoreHelper';
+import { DEFAULT_META } from '../reducers/MetaReducer';
 
 export interface IActionCompose extends Action<string>, IMetaAction {
   message?: string;
@@ -45,7 +46,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   public get meta(): Meta {
-    return metaModel.getMeta(this.getActionName()) || DEFAULT_META;
+    return metaReducer.getMeta(this.getActionName()) || DEFAULT_META;
   }
 
   public get loading(): boolean {

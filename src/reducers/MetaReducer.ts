@@ -1,17 +1,95 @@
 import { BaseReducer } from './BaseReducer';
-import { InternalSuccessAction } from '../actions/BaseRequestAction';
-import { IMetaRestore, Meta, METAS_PICK_METHOD, Metas, IMetaStash } from '../models/MetaModel';
-import { BaseModel } from '../models/BaseModel';
+import { InternalSuccessAction, HttpTransform } from '../actions/BaseRequestAction';
 import { ACTION_TYPE_META_RESTORE } from '../utils/actionType';
+import { IActionPayload } from '../actions/BaseAction';
+import { storeHelper } from '../stores/StoreHelper';
+
+export interface IMetaAction {
+  metaKey: string | number | symbol | boolean;
+  metaActionName: string;
+}
+
+export type MetasLoading<M> = {
+  pick: (value: M) => boolean;
+};
+
+export type Meta = Readonly<{
+  actionType: string;
+  loading: boolean;
+} & HttpTransform>;
+
+export type Metas<M = any> = Partial<{
+  [key: string]: Meta;
+}> & {
+  pick: (value: M) => Meta;
+};
+
+export interface IMetaRestore extends IActionPayload<{
+  key: string;
+  value: Meta | Metas;
+}> {}
+
+export interface IMetaStash {
+  [key: string]: Metas | Meta | 'meta-used';
+}
 
 export const USED_FLAG = 'meta-used';
 
-export class MetaReducer<Data = any> extends BaseReducer<Data> {
+export const DEFAULT_META: Meta = {
+  actionType: '',
+  loading: false,
+};
+
+export const METAS_PICK_METHOD: {
+  pick: (value: any) => Meta;
+} = {
+  pick: function (payload) {
+    return this[payload] || DEFAULT_META;
+  },
+};
+
+// @ts-ignore
+export const DEFAULT_METAS: Metas = {
+  ...METAS_PICK_METHOD,
+};
+
+interface Data {
+  [key: string]: Metas | Meta;
+}
+
+const REDUCER_NAME = '__metas__';
+
+class MetaReducer extends BaseReducer<Data> {
+  // All metas will be stored here before user need them.
   protected readonly stash: IMetaStash = {};
 
-  constructor(stash: IMetaStash, model: BaseModel<Data>, initData: Data) {
-    super(model, initData);
-    this.stash = stash;
+  constructor() {
+    super(REDUCER_NAME, {}, []);
+  }
+
+  protected getData(name: string): Meta | Metas {
+    return storeHelper.getState()[REDUCER_NAME][name];
+  }
+
+  public/*protected*/ getMeta<T extends Meta | Metas>(name: string): T | undefined {
+    const stash = this.stash[name];
+
+    if (!this.getData(name) && stash && stash !== USED_FLAG) {
+      const action: IMetaRestore = {
+        type: ACTION_TYPE_META_RESTORE,
+        payload: {
+          key: name,
+          value: stash,
+        },
+      };
+      storeHelper.dispatch<IMetaRestore>(action);
+    }
+
+    if (stash !== USED_FLAG) {
+      this.stash[name] = USED_FLAG;
+    }
+
+    return this.getData(name) as T;
   }
 
   protected isRestore(action: InternalSuccessAction | IMetaRestore): action is IMetaRestore {
@@ -72,3 +150,7 @@ export class MetaReducer<Data = any> extends BaseReducer<Data> {
     return state;
   }
 }
+
+export const metaReducer = new MetaReducer();
+
+storeHelper.appendReducers(metaReducer.createReducer());

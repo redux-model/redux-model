@@ -1,6 +1,6 @@
 import { BaseAction, IActionPayload, actionProxyKeys } from './BaseAction';
 import { getCurrentModel } from '../utils/setModel';
-import { metaModel, DEFAULT_META, Meta, Metas, DEFAULT_METAS, MetasLoading, IMetaAction } from '../models/MetaModel';
+import { metaReducer, Meta, Metas, MetasLoading, IMetaAction } from '../reducers/MetaReducer';
 import { State, StateReturn } from '../models/BaseModel';
 import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
 import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
@@ -9,6 +9,7 @@ import { setActionName } from '../utils/setActionName';
 import { IClearThrottleAction } from '../services/BaseHttpService';
 import { storeHelper } from '../stores/StoreHelper';
 import { ACTION_TYPE_CLEAR_THROTTLE } from '../utils/actionType';
+import { DEFAULT_META, DEFAULT_METAS } from '../reducers/MetaReducer';
 
 export interface Types {
   prepare: string;
@@ -105,7 +106,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public get meta(): Meta {
-    return metaModel.getMeta(this.getActionName()) || DEFAULT_META;
+    return metaReducer.getMeta(this.getActionName()) || DEFAULT_META;
   }
 
   public get loading(): boolean {
@@ -113,7 +114,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public get metas(): Metas {
-    return metaModel.getMeta(this.getActionName()) || DEFAULT_METAS;
+    return metaReducer.getMeta(this.getActionName()) || DEFAULT_METAS;
   }
 
   public get loadings(): MetasLoading<any> {
