@@ -1,7 +1,7 @@
 const ACTION_TYPE_PREFIX = '@ReduxModel/';
 
 const createActionType = (name: string, ...names: string[]): string => {
-  return ACTION_TYPE_PREFIX + name + '/' + names.join('/');
+  return ACTION_TYPE_PREFIX + name + (name.length ? '/' + names.join('/') : '');
 };
 
 export const ACTION_TYPE_CLEAR_THROTTLE = createActionType('clear', 'throttle');
