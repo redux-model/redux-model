@@ -8,7 +8,7 @@
   "npmClient": "yarn",
   "command": {
     "version": {
-      "message": "chore: Bump version %s [skip ci]"
+      "message": "chore: Bump version %s"
     }
   },
   "ignoreChanges": [
