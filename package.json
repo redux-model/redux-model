@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "next": "lerna publish --dist-tag=next",
-    "test": "jest",
+    "test": "tsc && jest",
     "pretest": "lerna run link"
   },
   "dependencies": {
