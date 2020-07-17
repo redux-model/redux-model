@@ -8,7 +8,9 @@ storeHelper.listenOnce((helper) => {
   let originalState = getCurrentState();
   const observer = Vue.reactive(cloneDeep(originalState));
 
-  helper.getState = helper.store.getState = () => {
+  // Vue component will never visit state during dispatching.
+  // So original state will respond by storeHelper.getState() during dispatching.
+  helper.getState = () => {
     return observer;
   };
 
