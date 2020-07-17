@@ -18,7 +18,7 @@ Redux Model is created to enhance original redux framework, which has complex de
 * Modify reducer by MVVM
 * Absolutely 100% static type checking with typescript
 * Trace loading status for each request action
-* Support react hooks
+* Support react/vue hooks
 
 # Installation
 
@@ -27,32 +27,32 @@ Redux Model is created to enhance original redux framework, which has complex de
 npm install @redux-model/react redux react-redux
 ```
 
-### Taro v3
-```bash
-npm install @redux-model/taro redux react-redux
-```
-
 ### Vue v3
 ```bash
 npm install @redux-model/vue redux
 ```
 
+### Taro v3
+```bash
+npm install @redux-model/taro redux react-redux
+```
+
 ### Others
-* For `taro < 3`, install @redux-model/taro@6.9.2 instead
-* For `vue < 3`, install @redux-model/vue@6.9.2 instead
+* For `taro < v3`, install @redux-model/taro@6.9.2 instead
+* For `vue < v3`, install @redux-model/vue@6.9.2 instead
 
 # Define Model
 ```typescript
 interface Response {
-  id: number;
-  name: string;
+    id: number;
+    name: string;
 }
 
 interface Data {
-  counter: number;
-  users: Partial<{
-    [key: string]: Response;
-  }>;
+    counter: number;
+    users: Partial<{
+        [key: string]: Response;
+    }>;
 }
 
 class TestModel extends Model<Data> {
@@ -103,7 +103,36 @@ const App: FC = () => {
 export default App;
 ```
 
-# With Redux connect
+# With Vue Hooks
+```vue
+<template>
+  <button @click="increase">
+    {{loading.value ? 'Waiting...' : `You clicked ${counter.value} times`}}
+  </button>
+</template>
+
+<script>
+export default {
+    setup() {
+        const increase = () => {
+            testModel.increase();
+            testModel.getUser(3);
+        };
+
+        const counter = testModel.useData((data) => data.counter);
+        const loading = testModel.getUser.useLoading();
+
+        return {
+            increase,
+            counter,
+            loading,
+        };
+    }
+};
+</script>
+```
+
+# With Redux Connect
 ```typescript jsx
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -134,35 +163,6 @@ const mapStateToProps = () => {
 };
 
 export default connect(mapStateToProps)(App);
-```
-
-# With Vue
-```vue
-<template>
-  <button @click="increase">
-    {{loading ? 'Waiting...' : `You clicked ${counter} times`}}
-  </button>
-</template>
-
-<script>
-export default {
-  name: 'HelloWorld',
-  methods: {
-    increase() {
-      testModel.increase();
-      testModel.getUser(3);
-    },
-  },
-  computed: {
-    counter() {
-      return testModel.data.counter;
-    },
-    loading() {
-        return testModel.getUser.loading;
-    },
-  },
-};
-</script>
 ```
 
 # Demos

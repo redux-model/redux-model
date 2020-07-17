@@ -93,11 +93,6 @@ test('Even if it can be register automatically, but we can register model again 
   expect(model.data.id).toBe(44);
 });
 
-// TODO: 支持hooks
-// test('Not allowed to use methods which have prefix useXXX() outside hooks-style component', () => {
-//   expect(() => model.useData()).toThrowError();
-// });
-
 test('User can get redux data when changing reducer', () => {
   expect(() => model.allowGetData()).not.toThrowError();
 });
