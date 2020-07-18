@@ -5,10 +5,9 @@
   "license": "MIT",
   "scripts": {
     "next": "lerna publish --dist-tag=next",
-    "test": "lerna run tsc && jest",
-    "bootstrap": "lerna clean -y && lerna bootstrap && lerna run relink",
-    "relink": "lerna run relink",
-    "pretest": "rm -rf packages/*/build"
+    "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest",
+    "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
+    "relink": "lerna run relink && sh scripts/vue.sh"
   },
   "devDependencies": {
     "@types/jest": "^26.0.4",
@@ -18,7 +17,7 @@
     "public-refactor": "^0.5.1",
     "redux": "^4.0.5",
     "sleep-promise": "^8.0.1",
-    "ts-jest": "^26.1.2",
-    "typescript": "^3.9.6"
+    "ts-jest": "^26.1.3",
+    "typescript": "^3.9.7"
   }
 }
