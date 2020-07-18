@@ -7,7 +7,7 @@ type Options<Data, Response, Payload> = Partial<Omit<IBaseRequestAction<Data, Re
   method: METHOD;
 };
 
-export type ThrottleOptionns = {
+export type ThrottleOptions = {
   duration: number;
   deps?: any[];
   enable?: boolean;
@@ -56,7 +56,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public throttle(options: number | ThrottleOptionns): this {
+  public throttle(options: number | ThrottleOptions): this {
     const obj = typeof options === 'number' ? { duration: options } : options;
 
     this.config.useThrottle = obj.enable !== false;

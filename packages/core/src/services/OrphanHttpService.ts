@@ -1,13 +1,13 @@
 import { METHOD } from '../utils/method';
 import { IBaseRequestAction } from '../actions/BaseRequestAction';
-import { ThrottleOptionns } from './HttpServiceBuilder';
+import { ThrottleOptions } from './HttpServiceBuilder';
 import { ACTION_TYPE_ORPHAN_REQUEST } from '../utils/actionType';
 
 export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | 'query' | 'body' | 'requestOptions' >> &
   {
     uri: string;
     requestOptions?: T;
-    throttle?: number | ThrottleOptionns;
+    throttle?: number | ThrottleOptions;
   };
 
 export class OrphanHttpService<T = object> {
@@ -24,7 +24,7 @@ export class OrphanHttpService<T = object> {
   collect(): IBaseRequestAction {
     const config = this.config;
 
-    const throttle: ThrottleOptionns = config.throttle === undefined
+    const throttle: ThrottleOptions = config.throttle === undefined
       ? {
         duration: 0,
         enable: false,
