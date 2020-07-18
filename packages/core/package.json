@@ -15,7 +15,6 @@
   "scripts": {
     "build": "bash ../../scripts/build.sh",
     "prepublishOnly": "yarn run build",
-    "outdated": "yarn outdated",
     "tsc": "../../node_modules/.bin/tsc"
   },
   "peerDependencies": {
