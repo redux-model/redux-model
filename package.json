@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "next": "lerna publish --dist-tag=next",
-    "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest",
+    "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest --runInBand",
     "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
     "relink": "lerna run relink && bash scripts/vue.sh"
   },
