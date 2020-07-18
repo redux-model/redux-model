@@ -30,7 +30,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "directory": "."
+    "directory": "build"
   },
   "files": [
     "lib",

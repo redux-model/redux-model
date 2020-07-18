@@ -7,7 +7,7 @@
     "next": "lerna publish --dist-tag=next",
     "test": "lerna run tsc && jest",
     "pretest": "rm -rf packages/*/build",
-    "bootstrap": "lerna clean -y && lerna bootstrap"
+    "bootstrap": "lerna clean -y && lerna bootstrap && lerna run relink"
   },
   "devDependencies": {
     "@types/clone": "^0.1.30",

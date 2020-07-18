@@ -11,7 +11,7 @@ fi
 
 
 rm -rf ./build/*
-../../node_modules/.bin/tsc
+yarn tsc
 mv ./build/src ./build/lib
 cp ../../README.md ../../LICENSE ./package.json ./build
 
@@ -20,4 +20,3 @@ cp ../../README.md ../../LICENSE ./package.json ./build
 # packages/core
 replace 's@\("main": \)"src/index\.ts"@\1"lib/index.js"@' ./build/package.json
 replace 's@\("types": \)"src/index\.ts"@\1"lib/index.d.ts"@' ./build/package.json
-replace 's@\("directory": \)"\."@\1"build"@' ./build/package.json
