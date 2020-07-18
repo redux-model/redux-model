@@ -4,5 +4,4 @@ node_modules/
 build/
 .DS_Store
 coverage/
-packages/*/src/core
 TODO
