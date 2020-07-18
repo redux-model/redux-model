@@ -6,11 +6,11 @@
   "scripts": {
     "next": "lerna publish --dist-tag=next",
     "test": "lerna run tsc && jest",
-    "pretest": "rm -rf packages/*/build",
-    "bootstrap": "lerna clean -y && lerna bootstrap && lerna run relink"
+    "bootstrap": "lerna clean -y && lerna bootstrap && lerna run relink",
+    "relink": "lerna run relink",
+    "pretest": "rm -rf packages/*/build"
   },
   "devDependencies": {
-    "@types/clone": "^0.1.30",
     "@types/jest": "^26.0.4",
     "@types/node": "^14.0.23",
     "jest": "^26.1.0",
