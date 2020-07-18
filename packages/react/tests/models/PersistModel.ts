@@ -15,10 +15,6 @@ export class PersistModel extends Model<Data> {
     };
   }
 
-  // filterPersistData: FilterPersist<Data> = (state) => {
-
-  // };
-
   protected autoRegister(): boolean {
     return false;
   }

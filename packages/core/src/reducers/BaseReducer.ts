@@ -14,9 +14,9 @@ export class BaseReducer<Data> {
   protected readonly initData: Data;
   protected readonly reducerName: string;
   protected readonly sideEffects: Record<string, Effects<Data>[number]['effect']> = {};
-  protected readonly filterPersistData?: FilterPersist<Data>;
+  protected readonly filterPersistData: FilterPersist<Data>;
 
-  constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData?: FilterPersist<Data>) {
+  constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData: FilterPersist<Data>) {
     this.initData = initData;
     this.reducerName = reducerName;
     this.sideEffects = effects.reduce((carry, { when, effect }) => {

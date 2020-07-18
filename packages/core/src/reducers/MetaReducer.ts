@@ -57,18 +57,16 @@ interface Data {
   [key: string]: Metas | Meta;
 }
 
-const REDUCER_NAME = '__metas__';
-
 class MetaReducer extends BaseReducer<Data> {
   // All metas will be stored here before user need them.
   protected readonly stash: IMetaStash = {};
 
   constructor() {
-    super(REDUCER_NAME, {}, []);
+    super('__metas__', {}, [], null);
   }
 
   protected getData(name: string): Meta | Metas {
-    return storeHelper.getState()[REDUCER_NAME][name];
+    return storeHelper.getState()[this.reducerName][name];
   }
 
   public/*protected*/ getMeta<T extends Meta | Metas>(name: string): T | undefined {

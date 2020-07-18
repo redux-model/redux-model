@@ -10,7 +10,7 @@ import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import { NullReducerError } from '../exceptions/NullReducerError';
 import { storeHelper } from '../stores/StoreHelper';
 
-export type FilterPersist<Data> = (state: State<Data>) => StateReturn<Data>;
+export type FilterPersist<Data> = ((state: State<Data>) => StateReturn<Data>) | null;
 
 export type AnyModel = BaseModel<any>;
 
@@ -50,6 +50,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   /**
    * Filter data from storage. Assign model to allowlist before you can use persist:
+   *
    * ```javascript
    * const store = createReduxStore({
    *   persist: {
@@ -61,9 +62,19 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    * });
    * ```
    *
-   * MVVM is allowed here.
+   * Then override this method:
+   *
+   * protected filterPersistData(): FilterPersist<Data> {
+   *   return (state) => {
+   *     // ...
+   *     // logic by mvvm
+   *   };
+   * }
+   *
    */
-  declare public/*protected*/ filterPersistData?: FilterPersist<Data>;
+  protected filterPersistData(): FilterPersist<Data> {
+    return null;
+  }
 
   constructor(alias: string = '') {
     setCurrentModel(this);
@@ -159,7 +170,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   public register(): IReducers {
     // TODO: 查看是否多次执行？
-    const reducer = new BaseReducer(this.getReducerName(), this.__getInitData(), this.effects());
+    const reducer = new BaseReducer(this.getReducerName(), this.__getInitData(), this.effects(), this.filterPersistData());
     return reducer.createReducer();
   }
 
