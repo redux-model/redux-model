@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 # vue redefine JSX which incompatible with react JSX
 file=packages/vue/node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts
