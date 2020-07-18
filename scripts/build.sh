@@ -9,7 +9,6 @@ else
   alias replace="sed -i"
 fi
 
-
 rm -rf ./build/*
 yarn tsc
 mv ./build/src ./build/lib

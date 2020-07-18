@@ -2,12 +2,13 @@
 
 set -ex
 
+# vue redefine JSX which incompatible with react JSX
+file=packages/vue/node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts
+
+# Don't use alias due to unbuntu (CI) can't recognize.
 if [ $(uname) == 'Darwin' ]
 then
-  alias replace="sed -i ''"
+  sed -i '' 's/JSX/_VUE_/' $file
 else
-  alias replace="sed -i"
+  sed -i 's/JSX/_VUE_/' $file
 fi
-
-# vue redefine JSX which incompatible with react JSX
-replace 's/JSX/_VUE_/' packages/vue/node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts

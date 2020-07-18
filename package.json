@@ -7,7 +7,7 @@
     "next": "lerna publish --dist-tag=next",
     "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest",
     "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
-    "relink": "lerna run relink && sh scripts/vue.sh"
+    "relink": "lerna run relink && bash scripts/vue.sh"
   },
   "devDependencies": {
     "@types/jest": "^26.0.4",

@@ -13,7 +13,7 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
-    "build": "sh ../../scripts/build.sh",
+    "build": "bash ../../scripts/build.sh",
     "prepublishOnly": "yarn run build",
     "outdated": "yarn outdated",
     "tsc": "../../node_modules/.bin/tsc"
