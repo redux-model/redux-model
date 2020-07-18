@@ -5,17 +5,19 @@ import { storeHelper } from '../stores/StoreHelper';
 export interface IActionNormal<Data = any, Payload = any> extends IActionPayload<Payload> {
   modelName: string;
   effect: (state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>;
+  effectCallback: null;
 }
 
 export interface NormalSubscriber<CustomData, Payload>{
   when: string;
-  effect: (state: State<CustomData>, action: IActionPayload<Payload>) => StateReturn<CustomData>;
+  effect?: (state: State<CustomData>, action: IActionPayload<Payload>) => StateReturn<CustomData>;
+  effectCallback?: (action: IActionPayload<Payload>) => void;
 }
 
 export const normalActionProxyKeys: {
   methods: (keyof NormalAction<any, any, any>)[];
 } = {
-  methods: ['onSuccess', 'changeCallback', ...actionProxyKeys.methods],
+  methods: ['onSuccess', 'afterSuccess', 'changeCallback', ...actionProxyKeys.methods],
 };
 
 export class NormalAction<Data, Callback extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload> extends BaseAction<Data> {
@@ -39,10 +41,17 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
     this.callback = fn;
   }
 
-  public onSuccess<CustomData>(effect: NormalSubscriber<CustomData, Payload>['effect']): NormalSubscriber<CustomData, Payload> {
+  public onSuccess<CustomData>(effect: NonNullable<NormalSubscriber<CustomData, Payload>['effect']>): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),
       effect,
+    };
+  }
+
+  public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['effectCallback']>): NormalSubscriber<CustomData, Payload> {
+    return {
+      when: this.getSuccessType(),
+      effectCallback: callback,
     };
   }
 
@@ -57,6 +66,7 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
         effect: (state, action) => {
           return this.callback(state, action.payload);
         },
+        effectCallback: null,
       });
     };
   }

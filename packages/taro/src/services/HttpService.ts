@@ -101,6 +101,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       type: prepare,
       loading: true,
       effect: action.onPrepare,
+      effectCallback: action.afterPrepare,
     });
 
     const task = this.request(requestOptions);
@@ -123,6 +124,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           loading: false,
           response: response.data,
           effect: action.onSuccess,
+          effectCallback: action.afterSuccess,
         };
 
         successInvoked = true;
@@ -171,6 +173,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           httpStatus,
           businessCode,
           effect: action.onFail,
+          effectCallback: action.afterFail,
         };
 
         fail && storeHelper.dispatch(errorResponse);

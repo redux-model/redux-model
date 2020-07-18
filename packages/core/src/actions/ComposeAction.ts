@@ -13,14 +13,20 @@ export interface IActionCompose extends Action<string>, IMetaAction {
 
 export interface ComposeSubscriber<CustomData>{
   when: string;
-  effect: (state: State<CustomData>) => StateReturn<CustomData>;
+  effect?: (state: State<CustomData>) => StateReturn<CustomData>;
+  effectCallback?: () => void;
 }
 
 export const composeActionProxyKeys: {
   methods: (keyof ComposeAction<any, any>)[];
   getters: (keyof ComposeAction<any, any>)[];
 } = {
-  methods: ['onSuccess', 'onPrepare', 'onFail', 'getPrepareType', 'getFailType', ...actionProxyKeys.methods],
+  methods: [
+    'onSuccess', 'onPrepare', 'onFail',
+    'afterSuccess', 'afterPrepare', 'afterFail',
+    'getPrepareType', 'getFailType',
+    ...actionProxyKeys.methods
+  ],
   getters: ['meta', 'loading', ...actionProxyKeys.getters],
 };
 
@@ -34,7 +40,12 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     methods: (keyof ComposeAction<any, any>)[];
     getters: (keyof ComposeAction<any, any>)[];
   } = {
-    methods: ['onSuccess', 'onPrepare', 'onFail', 'getPrepareType', 'getFailType', ...actionProxyKeys.methods],
+    methods: [
+      'onSuccess', 'onPrepare', 'onFail',
+      'afterSuccess', 'afterPrepare', 'afterFail',
+      'getPrepareType', 'getFailType',
+      ...actionProxyKeys.methods,
+    ],
     getters: ['meta', 'loading', ...actionProxyKeys.getters],
   };
 
@@ -118,24 +129,45 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     return this.__failType || setActionName(this).__failType!;
   }
 
-  public onSuccess<CustomData>(effect: ComposeSubscriber<CustomData>['effect']): ComposeSubscriber<CustomData> {
+  public onSuccess<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
       effect,
     };
   }
 
-  public onPrepare<CustomData>(effect: ComposeSubscriber<CustomData>['effect']): ComposeSubscriber<CustomData> {
+  public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>): ComposeSubscriber<CustomData> {
+    return {
+      when: this.getSuccessType(),
+      effectCallback: callback,
+    };
+  }
+
+  public onPrepare<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
       effect,
     };
   }
 
-  public onFail<CustomData>(effect: ComposeSubscriber<CustomData>['effect']): ComposeSubscriber<CustomData> {
+  public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>): ComposeSubscriber<CustomData> {
+    return {
+      when: this.getPrepareType(),
+      effectCallback: callback,
+    };
+  }
+
+  public onFail<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
       effect,
+    };
+  }
+
+  public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>): ComposeSubscriber<CustomData> {
+    return {
+      when: this.getFailType(),
+      effectCallback: callback,
     };
   }
 }

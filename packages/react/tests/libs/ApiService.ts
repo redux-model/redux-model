@@ -23,7 +23,17 @@ class ApiService<T> extends HttpService<T> {
     });
   }
 
-  public mockRejectValue(data?: any) {
+  public mockRejectValue(data?: any, duration: number = 0) {
+    this.mock.mockImplementationOnce(async () => {
+      if (duration > 0) {
+        await sleep(duration);
+      }
+
+      return Promise.reject({
+        data,
+      });
+    });
+
     this.mock.mockRejectedValue({
       data,
     });

@@ -155,6 +155,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
               type: action.type.success,
               response: cloneDeep(item.response, false),
               effect: action.onSuccess,
+              effectCallback: action.afterSuccess,
               fromThrottle: true,
             };
 

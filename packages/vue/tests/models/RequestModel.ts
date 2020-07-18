@@ -38,6 +38,26 @@ export class RequestModel extends Model<Data> {
       });
   });
 
+  withAfterXXX = $api.action(() => {
+    return this
+      .get<{ count: number }>('/')
+      .afterPrepare(() => {
+        this.changeReducer((state) => {
+          state.id += 1;
+        });
+      })
+      .afterSuccess((action) => {
+        this.changeReducer((state) => {
+          state.id += action.response.count;
+        });
+      })
+      .afterFail(() => {
+        this.changeReducer((state) => {
+          state.id += 2;
+        });
+      });
+  });
+
   withPostProfile = $api.action(() => {
     return this.post('/profile/create');
   });

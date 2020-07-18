@@ -2,6 +2,7 @@ import { $api } from '../libs/ApiService';
 import { RequestModel } from './RequestModel';
 import { createReduxStore } from '../../src/stores/createReduxStore';
 import { IResponseAction, METHOD } from '@redux-model/core';
+import sleep from 'sleep-promise';
 
 const data = {
   id: 1463,
@@ -256,4 +257,42 @@ test('Clear Throttle action by hand', async () => {
   // Cache
   const result4 = await model.enableThrottleProfile();
   expect(result4.response.id).toBe(666);
+});
+
+describe('Request action can handle afterXXX', () => {
+  beforeEach(() => {
+    model = new RequestModel(Math.random().toString());
+  });
+
+  test('case prepare', async (done) => {
+    $api.mockResolveValue({ count: 123 }, 20);
+    expect(model.data.id).toBe(1);
+
+    model.withAfterXXX().then(() => done());
+    expect(model.data.id).toBe(1);
+    await sleep(10); // Before success
+    expect(model.data.id).toBe(2);
+  });
+
+  test('case success', async () => {
+    $api.mockResolveValue({ count: 123 }, 20);
+    expect(model.data.id).toBe(1);
+
+    await model.withAfterXXX();
+    expect(model.data.id).toBe(2);
+    await sleep(10);
+    expect(model.data.id).toBe(125);
+  });
+
+  test('case fail', async () => {
+    $api.mockRejectValue({ count: 123 }, 20);
+    expect(model.data.id).toBe(1);
+
+    try {
+      await model.withAfterXXX();
+    } catch {}
+    expect(model.data.id).toBe(2);
+    await sleep(10);
+    expect(model.data.id).toBe(4);
+  });
 });

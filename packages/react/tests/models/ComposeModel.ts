@@ -28,3 +28,5 @@ export class ComposeModel extends Model<Data> {
     };
   }
 }
+
+export const composeModel = new ComposeModel();

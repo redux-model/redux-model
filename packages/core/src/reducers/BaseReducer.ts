@@ -13,16 +13,25 @@ export interface IReducers {
 export class BaseReducer<Data> {
   protected readonly initData: Data;
   protected readonly reducerName: string;
-  protected readonly sideEffects: Record<string, Effects<Data>[number]['effect']> = {};
+  protected readonly effects: Record<string, NonNullable<Effects<Data>[number]['effect']>>;
+  protected readonly effectsCallback: Record<string, NonNullable<Effects<Data>[number]['effectCallback']>>;
   protected readonly filterPersistData: FilterPersist<Data>;
 
   constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData: FilterPersist<Data>) {
     this.initData = initData;
     this.reducerName = reducerName;
-    this.sideEffects = effects.reduce((carry, { when, effect }) => {
-      carry[when] = effect;
-      return carry;
-    }, {} as Record<string, Effects<Data>[number]['effect']>);
+    this.effects = {};
+    this.effectsCallback = {};
+
+    effects.forEach(({ when, effect, effectCallback }) => {
+      if (effect) {
+        this.effects[when] = effect;
+      }
+
+      if (effectCallback) {
+        this.effectsCallback[when] = effectCallback;
+      }
+    });
     this.filterPersistData = filterPersistData;
   }
 
@@ -48,11 +57,25 @@ export class BaseReducer<Data> {
     }
 
     if (action.modelName === this.reducerName) {
+      if (action.effectCallback) {
+        setTimeout(() => {
+          action.effectCallback!(action);
+        });
+      }
+
       if (action.effect) {
         return this.changeState(action.effect, state, action);
       }
-    } else if (this.sideEffects[action.type]) {
-      return this.changeState(this.sideEffects[action.type], state, action);
+    } else {
+      if (this.effectsCallback[action.type]) {
+        setTimeout(() => {
+          this.effectsCallback[action.type](action);
+        });
+      }
+
+      if (this.effects[action.type]) {
+        return this.changeState(this.effects[action.type], state, action);
+      }
     }
 
     return state;
@@ -68,6 +91,7 @@ export class BaseReducer<Data> {
       modelName: this.reducerName,
       payload: undefined,
       effect: this.filterPersistData,
+      effectCallback: null,
     });
   };
 

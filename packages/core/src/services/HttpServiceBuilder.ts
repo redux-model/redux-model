@@ -95,14 +95,32 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
+  public afterPrepare(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterPrepare']>): this {
+    this.config.afterPrepare = fn;
+
+    return this;
+  }
+
   public onSuccess(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['onSuccess']>): this {
     this.config.onSuccess = fn;
 
     return this;
   }
 
+  public afterSuccess(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterSuccess']>): this {
+    this.config.afterSuccess = fn;
+
+    return this;
+  }
+
   public onFail(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['onFail']>): this {
     this.config.onFail = fn;
+
+    return this;
+  }
+
+  public afterFail(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterFail']>): this {
+    this.config.afterFail = fn;
 
     return this;
   }
@@ -129,8 +147,11 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       metaKey: config.metaKey === undefined ? true : config.metaKey,
       metaActionName: instance.getActionName(),
       onPrepare: config.onPrepare || null,
+      afterPrepare: config.afterPrepare || null,
       onSuccess: config.onSuccess || null,
+      afterSuccess: config.afterSuccess || null,
       onFail: config.onFail || null,
+      afterFail: config.afterFail || null,
       useThrottle: config.useThrottle || false,
       throttleMillSeconds: config.throttleMillSeconds || 0,
       throttleKey: '',

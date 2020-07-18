@@ -56,8 +56,11 @@ export class OrphanHttpService<T = object> {
       metaActionName: '',
       payload: undefined,
       onPrepare: null,
+      afterPrepare: null,
       onSuccess: null,
+      afterSuccess: null,
       onFail: null,
+      afterFail: null,
       modelName: '',
     };
 

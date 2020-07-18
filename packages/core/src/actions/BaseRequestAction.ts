@@ -33,8 +33,11 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
   throttleKey: string;
   throttleDeps: any[];
   onPrepare: null | ((state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>);
+  afterPrepare: null | ((action: IActionPayload<Payload>) => void);
   onSuccess: null | ((state: State<Data>, action: IResponseAction<Response, Payload>) => StateReturn<Data>);
+  afterSuccess: null | ((action: IResponseAction<Response, Payload>) => void);
   onFail: null | ((state: State<Data>, action: IResponseAction<unknown, Payload>) => StateReturn<Data>);
+  afterFail: null | ((action: IResponseAction<unknown, Payload>) => void);
 }
 
 export interface HttpTransform {
@@ -50,18 +53,21 @@ export interface IResponseAction<Response = any, Payload = any> extends IActionP
 export interface InternalPrepareAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string> {
   loading: boolean;
   effect: IBaseRequestAction<Data, any, Payload>['onPrepare'];
+  effectCallback: IBaseRequestAction<Data, any, Payload>['afterPrepare'];
 }
 
 export interface InternalSuccessAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string>, IResponseAction<Response, Payload> {
   loading: boolean;
   effect: IBaseRequestAction<Data, Response, Payload, string>['onSuccess'];
+  effectCallback: IBaseRequestAction<Data, Response, Payload, string>['afterSuccess'];
   fromThrottle?: boolean;
 }
 
 // TODO: 区分prepare, success, fail
 export interface RequestSubscriber<CustomData, Response, Payload>{
   when: string;
-  effect: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
+  effect?: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
+  effectCallback?: (action: IResponseAction<Response, Payload>) => void;
 }
 
 export const requestActionProxyKeys: {
@@ -70,6 +76,7 @@ export const requestActionProxyKeys: {
 } = {
   methods: [
     'onSuccess', 'onPrepare', 'onFail',
+    'afterSuccess', 'afterPrepare', 'afterFail',
     'getPrepareType', 'getFailType',
     'clearThrottle',
     ...actionProxyKeys.methods,
@@ -129,24 +136,45 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     return this.__failType || setActionName(this).__failType!;
   }
 
-  public onSuccess<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
+  public onSuccess<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
       effect,
     };
   }
 
-  public onPrepare<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
+  public afterSuccess<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>): RequestSubscriber<CustomData, Response, Payload> {
+    return {
+      when: this.getSuccessType(),
+      effectCallback: callback,
+    };
+  }
+
+  public onPrepare<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getPrepareType(),
       effect,
     };
   }
 
-  public onFail<CustomData>(effect: RequestSubscriber<CustomData, Response, Payload>['effect']): RequestSubscriber<CustomData, Response, Payload> {
+  public afterPrepare<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>): RequestSubscriber<CustomData, Response, Payload> {
+    return {
+      when: this.getPrepareType(),
+      effectCallback: callback,
+    };
+  }
+
+  public onFail<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getFailType(),
       effect,
+    };
+  }
+
+  public afterFail<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>): RequestSubscriber<CustomData, Response, Payload> {
+    return {
+      when: this.getFailType(),
+      effectCallback: callback,
     };
   }
 
