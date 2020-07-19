@@ -13,7 +13,7 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   middleware?: Middleware[];
   preloadedState?: PreloadedState<any>;
   onCombineReducers?: (reducer: Reducer) => Reducer;
-  persist?: false | {
+  persist?: {
     version: string | number;
     key: string;
     storage: PersistStorage | Engine;
