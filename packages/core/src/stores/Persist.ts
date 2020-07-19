@@ -62,15 +62,24 @@ export class Persist {
     return this;
   }
 
-  async rehydrate(): Promise<any> {
+  rehydrate():void {
     if (this.bootstrapped || !this.config) {
       return;
     }
 
-    const data = await this.storage.getItem(this.keyPrefix + this.config.key);
+    this.storage
+      .getItem(this.keyPrefix + this.config.key)
+      .then((data) => this.parseData(data));
+  }
+
+  protected parseData(data: string | null): void {
+    if (!this.config) {
+      return;
+    }
 
     if (data === null) {
-      return this.resetAndRestore().onParsed().onBootstrapped();
+      this.resetAndRestore().onParsed().onBootstrapped();
+      return;
     }
 
     try {

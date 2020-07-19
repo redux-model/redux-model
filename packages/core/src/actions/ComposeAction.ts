@@ -36,19 +36,6 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   private __prepareType?: string;
   private __failType?: string;
 
-  public static proxyKeys: {
-    methods: (keyof ComposeAction<any, any>)[];
-    getters: (keyof ComposeAction<any, any>)[];
-  } = {
-    methods: [
-      'onSuccess', 'onPrepare', 'onFail',
-      'afterSuccess', 'afterPrepare', 'afterFail',
-      'getPrepareType', 'getFailType',
-      ...actionProxyKeys.methods,
-    ],
-    getters: ['meta', 'loading', ...actionProxyKeys.getters],
-  };
-
   constructor(model: BaseModel<Data>, runner: Runner, fromSubClass: boolean = false) {
     super(model);
     this.runner = runner;
@@ -79,7 +66,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   protected getProxyFn(): Function {
-    return async (...args: Parameters<Runner>) => {
+    return (...args: Parameters<Runner>): Promise<any> => {
       const actionName = this.getActionName();
 
       storeHelper.dispatch<IActionCompose>({
@@ -89,26 +76,29 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
         loading: true,
       });
 
-      try {
-        await this.runner(...args);
+      return this
+        .runner(...args)
+        .then((result) => {
+          storeHelper.dispatch<IActionCompose>({
+            type: this.getSuccessType(),
+            metaKey: true,
+            metaActionName: actionName,
+            loading: false,
+          });
 
-        storeHelper.dispatch<IActionCompose>({
-          type: this.getSuccessType(),
-          metaKey: true,
-          metaActionName: actionName,
-          loading: false,
-        });
-      } catch (e) {
-        storeHelper.dispatch<IActionCompose>({
-          type: this.getFailType(),
-          metaKey: true,
-          metaActionName: actionName,
-          message: e.message,
-          loading: false,
-        });
+          return result;
+        })
+        .catch((e: Error) => {
+          storeHelper.dispatch<IActionCompose>({
+            type: this.getFailType(),
+            metaKey: true,
+            metaActionName: actionName,
+            message: e.message,
+            loading: false,
+          });
 
-        throw e;
-      }
+          return Promise.reject(e);
+        });
     };
   }
 

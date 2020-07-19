@@ -1,15 +1,12 @@
 import { PersistStorage } from '@redux-model/core';
 
 const session: PersistStorage = {
-  async getItem(key) {
-    return sessionStorage.getItem(key);
+  getItem(key) {
+    return Promise.resolve(sessionStorage.getItem(key));
   },
-  async setItem(key, value) {
-    sessionStorage.setItem(key, value);
+  setItem(key, value) {
+    return Promise.resolve(sessionStorage.setItem(key, value));
   },
-  async removeItem(key) {
-    sessionStorage.removeItem(key);
-  }
 };
 
 export default session;

@@ -17,7 +17,7 @@ export const actionProxyKeys: {
 
 export abstract class BaseAction<Data> {
   public/*protected*/ readonly model: BaseModel<Data>;
-  protected __actionName: string = '';
+  protected __actionName?: string;
   protected __successType?: string;
 
   declare public/*private*/ readonly __isAction__: boolean;
@@ -31,11 +31,11 @@ export abstract class BaseAction<Data> {
   }
 
   public getSuccessType(): string {
-    return this.__successType || (setActionName(this), this.__successType!);
+    return this.__successType || setActionName(this).__successType!;
   }
 
   public/*protected*/ getActionName(): string {
-    return this.__actionName || (setActionName(this), this.__actionName);
+    return this.__actionName || setActionName(this).__actionName!;
   }
 
   public/*protected*/ setName(name: string | number): void {
@@ -47,18 +47,18 @@ export abstract class BaseAction<Data> {
     const methods = {};
     const fn = this.getProxyFn();
 
-    for (const method of this.getProxyMethods()) {
+    this.getProxyMethods().forEach((method) => {
       methods[method] = this[method].bind(this);
       Object.defineProperty(fn, method, {
         get: () => methods[method],
       });
-    }
+    });
 
-    for (const property of this.getProxyGetters()) {
+    this.getProxyGetters().forEach((property) => {
       Object.defineProperty(fn, property, {
         get: () => this[property],
       });
-    }
+    });
 
     // @see Action.__isAction__
     fn['__isAction__'] = true;
