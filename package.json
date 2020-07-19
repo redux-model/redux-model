@@ -4,13 +4,13 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "scripts": {
-    "next": "lerna publish --dist-tag=next",
+    "next": "lerna run build && lerna publish --dist-tag=next",
     "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest --runInBand",
     "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
     "relink": "lerna run relink && bash scripts/vue.sh"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.4",
+    "@types/jest": "^26.0.5",
     "@types/node": "^14.0.23",
     "jest": "^26.1.0",
     "lerna": "^3.22.1",
