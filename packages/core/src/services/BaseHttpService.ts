@@ -12,8 +12,16 @@ export interface FetchHandle<Response = any, Payload = any, CancelFn = () => voi
 }
 
 export type PickData<T> = T extends (...args: any[]) => HttpServiceBuilder<infer Data, any, any, any, any> ? Data : never;
-export type PickResponse<T> = T extends (...args: any[]) => HttpServiceBuilder<any, infer Response, any, any, any> ? Response : never;
-export type PickPayload<T> = T extends (...args: any[]) => HttpServiceBuilder<any, any, infer Payload, any, any> ? Payload : never;
+export type PickResponse<T> = T extends (...args: any[]) => HttpServiceBuilderWithMeta<any, infer Response, any, any, any>
+  ? Response
+  : T extends (...args: any[]) => HttpServiceBuilderWithMetas<any, infer Response, any, any, any>
+    ? Response
+    : never;
+export type PickPayload<T> = T extends (...args: any[]) => HttpServiceBuilderWithMeta<any, any, infer Payload, any, any>
+  ? Payload
+  : T extends (...args: any[]) => HttpServiceBuilderWithMetas<any, any, infer Payload, any, any>
+    ? Payload
+    : unknown;
 export type PickMeta<T> = T extends (...args: any[]) => HttpServiceBuilderWithMetas<any, any, any, any, infer M> ? M : never;
 
 export interface BaseHttpServiceConfig {

@@ -1,11 +1,8 @@
 import { Model } from '../../src';
 import { $api } from '../libs/ApiService';
 
-interface Data {
-  counter: number;
-}
-
-export class ThrottleModel extends Model<Data> {
+// Notice: Keep Data as null to make sure http-servie and null-data can work fine together.
+export class ThrottleModel extends Model {
   enableThrottleProfile = $api.action((name: string) => {
     return this
       .get<{ id: number }>('/profile/manage')
@@ -20,6 +17,7 @@ export class ThrottleModel extends Model<Data> {
   disableThrottleProfile = $api.action(() => {
     return this
       .get<{ id: number }>('/profile/manage')
+      .metas(1)
       .throttle({
         duration: 3000,
         enable: false,
@@ -29,6 +27,8 @@ export class ThrottleModel extends Model<Data> {
   configurableThrottle = $api.action((useCache: boolean) => {
     return this
     .get<{ id: number }>('/profile/manage')
+    .metas(1)
+    .payload(1)
     .throttle({
       duration: 3000,
       enable: useCache,
@@ -48,9 +48,7 @@ export class ThrottleModel extends Model<Data> {
       });
   });
 
-  protected initReducer(): Data {
-    return {
-      counter: 0,
-    };
+  protected initReducer() {
+    return null;
   }
 }
