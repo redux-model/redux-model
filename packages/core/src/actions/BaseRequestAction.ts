@@ -6,9 +6,9 @@ import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
 import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
 import { setActionName } from '../utils/setActionName';
-import { IClearThrottleAction } from '../services/BaseHttpService';
+import { IClearThrottleAction, ThrottleKeyOption } from '../services/BaseHttpService';
 import { storeHelper } from '../stores/StoreHelper';
-import { ACTION_TYPE_CLEAR_THROTTLE } from '../utils/actionType';
+import { ACTION_TYPE_CLEAR_ACTION_THROTTLE } from '../utils/actionType';
 import { DEFAULT_META, DEFAULT_METAS } from '../reducers/MetaReducer';
 
 export interface Types {
@@ -31,7 +31,7 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
   useThrottle: boolean;
   throttleMillSeconds: number;
   throttleKey: string;
-  throttleDeps: any[];
+  throttleTransfer: ThrottleKeyOption['transfer'];
   onPrepare: null | ((state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>);
   afterPrepare: null | ((action: IActionPayload<Payload>) => void);
   onSuccess: null | ((state: State<Data>, action: IResponseAction<Response, Payload>) => StateReturn<Data>);
@@ -60,7 +60,6 @@ export interface InternalSuccessAction<Data = any, Response = any, Payload = any
   loading: boolean;
   effect: IBaseRequestAction<Data, Response, Payload, string>['onSuccess'];
   effectCallback: IBaseRequestAction<Data, Response, Payload, string>['afterSuccess'];
-  fromThrottle?: boolean;
 }
 
 // TODO: 区分prepare, success, fail
@@ -106,7 +105,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
 
   public clearThrottle(): void {
     storeHelper.dispatch<IClearThrottleAction>({
-      type: ACTION_TYPE_CLEAR_THROTTLE,
+      type: ACTION_TYPE_CLEAR_ACTION_THROTTLE,
       key: this.getSuccessType(),
       uniqueId: this.uniqueId,
     });

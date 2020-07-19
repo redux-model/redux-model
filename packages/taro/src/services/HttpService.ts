@@ -91,7 +91,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
     requestOptions.url = url;
 
-    // For query request, `requestOptions.data` will be considered as queryString.
+    // For GET request, `requestOptions.data` will convert to queryString.
     if (action.method !== METHOD.get && action.body) {
       requestOptions.data = action.body;
     }
@@ -103,6 +103,22 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       effect: action.onPrepare,
       effectCallback: action.afterPrepare,
     });
+
+    const throttleData = this.getThrottleData(action, {
+      url: requestOptions.url,
+      modelName: action.modelName,
+      successType: success,
+      method: action.method,
+      body: action.body,
+      // query data has been appended to url
+      query: {},
+      headers: requestOptions.header || {},
+      transfer: action.throttleTransfer,
+    });
+
+    if (throttleData) {
+      return throttleData;
+    }
 
     const task = this.request(requestOptions);
     const canceler = task.abort;
@@ -129,6 +145,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
         successInvoked = true;
         success && storeHelper.dispatch(okAction);
+        this.storeThrottle(okAction);
         this.triggerShowSuccess(okAction, action.successText);
 
         return Promise.resolve(okAction);

@@ -82,30 +82,6 @@ export class RequestModel extends Model<Data> {
       })
   });
 
-  enableThrottleProfile = $api.action(() => {
-    return this
-      .get<{ id: number }>('/profile/manage')
-      .throttle(3000);
-  });
-
-  disableCacheProfile = $api.action(() => {
-    return this
-      .get<{ id: number }>('/profile/manage')
-      .throttle({
-        duration: 3000,
-        enable: false,
-      });
-  });
-
-  configurableThrottle = $api.action((useCache: boolean) => {
-    return this
-    .get<{ id: number }>('/profile/manage')
-    .throttle({
-      duration: 3000,
-      enable: useCache,
-    });
-  });
-
   getProfileById = $api.action((id: number) => {
     return this
       .get<Response>('/profile.json')

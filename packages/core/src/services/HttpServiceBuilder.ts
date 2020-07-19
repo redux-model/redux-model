@@ -1,5 +1,6 @@
 import { IResponseAction, BaseRequestAction, IBaseRequestAction } from '../actions/BaseRequestAction';
 import { METHOD } from '../utils/method';
+import { ThrottleKeyOption } from './BaseHttpService';
 
 type Options<Data, Response, Payload> = Partial<Omit<IBaseRequestAction<Data, Response, Payload>, 'type'>> & {
   uri: string;
@@ -8,9 +9,15 @@ type Options<Data, Response, Payload> = Partial<Omit<IBaseRequestAction<Data, Re
 };
 
 export type ThrottleOptions = {
+  /**
+   * Millisecond
+   *
+   * `1000`  means 1 second
+   * `60000` means 1 minute
+   */
   duration: number;
-  deps?: any[];
   enable?: boolean;
+  transfer?: ThrottleKeyOption['transfer'];
 };
 
 export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption extends object = object, M = true> {
@@ -56,12 +63,10 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public throttle(options: number | ThrottleOptions): this {
-    const obj = typeof options === 'number' ? { duration: options } : options;
-
-    this.config.useThrottle = obj.enable !== false;
-    this.config.throttleMillSeconds = obj.duration;
-    this.config.throttleDeps = obj.deps;
+  public throttle(options: ThrottleOptions): this {
+    this.config.useThrottle = options.enable !== false;
+    this.config.throttleMillSeconds = options.duration;
+    this.config.throttleTransfer = options.transfer;
 
     return this;
   }
@@ -155,7 +160,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       useThrottle: config.useThrottle || false,
       throttleMillSeconds: config.throttleMillSeconds || 0,
       throttleKey: '',
-      throttleDeps: config.throttleDeps || [],
+      throttleTransfer: config.throttleTransfer || null,
     };
 
     return action;

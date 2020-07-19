@@ -5,7 +5,7 @@ import cloneDeep from 'clone';
 import { OrphanHttpService, OrphanRequestOptions } from './OrphanHttpService';
 import { METHOD } from '../utils/method';
 import { storeHelper } from '../stores/StoreHelper';
-import { ACTION_TYPE_CLEAR_THROTTLE } from '../utils/actionType';
+import { ACTION_TYPE_CLEAR_ACTION_THROTTLE } from '../utils/actionType';
 
 export interface FetchHandle<Response = any, Payload = any, CancelFn = () => void> extends Promise<IResponseAction<Response, Payload>> {
   cancel: CancelFn;
@@ -30,6 +30,17 @@ export interface IClearThrottleAction extends Action<string> {
   key: string;
 }
 
+export interface ThrottleKeyOption {
+  modelName: string;           // determine model
+  successType: string;         // determine action
+  url: string;                 // params like: /user/2/post/3
+  method: METHOD;              // low compat, user always use the same method
+  body: Record<string, any>;                // condition
+  query: Record<string, any>;               // condition
+  headers: Record<string, any>;             // condition, especially token
+  transfer: null | ((options: Omit<ThrottleKeyOption, 'transfer'>) => Omit<ThrottleKeyOption, 'transfer'>);
+}
+
 export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn> {
   protected readonly uniqueId: number;
   protected readonly config: T;
@@ -47,7 +58,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     this.config = config;
     this.uniqueId = Date.now() + Math.random();
 
-    storeHelper.middleware.use(this.uniqueId + '_throttle', this.createThrottleMiddleware());
+    storeHelper.middleware.use(this.uniqueId + '_throttle', this.createClearThrottleMiddleware());
     storeHelper.middleware.use(this.uniqueId + '_request', this.createRequestMiddleware());
   }
 
@@ -99,98 +110,81 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     return storeHelper.dispatch(service.collect());
   }
 
-  protected generateThrottleKey(action: IBaseRequestAction): string {
-    return JSON.stringify([
-      action.modelName,           // determine model
-      action.type,                // determine action
-      action.uri,                 // params like: /user/2/post/3
-      action.method,              // low compat, user always use the same method
-      action.body,                // condition
-      action.query,               // condition
-      action.requestOptions,      // condition
-    ]);
+  protected generateThrottleKey(options: ThrottleKeyOption): string {
+    const { transfer, ...rest } = options;
+
+    if (transfer) {
+      return JSON.stringify(transfer(cloneDeep(rest)));
+    }
+
+    return JSON.stringify(rest);
   }
 
-  protected isFetchAction(action: IBaseRequestAction | InternalSuccessAction | IClearThrottleAction): action is IBaseRequestAction {
-    return typeof action.type === 'object';
-  }
+  protected getThrottleData(action: IBaseRequestAction, throttleKeyOption: ThrottleKeyOption): FetchHandle | void {
+    const actionName = action.type.success;
+    const cacheData = this.caches[actionName];
 
-  protected isClearAction(action: IBaseRequestAction | InternalSuccessAction | IClearThrottleAction): action is IClearThrottleAction {
-    return action.type === ACTION_TYPE_CLEAR_THROTTLE;
-  }
-
-  protected createThrottleMiddleware(): Middleware {
-    return () => (next) => (action: IBaseRequestAction | InternalSuccessAction | IClearThrottleAction) => {
-      if (action.uniqueId !== this.uniqueId) {
-        return next(action);
+    if (!action.useThrottle) {
+      if (cacheData) {
+        cacheData[this.generateThrottleKey(throttleKeyOption)] = undefined;
       }
 
-      if (this.isClearAction(action)) {
-        this.caches[action.key] = undefined;
-        return action;
-      }
+      return;
+    } // end
 
-      if (this.isFetchAction(action)) {
-        const key = action.type.success;
-        const cacheData = this.caches[key];
+    const throttleKey = this.generateThrottleKey(throttleKeyOption);
+    const item = cacheData?.[throttleKey];
 
-        if (!action.useThrottle) {
-          if (cacheData) {
-            cacheData[this.generateThrottleKey(action)] = undefined;
-          }
+    action.throttleKey = throttleKey;
 
-          return next(action);
-        } // end
-
-        const throttleKey = this.generateThrottleKey(action);
-        const item = cacheData?.[throttleKey];
-
-        action.throttleKey = throttleKey;
-
-        if (item && Date.now() <= item.timestamp) {
-          const promise = new Promise((resolve) => {
-            const fakeOkAction: InternalSuccessAction = {
-              ...action,
-              loading: false,
-              type: action.type.success,
-              response: cloneDeep(item.response, false),
-              effect: action.onSuccess,
-              effectCallback: action.afterSuccess,
-              fromThrottle: true,
-            };
-
-            storeHelper.dispatch(fakeOkAction);
-            this.triggerShowSuccess(fakeOkAction, action.successText);
-            resolve(fakeOkAction);
-          });
-
-          const wrapPromise = promise as FetchHandle;
-          wrapPromise.cancel = () => {};
-          return wrapPromise;
-        } // end
-
-        if (item) {
-          cacheData![throttleKey] = undefined;
-        }
-
-        return next(action);
-      } // end
-
-      if (action.useThrottle && !action.fromThrottle && action.throttleMillSeconds > 0) {
-        const type = action.type;
-
-        if (type.lastIndexOf('success') !== type.length - 7) {
-          return next(action);
-        } // end
-
-        this.caches[type] = this.caches[type] || {};
-        this.caches[type]![action.throttleKey] = {
-          timestamp: Date.now() + action.throttleMillSeconds,
-          response: cloneDeep(action.response, false),
+    if (item && Date.now() <= item.timestamp) {
+      const promise = new Promise((resolve) => {
+        const fakeOkAction: InternalSuccessAction = {
+          ...action,
+          loading: false,
+          type: action.type.success,
+          response: cloneDeep(item.response, false),
+          effect: action.onSuccess,
+          effectCallback: action.afterSuccess,
         };
+
+        storeHelper.dispatch(fakeOkAction);
+        this.triggerShowSuccess(fakeOkAction, action.successText);
+        resolve(fakeOkAction);
+      });
+
+      const wrapPromise = promise as FetchHandle;
+      wrapPromise.cancel = () => {};
+      return wrapPromise;
+    } // end
+
+    if (item) {
+      cacheData![throttleKey] = undefined;
+    }
+
+    return;
+  }
+
+  protected storeThrottle(action: InternalSuccessAction) {
+    if (action.useThrottle && action.throttleMillSeconds > 0) {
+      const type = action.type;
+
+      this.caches[type] = this.caches[type] || {};
+      this.caches[type]![action.throttleKey] = {
+        timestamp: Date.now() + action.throttleMillSeconds,
+        response: cloneDeep(action.response, false),
+      };
+    }
+  }
+
+  protected createClearThrottleMiddleware(): Middleware {
+    return () => (next) => (action: IClearThrottleAction) => {
+      if (action.uniqueId !== this.uniqueId || action.type !== ACTION_TYPE_CLEAR_ACTION_THROTTLE) {
+        return next(action);
       }
 
-      return next(action);
+      this.caches[action.key] = undefined;
+      return action;
     };
   }
 

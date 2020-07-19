@@ -89,6 +89,21 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       effectCallback: action.afterPrepare,
     });
 
+    const throttleData = this.getThrottleData(action, {
+      url: requestOptions.url!,
+      modelName: action.modelName,
+      successType: success,
+      method: action.method,
+      body: action.body,
+      query: action.query,
+      headers: requestOptions.headers || {},
+      transfer: action.throttleTransfer,
+    });
+
+    if (throttleData) {
+      return throttleData;
+    }
+
     const promise = this.httpHandler.request(requestOptions)
       .then((response) => {
         if (this.config.isSuccess && !this.config.isSuccess(response)) {
@@ -112,6 +127,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
         successInvoked = true;
         success && storeHelper.dispatch(okAction);
+        this.storeThrottle(okAction);
         this.triggerShowSuccess(okAction, action.successText);
 
         return Promise.resolve(okAction);

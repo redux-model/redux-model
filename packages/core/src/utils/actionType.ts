@@ -4,7 +4,7 @@ const createActionType = (name: string, ...others: string[]): string => {
   return ACTION_TYPE_PREFIX + name + (others.length ? '/' + others.join('/') : '');
 };
 
-export const ACTION_TYPE_CLEAR_THROTTLE = createActionType('clear', 'throttle');
+export const ACTION_TYPE_CLEAR_ACTION_THROTTLE = createActionType('clear', 'action', 'throttle');
 
 export const ACTION_TYPE_REHYDRATE = createActionType('rehydrate');
 

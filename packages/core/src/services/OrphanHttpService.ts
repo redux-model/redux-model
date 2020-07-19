@@ -7,7 +7,7 @@ export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | '
   {
     uri: string;
     requestOptions?: T;
-    throttle?: number | ThrottleOptions;
+    throttle?: ThrottleOptions;
   };
 
 export class OrphanHttpService<T = object> {
@@ -23,15 +23,7 @@ export class OrphanHttpService<T = object> {
 
   collect(): IBaseRequestAction {
     const config = this.config;
-
-    const throttle: ThrottleOptions = config.throttle === undefined
-      ? {
-        duration: 0,
-        enable: false,
-      }
-      : typeof config.throttle === 'number'
-        ? { duration: config.throttle }
-        : config.throttle;
+    const throttle: ThrottleOptions = config.throttle === undefined ? { duration: 0 } : config.throttle;
 
     const action: IBaseRequestAction = {
       uniqueId: this.uniqueId,
@@ -50,8 +42,8 @@ export class OrphanHttpService<T = object> {
       method: this.method,
       useThrottle: throttle.enable !== false,
       throttleMillSeconds: throttle.duration,
-      throttleDeps: throttle.deps || [],
       throttleKey: '',
+      throttleTransfer: throttle.transfer || null,
       metaKey: false,
       metaActionName: '',
       payload: undefined,
