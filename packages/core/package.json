@@ -35,6 +35,7 @@
     "lib",
     "LICENSE",
     "package.json",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ]
 }

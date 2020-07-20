@@ -1,3 +1,22 @@
+# 7.0.0
+## Breaking
+* Depecrate ~~**@redux-model/web**~~ and ~~**@redux-model/react-native**~~, use `@redux-model/react` instead.
+* Required minimum taro version is `v3.0`.
+* Required minimum vue version is `v3.0`.
+* Rename Model.isLoading() to Model.useLoading().
+* Persist storage engine should implements Promise now.
+* HttpService provides generic for error data and never export `HttpResponse` for user.
+* Throttle parameters convert to object option now.
+
+## Features
+* Add ComposeAction to hold multiple request, that provides `loading, useLoading, meta, useMeta` methods.
+* Throttle add transfer function.
+* Provide new storage engine.
+* Vue hooks.
+* Vue PersistGate component for persist.
+* Request-action and effects support `afterPrepare`, `afterSuccess` and `afterFail` to dispatch or execute other things.
+* Update deps to latest.
+
 # 6.9.2
 [fix] Use builtin delete keyword to compatible with lower version device and browser
 

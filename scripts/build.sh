@@ -12,7 +12,7 @@ fi
 rm -rf ./build/*
 yarn tsc
 mv ./build/src ./build/lib
-cp ../../README.md ../../LICENSE ./package.json ./build
+cp ../../README.md ../../LICENSE ../../CHANGELOG.md ./package.json ./build
 
 ../../node_modules/.bin/public-refactor --src ./src --dist ./build/lib
 
