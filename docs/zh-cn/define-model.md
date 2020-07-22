@@ -25,7 +25,9 @@ export const firstModel = new FirstModel();
 !> 定义的Data通过泛型注入后，所有的action都能享受数据的自动推导
 
 ### 使用数据
-通过**connect**连接
+<!-- tabs:start -->
+
+#### ** Redux Connect **
 ```typescript
 import React, { FC } from 'react';
 import { connect } from 'react-redux';
@@ -47,7 +49,8 @@ const mapStateToProps = () => {
 export default connect(mapStateToProps)(App);
 ```
 
-通过**React Hooks**连接
+#### ** React Hooks **
+
 ```typescript
 import React, { FC } from 'react';
 
@@ -60,7 +63,8 @@ const App: FC = () => {
 export default App;
 ```
 
-通过**Vue**连接
+#### ** Vue Hooks **
+
 ```typescript
 <template>
   <div>{counter}</div>
@@ -80,6 +84,8 @@ export default defineComponent({
 });
 </scirpt>
 ```
+
+<!-- tabs:end -->
 
 !> 使用`useData()`时，可以不传过滤函数，这样就返回了整个state。
 
