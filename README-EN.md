@@ -4,27 +4,27 @@
   </a>
 </h1>
 
-[English](./README-EN.md)
+[中文](./README.md)
 
-Redux Model的存在是为了弥补原生Redux繁琐的开发流程，开发者重复劳动效率低下，模板文件导致代码量臃肿，以及因action和reducer文件分散造成代码追踪困难的问题而设计的。
+Redux Model is created to enhance original redux framework, which has complex development flow and lots of template fragments.
+
 
 [![License](https://img.shields.io/github/license/redux-model/redux-model)](https://github.com/redux-model/redux-model/blob/master/LICENSE)
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/redux-model/redux-model/CI/master)](https://github.com/redux-model/redux-model/actions)
 [![Codecov](https://img.shields.io/codecov/c/github/redux-model/redux-model)](https://codecov.io/gh/redux-model/redux-model)
 
 
-# 特性
+# Features
 
-* 代码量极简，超高开发效率
-* 使用mvvm更改reducer，一步到位
-* **基于typescript定制，拥有100%无死角的业务代码类型提示**
-* 每个请求的action都自带loading状态记录
-* 支持 Hooks
+* Less code and higher efficiency
+* Modify reducer by MVVM
+* Absolutely 100% static type checking with typescript
+* Trace loading status for each request action
+* Support react/vue hooks
 
+# Installation
 
-# 安装
-
-### React 或 React-Native
+### React or React-Native
 ```bash
 npm install @redux-model/react redux react-redux
 ```
@@ -39,11 +39,11 @@ npm install @redux-model/vue redux
 npm install @redux-model/taro redux react-redux
 ```
 
-### 其它
-* 对于Taro 3.0之前的版本，请安装 **@redux-model/taro@6.9.2**
-* 对于Vue 3.0之前的版本，请安装 **@redux-model/vue@6.9.2**
+### Others
+* For `taro < v3`, install @redux-model/taro@6.9.2 instead
+* For `vue < v3`, install @redux-model/vue@6.9.2 instead
 
-# 定义模型
+# Define Model
 ```typescript
 interface Response {
     id: number;
@@ -82,7 +82,7 @@ class TestModel extends Model<Data> {
 export const testModel = new TestModel();
 ```
 
-# 在React Hooks中使用
+# With React Hooks
 ```typescript jsx
 import React, { FC } from 'react';
 
@@ -105,7 +105,7 @@ const App: FC = () => {
 export default App;
 ```
 
-# 在Vue Hooks中使用
+# With Vue Hooks
 ```vue
 <template>
   <button @click="increase">
@@ -134,7 +134,7 @@ export default {
 </script>
 ```
 
-# 在Redux Connect中使用
+# With Redux Connect
 ```typescript jsx
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -167,14 +167,14 @@ const mapStateToProps = () => {
 export default connect(mapStateToProps)(App);
 ```
 
-# 简单的例子
+# Demos
 
 * [React Web](https://github.com/redux-model/redux-model-web-demo)
 
-# 文档
+# Documents
 
-请点击[这里查看文档](https://redux-model.github.io/redux-model)
+Here is the [document](https://redux-model.github.io/redux-model)
 
 ---------------------
 
-欢迎使用并随时给我建议
+Feel free to use it and welcome to send PR to me.
