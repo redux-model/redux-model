@@ -1,27 +1,64 @@
-# 定义Normal Action
-Action的作用是直接变更reducer的值。框架对Action做了诸多的改良，精简代码并增强代码的可阅读性。
+### 第一个Action
+
+您可能无法相信，创建一个action能有多么简单：
 
 ```typescript
-import { Model } from '@redux-model/web';
+import { Model } from '@redux-model/react';
 
 interface Data {
-  counter: number;
+    counter: number;
 }
 
-class FirstModel extends Model<Data> {
-    // Action
-    increase = this.action((state) => {
-        state.counter += 1;
-    });
-    
-    // Action
-    plusStep = this.action((state, step: number) => {
+class NormalModel extends Model<Data> {
+    // ---开始
+    increase = this.action((state, step: number = 1) => {
         state.counter += step;
     });
-    
-    // Action
-    reduceStep = this.action((state, payload: { step: number }) => {
-        state.counter -= payload.step;
+    // ---结束
+
+    protected initReducer(): Data {
+        return {
+            counter: 0,
+        };
+    }
+}
+
+export const normalModel = new NormalModel();
+```
+瞧，我们增加了一个名为`increase`的action，虽然只有两行，但是它将完成`dispatch -> action + type -> reducer`的全套操作。
+
+是时候执行这个action了，没有任何多余的操作：
+```typescript
+nomalModel.increase(1);
+```
+怎样？简单到爆了吧？下面有个可操作的demo，点击按钮改变数字，打开控制台可以看到日志：
+
+<iframe src="https://redux-model.github.io/docs-runtime/normal-action.html" height="250"></iframe>
+
+!> action最多只能提供两个形参，第一个为固定参数state用于变更reducer，第二个为可选的任意类型的payload，当您调用action时，TS仅提示payload的类型。
+
+### 多几个Action
+
+您想对一个模型里的数据做各种各样的操作吗？那就多建几个action吧：
+
+```typescript
+import { Model } from '@redux-model/react';
+
+interface Data {
+    counter: number;
+}
+
+class NormalModel extends Model<Data> {
+    increase = this.action((state, step: number = 1) => {
+        state.counter += step;
+    });
+
+    double = this.action((state) => {
+      state.counter = state.counter * 2;
+    });
+
+    decrease = this.action((state, step: number = 1) => {
+        state.counter -= step;
     });
 
     protected initReducer(): Data {
@@ -31,19 +68,52 @@ class FirstModel extends Model<Data> {
     }
 }
 
-export const firstModel = new FirstModel();
+export const normalModel = new NormalModel();
 ```
-一个模型可以定义无数个Action，只要你愿意。
+新建了两个action `double`和`decrease`，而且只要您乐意，加多少个都可以。
 
-Action的回调函数中，最多只能带两个参数。第一个参数是reducer的state，我们可以变更state的值，从而变更reducer。第二个参数是Action的真正的参数，它可以是任何类型的值，但我们一般使用对象，这样能接收到更多的数据
 
+
+### 对比原生
+
+相对于传统的reducer操作，数据是不可变的，意味着当您想改变数据时，必须返回新的对象或数组才能被redux检测到数据有变更：
 ```typescript
-console.log(firstModel.data.counter); // counter === 0
-            
-firstModel.reduceStep({ step: 2 }); // counter === -2
+// 原生 Redux
+const initState = {
+    counter: 0,
+    foo: {
+        counter: 0,
+        bar: {
+            baz: '',
+        }
+    },
+};
 
-firstModel.increase(); // counter === -1
-
-firstModel.plusStep(1); // counter === 0
+const myReducer = (state = initState, action) => {
+    switch (action.type) {
+        case 'expected':
+            return {
+                ...state,
+                counter: state.counter + action.payload.step,
+                foo: {
+                    ...foo,
+                    counter: state.counter + action.payload.step,
+                },
+            };
+        default:
+            return state;
+    }
+};
 ```
-!> 调用模型的Action，不需要使用`dispatch()`函数包裹，框架会自动处理。
+看看，各种解构操作！当case不断变多、对象越来越变复杂的时候，您需要做更多恐怖的操作，这极大地增加了心智负担，而且出错率直线上升。没有人愿意去维护这种代码。
+
+而使用模型，您可以随(早)心(点)所(下)欲(班)地改变数据，而且不用担心出错，因为您已经通过`Model<Data>`注入了数据类型，参数`state`被类型自动推导为Data：
+```typescript
+// 模型
+class NormalModel extends Model {
+    increase = this.action((state, step: number) => {
+        state.counter += step;
+        state.foo.counter += step;
+    });
+}
+```

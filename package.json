@@ -8,7 +8,8 @@
     "latest": "lerna run build && lerna publish",
     "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest --runInBand",
     "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
-    "relink": "lerna run relink && bash scripts/vue.sh"
+    "relink": "lerna run relink && bash scripts/vue.sh",
+    "docs": "docsify serve docs"
   },
   "devDependencies": {
     "@types/jest": "^26.0.5",
@@ -19,6 +20,7 @@
     "redux": "^4.0.5",
     "sleep-promise": "^8.0.1",
     "ts-jest": "^26.1.3",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "docsify-cli": "^4.4.1"
   }
 }

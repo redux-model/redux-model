@@ -1,22 +1,15 @@
-# 定义Model
+模型的本质是一个reducer与多个action的组合：
 
-当你想用这个框架时，您必须先定义一个模型类。每个模型都是独立的单元，它可以包含一个`reducer`和无数个`action`
+### 定义
 
 ```typescript
-// FirstModel.ts
-import { Model } from '@redux-model/web';
+import { Model } from '@redux-model/react';
 
 interface Data {
-  counter: number;
+    counter: number;
 }
 
 class FirstModel extends Model<Data> {
-    // Action
-    increase = this.action((state) => {
-        state.counter += 1;
-    });
-    
-    // Reducer的初始值
     protected initReducer(): Data {
         return {
             counter: 0,
@@ -27,20 +20,76 @@ class FirstModel extends Model<Data> {
 export const firstModel = new FirstModel();
 ```
 
-上面定义了一个完整的redux流程，如果您已经在项目的入口文件中执行了`createReduxStore({})`函数，那么每个模型中的Reducer都将自动注入到store中。
+我们刚刚创建了一个模型，它继承自框架的基础模型`Model<T>`。**\<T>**即为泛型，因为每个模型都默认存在一个reducer，所以泛型约束了reducer的数据类型。接着，模型实现了抽象方法`initReducer()`，为模型提供一个初始state。
 
-利用接口`.data`属性，我们可以轻松地拿到reducer的数据。现在，我们可以快速地执行模型中的Action方法：
+!> 定义的Data通过泛型注入后，所有的action都能享受数据的自动推导
+
+### 使用数据
+通过**connect**连接
 ```typescript
-console.log(firstModel.data.counter); // counter === 0
+import React, { FC } from 'react';
+import { connect } from 'react-redux';
 
-firstModel.increase(); // counter === 1
+type Props = ReturnType<typeof mapStateToProps>;
+
+const App: FC<Props> = (props) => {
+    const { counter } = props;
+
+    return null;
+};
+
+const mapStateToProps = () => {
+    return {
+        counter: firstModel.data.counter,
+    };
+};
+
+export default connect(mapStateToProps)(App);
 ```
-通过执行Action，我们轻而易举地改变了reducer的值，高效，快速，代码十分简洁。
 
-你可能会疑惑，reducer中的state是不可变的，直接变更state，React组件能正常re-render吗？不用担心，框架使用了`mvvm`的特性，一旦发现state变更，就会返回新的对象，React组件能正常渲染。
+通过**React Hooks**连接
+```typescript
+import React, { FC } from 'react';
 
-!> 调用模型的Action，不需要使用`dispatch()`函数包裹，框架会自动处理。
+const App: FC = () => {
+    const counter = firstModel.useData((data) => data.counter);
 
+    return null;
+}
 
-## 不带Reducer的Model
-TODO
+export default App;
+```
+
+通过**Vue**连接
+```typescript
+<template>
+  <div>{counter}</div>
+</template>
+
+<script>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    setup() {
+        const counter = firstModel.useData((data) => data.counter);
+
+        return {
+            counter,
+        };
+    }
+});
+</scirpt>
+```
+
+!> 使用`useData()`时，可以不传过滤函数，这样就返回了整个state。
+
+### 无数据
+您不一定非要创建带state的模型，这符合常理。如果您只需要actions，那么欢迎您这么做：
+```typescript
+import MyModel extends Model {
+    protected initReducer() {
+        return null;
+    }
+}
+```
+由于`initReducer`是抽象方法，所以您必须重载，并返回null，代表您不需要state。

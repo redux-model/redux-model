@@ -1,6 +1,6 @@
-# 处理Reducer
+mvvm的实现使用名为了`immer`开源库，该库的作者也为著名的开源库`mobx`的作者。
 
-### 双向绑定
+### 直接修改
 在文档的多个例子中，reducer的变更都是通过直接变更state对象，这很好，简化了代码的复杂度，减少了代码量，阅读起来也方便。
 ```typescript
 (state) => {
@@ -14,7 +14,7 @@
 
 如果您只想变更部分数据，但又不想一个一个地赋值，那么请使用`Object.assign`处理
 ```typescript
-(state, payload) => {                     
+(state, payload) => {
     // 请勿使用 return { ...state, ...payload } 的方式！！！
     Object.assign(state, payload);
 }

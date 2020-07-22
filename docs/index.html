@@ -12,7 +12,7 @@
     .markdown-section {
       margin: 0;
       max-width: 850px;
-      padding-left: 20px;
+      padding-left: 40px;
       padding-right: 20px;
     }
 
@@ -33,7 +33,8 @@
 
   <script type="text/javascript">
     if (/^#?\/?$/.test(window.location.hash)) {
-        window.location.hash = /zh-cn/i.test(navigator.language) ? '#/zh-cn/' : '#/en/';
+        // window.location.hash = /zh-cn/i.test(navigator.language) ? '#/zh-cn/' : '#/en/';
+        window.location.hash = '#/zh-cn/';
     }
   </script>
 </head>
@@ -41,17 +42,20 @@
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: 'redux-model',
+      name: 'Redux Model',
       //repo: 'http://github.com/redux-model/redux-model',
       loadNavbar: true,
       loadSidebar: true,
       // 更改路由时自动滚动到屏幕顶部
       auto2top: true,
+      subMaxLevel: 10,
+      autoHeader: true,
+      topMargin: 30,
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/prismjs/components/prism-typescript.min.js"></script>
-  <script src="//unpkg.com/prismjs/components/prism-jsx.min.js"></script>
   <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
+
 </body>
 </html>

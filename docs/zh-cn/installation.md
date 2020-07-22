@@ -1,32 +1,19 @@
-# 安装
-
-#### [H5 / Web](https://reactjs.org)
+### React 或 React-Native
 ```bash
-# 使用 npm 或者 yarn
-npm install @redux-model/web
-npm install redux react-redux
+npm install @redux-model/react redux react-redux
 ```
 
-#### [React-Native](https://github.com/facebook/react-native)
-
+### Vue v3
 ```bash
-# 使用 npm 或者 yarn
-npm install @redux-model/react-native
-npm install redux react-redux
+npm install @redux-model/vue redux
 ```
 
-#### [Vue](https://github.com/vuejs/vue)
-
+### Taro v3
 ```bash
-# 使用 npm 或者 yarn
-npm install @redux-model/vue
-npm install redux
+npm install @redux-model/taro redux react-redux
 ```
 
-
-#### [Taro](https://github.com/NervJS/taro)
-```bash
-# 使用 npm 或者 yarn
-npm install @redux-model/taro
-npm install redux @tarojs/redux @tarojs/redux-h5
-```
+--------
+!> 对于Taro 3.0之前的版本，请安装 **@redux-model/taro@6.9.2**
+<br>
+对于Vue 3.0之前的版本，请安装 **@redux-model/vue@6.9.2**
