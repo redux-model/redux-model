@@ -13,3 +13,5 @@ Redux Model同时弥补了在typescript项目中，每个地方都需要类型�
 * **基于typescript定制，拥有100%无死角的业务代码类型提示**
 * 每个请求的action都自带loading状态记录
 * 支持 Hooks
+
+!> 只有使用vscode编辑器开发项目，才能发挥TS的最大优势
