@@ -37,9 +37,9 @@ class RequestModel extends Model<Data> {
 
 export const requestAction = new RequestModel();
 ```
-我们事先初实例化了service并命名为`$api`，并快速地定义了模型的action。匿名函数内部是一个链式的操作，配置了请求的行为方式。
+我们事先初实例化了service并命名为[$api](/zh-cn/service.md)，并快速地定义了模型的action。匿名函数内部是一个链式的操作，配置了请求的行为方式。
 
-`this.get<T>(url)`是为了告诉service请求的方式和请求地址，其中**泛型T**为请求成功后的数据类型约束。
+`this.get<T>(url)`是为了告诉service请求的方式和请求地址，其中**泛型T**为请求成功后的数据类型约束。请求方式也是各式各样的：**get**、**post**、**put**、**patch**、**delete**、**connect**。
 
 `onSuccess((state, action) => {})`是为了告诉service请求成功后该怎么处理数据。其中state的类型约束来自**Model\<T>**，action.response的类型约束来自**this.get\<T>**
 
@@ -113,43 +113,43 @@ const App: FC = () => {
 !> **useLoadings().pick(value)** 适合在数组循环时使用。因为React hooks不能在条件中使用，而且最外层value不能确定，您必须提前把全部状态都取出来。<br><br>
 注意：Vue暂时没有`pick`的用法，因为vue的hooks可以在条件中使用
 
-### 创建Service
-现在我们讲讲`$api`是怎么回事。网络请求返回接口数据的同时，往往可能出现很多异常情况，比如断网、服务器宕、请求参数错误、请求超时等问题。而每一个请求都要面临上述的问题，所以我们需要创建一个服务去统一处理。
-
+### 节流
+有那么一部分数据，它会在组件挂载的时候被请求。这是符合常理的。但是如果这个组件被频繁地卸载和挂载时，同一个数据也会被频繁地请求。通过您的分析，请求的数据基本不会变，那么多次请求就会变得毫无意义，因此您希望一段时间内只真正地请求一次。别担心，框架为您准备了节流的功能：
 ```typescript
-import { HttpService } from '@redux-model/react';
+import { Model } from '@redux-model/react';
+import { $api } from './ApiService';
 
-interface ErrorData {
-    code: number;
-    message: string;
+class RequestModel extends Model<Data> {
+    getInfo = $api.action((pkgName: string) => {
+        return this
+            .get<Response>(`/${pkgName}`)
+            // ----- 开始
+            .throttle({
+              duration: 300 * 1000,
+            })
+            // ----- 结束
+            .onSuccess((state, action) => {
+                state.id = action.response._id;
+                state.homepage = action.response.homepage;
+            });
+    });
 }
 
-export const $api = new HttpService<ErrorData>({
-    baseUrl: 'http://example.com',
-    headers: () => {
-        return {};
-    },
-    onRespondError: (response, transform) => {
-        if (response.message) {
-            transform.businessCode = response.code;
-            transform.message = response.message;
-        }
-    },
-    onShowSuccess: (msg) => {
-        alert(msg);
-    },
-    onShowError: (msg) => {
-        alert(msg);
-    },
-});
+export const requestAction = new RequestModel();
 ```
+通过`.throttle()`方法，您在**5分钟内**成功地拦截了接下来的请求，action已经缓存了第一次的响应数据，并直接触发`onSuccess`。
 
-### 克隆Service
-您可以继续通过`new HttpService()`实例化更多的service，但有时候多个service之间可能有很多相似之处，也许只有`baseUrl`是不一样的。如果有需要，您可以使用克隆的形式，并传入配置覆盖与原来service不同之处即可
+这里缓存的原理，是使用请求发送的链接、查询字符串、数据、报头 等信息生成的唯一的字符串作为比较依据。一旦您有任何参数变化，缓存便不再命中。您也可以通过`transfer`属性改变缓存的依据：
 ```typescript
-
-export const $otherApi = $api.clone({
-    baseUrl: 'http://other.com',
-    // ...
-});
+this
+  .get('/')
+  .throttle({
+    duration: 300 * 1000,
+    // ----- 开始
+    transfer: (options) => {
+      delete options.body;
+      return options;
+    },
+    // ----- 结束
+  })
 ```
