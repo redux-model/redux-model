@@ -6,7 +6,7 @@ import { Loadings } from './Loadings';
 import sleep from 'sleep-promise';
 
 test('Request with useLoadings()', async () => {
-  const store = createReduxStore({});
+  const store = createReduxStore();
   const testRenderer = create(
     <Provider store={store}>
       <Loadings userId={10} />

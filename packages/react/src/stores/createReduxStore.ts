@@ -11,7 +11,7 @@ import session from '../storages/sessionStorage';
  *
  * `memory:  Promised object for testing`
  */
-export const createReduxStore = (config: ReduxStoreConfig<'local' | 'session' | 'memory'>) => {
+export const createReduxStore = (config: ReduxStoreConfig<'local' | 'session' | 'memory'> = {}) => {
   if (config.persist) {
     switch (config.persist.storage) {
       case 'local':

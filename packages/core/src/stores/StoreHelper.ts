@@ -37,7 +37,7 @@ export class StoreHelper {
     this.__dynamicMiddleware = new DynamicMiddleware();
   }
 
-  createStore(config: ReduxStoreConfig): Store {
+  createStore(config: ReduxStoreConfig = {}): Store {
     const { onCombineReducers, reducers = {}, preloadedState, compose: customCompose = compose, middleware = [] } = config;
 
     this.onCombineReducers = onCombineReducers;

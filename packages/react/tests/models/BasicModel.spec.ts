@@ -4,7 +4,7 @@ import { createReduxStore } from '../../src/stores/createReduxStore';
 let model: BasicModel;
 
 beforeAll(() => {
-  createReduxStore({});
+  createReduxStore();
 });
 
 beforeEach(() => {

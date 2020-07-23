@@ -5,7 +5,7 @@ import { $api } from '../libs/ApiService';
 let model: ComposeModel;
 
 beforeAll(() => {
-  createReduxStore({});
+  createReduxStore();
 });
 
 beforeEach(() => {

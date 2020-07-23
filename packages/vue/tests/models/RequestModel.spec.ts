@@ -13,7 +13,7 @@ const data = {
 let model: RequestModel;
 
 beforeAll(() => {
-  createReduxStore({});
+  createReduxStore();
 });
 
 beforeEach(() => {

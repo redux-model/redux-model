@@ -6,7 +6,7 @@ import { createReduxStore } from '../../src/stores/createReduxStore';
 import { Loading } from './Loading';
 
 test('Request with useLoading()', async () => {
-  const store = createReduxStore({});
+  const store = createReduxStore();
   const testRenderer = create(
     <Provider store={store}>
       <Loading />
