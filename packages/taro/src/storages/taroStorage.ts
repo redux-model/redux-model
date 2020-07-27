@@ -4,9 +4,14 @@ import { PersistStorage } from '@redux-model/core';
 const taro: PersistStorage = {
   getItem(key) {
     return new Promise((resolve) => {
-      Taro.getStorage({ key }).then(({ data }) => {
-        resolve(typeof data === 'string' ? data : null);
-      });
+      Taro.getStorage({ key })
+        .then(({ data }) => {
+          resolve(typeof data === 'string' ? data : null);
+        })
+        .catch(() => {
+          // Mini program will throw error when key is not found.
+          resolve(null);
+        });
     });
   },
   setItem(key, value) {
