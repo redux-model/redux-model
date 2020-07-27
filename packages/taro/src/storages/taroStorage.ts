@@ -1,10 +1,12 @@
-import Taro from '@tarojs/taro';
 import { PersistStorage } from '@redux-model/core';
+import { getTaro } from '../utils/getTaro';
+
+const TaroJS = getTaro();
 
 const taro: PersistStorage = {
   getItem(key) {
     return new Promise((resolve) => {
-      Taro.getStorage({ key })
+      TaroJS.getStorage({ key })
         .then(({ data }) => {
           resolve(typeof data === 'string' ? data : null);
         })
@@ -16,7 +18,7 @@ const taro: PersistStorage = {
   },
   setItem(key, value) {
     return new Promise((resolve) => {
-      Taro.setStorage({
+      TaroJS.setStorage({
         key,
         data: value,
       }).then(() => {
