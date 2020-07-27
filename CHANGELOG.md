@@ -1,3 +1,14 @@
+# 7.0.1
+[fix] Taro H5 can't find Taro.getStorage <br>
+[fix] Taro throw error when storage key is not found <br>
+[feat] Function createReduxStore() prarmeter provide default value `{}`
+
+--------------------------------------
+
+[修复] Taro H5端无法直接使用 Taro.getStorage <br>
+[修复] Taro 在找不到缓存的情况下会抛出异常 <br>
+[特性] 函数createReduxStore() 参数提供了默认值：`{}`
+
 # 7.0.0
 ## Breaking
 * Depecrate ~~**@redux-model/web**~~ and ~~**@redux-model/react-native**~~, use `@redux-model/react` instead.
