@@ -46,7 +46,6 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly __name: string;
   private readonly __alias: string;
-  private __initData?: Data;
   private __anonymousAction?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
 
   /**
@@ -97,7 +96,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     const data = storeHelper.getState()[this.__name];
 
     if (data === undefined) {
-      if (this.__getInitData() === null) {
+      if (this.initReducer() === null) {
         throw new NullReducerError(this.__name);
       } else {
         throw new ForgetRegisterError(this.__name);
@@ -109,7 +108,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   public/*protected*/ resetReducer(): IActionNormal<Data, null> {
     return this.changeReducer(() => {
-      return this.__getInitData() as StateReturn<Data>;
+      return this.initReducer() as StateReturn<Data>;
     });
   }
 
@@ -170,7 +169,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public register(): IReducers {
-    const reducer = new BaseReducer(this.getReducerName(), this.__getInitData(), this.effects(), this.filterPersistData());
+    const reducer = new BaseReducer(this.getReducerName(), this.initReducer(), this.effects(), this.filterPersistData());
     return reducer.createReducer();
   }
 
@@ -195,9 +194,5 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     // @ts-ignore
     // @ts-expect-error
     return builder;
-  }
-
-  private __getInitData() {
-    return this.__initData === undefined ? this.initReducer() : this.__initData;
   }
 }
