@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { BaseRequestAction, Meta, Metas, MetasLoading, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys } from '@redux-model/core';
+import { BaseRequestAction, Meta, Metas, MetasLoading, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys, METAS_PICK_METHOD } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
 
 export const requestActionProxyKeys: {
@@ -23,6 +23,12 @@ export class RequestAction<Data, Builder extends (...args: any[]) => HttpService
   public useMetas<T extends keyof Meta>(value?: M, metaKey?: T): Metas<M> | Meta | Meta[T] {
     return ReactRedux.useSelector(() => {
       const customMetas: Metas<M> = this.metas;
+
+      // For dev environment, user may append `.metas(value)` onto chain inside request action.
+      // It means action will be converted from meta to metas. `pick` method will disappear by this way.
+      if (!customMetas.pick) {
+        customMetas.pick = METAS_PICK_METHOD.pick;
+      }
 
       // Parameter `metaKey` is useless for metas when value is not provided.
       if (value === undefined) {
