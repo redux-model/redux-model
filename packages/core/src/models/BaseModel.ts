@@ -107,13 +107,13 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return data;
   }
 
-  public/*protected*/ resetReducer(): void {
-    this.changeReducer(() => {
+  public/*protected*/ resetReducer(): IActionNormal<Data, null> {
+    return this.changeReducer(() => {
       return this.__getInitData() as StateReturn<Data>;
     });
   }
 
-  protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): void {
+  protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): IActionNormal<Data, null> {
     // Make sure reducer is registered and initData not null.
     this.data;
 
@@ -124,7 +124,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
       this.__anonymousAction.setName('anonymous-action');
     }
 
-    this.__anonymousAction();
+    return this.__anonymousAction();
   }
 
   protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>>(
@@ -170,7 +170,6 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public register(): IReducers {
-    // TODO: 查看是否多次执行？
     const reducer = new BaseReducer(this.getReducerName(), this.__getInitData(), this.effects(), this.filterPersistData());
     return reducer.createReducer();
   }
