@@ -8,10 +8,11 @@ Redux Model同时弥补了在typescript项目中，每个地方都需要类型�
 
 总的来说，模型拥有以下特性：
 
-* 代码量极简，超高开发效率
-* 使用mvvm更改reducer，一步到位
-* **基于typescript定制，拥有100%无死角的业务代码类型提示**
-* 每个请求的action都自带loading状态记录
-* 支持 Hooks
+* 深度封装，超高开发效率
+* 使用mvvm快速处理reducer
+* **无typescript不编程，拥有100%无死角的业务代码类型提示**
+* 内置http服务，请求action自带loading追踪、节流
+* React/Vue Hooks
+* 数据持久化
 
 !> 只有使用vscode编辑器开发项目，才能发挥TS的最大优势

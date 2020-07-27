@@ -15,11 +15,12 @@ Redux Model的存在是为了弥补原生Redux繁琐的开发流程，开发者�
 
 # 特性
 
-* 代码量极简，超高开发效率
-* 使用mvvm更改reducer，一步到位
-* **基于typescript定制，拥有100%无死角的业务代码类型提示**
-* 每个请求的action都自带loading状态记录
-* 支持 Hooks
+* 深度封装，超高开发效率
+* 使用mvvm快速处理reducer
+* **无typescript不编程，拥有100%无死角的业务代码类型提示**
+* 内置http服务，请求action自带loading追踪、节流
+* React/Vue Hooks
+* 数据持久化
 
 
 # 安装

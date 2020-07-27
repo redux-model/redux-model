@@ -16,11 +16,12 @@ Redux Model is created to enhance original redux framework, which has complex de
 
 # Features
 
-* Less code and higher efficiency
+* Highest coding efficiency
 * Modify reducer by MVVM
-* Absolutely 100% static type checking with typescript
-* Trace loading status for each request action
+* **Absolutely 100% static type checking with typescript**
+* Provide http service, combine loading and throttle for each request action
 * Support react/vue hooks
+* Persist data
 
 # Installation
 
