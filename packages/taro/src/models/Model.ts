@@ -11,11 +11,11 @@ export abstract class Model<Data = null> extends BaseModel<Data, TaroRequestConf
   }
 
   public useData(): Data;
-  public useData<T>(filter: (data: Data) => T): T;
-  public useData(filter?: (data: Data) => any): any {
+  public useData<T>(selector: (data: Data) => T, shallowEqual?: boolean): T;
+  public useData(selector?: (data: Data) => any, shallowEqual?: boolean): any {
     return ReactRedux.useSelector(() => {
-      return filter ? filter(this.data) : this.data;
-    });
+      return selector ? selector(this.data) : this.data;
+    }, shallowEqual ? ReactRedux.shallowEqual : undefined);
   }
 
   protected compose<Fn extends (...args: any[]) => Promise<any>>(fn: Fn): Fn & ComposeAction<Data, Fn> {

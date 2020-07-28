@@ -5,10 +5,10 @@ import { ComposeAction } from '../actions/ComposeAction';
 
 export abstract class Model<Data = null> extends BaseModel<Data, AxiosRequestConfig> {
   public useData(): Vue.ComputedRef<Data>;
-  public useData<T>(filter: (data: Data) => T): Vue.ComputedRef<T>;
-  public useData(filter?: (data: Data) => any): any {
+  public useData<T>(selector: (data: Data) => T): Vue.ComputedRef<T>;
+  public useData(selector?: (data: Data) => any): any {
     return Vue.computed(() => {
-      return filter ? filter(this.data) : this.data;
+      return selector ? selector(this.data) : this.data;
     });
   }
 
