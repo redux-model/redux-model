@@ -44,14 +44,10 @@ export abstract class BaseAction<Data> {
   }
 
   protected proxy(): this {
-    const methods = {};
     const fn = this.getProxyFn();
 
     this.getProxyMethods().forEach((method) => {
-      methods[method] = this[method].bind(this);
-      Object.defineProperty(fn, method, {
-        get: () => methods[method],
-      });
+      fn[method] = this[method].bind(this);
     });
 
     this.getProxyGetters().forEach((property) => {
