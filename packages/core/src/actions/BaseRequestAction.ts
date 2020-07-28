@@ -92,8 +92,8 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   // Avoid re-render component even if state doesn't change.
   protected loadingsCache?: [Metas, MetasLoading<any>];
   public/*protected*/ readonly uniqueId: number;
-  private __prepareType?: string;
-  private __failType?: string;
+  private _prepare?: string;
+  private _fail?: string;
 
   constructor(builder: Builder, uniqueId: number, fromSubClass: boolean = false) {
     super(getCurrentModel());
@@ -128,11 +128,11 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public getPrepareType(): string {
-    return this.__prepareType || setActionName(this).__prepareType!;
+    return this._prepare || setActionName(this)._prepare!;
   }
 
   public getFailType(): string {
-    return this.__failType || setActionName(this).__failType!;
+    return this._fail || setActionName(this)._fail!;
   }
 
   public onSuccess<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
@@ -217,7 +217,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
    */
   public/*protected*/ setName(name: string | number): void {
     super.setName(name);
-    this.__prepareType = this.__actionName + ' prepare';
-    this.__failType = this.__actionName + ' fail';
+    this._prepare = this._name + ' prepare';
+    this._fail = this._name + ' fail';
   }
 }

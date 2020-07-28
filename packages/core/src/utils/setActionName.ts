@@ -17,7 +17,7 @@ export const setActionName = <T extends BaseAction<any>>(action: T): T => {
 
   Object.keys(model).forEach((name) => {
     const customAction: BaseAction<any> = model[name];
-    if (customAction && customAction.__isAction__) {
+    if (customAction && customAction._RMAction_) {
       customAction.setName(name);
     }
   });

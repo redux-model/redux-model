@@ -12,13 +12,15 @@ import session from '../storages/sessionStorage';
  * `memory:  Promised object for testing`
  */
 export const createReduxStore = (config: ReduxStoreConfig<'local' | 'session' | 'memory'> = {}) => {
-  if (config.persist) {
-    switch (config.persist.storage) {
+  const persist = config.persist;
+
+  if (persist) {
+    switch (persist.storage) {
       case 'local':
-        config.persist.storage = local;
+        persist.storage = local;
         break;
       case 'session':
-        config.persist.storage = session;
+        persist.storage = session;
         break;
     }
   }

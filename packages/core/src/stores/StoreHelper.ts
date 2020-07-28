@@ -22,9 +22,9 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
 }
 
 export class StoreHelper {
-  protected readonly __persist: Persist;
-  protected readonly __dynamicMiddleware: DynamicMiddleware;
-  protected __store?: Store;
+  protected readonly _persist: Persist;
+  protected readonly _dynamicMiddleware: DynamicMiddleware;
+  protected _store?: Store;
   protected autoReducers: IReducers = {};
   protected userReducers: IReducers = {};
   protected listeners: Array<(storeHelper: StoreHelper) => void> = [];
@@ -33,8 +33,8 @@ export class StoreHelper {
   protected onCombineReducers: ReduxStoreConfig['onCombineReducers'];
 
   constructor() {
-    this.__persist = new Persist(this);
-    this.__dynamicMiddleware = new DynamicMiddleware();
+    this._persist = new Persist(this);
+    this._dynamicMiddleware = new DynamicMiddleware();
   }
 
   createStore(config: ReduxStoreConfig = {}): Store {
@@ -42,25 +42,25 @@ export class StoreHelper {
 
     this.onCombineReducers = onCombineReducers;
     this.userReducers = reducers;
-    this.__persist.setConfig(config.persist);
+    this._persist.setConfig(config.persist);
 
     const combined = this.combindReducers();
 
-    if (this.__store) {
+    if (this._store) {
       // Avoid to dispatch persist data for @@redux/x.y.z triggerred by replaceReducer()
       this.persist.rehydrate();
       this.store.replaceReducer(combined);
     } else {
-      this.__store = createStore(
+      this._store = createStore(
         combined,
         preloadedState,
-        customCompose(applyMiddleware(this.__dynamicMiddleware.create(), ...middleware))
+        customCompose(applyMiddleware(this._dynamicMiddleware.create(), ...middleware))
       );
       this.publish();
       this.persist.rehydrate();
     }
 
-    return this.__store!;
+    return this._store!;
   }
 
   appendReducers(reducers: IReducers): this {
@@ -69,27 +69,27 @@ export class StoreHelper {
       ...reducers,
     };
 
-    if (this.__store) {
-      this.__store.replaceReducer(this.combindReducers());
+    if (this._store) {
+      this._store.replaceReducer(this.combindReducers());
     }
 
     return this;
   }
 
   get middleware(): DynamicMiddleware {
-    return this.__dynamicMiddleware;
+    return this._dynamicMiddleware;
   }
 
   get store(): Store {
-    if (!this.__store) {
+    if (!this._store) {
       throw new StoreNotFoundError();
     }
 
-    return this.__store;
+    return this._store;
   }
 
   get persist(): Persist {
-    return this.__persist;
+    return this._persist;
   }
 
   dispatch<T extends AnyAction>(action: T): any {
@@ -103,7 +103,7 @@ export class StoreHelper {
   listenOnce(fn: (storeHelper: StoreHelper) => void): this {
     this.listeners.push(fn);
 
-    if (this.__store) {
+    if (this._store) {
       setTimeout(() => {
         this.publish();
       });

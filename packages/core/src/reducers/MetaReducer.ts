@@ -62,7 +62,7 @@ class MetaReducer extends BaseReducer<Data> {
   protected readonly stash: IMetaStash = {};
 
   constructor() {
-    super('__metas__', {}, [], null);
+    super('_metas_', {}, [], null);
   }
 
   protected getData(name: string): Meta | Metas {

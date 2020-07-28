@@ -33,8 +33,8 @@ export const composeActionProxyKeys: {
 // FIXME: 这里的Meta是子集，也许有必要做一个ComposeMeta
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseAction<Data> {
   protected readonly runner: Runner;
-  private __prepareType?: string;
-  private __failType?: string;
+  private _prepare?: string;
+  private _fail?: string;
 
   constructor(model: BaseModel<Data>, runner: Runner, fromSubClass: boolean = false) {
     super(model);
@@ -107,16 +107,16 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
    */
   public/*protected*/ setName(name: string | number): void {
     super.setName(name);
-    this.__prepareType = this.__actionName + ' prepare';
-    this.__failType = this.__actionName + ' fail';
+    this._prepare = this._name + ' prepare';
+    this._fail = this._name + ' fail';
   }
 
   public getPrepareType(): string {
-    return this.__prepareType || setActionName(this).__prepareType!;
+    return this._prepare || setActionName(this)._prepare!;
   }
 
   public getFailType(): string {
-    return this.__failType || setActionName(this).__failType!;
+    return this._fail || setActionName(this)._fail!;
   }
 
   public onSuccess<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {

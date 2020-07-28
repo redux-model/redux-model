@@ -44,9 +44,9 @@ export type CreateNormalActionPayload<A> = A extends (state: any, payload: infer
 export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => IActionNormal<Data, P[0]> : never;
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
-  private readonly __name: string;
-  private readonly __alias: string;
-  private __anonymousAction?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
+  private readonly _name: string;
+  private readonly _alias: string;
+  private _anonymousAction?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
 
   /**
    * Filter data from storage. Assign model to allowlist before you can use persist:
@@ -78,8 +78,8 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   constructor(alias: string = '') {
     setCurrentModel(this);
-    this.__alias = alias;
-    this.__name = this.getReducerName();
+    this._alias = alias;
+    this._name = this.getReducerName();
 
     if (this.autoRegister()) {
       storeHelper.appendReducers(this.register());
@@ -89,17 +89,17 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public getReducerName(): string {
-    return this.__name || setInstanceName(this.constructor.name, this.__alias);
+    return this._name || setInstanceName(this.constructor.name, this._alias);
   }
 
   public get data(): Data extends null ? never : Data {
-    const data = storeHelper.getState()[this.__name];
+    const data = storeHelper.getState()[this._name];
 
     if (data === undefined) {
       if (this.initReducer() === null) {
-        throw new NullReducerError(this.__name);
+        throw new NullReducerError(this._name);
       } else {
-        throw new ForgetRegisterError(this.__name);
+        throw new ForgetRegisterError(this._name);
       }
     }
 
@@ -116,14 +116,14 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     // Make sure reducer is registered and initData not null.
     this.data;
 
-    if (this.__anonymousAction) {
-      this.__anonymousAction.changeCallback(fn);
+    if (this._anonymousAction) {
+      this._anonymousAction.changeCallback(fn);
     } else {
-      this.__anonymousAction = this.action(fn);
-      this.__anonymousAction.setName('anonymous-action');
+      this._anonymousAction = this.action(fn);
+      this._anonymousAction.setName('anonymous-action');
     }
 
-    return this.__anonymousAction();
+    return this._anonymousAction();
   }
 
   protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>>(
@@ -145,27 +145,27 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   protected get<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
-    return this.__createHttpServiceBuilder<Response>(uri, METHOD.get);
+    return this._createBuilder<Response>(uri, METHOD.get);
   }
 
   protected post<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
-    return this.__createHttpServiceBuilder<Response>(uri, METHOD.post);
+    return this._createBuilder<Response>(uri, METHOD.post);
   }
 
   protected put<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
-    return this.__createHttpServiceBuilder<Response>(uri, METHOD.put);
+    return this._createBuilder<Response>(uri, METHOD.put);
   }
 
   protected delete<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
-    return this.__createHttpServiceBuilder<Response>(uri, METHOD.delete);
+    return this._createBuilder<Response>(uri, METHOD.delete);
   }
 
   protected patch<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
-    return this.__createHttpServiceBuilder<Response>(uri, METHOD.patch);
+    return this._createBuilder<Response>(uri, METHOD.patch);
   }
 
   protected connect<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
-    return this.__createHttpServiceBuilder<Response>(uri, METHOD.connect);
+    return this._createBuilder<Response>(uri, METHOD.connect);
   }
 
   public register(): IReducers {
@@ -184,11 +184,11 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   protected abstract initReducer(): Data;
 
-  private __createHttpServiceBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
+  private _createBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     const builder = new HttpServiceBuilder<Data, Response>({
       uri,
       method,
-      instanceName: this.__name,
+      instanceName: this._name,
     });
 
     // @ts-ignore

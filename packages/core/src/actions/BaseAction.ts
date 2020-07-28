@@ -17,10 +17,10 @@ export const actionProxyKeys: {
 
 export abstract class BaseAction<Data> {
   public/*protected*/ readonly model: BaseModel<Data>;
-  protected __actionName?: string;
-  protected __successType?: string;
+  protected _name?: string;
+  protected _success?: string;
 
-  declare public/*private*/ readonly __isAction__: boolean;
+  declare public/*private*/ readonly _RMAction_: boolean;
 
   protected constructor(model: BaseModel<Data>) {
     this.model = model;
@@ -31,16 +31,16 @@ export abstract class BaseAction<Data> {
   }
 
   public getSuccessType(): string {
-    return this.__successType || setActionName(this).__successType!;
+    return this._success || setActionName(this)._success!;
   }
 
   public/*protected*/ getActionName(): string {
-    return this.__actionName || setActionName(this).__actionName!;
+    return this._name || setActionName(this)._name!;
   }
 
   public/*protected*/ setName(name: string | number): void {
-    this.__actionName = this.model.getReducerName() + '_' + name;
-    this.__successType = this.__actionName + ' success';
+    this._name = this.model.getReducerName() + '_' + name;
+    this._success = this._name + ' success';
   }
 
   protected proxy(): this {
@@ -60,8 +60,8 @@ export abstract class BaseAction<Data> {
       });
     });
 
-    // @see Action.__isAction__
-    fn['__isAction__'] = true;
+    // BaseAction._RMAction_
+    fn['_RMAction_'] = true;
 
     // @ts-ignore
     // @ts-expect-error

@@ -9,8 +9,10 @@ import taro from '../storages/taroStorage';
  * `memory:  Promised object for testing`
  */
 export const createReduxStore = (config: ReduxStoreConfig<'taro' | 'memory'> = {}) => {
-  if (config.persist && config.persist.storage === 'taro') {
-    config.persist.storage = taro;
+  const persist = config.persist;
+
+  if (persist && persist.storage === 'taro') {
+    persist.storage = taro;
   }
 
   return storeHelper.createStore(config as ReduxStoreConfig);
