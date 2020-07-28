@@ -60,11 +60,10 @@ export abstract class BaseAction<Data> {
       });
     });
 
-    // BaseAction._RMAction_
-    fn['_RMAction_'] = true;
+    // @ts-ignore
+    (fn as this)._RMAction_ = true;
 
     // @ts-ignore
-    // @ts-expect-error
     return fn;
   }
 
