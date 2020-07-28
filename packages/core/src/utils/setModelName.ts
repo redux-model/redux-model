@@ -6,33 +6,28 @@ let instanceName: string = '';
 let modelCounter: number = 0;
 
 export const setInstanceName = (className: string, alias: string): string => {
-  let aliasName = alias ? `.${alias}` : '';
-
   resetActionCounter();
 
   if (isCompressed()) {
-    instanceName = 'm' + aliasName + modelCounter;
-    modelCounter += 1;
-
-    return instanceName;
+    return 'm' + ++modelCounter;
   }
 
-  instanceName = className + aliasName;
-  const dictKey = `dict_${instanceName}`;
+  instanceName = className + (alias ? `.${alias}` : '');
+  const key = instanceName;
 
-  if (instanceCounter[dictKey] === undefined) {
-    instanceCounter[dictKey] = 0;
+  if (instanceCounter[key] === undefined) {
+    instanceCounter[key] = 0;
   } else {
-    instanceCounter[dictKey] += 1;
+    ++instanceCounter[key];
   }
 
-  if (instanceCounter[dictKey] > 0) {
-    instanceName += `-${instanceCounter[dictKey]}`;
+  if (instanceCounter[key] > 0) {
+    instanceName += `-${instanceCounter[key]}`;
   }
 
   setTimeout(() => {
-    // Reset since Hot-Reload will increase counter every time.
-    instanceCounter[dictKey] -= 1;
+    // Reset due to Hot-Reload will increase counter.
+    --instanceCounter[key];
   });
 
   return instanceName;
