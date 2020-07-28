@@ -5,7 +5,7 @@ const instanceCounter: Record<string, number> = {};
 let instanceName: string = '';
 let modelCounter: number = 0;
 
-export const setInstanceName = (className: string, alias: string): string => {
+export const setModelName = (className: string, alias: string): string => {
   resetActionCounter();
 
   if (isCompressed()) {
@@ -30,9 +30,5 @@ export const setInstanceName = (className: string, alias: string): string => {
     --instanceCounter[key];
   });
 
-  return instanceName;
-};
-
-export const getInstanceName = (): string => {
   return instanceName;
 };

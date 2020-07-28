@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { setInstanceName } from '../utils/setModelName';
+import { setModelName } from '../utils/setModelName';
 import { NormalAction, IActionNormal } from '../actions/NormalAction';
 import { setCurrentModel } from '../utils/setModel';
 import { ComposeAction } from '../actions/ComposeAction';
@@ -77,7 +77,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   constructor(alias: string = '') {
     setCurrentModel(this);
-    this._name = setInstanceName(this.constructor.name, alias);
+    this._name = setModelName(this.constructor.name, alias);
 
     if (this.autoRegister()) {
       storeHelper.appendReducers(this.register());
