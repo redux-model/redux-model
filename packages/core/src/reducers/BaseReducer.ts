@@ -56,6 +56,12 @@ export class BaseReducer<Data> {
       return this.initFromPersist(action.payload[this.reducerName]);
     }
 
+    if (this.effectsCallback[action.type]) {
+      setTimeout(() => {
+        this.effectsCallback[action.type](action);
+      });
+    }
+
     if (action.modelName === this.reducerName) {
       if (action.effectCallback) {
         setTimeout(() => {
@@ -66,16 +72,8 @@ export class BaseReducer<Data> {
       if (action.effect) {
         return this.changeState(action.effect, state, action);
       }
-    } else {
-      if (this.effectsCallback[action.type]) {
-        setTimeout(() => {
-          this.effectsCallback[action.type](action);
-        });
-      }
-
-      if (this.effects[action.type]) {
-        return this.changeState(this.effects[action.type], state, action);
-      }
+    } else if (this.effects[action.type]) {
+      return this.changeState(this.effects[action.type], state, action);
     }
 
     return state;
