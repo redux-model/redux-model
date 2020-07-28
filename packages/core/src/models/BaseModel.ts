@@ -45,7 +45,6 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly _name: string;
-  private readonly _alias: string;
   private _anonymousAction?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
 
   /**
@@ -78,8 +77,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   constructor(alias: string = '') {
     setCurrentModel(this);
-    this._alias = alias;
-    this._name = this.getReducerName();
+    this._name = setInstanceName(this.constructor.name, alias);
 
     if (this.autoRegister()) {
       storeHelper.appendReducers(this.register());
@@ -89,7 +87,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public getReducerName(): string {
-    return this._name || setInstanceName(this.constructor.name, this._alias);
+    return this._name;
   }
 
   public get data(): Data extends null ? never : Data {
