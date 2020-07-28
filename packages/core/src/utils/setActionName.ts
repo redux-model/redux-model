@@ -7,9 +7,7 @@ export const resetActionCounter = (): void => {
 };
 
 export const increaseActionCounter = (): number => {
-  actionCounter += 1;
-
-  return actionCounter;
+  return ++actionCounter;
 };
 
 export const setActionName = <T extends BaseAction<any>>(action: T): T => {
