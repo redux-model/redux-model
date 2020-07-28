@@ -1,15 +1,15 @@
-import { BaseAction, IActionPayload, actionProxyKeys } from './BaseAction';
+import { IActionPayload } from './BaseAction';
 import { getCurrentModel } from '../utils/setModel';
-import { metaReducer, Meta, Metas, MetasLoading, IMetaAction } from '../reducers/MetaReducer';
+import { metaReducer, Metas, MetasLoading, IMetaAction } from '../reducers/MetaReducer';
 import { State, StateReturn } from '../models/BaseModel';
 import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
 import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
-import { setActionName } from '../utils/setActionName';
 import { IClearThrottleAction, ThrottleKeyOption } from '../services/BaseHttpService';
 import { storeHelper } from '../stores/StoreHelper';
 import { ACTION_TYPE_CLEAR_ACTION_THROTTLE } from '../utils/actionType';
-import { DEFAULT_META, DEFAULT_METAS } from '../reducers/MetaReducer';
+import { DEFAULT_METAS } from '../reducers/MetaReducer';
+import { BaseAsyncAction, baseAsyncActionProxyKeys } from './BaseAsyncAction';
 
 export interface Types {
   prepare: string;
@@ -76,24 +76,20 @@ export const requestActionProxyKeys: {
   methods: [
     'onSuccess', 'onPrepare', 'onFail',
     'afterSuccess', 'afterPrepare', 'afterFail',
-    'getPrepareType', 'getFailType',
     'clearThrottle',
-    ...actionProxyKeys.methods,
+    ...baseAsyncActionProxyKeys.methods,
   ],
   getters: [
-    'meta', 'metas',
-    'loading', 'loadings',
-    ...actionProxyKeys.getters,
+    'metas', 'loadings',
+    ...baseAsyncActionProxyKeys.getters,
   ],
 };
 
-export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, any, M>, Response, Payload, M> extends BaseAction<Data> {
+export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, any, M>, Response, Payload, M> extends BaseAsyncAction<Data> {
   protected readonly builder: Builder;
   // Avoid re-render component even if state doesn't change.
   protected loadingsCache?: [Metas, MetasLoading<any>];
   public/*protected*/ readonly uniqueId: number;
-  private _prepare?: string;
-  private _fail?: string;
 
   constructor(builder: Builder, uniqueId: number, fromSubClass: boolean = false) {
     super(getCurrentModel());
@@ -111,28 +107,12 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     });
   }
 
-  public get meta(): Meta {
-    return metaReducer.getMeta(this.getActionName()) || DEFAULT_META;
-  }
-
-  public get loading(): boolean {
-    return this.meta.loading;
-  }
-
   public get metas(): Metas {
     return metaReducer.getMeta(this.getActionName()) || DEFAULT_METAS;
   }
 
   public get loadings(): MetasLoading<any> {
     return this.getLoadingHandler(this.metas);
-  }
-
-  public getPrepareType(): string {
-    return this._prepare || setActionName(this)._prepare!;
-  }
-
-  public getFailType(): string {
-    return this._fail || setActionName(this)._fail!;
   }
 
   public onSuccess<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
@@ -210,14 +190,5 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
         this.builder(...args).collect(this),
       );
     };
-  }
-
-  /**
-   * @override
-   */
-  public/*protected*/ setName(name: string | number): void {
-    super.setName(name);
-    this._prepare = this._name + ' prepare';
-    this._fail = this._name + ' fail';
   }
 }

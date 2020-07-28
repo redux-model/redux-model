@@ -1,4 +1,4 @@
-import { BaseAction, IActionPayload, actionProxyKeys } from './BaseAction';
+import { BaseAction, IActionPayload, baseActionProxyKeys } from './BaseAction';
 import { State, StateReturn, BaseModel } from '../models/BaseModel';
 import { storeHelper } from '../stores/StoreHelper';
 
@@ -16,8 +16,10 @@ export interface NormalSubscriber<CustomData, Payload>{
 
 export const normalActionProxyKeys: {
   methods: (keyof NormalAction<any, any, any>)[];
+  getters: (keyof NormalAction<any, any, any>)[];
 } = {
-  methods: ['onSuccess', 'afterSuccess', 'changeCallback', ...actionProxyKeys.methods],
+  methods: ['onSuccess', 'afterSuccess', 'changeCallback', ...baseActionProxyKeys.methods],
+  getters: [...baseActionProxyKeys.getters],
 };
 
 export class NormalAction<Data, Callback extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload> extends BaseAction<Data> {
@@ -28,13 +30,6 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
     this.callback = changeFn;
 
     return fromSubClass ? this : this.proxy();
-  }
-
-  /**
-   * @override
-   */
-  protected getProxyMethods(): string[] {
-    return normalActionProxyKeys.methods;
   }
 
   public/*protected*/ changeCallback(fn: Callback) {
@@ -69,5 +64,19 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
         effectCallback: null,
       });
     };
+  }
+
+  /**
+   * @override
+   */
+  protected getProxyMethods(): string[] {
+    return normalActionProxyKeys.methods;
+  }
+
+  /**
+   * @override
+   */
+  protected getProxyGetters(): string[] {
+    return normalActionProxyKeys.getters;
   }
 }

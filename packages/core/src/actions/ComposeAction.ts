@@ -1,10 +1,8 @@
-import { BaseAction, actionProxyKeys } from './BaseAction';
-import { Meta, metaReducer, IMetaAction } from '../reducers/MetaReducer';
+import { IMetaAction } from '../reducers/MetaReducer';
 import { BaseModel, State, StateReturn } from '../models/BaseModel';
-import { setActionName } from '../utils/setActionName';
 import { Action } from 'redux';
 import { storeHelper } from '../stores/StoreHelper';
-import { DEFAULT_META } from '../reducers/MetaReducer';
+import { BaseAsyncAction, baseAsyncActionProxyKeys } from './BaseAsyncAction';
 
 export interface IActionCompose extends Action<string>, IMetaAction {
   message?: string;
@@ -24,31 +22,20 @@ export const composeActionProxyKeys: {
   methods: [
     'onSuccess', 'onPrepare', 'onFail',
     'afterSuccess', 'afterPrepare', 'afterFail',
-    'getPrepareType', 'getFailType',
-    ...actionProxyKeys.methods
+    ...baseAsyncActionProxyKeys.methods,
   ],
-  getters: ['meta', 'loading', ...actionProxyKeys.getters],
+  getters: [...baseAsyncActionProxyKeys.getters],
 };
 
 // FIXME: 这里的Meta是子集，也许有必要做一个ComposeMeta
-export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseAction<Data> {
+export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseAsyncAction<Data> {
   protected readonly runner: Runner;
-  private _prepare?: string;
-  private _fail?: string;
 
   constructor(model: BaseModel<Data>, runner: Runner, fromSubClass: boolean = false) {
     super(model);
     this.runner = runner;
 
     return fromSubClass ? this : this.proxy();
-  }
-
-  public get meta(): Meta {
-    return metaReducer.getMeta(this.getActionName()) || DEFAULT_META;
-  }
-
-  public get loading(): boolean {
-    return this.meta.loading;
   }
 
   /**
@@ -100,23 +87,6 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
           return Promise.reject(e);
         });
     };
-  }
-
-  /**
-   * @override
-   */
-  public/*protected*/ setName(name: string | number): void {
-    super.setName(name);
-    this._prepare = this._name + ' prepare';
-    this._fail = this._name + ' fail';
-  }
-
-  public getPrepareType(): string {
-    return this._prepare || setActionName(this)._prepare!;
-  }
-
-  public getFailType(): string {
-    return this._fail || setActionName(this)._fail!;
   }
 
   public onSuccess<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {

@@ -7,7 +7,7 @@ export interface IActionPayload<Payload = any, T = string> extends Action<T> {
   payload: Payload;
 }
 
-export const actionProxyKeys: {
+export const baseActionProxyKeys: {
   methods: (keyof BaseAction<any>)[];
   getters: (keyof BaseAction<any>)[];
 } = {
@@ -63,13 +63,9 @@ export abstract class BaseAction<Data> {
     return fn;
   }
 
-  protected getProxyMethods(): string[] {
-    return actionProxyKeys.methods;
-  }
+  protected abstract getProxyMethods(): string[];
 
-  protected getProxyGetters(): string[] {
-    return actionProxyKeys.getters;
-  }
+  protected abstract getProxyGetters(): string[];
 
   protected abstract getProxyFn(): Function;
 }
