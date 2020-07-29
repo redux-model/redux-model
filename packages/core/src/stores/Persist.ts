@@ -244,20 +244,19 @@ export class Persist {
       return this;
     }
 
-    const { key } = this.config;
-    const strings = {};
-
-    // Restore existing reducers
-    Object.keys(this.persistReducers).forEach((key) => {
-      strings[key] = this.serializedStrings[key];
-    });
-
     const timer = this.restoreTimer = setTimeout(() => {
-      if (timer !== this.restoreTimer) {
+      if (!this.config || timer !== this.restoreTimer) {
         return;
       }
 
-      this.storage.setItem(this.keyPrefix + key, JSON.stringify({
+      const strings = {};
+
+      // Restore existing reducers
+      Object.keys(this.persistReducers).forEach((key) => {
+        strings[key] = this.serializedStrings[key];
+      });
+
+      this.storage.setItem(this.keyPrefix + this.config.key, JSON.stringify({
         ...strings,
         ...this.schema,
       }));
