@@ -1,3 +1,14 @@
+# 7.1.0
+[feat] Model useData() support shallowEqual as the second parameter. <br>
+[feat] Http Service add config protperty `throttleTransfer` to handle cache key globally. <br>
+[refactor] Reduce bundle size.
+
+--------------------------------------
+
+[特性] 模型实例方法 useData() 第二个参数增加shallowEqual浅对比开关。 <br>
+[特性] Http服务增加`throttleTransfer`的配置项，用于全局性地改变节流缓存依据。<br>
+[重构] 优化代码尺寸。
+
 # 7.0.1
 [fix] Taro H5 can't find Taro.getStorage <br>
 [fix] Taro throw error when storage key is not found <br>
