@@ -2,11 +2,7 @@ import { BaseAction } from '../actions/BaseAction';
 
 let actionCounter: number = 0;
 
-export const resetActionCounter = (): void => {
-  actionCounter = 0;
-};
-
-export const increaseActionCounter = (): number => {
+export const getActionCounter = (): number => {
   return ++actionCounter;
 };
 

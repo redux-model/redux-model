@@ -7,7 +7,7 @@ afterAll(() => {
 });
 
 test('getInstanceName will not call for product mode', () => {
-  const increseSpier = jest.spyOn(methods, 'increaseActionCounter');
+  const increseSpier = jest.spyOn(methods, 'getActionCounter');
 
   new ProdModel(Math.random().toString());
   expect(increseSpier).toHaveBeenCalledTimes(2);

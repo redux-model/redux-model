@@ -1,7 +1,7 @@
 import { Action } from 'redux';
 import { BaseModel } from '../models/BaseModel';
 import { isCompressed } from '../utils/isCompressed';
-import { setActionName, increaseActionCounter } from '../utils/setActionName';
+import { setActionName, getActionCounter } from '../utils/setActionName';
 
 export interface IActionPayload<Payload = any, T = string> extends Action<T> {
   payload: Payload;
@@ -26,7 +26,7 @@ export abstract class BaseAction<Data> {
     this.model = model;
 
     if (isCompressed()) {
-      this.setName(increaseActionCounter());
+      this.setName(getActionCounter());
     }
   }
 
