@@ -19,7 +19,7 @@ export abstract class BaseAsyncAction<Data> extends BaseAction<Data> {
   private _fail?: string;
 
   public get meta(): Meta {
-    return metaReducer.getMeta(this.getActionName()) || DEFAULT_META;
+    return metaReducer.getMeta(this.getName()) || DEFAULT_META;
   }
 
   public get loading(): boolean {

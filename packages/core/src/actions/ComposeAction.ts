@@ -54,7 +54,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
 
   protected getProxyFn(): Function {
     return (...args: Parameters<Runner>): Promise<any> => {
-      const actionName = this.getActionName();
+      const actionName = this.getName();
 
       storeHelper.dispatch<IActionCompose>({
         type: this.getPrepareType(),

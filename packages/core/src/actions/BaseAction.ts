@@ -34,7 +34,7 @@ export abstract class BaseAction<Data> {
     return this._success || setActionName(this)._success!;
   }
 
-  public/*protected*/ getActionName(): string {
+  public/*protected*/ getName(): string {
     return this._name || setActionName(this)._name!;
   }
 

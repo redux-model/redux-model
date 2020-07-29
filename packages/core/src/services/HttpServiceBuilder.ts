@@ -150,7 +150,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       hideError: config.hideError || false,
       requestOptions: config.requestOptions || {},
       metaKey: config.metaKey === undefined ? true : config.metaKey,
-      metaActionName: instance.getActionName(),
+      metaActionName: instance.getName(),
       onPrepare: config.onPrepare || null,
       afterPrepare: config.afterPrepare || null,
       onSuccess: config.onSuccess || null,

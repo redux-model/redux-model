@@ -108,7 +108,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public get metas(): Metas {
-    return metaReducer.getMeta(this.getActionName()) || DEFAULT_METAS;
+    return metaReducer.getMeta(this.getName()) || DEFAULT_METAS;
   }
 
   public get loadings(): MetasLoading<any> {
