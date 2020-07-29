@@ -1,6 +1,7 @@
 import { ThrottleModel } from './ThrottleModel';
 import { createReduxStore } from '../../src/stores/createReduxStore';
 import { $api } from '../libs/ApiService';
+import { $throttleApi } from '../libs/ThrottleService';
 
 let model: ThrottleModel;
 
@@ -91,5 +92,16 @@ test('Throttle can adjust the key', async () => {
 
   const result = await model.withTransfer(query);
   expect(result.response.id).toBe(123);
-  expect(query.name === 'abcde');
+  expect(query.name).toBe('abcd');
+});
+
+test('Throttle can adjust the key by global transer', async () => {
+  $throttleApi.mockResolveValue({ id: 123 });
+  const query = { name: 'abcd' };
+  await model.withGlobalTransfer(query);
+
+  const result = await model.withGlobalTransfer(query);
+  expect(result.response.id).toBe(123);
+  expect(query.name).toBe('abcd');
+  expect(query).toHaveProperty('__rand');
 });

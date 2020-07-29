@@ -1,5 +1,6 @@
 import { Model } from '../../src';
 import { $api } from '../libs/ApiService';
+import { $throttleApi } from '../libs/ThrottleService';
 
 // Notice: Keep Data as null to make sure http-servie and null-data can work fine together.
 export class ThrottleModel extends Model {
@@ -44,6 +45,18 @@ export class ThrottleModel extends Model {
         transfer: (options) => {
           options.query.name = 'FIXED';
           return options;
+        },
+      });
+  });
+
+  withGlobalTransfer = $throttleApi.action((query: { name: string }) => {
+    return this
+      .get<{ id: number }>('/profile/manage')
+      .query(query)
+      .throttle({
+        duration: 3000,
+        transfer: (options) => {
+          options.query.name = 'FIXED';
         },
       });
   });

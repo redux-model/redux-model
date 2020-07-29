@@ -31,6 +31,7 @@ export interface BaseHttpServiceConfig {
   onShowError: (errorText: string, action: IResponseAction) => void;
   timeoutMessage?: (originalText: string) => string;
   networkErrorMessage?: (originalText: string) => string;
+  throttleTransfer?: NonNullable<ThrottleKeyOption['transfer']>,
 }
 
 export interface IClearThrottleAction extends Action<string> {
@@ -39,14 +40,14 @@ export interface IClearThrottleAction extends Action<string> {
 }
 
 export interface ThrottleKeyOption {
-  modelName: string;           // determine model
-  successType: string;         // determine action
-  url: string;                 // params like: /user/2/post/3
-  method: METHOD;              // low compat, user always use the same method
+  modelName: string;                        // determine model
+  successType: string;                      // determine action
+  url: string;                              // params like: /user/2/post/3
+  method: METHOD;                           // low compat, user always use the same method
   body: Record<string, any>;                // condition
   query: Record<string, any>;               // condition
   headers: Record<string, any>;             // condition, especially token
-  transfer: null | ((options: Omit<ThrottleKeyOption, 'transfer'>) => Omit<ThrottleKeyOption, 'transfer'>);
+  transfer: null | ((options: Omit<ThrottleKeyOption, 'transfer'>) => void | Omit<ThrottleKeyOption, 'transfer'>);
 }
 
 export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn> {
@@ -121,8 +122,20 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
   protected generateThrottleKey(options: ThrottleKeyOption): string {
     const { transfer, ...rest } = options;
 
-    if (transfer) {
-      return JSON.stringify(transfer(cloneDeep(rest)));
+    if (transfer || this.config.throttleTransfer) {
+      let cloneObj = cloneDeep(rest);
+
+      [this.config.throttleTransfer, transfer].forEach((runner) => {
+        if (runner) {
+          const tmp = runner(cloneObj);
+
+          if (tmp !== undefined) {
+            cloneObj = tmp;
+          }
+        }
+      });
+
+      return JSON.stringify(cloneObj);
     }
 
     return JSON.stringify(rest);

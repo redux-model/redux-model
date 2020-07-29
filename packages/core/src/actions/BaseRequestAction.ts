@@ -21,8 +21,8 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
   uniqueId: number;
   method: METHOD;
   uri: string;
-  body: object;
-  query: object;
+  body: Record<string, any>;
+  query: Record<string, any>;
   successText: string;
   failText: string;
   hideError: boolean | ((response: IResponseAction<Response, Payload>) => boolean);

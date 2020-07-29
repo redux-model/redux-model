@@ -1,7 +1,7 @@
 import { HttpServiceConfig, HttpService } from '../../src/services/HttpService';
 import sleep from 'sleep-promise';
 
-class ApiService<T> extends HttpService<T> {
+export class ApiService<T> extends HttpService<T> {
   protected readonly mock: jest.Mock;
 
   constructor(config: HttpServiceConfig<T>) {
@@ -36,6 +36,15 @@ class ApiService<T> extends HttpService<T> {
 
     this.mock.mockRejectedValue({
       data,
+    });
+  }
+
+  public clone<NewErrorData = T>(config: Partial<HttpServiceConfig<NewErrorData>>): ApiService<NewErrorData> {
+    // @ts-ignore
+    // @ts-expect-error
+    return new ApiService<U>({
+      ...this.config,
+      ...config,
     });
   }
 }
