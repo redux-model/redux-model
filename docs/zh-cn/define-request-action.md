@@ -139,7 +139,7 @@ export const requestAction = new RequestModel();
 ```
 通过`.throttle()`方法，您在**5分钟内**成功地拦截了接下来的请求，action已经缓存了第一次的响应数据，并直接触发`onSuccess`。
 
-这里缓存的原理，是使用请求发送的链接、查询字符串、数据、报头 等信息生成的唯一的字符串作为比较依据。一旦您有任何参数变化，缓存便不再命中。您也可以通过`transfer`属性改变缓存的依据：
+这里缓存的原理，是使用请求发送的链接、查询字符串、数据、报头 等信息生成的唯一的字符串作为key依据。一旦您有任何参数变化，缓存便不再命中。您也可以通过`transfer`属性改变缓存的key依据：
 ```typescript
 this
   .get('/')
@@ -151,7 +151,23 @@ this
       return options;
     },
     // ----- 结束
-  })
+  });
+```
+虽然您删除了`options.body`，但这并不会影响到请求中的body，因为这份数据是深度克隆的，您可以随意修改。
+
+如果您想统一地处理缓存key，框架允许您在实例化http服务时传入属性`throttleTransfer`。下面例子中，我们为了阻止浏览器缓存或者服务端缓存，特意在查询字符串中加入了随机的字符串，这符合常理。但如果您不处理这个随机字符串，节流就等同于失效了。
+```typescript
+const $api = new HttpService({
+  ...
+  beforeSend: (action) => {
+    action.query.__timestamp = Date.now();
+  },
+  // ----- 开始
+  throttleTransfer: (options) => {
+    delete options.query.__timestamp;
+  },
+  // ----- 结束
+});
 ```
 
 ### 清除节流
