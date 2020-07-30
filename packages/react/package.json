@@ -28,7 +28,7 @@
     "redux": "^4.0.0"
   },
   "dependencies": {
-    "@redux-model/core": "^7.1.0",
+    "@redux-model/core": "7.1.0",
     "axios": "0.19.2",
     "tslib": "2.0.0"
   },
