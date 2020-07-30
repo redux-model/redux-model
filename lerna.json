@@ -9,6 +9,7 @@
       "message": "chore: Bump version %s"
     }
   },
+  "exact": true,
   "ignoreChanges": [
     "**/tests/**",
     "**/.gitignore",
