@@ -29,7 +29,8 @@ export const applyPatch = (originalState: object, currentState: object, ovserver
     return;
   }
 
-  patches.forEach((patch) => {
+  for (let i = 0, len = patches.length; i < len; ++i) {
+    const patch = patches[i];
     const patchPath: Array<string | number> = patch.path!;
 
     switch (patch.kind) {
@@ -50,5 +51,5 @@ export const applyPatch = (originalState: object, currentState: object, ovserver
       default:
         throw new TypeError('Unknown diff kind: ' + patch.kind);
     }
-  });
+  }
 };
