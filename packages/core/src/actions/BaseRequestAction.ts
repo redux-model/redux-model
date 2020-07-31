@@ -7,7 +7,7 @@ import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
 import { IClearThrottleAction, ThrottleKeyOption } from '../services/BaseHttpService';
 import { storeHelper } from '../stores/StoreHelper';
-import { ACTION_TYPE_CLEAR_ACTION_THROTTLE } from '../utils/actionType';
+import ACTION_TYPES from '../utils/actionType';
 import { DEFAULT_METAS } from '../reducers/MetaReducer';
 import { BaseAsyncAction, baseAsyncActionProxyKeys } from './BaseAsyncAction';
 
@@ -101,7 +101,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
 
   public clearThrottle(): void {
     storeHelper.dispatch<IClearThrottleAction>({
-      type: ACTION_TYPE_CLEAR_ACTION_THROTTLE,
+      type: ACTION_TYPES.clearThrottle,
       key: this.getSuccessType(),
       uniqueId: this.uniqueId,
     });

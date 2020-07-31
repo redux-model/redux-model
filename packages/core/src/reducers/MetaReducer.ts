@@ -1,6 +1,6 @@
 import { BaseReducer } from './BaseReducer';
 import { InternalSuccessAction, HttpTransform } from '../actions/BaseRequestAction';
-import { ACTION_TYPE_META_RESTORE } from '../utils/actionType';
+import ACTION_TYPES from '../utils/actionType';
 import { IActionPayload } from '../actions/BaseAction';
 import { storeHelper } from '../stores/StoreHelper';
 
@@ -74,7 +74,7 @@ class MetaReducer extends BaseReducer<Data> {
 
     if (!this.getData(name) && stash && stash !== USED_FLAG) {
       const action: IMetaRestore = {
-        type: ACTION_TYPE_META_RESTORE,
+        type: ACTION_TYPES.metaRestore,
         payload: {
           key: name,
           value: stash,
@@ -91,7 +91,7 @@ class MetaReducer extends BaseReducer<Data> {
   }
 
   protected isRestore(action: InternalSuccessAction | IMetaRestore): action is IMetaRestore {
-    return action.type === ACTION_TYPE_META_RESTORE;
+    return action.type === ACTION_TYPES.metaRestore;
   }
 
   protected reducer(state: Data | undefined, action: InternalSuccessAction | IMetaRestore): Data {

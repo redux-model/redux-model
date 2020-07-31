@@ -5,7 +5,7 @@ import cloneDeep from 'clone';
 import { OrphanHttpService, OrphanRequestOptions } from './OrphanHttpService';
 import { METHOD } from '../utils/method';
 import { storeHelper } from '../stores/StoreHelper';
-import { ACTION_TYPE_CLEAR_ACTION_THROTTLE } from '../utils/actionType';
+import ACTION_TYPES from '../utils/actionType';
 
 export interface FetchHandle<Response = any, Payload = any, CancelFn = () => void> extends Promise<IResponseAction<Response, Payload>> {
   cancel: CancelFn;
@@ -200,7 +200,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
 
   protected createClearThrottleMiddleware(): Middleware {
     return () => (next) => (action: IClearThrottleAction) => {
-      if (action.uniqueId !== this.uniqueId || action.type !== ACTION_TYPE_CLEAR_ACTION_THROTTLE) {
+      if (action.uniqueId !== this.uniqueId || action.type !== ACTION_TYPES.clearThrottle) {
         return next(action);
       }
 

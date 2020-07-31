@@ -5,7 +5,7 @@ import { PersistStorage } from './PersistStorage';
 import { BaseModel } from '../models/BaseModel';
 import { Persist } from './Persist';
 import { DynamicMiddleware } from './DynamicMiddleware';
-import { ACTION_TYPE_REHYDRATE } from '../utils/actionType';
+import ACTION_TYPES from '../utils/actionType';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   reducers?: IReducers;
@@ -133,7 +133,7 @@ export class StoreHelper {
       let mainResult = combined(state, action);
 
       if (this.stateWhenDispatching !== mainResult) {
-        this.persist.update(mainResult, action.type === ACTION_TYPE_REHYDRATE);
+        this.persist.update(mainResult, action.type === ACTION_TYPES.persist);
       }
 
       this.isDispatching = false;
