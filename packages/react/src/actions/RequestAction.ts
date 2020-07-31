@@ -1,12 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
-import { BaseRequestAction, Meta, Metas, MetasLoading, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys, METAS_PICK_METHOD } from '@redux-model/core';
+import { BaseRequestAction, Meta, Metas, MetasLoading, HttpServiceBuilder, METAS_PICK_METHOD } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
-
-export const requestActionProxyKeys: {
-  methods: (keyof RequestAction<any, any, any, any, any>)[];
-} = {
-  methods: ['useMeta', 'useMetas', 'useLoading', 'useLoadings', ...superProxyKeys.methods],
-};
 
 export class RequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, AxiosRequestConfig, M>, Response, Payload, M> extends BaseRequestAction<Data, Builder, Response, Payload, M> {
   public useMeta(): Meta;
@@ -53,7 +47,9 @@ export class RequestAction<Data, Builder extends (...args: any[]) => HttpService
       : this.useMetas(value, 'loading');
   }
 
-  protected getProxyMethods(): string[] {
-    return requestActionProxyKeys.methods;
+  protected methods(): string[] {
+    return super.methods().concat(
+      'useMeta', 'useMetas', 'useLoading', 'useLoadings'
+    );
   }
 }

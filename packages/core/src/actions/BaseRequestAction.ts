@@ -9,7 +9,7 @@ import { IClearThrottleAction, ThrottleKeyOption } from '../services/BaseHttpSer
 import { storeHelper } from '../stores/StoreHelper';
 import ACTION_TYPES from '../utils/actionType';
 import { DEFAULT_METAS } from '../reducers/MetaReducer';
-import { BaseAsyncAction, baseAsyncActionProxyKeys } from './BaseAsyncAction';
+import { BaseAsyncAction } from './BaseAsyncAction';
 
 export interface Types {
   prepare: string;
@@ -68,22 +68,6 @@ export interface RequestSubscriber<CustomData, Response, Payload>{
   effect?: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
   effectCallback?: (action: IResponseAction<Response, Payload>) => void;
 }
-
-export const requestActionProxyKeys: {
-  methods: (keyof BaseRequestAction<any, any, any, any, any>)[];
-  getters: (keyof BaseRequestAction<any, any, any, any, any>)[];
-} = {
-  methods: [
-    'onSuccess', 'onPrepare', 'onFail',
-    'afterSuccess', 'afterPrepare', 'afterFail',
-    'clearThrottle',
-    ...baseAsyncActionProxyKeys.methods,
-  ],
-  getters: [
-    'metas', 'loadings',
-    ...baseAsyncActionProxyKeys.getters,
-  ],
-};
 
 export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, any, M>, Response, Payload, M> extends BaseAsyncAction<Data> {
   protected readonly builder: Builder;
@@ -170,21 +154,25 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   /**
    * @override
    */
-  protected getProxyMethods(): string[] {
-    return requestActionProxyKeys.methods;
+  protected methods(): string[] {
+    return super.methods().concat(
+      'onSuccess', 'onPrepare', 'onFail',
+      'afterSuccess', 'afterPrepare', 'afterFail',
+      'clearThrottle',
+    );
   }
 
   /**
    * @override
    */
-  protected getProxyGetters(): string[] {
-    return requestActionProxyKeys.getters;
+  protected getters(): string[] {
+    return super.getters().concat('metas', 'loadings');
   }
 
   /**
    * @implements
    */
-  protected getProxyFn(): Function {
+  protected action(): Function {
     return (...args: Parameters<Builder>) => {
       return storeHelper.dispatch(
         this.builder(...args).collect(this),

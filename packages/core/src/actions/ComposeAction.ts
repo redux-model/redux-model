@@ -2,7 +2,7 @@ import { IMetaAction } from '../reducers/MetaReducer';
 import { BaseModel, State, StateReturn } from '../models/BaseModel';
 import { Action } from 'redux';
 import { storeHelper } from '../stores/StoreHelper';
-import { BaseAsyncAction, baseAsyncActionProxyKeys } from './BaseAsyncAction';
+import { BaseAsyncAction } from './BaseAsyncAction';
 
 export interface IActionCompose extends Action<string>, IMetaAction {
   message?: string;
@@ -14,18 +14,6 @@ export interface ComposeSubscriber<CustomData>{
   effect?: (state: State<CustomData>) => StateReturn<CustomData>;
   effectCallback?: () => void;
 }
-
-export const composeActionProxyKeys: {
-  methods: (keyof ComposeAction<any, any>)[];
-  getters: (keyof ComposeAction<any, any>)[];
-} = {
-  methods: [
-    'onSuccess', 'onPrepare', 'onFail',
-    'afterSuccess', 'afterPrepare', 'afterFail',
-    ...baseAsyncActionProxyKeys.methods,
-  ],
-  getters: [...baseAsyncActionProxyKeys.getters],
-};
 
 // FIXME: 这里的Meta是子集，也许有必要做一个ComposeMeta
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseAsyncAction<Data> {
@@ -41,18 +29,14 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   /**
    * @override
    */
-  protected getProxyMethods(): string[] {
-    return composeActionProxyKeys.methods;
+  protected methods(): string[] {
+    return super.methods().concat(
+      'onSuccess', 'onPrepare', 'onFail',
+      'afterSuccess', 'afterPrepare', 'afterFail',
+    );
   }
 
-  /**
-   * @override
-   */
-  protected getProxyGetters(): string[] {
-    return composeActionProxyKeys.getters;
-  }
-
-  protected getProxyFn(): Function {
+  protected action(): Function {
     return (...args: Parameters<Runner>): Promise<any> => {
       const actionName = this.getName();
 

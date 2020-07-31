@@ -7,14 +7,6 @@ export interface IActionPayload<Payload = any, T = string> extends Action<T> {
   payload: Payload;
 }
 
-export const baseActionProxyKeys: {
-  methods: (keyof BaseAction<any>)[];
-  getters: (keyof BaseAction<any>)[];
-} = {
-  methods: ['setName', 'getSuccessType'],
-  getters: [],
-};
-
 export abstract class BaseAction<Data> {
   public/*protected*/ readonly model: BaseModel<Data>;
   protected _name?: string;
@@ -44,13 +36,17 @@ export abstract class BaseAction<Data> {
   }
 
   protected proxy(): this {
-    const fn = this.getProxyFn();
+    const fn = this.action();
+    // @ts-ignore
+    const cache: { __methods: string[]; __getters: string[] } = this.constructor;
+    const methods = cache.__methods || (cache.__methods = this.methods(), cache.__methods);
+    const getters = cache.__getters || (cache.__getters = this.getters(), cache.__getters);
 
-    this.getProxyMethods().forEach((method) => {
+    methods.forEach((method) => {
       fn[method] = this[method].bind(this);
     });
 
-    this.getProxyGetters().forEach((property) => {
+    getters.forEach((property) => {
       Object.defineProperty(fn, property, {
         get: () => this[property],
       });
@@ -63,9 +59,13 @@ export abstract class BaseAction<Data> {
     return fn;
   }
 
-  protected abstract getProxyMethods(): string[];
+  protected methods(): string[] {
+    return ['setName', 'getSuccessType'];
+  }
 
-  protected abstract getProxyGetters(): string[];
+  protected getters(): string[] {
+    return [];
+  }
 
-  protected abstract getProxyFn(): Function;
+  protected abstract action(): Function;
 }

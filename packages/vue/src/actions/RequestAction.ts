@@ -1,12 +1,6 @@
 import * as Vue from 'vue';
 import { AxiosRequestConfig } from 'axios';
-import { BaseRequestAction, HttpServiceBuilder, requestActionProxyKeys as superProxyKeys, Meta, Metas } from '@redux-model/core';
-
-export const requestActionProxyKeys: {
-  methods: (keyof RequestAction<any, any, any, any, any>)[];
-} = {
-  methods: ['useMeta', 'useMetas', 'useLoading', 'useLoadings', ...superProxyKeys.methods],
-};
+import { BaseRequestAction, HttpServiceBuilder, Meta, Metas } from '@redux-model/core';
 
 export class RequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, AxiosRequestConfig, M>, Response, Payload, M> extends BaseRequestAction<Data, Builder, Response, Payload, M> {
   public useMeta(): Vue.ComputedRef<Meta>;
@@ -36,7 +30,9 @@ export class RequestAction<Data, Builder extends (...args: any[]) => HttpService
     return this.useMetas(value, 'loading');
   }
 
-  protected getProxyMethods(): string[] {
-    return requestActionProxyKeys.methods;
+  protected methods(): string[] {
+    return super.methods().concat(
+      'useMeta', 'useMetas', 'useLoading', 'useLoadings'
+    );
   }
 }

@@ -1,11 +1,5 @@
 import * as Vue from 'vue';
-import { ComposeAction as BaseComponseAction, composeActionProxyKeys as superProxyKeys, Meta } from '@redux-model/core';
-
-export const composeActionProxyKeys: {
-  methods: (keyof ComposeAction<any, any>)[];
-} = {
-  methods: ['useLoading', 'useMeta', ...superProxyKeys.methods],
-};
+import { ComposeAction as BaseComponseAction, Meta } from '@redux-model/core';
 
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseComponseAction<Data, Runner> {
   public useMeta(): Vue.ComputedRef<Meta>;
@@ -23,7 +17,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   /**
    * @override
    */
-  protected getProxyMethods(): string[] {
-    return composeActionProxyKeys.methods;
+  protected methods(): string[] {
+    return super.methods().concat('useLoading', 'useMeta');
   }
 }
