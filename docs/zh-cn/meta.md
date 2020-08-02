@@ -28,3 +28,9 @@ const $api = new HttpService<ErrorData>({
 当一个请求Action被连续执行时，它的Meta状态就会被不断覆盖，直到最后一个请求结束。此时Metas登场。
 
 顾名思义，Metas就是Meta的集合。当请求Action的构造器加入了`.metas(value)`后，action的状态追踪便由Metas接管了。它存在的意义就是让每一次的请求都能独立追踪状态，并在组件中分开使用，互不干扰。
+
+
+### 性能说明
+不是每个请求都需要状态追踪，因为是否需要展示loading条，得按业务需求。所以在默认情况下，Meta\[s]会储存在独立的内存块中，不参与Redux的数据升级。
+
+当您调用了action上的`.meta[s]`或者`.loading[s]`，说明记录的状态已经产生了实际作用，此时相应的Meta\[s]就会正式转移回Redux的状态树中。这种**惰性**模式，极大地优化了渲染性能。
