@@ -66,7 +66,7 @@ class MetaReducer extends BaseReducer<Data> {
   }
 
   protected getData(name: string): Meta | Metas {
-    return storeHelper.getState()[this.reducerName][name];
+    return storeHelper.getState()[this.name][name];
   }
 
   public/*protected*/ getMeta<T extends Meta | Metas>(name: string): T | undefined {

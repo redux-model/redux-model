@@ -12,33 +12,33 @@ export interface IReducers {
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
-  protected readonly reducerName: string;
-  protected readonly effects: Record<string, NonNullable<Effects<Data>[number]['effect']>>;
-  protected readonly effectsCallback: Record<string, {
-    fn: NonNullable<Effects<Data>[number]['effectCallback']>;
+  protected readonly name: string;
+  protected readonly cases: Record<string, NonNullable<Effects<Data>[number]['then']>>;
+  protected readonly after: Record<string, {
+    fn: NonNullable<Effects<Data>[number]['after']>;
     duration?: number;
   }>;
-  protected readonly filterPersistData: FilterPersist<Data>;
+  protected readonly filterPersist: FilterPersist<Data>;
 
   constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData: FilterPersist<Data>) {
     this.initData = initData;
-    this.reducerName = reducerName;
-    this.effects = {};
-    this.effectsCallback = {};
+    this.name = reducerName;
+    this.cases = {};
+    this.after = {};
 
-    effects.forEach(({ when, effect, effectCallback, duration }) => {
-      if (effect) {
-        this.effects[when] = effect;
+    effects.forEach(({ when, then, after, duration }) => {
+      if (then) {
+        this.cases[when] = then;
       }
 
-      if (effectCallback) {
-        this.effectsCallback[when] = {
-          fn: effectCallback,
+      if (after) {
+        this.after[when] = {
+          fn: after,
           duration,
         };
       }
     });
-    this.filterPersistData = filterPersistData;
+    this.filterPersist = filterPersistData;
   }
 
   public createReducer(): IReducers {
@@ -47,30 +47,30 @@ export class BaseReducer<Data> {
     }
 
     return {
-      [this.reducerName]: this.reducer.bind(this),
+      [this.name]: this.reducer.bind(this),
     };
   }
 
   protected reducer(state: Data | undefined, action: InternalSuccessAction<Data> | IActionNormal<Data>): Data {
     if (state === undefined) {
-      const newState = storeHelper.persist.getPersistData(this.reducerName, this.initData);
+      const newState = storeHelper.persist.getPersistData(this.name, this.initData);
       return this.initFromPersist(newState);
     }
 
     const actionType = action.type;
 
     // For async storage, we should dispatch action to inject persist data into reducer
-    if (actionType === ACTION_TYPES.persist && action.payload && action.payload[this.reducerName] !== undefined) {
-      return this.initFromPersist(action.payload[this.reducerName]);
+    if (actionType === ACTION_TYPES.persist && action.payload && action.payload[this.name] !== undefined) {
+      return this.initFromPersist(action.payload[this.name]);
     }
 
-    if (this.effectsCallback[actionType]) {
+    if (this.after[actionType]) {
       setTimeout(() => {
-        this.effectsCallback[actionType].fn(action);
-      }, this.effectsCallback[actionType].duration);
+        this.after[actionType].fn(action);
+      }, this.after[actionType].duration);
     }
 
-    if (action.modelName === this.reducerName) {
+    if (action.modelName === this.name) {
       if (action.effectCallback) {
         setTimeout(() => {
           action.effectCallback!(action);
@@ -80,23 +80,23 @@ export class BaseReducer<Data> {
       if (action.effect) {
         return this.changeState(action.effect, state, action);
       }
-    } else if (this.effects[actionType]) {
-      return this.changeState(this.effects[actionType], state, action);
+    } else if (this.cases[actionType]) {
+      return this.changeState(this.cases[actionType], state, action);
     }
 
     return state;
   }
 
   protected initFromPersist(state: any): any {
-    if (this.initData === state || !this.filterPersistData) {
+    if (this.initData === state || !this.filterPersist) {
       return state;
     }
 
-    return this.changeState(this.filterPersistData, state, {
+    return this.changeState(this.filterPersist, state, {
       type: 'filterPersistData',
-      modelName: this.reducerName,
+      modelName: this.name,
       payload: undefined,
-      effect: this.filterPersistData,
+      effect: this.filterPersist,
       effectCallback: null,
     });
   };

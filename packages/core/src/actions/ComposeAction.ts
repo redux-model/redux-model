@@ -9,10 +9,10 @@ export interface IActionCompose extends Action<string>, IMetaAction {
   loading: boolean;
 }
 
-export interface ComposeSubscriber<CustomData>{
+export interface ComposeSubscriber<CustomData> {
   when: string;
-  effect?: (state: State<CustomData>) => StateReturn<CustomData>;
-  effectCallback?: () => void;
+  then?: (state: State<CustomData>) => StateReturn<CustomData>;
+  after?: () => void;
   duration?: number;
 }
 
@@ -74,47 +74,47 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public onSuccess<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {
+  public onSuccess<CustomData>(changeReducer: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>, duration?: number): ComposeSubscriber<CustomData> {
+  public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }
 
-  public onPrepare<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {
+  public onPrepare<CustomData>(changeReducer: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>, duration?: number): ComposeSubscriber<CustomData> {
+  public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }
 
-  public onFail<CustomData>(effect: NonNullable<ComposeSubscriber<CustomData>['effect']>): ComposeSubscriber<CustomData> {
+  public onFail<CustomData>(changeReducer: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>, duration?: number): ComposeSubscriber<CustomData> {
+  public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }

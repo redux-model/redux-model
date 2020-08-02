@@ -36,8 +36,8 @@ export type StateReturn<Data> = void | (Data & {
 
 export type Effects<Data> = Array<{
   when: string;
-  effect?: (state: State<Data>, action: any) => StateReturn<Data>;
-  effectCallback?: (action: any) => void;
+  then?: (state: State<Data>, action: any) => StateReturn<Data>;
+  after?: (action: any) => void;
   duration?: number;
 }>;
 

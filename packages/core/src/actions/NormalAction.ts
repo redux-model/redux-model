@@ -8,10 +8,10 @@ export interface IActionNormal<Data = any, Payload = any> extends IActionPayload
   effectCallback: null;
 }
 
-export interface NormalSubscriber<CustomData, Payload>{
+export interface NormalSubscriber<CustomData, Payload> {
   when: string;
-  effect?: (state: State<CustomData>, action: IActionPayload<Payload>) => StateReturn<CustomData>;
-  effectCallback?: (action: IActionPayload<Payload>) => void;
+  then?: (state: State<CustomData>, action: IActionPayload<Payload>) => StateReturn<CustomData>;
+  after?: (action: IActionPayload<Payload>) => void;
   duration?: number;
 }
 
@@ -29,17 +29,17 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
     this.callback = fn;
   }
 
-  public onSuccess<CustomData>(effect: NonNullable<NormalSubscriber<CustomData, Payload>['effect']>): NormalSubscriber<CustomData, Payload> {
+  public onSuccess<CustomData>(changeReducer: NonNullable<NormalSubscriber<CustomData, Payload>['then']>): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['effectCallback']>, duration?: number): NormalSubscriber<CustomData, Payload> {
+  public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['after']>, duration?: number): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }

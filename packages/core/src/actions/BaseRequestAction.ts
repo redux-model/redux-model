@@ -68,10 +68,10 @@ export interface InternalSuccessAction<Data = any, Response = any, Payload = any
 }
 
 // TODO: 区分prepare, success, fail
-export interface RequestSubscriber<CustomData, Response, Payload>{
+export interface RequestSubscriber<CustomData, Response, Payload> {
   when: string;
-  effect?: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
-  effectCallback?: (action: IResponseAction<Response, Payload>) => void;
+  then?: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
+  after?: (action: IResponseAction<Response, Payload>) => void;
   duration?: number;
 }
 
@@ -105,47 +105,47 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     return this.getLoadingHandler(this.metas);
   }
 
-  public onSuccess<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
+  public onSuccess<CustomData>(changeReducer: NonNullable<RequestSubscriber<CustomData, Response, Payload>['then']>): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
+  public afterSuccess<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }
 
-  public onPrepare<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
+  public onPrepare<CustomData>(changeReducer: NonNullable<RequestSubscriber<CustomData, Response, Payload>['then']>): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getPrepareType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterPrepare<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
+  public afterPrepare<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getPrepareType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }
 
-  public onFail<CustomData>(effect: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effect']>): RequestSubscriber<CustomData, Response, Payload> {
+  public onFail<CustomData>(changeReducer: NonNullable<RequestSubscriber<CustomData, Response, Payload>['then']>): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getFailType(),
-      effect,
+      then: changeReducer,
     };
   }
 
-  public afterFail<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
+  public afterFail<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getFailType(),
-      effectCallback: callback,
+      after: callback,
       duration: duration,
     };
   }
