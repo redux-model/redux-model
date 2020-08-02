@@ -6,7 +6,7 @@
 
 [中文](./README.md)
 
-Redux Model is created to enhance original redux framework, which has complex development flow and lots of template fragments.
+Redux Model is created to enhance original redux framework, which has complex flow and lots of boilerplate.
 
 Lots of famous state framework are designed for JS users. They totally follow design mode and hide everything you needn't see, it means you are difficult to combine these frameworks with typescript unless you inject `type interface` manually. Fortunately, Redux-Model is specially designed for typescript, feel free to inject once, use everywhere.
 
