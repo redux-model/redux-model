@@ -48,37 +48,37 @@ npm install @redux-model/taro redux react-redux
 # Define Model
 ```typescript
 interface Response {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 }
 
 interface Data {
-    counter: number;
-    users: Partial<{
-        [key: string]: Response;
-    }>;
+  counter: number;
+  users: Partial<{
+    [key: string]: Response;
+  }>;
 }
 
 class TestModel extends Model<Data> {
-    increase = this.action((state) => {
+  increase = this.action((state) => {
+    state.counter += 1;
+  });
+
+  getUser = $api.action((id: number) => {
+    return this
+      .get<Response>(`/api/user/${id}`)
+      .onSuccess((state, action) => {
         state.counter += 1;
-    });
+        state.users[id] = action.response;
+      });
+  });
 
-    getUser = $api.action((id: number) => {
-        return this
-            .get<Response>(`/api/user/${id}`)
-            .onSuccess((state, action) => {
-                state.counter += 1;
-                state.users[id] = action.response;
-            });
-    });
-
-    protected initReducer(): Data {
-        return {
-            counter: 0,
-            users: {},
-        };
-    }
+  protected initReducer(): Data {
+    return {
+      counter: 0,
+      users: {},
+    };
+  }
 }
 
 export const testModel = new TestModel();
@@ -89,19 +89,19 @@ export const testModel = new TestModel();
 import React, { FC } from 'react';
 
 const App: FC = () => {
-    const counter = testModel.useData((data) => data.counter);
-    const loading = testModel.getUser.useLoading();
+  const counter = testModel.useData((data) => data.counter);
+  const loading = testModel.getUser.useLoading();
 
-    const increase = () => {
-        testModel.increase();
-        testModel.getUser(3);
-    };
+  const increase = () => {
+    testModel.increase();
+    testModel.getUser(3);
+  };
 
-    return (
-        <button onClick={increase}>
-            {loading ? 'Waiting...' : `You clicked ${counter} times`}
-        </button>
-    );
+  return (
+    <button onClick={increase}>
+      {loading ? 'Waiting...' : `You clicked ${counter} times`}
+    </button>
+  );
 };
 
 export default App;
@@ -117,21 +117,21 @@ export default App;
 
 <script>
 export default {
-    setup() {
-        const increase = () => {
-            testModel.increase();
-            testModel.getUser(3);
-        };
+  setup() {
+    const increase = () => {
+      testModel.increase();
+      testModel.getUser(3);
+    };
 
-        const counter = testModel.useData((data) => data.counter);
-        const loading = testModel.getUser.useLoading();
+    const counter = testModel.useData((data) => data.counter);
+    const loading = testModel.getUser.useLoading();
 
-        return {
-            increase,
-            counter,
-            loading,
-        };
-    }
+    return {
+      increase,
+      counter,
+      loading,
+    };
+  }
 };
 </script>
 ```
@@ -144,26 +144,26 @@ import { connect } from 'react-redux';
 type Props = ReturnType<typeof mapStateToProps>;
 
 class App extends Component<Props> {
-    increase() {
-        testModel.increase();
-        testModel.getUser(3);
-    }
+  increase() {
+    testModel.increase();
+    testModel.getUser(3);
+  }
 
-    render() {
-        const { loading, counter } = this.props;
-        return (
-            <button onClick={this.increase}>
-                {loading ? 'Waiting...' : `You clicked ${counter} times`}
-            </button>
-        );
-    }
+  render() {
+    const { loading, counter } = this.props;
+    return (
+      <button onClick={this.increase}>
+          {loading ? 'Waiting...' : `You clicked ${counter} times`}
+      </button>
+    );
+  }
 }
 
 const mapStateToProps = () => {
-    return {
-        counter: testModel.data.counter,
-        loading: testModel.getUser.loading,
-    };
+  return {
+    counter: testModel.data.counter,
+    loading: testModel.getUser.loading,
+  };
 };
 
 export default connect(mapStateToProps)(App);
