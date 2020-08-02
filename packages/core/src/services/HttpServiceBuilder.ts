@@ -100,8 +100,9 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public afterPrepare(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterPrepare']>): this {
+  public afterPrepare(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterPrepare']>, duration?: number): this {
     this.config.afterPrepare = fn;
+    this.config.afterPrepareDuration = duration;
 
     return this;
   }
@@ -112,8 +113,9 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public afterSuccess(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterSuccess']>): this {
+  public afterSuccess(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterSuccess']>, duration?: number): this {
     this.config.afterSuccess = fn;
+    this.config.afterSuccessDuration = duration;
 
     return this;
   }
@@ -124,8 +126,9 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public afterFail(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterFail']>): this {
+  public afterFail(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterFail']>, duration?: number): this {
     this.config.afterFail = fn;
+    this.config.afterFailDuration = duration;
 
     return this;
   }
@@ -153,10 +156,13 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       metaActionName: instance.getName(),
       onPrepare: config.onPrepare || null,
       afterPrepare: config.afterPrepare || null,
+      afterPrepareDuration: config.afterPrepareDuration,
       onSuccess: config.onSuccess || null,
       afterSuccess: config.afterSuccess || null,
+      afterSuccessDuration: config.afterSuccessDuration,
       onFail: config.onFail || null,
       afterFail: config.afterFail || null,
+      afterFailDuration: config.afterFailDuration,
       useThrottle: config.useThrottle || false,
       throttleMillSeconds: config.throttleMillSeconds || 0,
       throttleKey: '',

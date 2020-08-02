@@ -101,6 +101,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       loading: true,
       effect: action.onPrepare,
       effectCallback: action.afterPrepare,
+      effectDuration: action.afterPrepareDuration,
     });
 
     const throttleData = this.getThrottleData(action, {
@@ -140,6 +141,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           response: response.data,
           effect: action.onSuccess,
           effectCallback: action.afterSuccess,
+          effectDuration: action.afterSuccessDuration,
         };
 
         successInvoked = true;
@@ -190,6 +192,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           businessCode,
           effect: action.onFail,
           effectCallback: action.afterFail,
+          effectDuration: action.afterFailDuration,
         };
 
         fail && storeHelper.dispatch(errorResponse);

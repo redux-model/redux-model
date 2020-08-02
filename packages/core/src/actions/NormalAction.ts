@@ -12,6 +12,7 @@ export interface NormalSubscriber<CustomData, Payload>{
   when: string;
   effect?: (state: State<CustomData>, action: IActionPayload<Payload>) => StateReturn<CustomData>;
   effectCallback?: (action: IActionPayload<Payload>) => void;
+  duration?: number;
 }
 
 export class NormalAction<Data, Callback extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload> extends BaseAction<Data> {
@@ -35,10 +36,11 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['effectCallback']>): NormalSubscriber<CustomData, Payload> {
+  public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['effectCallback']>, duration?: number): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 

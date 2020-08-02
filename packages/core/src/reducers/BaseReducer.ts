@@ -14,7 +14,10 @@ export class BaseReducer<Data> {
   protected readonly initData: Data;
   protected readonly reducerName: string;
   protected readonly effects: Record<string, NonNullable<Effects<Data>[number]['effect']>>;
-  protected readonly effectsCallback: Record<string, NonNullable<Effects<Data>[number]['effectCallback']>>;
+  protected readonly effectsCallback: Record<string, {
+    fn: NonNullable<Effects<Data>[number]['effectCallback']>;
+    duration?: number;
+  }>;
   protected readonly filterPersistData: FilterPersist<Data>;
 
   constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData: FilterPersist<Data>) {
@@ -23,13 +26,16 @@ export class BaseReducer<Data> {
     this.effects = {};
     this.effectsCallback = {};
 
-    effects.forEach(({ when, effect, effectCallback }) => {
+    effects.forEach(({ when, effect, effectCallback, duration }) => {
       if (effect) {
         this.effects[when] = effect;
       }
 
       if (effectCallback) {
-        this.effectsCallback[when] = effectCallback;
+        this.effectsCallback[when] = {
+          fn: effectCallback,
+          duration,
+        };
       }
     });
     this.filterPersistData = filterPersistData;
@@ -51,29 +57,31 @@ export class BaseReducer<Data> {
       return this.initFromPersist(newState);
     }
 
+    const actionType = action.type;
+
     // For async storage, we should dispatch action to inject persist data into reducer
-    if (action.type === ACTION_TYPES.persist && action.payload && action.payload[this.reducerName] !== undefined) {
+    if (actionType === ACTION_TYPES.persist && action.payload && action.payload[this.reducerName] !== undefined) {
       return this.initFromPersist(action.payload[this.reducerName]);
     }
 
-    if (this.effectsCallback[action.type]) {
+    if (this.effectsCallback[actionType]) {
       setTimeout(() => {
-        this.effectsCallback[action.type](action);
-      });
+        this.effectsCallback[actionType].fn(action);
+      }, this.effectsCallback[actionType].duration);
     }
 
     if (action.modelName === this.reducerName) {
       if (action.effectCallback) {
         setTimeout(() => {
           action.effectCallback!(action);
-        });
+        }, action.effectDuration);
       }
 
       if (action.effect) {
         return this.changeState(action.effect, state, action);
       }
-    } else if (this.effects[action.type]) {
-      return this.changeState(this.effects[action.type], state, action);
+    } else if (this.effects[actionType]) {
+      return this.changeState(this.effects[actionType], state, action);
     }
 
     return state;

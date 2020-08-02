@@ -13,6 +13,7 @@ export interface ComposeSubscriber<CustomData>{
   when: string;
   effect?: (state: State<CustomData>) => StateReturn<CustomData>;
   effectCallback?: () => void;
+  duration?: number;
 }
 
 // FIXME: 这里的Meta是子集，也许有必要做一个ComposeMeta
@@ -80,10 +81,11 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>): ComposeSubscriber<CustomData> {
+  public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 
@@ -94,10 +96,11 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>): ComposeSubscriber<CustomData> {
+  public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 
@@ -108,10 +111,11 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>): ComposeSubscriber<CustomData> {
+  public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['effectCallback']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 }

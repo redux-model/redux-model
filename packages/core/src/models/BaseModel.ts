@@ -38,6 +38,7 @@ export type Effects<Data> = Array<{
   when: string;
   effect?: (state: State<Data>, action: any) => StateReturn<Data>;
   effectCallback?: (action: any) => void;
+  duration?: number;
 }>;
 
 export type CreateNormalActionPayload<A> = A extends (state: any, payload: infer P) => any ? P : never;

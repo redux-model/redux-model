@@ -34,10 +34,13 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
   throttleTransfer: ThrottleKeyOption['transfer'];
   onPrepare: null | ((state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>);
   afterPrepare: null | ((action: IActionPayload<Payload>) => void);
+  afterPrepareDuration?: number;
   onSuccess: null | ((state: State<Data>, action: IResponseAction<Response, Payload>) => StateReturn<Data>);
   afterSuccess: null | ((action: IResponseAction<Response, Payload>) => void);
+  afterSuccessDuration?: number;
   onFail: null | ((state: State<Data>, action: IResponseAction<unknown, Payload>) => StateReturn<Data>);
   afterFail: null | ((action: IResponseAction<unknown, Payload>) => void);
+  afterFailDuration?: number;
 }
 
 export interface HttpTransform {
@@ -54,12 +57,14 @@ export interface InternalPrepareAction<Data = any, Response = any, Payload = any
   loading: boolean;
   effect: IBaseRequestAction<Data, any, Payload>['onPrepare'];
   effectCallback: IBaseRequestAction<Data, any, Payload>['afterPrepare'];
+  effectDuration: IBaseRequestAction<Data, any, Payload>['afterPrepareDuration'];
 }
 
 export interface InternalSuccessAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string>, IResponseAction<Response, Payload> {
   loading: boolean;
   effect: IBaseRequestAction<Data, Response, Payload, string>['onSuccess'];
   effectCallback: IBaseRequestAction<Data, Response, Payload, string>['afterSuccess'];
+  effectDuration: IBaseRequestAction<Data, any, Payload>['afterSuccessDuration'];
 }
 
 // TODO: 区分prepare, success, fail
@@ -67,6 +72,7 @@ export interface RequestSubscriber<CustomData, Response, Payload>{
   when: string;
   effect?: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
   effectCallback?: (action: IResponseAction<Response, Payload>) => void;
+  duration?: number;
 }
 
 export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, any, M>, Response, Payload, M> extends BaseAsyncAction<Data> {
@@ -106,10 +112,11 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>): RequestSubscriber<CustomData, Response, Payload> {
+  public afterSuccess<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 
@@ -120,10 +127,11 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public afterPrepare<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>): RequestSubscriber<CustomData, Response, Payload> {
+  public afterPrepare<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getPrepareType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 
@@ -134,10 +142,11 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public afterFail<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>): RequestSubscriber<CustomData, Response, Payload> {
+  public afterFail<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['effectCallback']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getFailType(),
       effectCallback: callback,
+      duration: duration,
     };
   }
 

@@ -3,6 +3,7 @@ import { Effects } from '../../src';
 import { basicModel } from './BasicModel';
 import { requestModel } from './RequestModel';
 import { composeModel } from './ComposeModel';
+import { $api } from '../libs/ApiService';
 
 interface Data {
   counter: number;
@@ -13,6 +14,16 @@ interface Data {
 export class EffectModel extends Model<Data> {
   reset = this.action((state) => {
     state.counter = 0;
+  });
+
+  normalWithDuration = this.action(() => {});
+
+  requestWithDuration = $api.action(() => this.patch('/'));
+
+  composeWithDuration = this.compose(async () => {
+    await $api.getAsync({
+      uri: '/api',
+    });
   });
 
   protected effects(): Effects<Data> {

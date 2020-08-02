@@ -229,3 +229,44 @@ describe('Request action can handle afterXXX', () => {
     expect(model.data.id).toBe(4);
   });
 });
+
+describe('Request action can handle afterXXX with duration', () => {
+  beforeEach(() => {
+    model = new RequestModel(Math.random().toString());
+  });
+
+  test('case prepare', async () => {
+    $api.mockResolveValue({ count: 123 });
+    expect(model.data.id).toBe(1);
+
+    model.withAfterXXXAndDuration();
+    await sleep(20);
+    expect(model.data.id).toBe(1);
+    await sleep(100);
+    expect(model.data.id).toBe(2);
+  });
+
+  test('case success', async () => {
+    $api.mockResolveValue({ count: 123 });
+    expect(model.data.id).toBe(1);
+
+    await model.withAfterXXXAndDuration();
+    await sleep(20);
+    expect(model.data.id).toBe(1);
+    await sleep(250);
+    expect(model.data.id).toBe(125);
+  });
+
+  test('case fail', async () => {
+    $api.mockRejectValue({ count: 123 });
+    expect(model.data.id).toBe(1);
+
+    try {
+      await model.withAfterXXXAndDuration();
+    } catch {}
+    await sleep(20);
+    expect(model.data.id).toBe(1);
+    await sleep(250);
+    expect(model.data.id).toBe(4);
+  });
+});
