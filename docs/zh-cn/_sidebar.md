@@ -15,3 +15,4 @@
     * [订阅](/zh-cn/subscription.md)
     * [状态追踪](/zh-cn/meta.md)
     * [双向绑定](/zh-cn/mvvm.md)
+    * [模型多实例](/zh-cn/multiple-model.md)
