@@ -56,15 +56,15 @@ export interface IResponseAction<Response = any, Payload = any> extends IActionP
 export interface InternalPrepareAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string> {
   loading: boolean;
   effect: IBaseRequestAction<Data, any, Payload>['onPrepare'];
-  effectCallback: IBaseRequestAction<Data, any, Payload>['afterPrepare'];
-  effectDuration: IBaseRequestAction<Data, any, Payload>['afterPrepareDuration'];
+  after: IBaseRequestAction<Data, any, Payload>['afterPrepare'];
+  afterDuration: IBaseRequestAction<Data, any, Payload>['afterPrepareDuration'];
 }
 
 export interface InternalSuccessAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string>, IResponseAction<Response, Payload> {
   loading: boolean;
   effect: IBaseRequestAction<Data, Response, Payload, string>['onSuccess'];
-  effectCallback: IBaseRequestAction<Data, Response, Payload, string>['afterSuccess'];
-  effectDuration: IBaseRequestAction<Data, any, Payload>['afterSuccessDuration'];
+  after: IBaseRequestAction<Data, Response, Payload, string>['afterSuccess'];
+  afterDuration: IBaseRequestAction<Data, any, Payload>['afterSuccessDuration'];
 }
 
 // TODO: 区分prepare, success, fail

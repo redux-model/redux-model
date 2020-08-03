@@ -46,7 +46,7 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly _name: string;
-  private _anonymousAction?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
+  private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
 
   /**
    * Filter data from storage. Assign model to allowlist before you can use persist:
@@ -115,20 +115,20 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     // Make sure reducer is registered and initData not null.
     this.data;
 
-    if (this._anonymousAction) {
-      this._anonymousAction.changeCallback(fn);
+    if (this._action) {
+      this._action.setEffect(fn);
     } else {
-      this._anonymousAction = this.action(fn);
-      this._anonymousAction.setName('anonymous-action');
+      this._action = this.action(fn);
+      this._action.setName('anonymous');
     }
 
-    return this._anonymousAction();
+    return this._action();
   }
 
   protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    effect: Fn
+    changeReducer: Fn
   ): CreateNormalActionEffect<Data, Fn> & NormalAction<Data, Fn, CreateNormalActionPayload<Fn>> {
-    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>>(this, effect);
+    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>>(this, changeReducer);
 
     return action as CreateNormalActionEffect<Data, Fn> & typeof action;
   }

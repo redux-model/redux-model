@@ -5,7 +5,7 @@ import { storeHelper } from '../stores/StoreHelper';
 export interface IActionNormal<Data = any, Payload = any> extends IActionPayload<Payload> {
   modelName: string;
   effect: (state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>;
-  effectCallback: null;
+  after: null;
 }
 
 export interface NormalSubscriber<CustomData, Payload> {
@@ -15,18 +15,18 @@ export interface NormalSubscriber<CustomData, Payload> {
   duration?: number;
 }
 
-export class NormalAction<Data, Callback extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload> extends BaseAction<Data> {
-  private callback: Callback;
+export class NormalAction<Data, ChangeReducer extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload> extends BaseAction<Data> {
+  private effect: ChangeReducer;
 
-  constructor(model: BaseModel<Data>, changeFn: Callback, fromSubClass: boolean = false) {
+  constructor(model: BaseModel<Data>, effect: ChangeReducer, fromSubClass: boolean = false) {
     super(model);
-    this.callback = changeFn;
+    this.effect = effect;
 
     return fromSubClass ? this : this.proxy();
   }
 
-  public/*protected*/ changeCallback(fn: Callback) {
-    this.callback = fn;
+  public/*protected*/ setEffect(fn: ChangeReducer) {
+    this.effect = fn;
   }
 
   public onSuccess<CustomData>(changeReducer: NonNullable<NormalSubscriber<CustomData, Payload>['then']>): NormalSubscriber<CustomData, Payload> {
@@ -53,9 +53,9 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
         payload: payload,
         modelName: modelName,
         effect: (state, action) => {
-          return this.callback(state, action.payload);
+          return this.effect(state, action.payload);
         },
-        effectCallback: null,
+        after: null,
       });
     };
   }
@@ -64,6 +64,6 @@ export class NormalAction<Data, Callback extends (state: State<Data>, payload: P
    * @override
    */
   protected methods(): string[] {
-    return super.methods().concat('onSuccess', 'afterSuccess', 'changeCallback');
+    return super.methods().concat('onSuccess', 'afterSuccess', 'setEffect');
   }
 }

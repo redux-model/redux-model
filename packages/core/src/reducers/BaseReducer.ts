@@ -71,10 +71,10 @@ export class BaseReducer<Data> {
     }
 
     if (action.modelName === this.name) {
-      if (action.effectCallback) {
+      if (action.after) {
         setTimeout(() => {
-          action.effectCallback!(action);
-        }, action.effectDuration);
+          action.after!(action);
+        }, action.afterDuration);
       }
 
       if (action.effect) {
@@ -97,7 +97,7 @@ export class BaseReducer<Data> {
       modelName: this.name,
       payload: undefined,
       effect: this.filterPersist,
-      effectCallback: null,
+      after: null,
     });
   };
 

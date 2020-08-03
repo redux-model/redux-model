@@ -166,8 +166,8 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
           type: action.type.success,
           response: cloneDeep(item.response, false),
           effect: action.onSuccess,
-          effectCallback: action.afterSuccess,
-          effectDuration: action.afterSuccessDuration,
+          after: action.afterSuccess,
+          afterDuration: action.afterSuccessDuration,
         };
 
         storeHelper.dispatch(fakeOkAction);
