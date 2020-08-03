@@ -5,14 +5,10 @@ interface Data {
   counter: number;
 }
 
-export class PersistAutoModel extends PersistModel {
+export class PersistFilterModel extends PersistModel {
   filterPersistData(): FilterPersist<Data> {
     return (state) => {
       state.counter += 10;
     };
-  }
-
-  protected autoRegister(): boolean {
-    return true;
   }
 }

@@ -59,7 +59,7 @@ export class BaseReducer<Data> {
 
     const actionType = action.type;
 
-    // For async storage, we should dispatch action to inject persist data into reducer
+    // Only subscriber can receive this action
     if (actionType === ACTION_TYPES.persist && action.payload && action.payload[this.name] !== undefined) {
       return this.initFromPersist(action.payload[this.name]);
     }

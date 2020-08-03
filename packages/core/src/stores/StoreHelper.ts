@@ -17,7 +17,7 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
     version: string | number;
     key: string;
     storage: PersistStorage | Engine;
-    allowlist: Record<string, BaseModel<any> | string>;
+    allowlist: Record<string, BaseModel<any>>;
   };
 }
 

@@ -7,8 +7,9 @@ export class Persist {
   protected readonly keyPrefix = 'ReduxModel:Persist:';
   protected readonly storeHelper: StoreHelper;
   protected readonly schema: { __persist: { version: number | string } };
+  protected cacheData?: string | null;
   protected config: ReduxStoreConfig['persist'];
-  protected bootstrapped: boolean = false;
+  protected ready: boolean = false;
   protected allowKeys: string[] = [];
   protected mapFromModelToKey: Record<string, string | undefined> = {};
 
@@ -31,10 +32,11 @@ export class Persist {
   }
 
   setConfig(config: ReduxStoreConfig['persist']): this {
+    const originalConfig = this.config;
     this.config = config;
 
     if (!config) {
-      return this.onBootstrapped();
+      return this.onReady();
     }
 
     switch (config.storage) {
@@ -47,7 +49,7 @@ export class Persist {
 
     const { allowlist, version } = config;
 
-    this.bootstrapped = false;
+    this.ready = false;
     this.schema.__persist.version = version;
     this.allowKeys = [];
     this.mapFromModelToKey = {};
@@ -56,20 +58,37 @@ export class Persist {
       const model = allowlist[key];
 
       this.allowKeys.push(key);
-      this.mapFromModelToKey[typeof model === 'string' ? model : model.getReducerName()] = key;
+      this.mapFromModelToKey[model.getReducerName()] = key;
     });
+
+    if (
+      !originalConfig ||
+      !config ||
+      originalConfig.key !== config.key ||
+      originalConfig.storage !== config.storage
+    ) {
+      this.cacheData = undefined;
+    }
 
     return this;
   }
 
   rehydrate():void {
-    if (this.bootstrapped || !this.config) {
+    if (this.ready || !this.config) {
+      return;
+    }
+
+    if (this.cacheData !== undefined) {
+      this.parseData(this.cacheData);
       return;
     }
 
     this.storage
       .getItem(this.keyPrefix + this.config.key)
-      .then((data) => this.parseData(data));
+      .then((data) => {
+        this.cacheData = data;
+        this.parseData(data);
+      });
   }
 
   protected parseData(data: string | null): void {
@@ -78,7 +97,7 @@ export class Persist {
     }
 
     if (data === null) {
-      this.resetAndRestore().onParsed().onBootstrapped();
+      this.resetAndRestore().onParsed().onReady();
       return;
     }
 
@@ -106,10 +125,10 @@ export class Persist {
       }
     } catch (e) {
       this.resetAndRestore();
-      console.error('Unable to parser persist reducers from storage: ' + e.message);
+      console.error('Unable to parse persist reducers from storage: ' + e.message);
     }
 
-    this.onParsed().onBootstrapped();
+    this.onParsed().onReady();
   }
 
   update(nextState: any, force: boolean): void {
@@ -118,7 +137,7 @@ export class Persist {
     }
 
     // Persist is not ready before dispatch action TYPE_REHYDRATE
-    if (!this.bootstrapped && !force) {
+    if (!this.ready && !force) {
       return;
     }
 
@@ -146,7 +165,7 @@ export class Persist {
   }
 
   isReady() {
-    return this.bootstrapped;
+    return this.ready;
   }
 
   getPersistData<T>(reducerName: string, state: T): T {
@@ -159,7 +178,7 @@ export class Persist {
       return state;
     }
 
-    if (!this.bootstrapped) {
+    if (!this.ready) {
       if (this.subscription.indexOf(reducerName) === -1) {
         this.subscription.push(reducerName);
       }
@@ -205,8 +224,8 @@ export class Persist {
     return this;
   }
 
-  protected onBootstrapped(): this {
-    this.bootstrapped = true;
+  protected onReady(): this {
+    this.ready = true;
 
     if (this.readyEvents.length) {
       this.readyEvents.forEach((item) => item());
@@ -219,10 +238,10 @@ export class Persist {
   listen(fn: () => void): Function {
     this.readyEvents.push(fn);
 
-    if (this.bootstrapped) {
+    if (this.ready) {
       setTimeout(() => {
-        if (this.bootstrapped) {
-          this.onBootstrapped();
+        if (this.ready) {
+          this.onReady();
         }
       });
     }
@@ -256,10 +275,13 @@ export class Persist {
         strings[key] = this.serializedStrings[key];
       });
 
-      this.storage.setItem(this.keyPrefix + this.config.key, JSON.stringify({
+      const storageData = JSON.stringify({
         ...strings,
         ...this.schema,
-      }));
+      });
+
+      this.storage.setItem(this.keyPrefix + this.config.key, storageData);
+      this.cacheData = storageData;
     });
 
     return this;

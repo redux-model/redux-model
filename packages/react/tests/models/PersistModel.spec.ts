@@ -224,3 +224,49 @@ test('Restore data from storage without whitelist', async () => {
   await sleep(10);
   expect(localStorage.getItem(`ReduxModel:Persist:${persistKey}`)).toBe('{"__persist":{"version":1}}');
 });
+
+test('Persit will use cache data for re-create store', (done) => {
+  localStorage.setItem(`ReduxModel:Persist:${persistKey}`, `{"model":"{\\"counter\\":2}","__persist":{"version":1}}`);
+
+  createReduxStore({
+    reducers: {
+      ...model.register(),
+    },
+    persist: {
+      version: 1,
+      key: persistKey,
+      storage: 'local',
+      allowlist: {
+        model,
+      },
+    },
+  });
+
+  storeHelper.persist.listenOnce(async () => {
+    const model2 = new PersistModel(Math.random().toString());
+
+    localStorage.setItem(`ReduxModel:Persist:${persistKey}`, `{"model2":"{\\"counter\\":2000}","__persist":{"version":1}}`);
+
+    createReduxStore({
+      reducers: {
+        ...model.register(),
+        ...model2.register(),
+      },
+      persist: {
+        version: 1,
+        key: persistKey,
+        storage: 'local',
+        allowlist: {
+          model,
+          model2,
+        },
+      },
+    });
+
+    await sleep(20);
+
+    expect(model.data.counter).toBe(2);
+    expect(model2.data.counter).toBe(0);
+    done();
+  });
+});
