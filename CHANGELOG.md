@@ -1,3 +1,14 @@
+# 7.2.0
+[feat] **after** subscribers can using duration now. <br>
+[feat] Persist with cache to against entry hot-reload. <br>
+[refactor] Reduce bundle size. <br>
+
+--------------------------------------
+
+[特性] **after** 订阅事件增加延迟执行时间。 <br>
+[特性] 持久层加入缓存机制以应对入口的热更新。 <br>
+[重构] 优化打包尺寸
+
 # 7.1.0
 [feat] Model useData() support shallowEqual as the second parameter. <br>
 [feat] Http Service add config protperty `throttleTransfer` to handle cache key globally. <br>
