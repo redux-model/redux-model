@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/react",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "keywords": [
     "react",
     "redux-model",
@@ -28,7 +28,7 @@
     "redux": "^4.0.0"
   },
   "dependencies": {
-    "@redux-model/core": "7.1.0",
+    "@redux-model/core": "7.2.0",
     "axios": "0.19.2",
     "tslib": "2.0.0"
   },
