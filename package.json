@@ -8,7 +8,7 @@
     "latest": "lerna run build && lerna publish",
     "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest --runInBand",
     "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
-    "relink": "lerna run relink && bash scripts/vue.sh",
+    "relink": "lerna run relink && bash scripts/vue.sh && bash scripts/taro.sh",
     "docs": "docsify serve docs"
   },
   "devDependencies": {

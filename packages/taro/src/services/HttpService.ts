@@ -78,6 +78,8 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       url = this.config.baseUrl + url;
     }
 
+    const throttleUrl = url;
+
     if (action.query) {
       const isArg = url.indexOf('?') >= 0 ? '&' : '?';
       const args = stringify(action.query, {
@@ -105,13 +107,12 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     });
 
     const throttleData = this.getThrottleData(action, {
-      url: requestOptions.url,
+      url: throttleUrl,
       modelName: action.modelName,
       successType: success,
       method: action.method,
       body: action.body,
-      // query data has been appended to url
-      query: {},
+      query: action.query,
       headers: requestOptions.header || {},
       transfer: action.throttleTransfer,
     });
