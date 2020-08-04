@@ -1,3 +1,4 @@
+import { Action } from 'redux';
 import { Effects, FilterPersist } from '../models/BaseModel';
 import { InternalSuccessAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
@@ -5,6 +6,7 @@ import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import ACTION_TYPES from '../utils/actionType';
+import { IPersistRehydrate } from '../stores/Persist';
 
 export interface IReducers {
   [key: string]: (state: any, action: any) => any;
@@ -51,7 +53,11 @@ export class BaseReducer<Data> {
     };
   }
 
-  protected reducer(state: Data | undefined, action: InternalSuccessAction<Data> | IActionNormal<Data>): Data {
+  protected isPersist(action: Action<string>): action is IPersistRehydrate {
+    return action.type === ACTION_TYPES.persist;
+  }
+
+  protected reducer(state: Data | undefined, action: InternalSuccessAction<Data> | IActionNormal<Data> | IPersistRehydrate): Data {
     if (state === undefined) {
       const newState = storeHelper.persist.getPersistData(this.name, this.initData);
       return this.initFromPersist(newState);
@@ -60,8 +66,12 @@ export class BaseReducer<Data> {
     const actionType = action.type;
 
     // Only subscriber can receive this action
-    if (actionType === ACTION_TYPES.persist && action.payload && action.payload[this.name] !== undefined) {
-      return this.initFromPersist(action.payload[this.name]);
+    if (this.isPersist(action)) {
+      if (action.payload[this.name] !== undefined) {
+        return this.initFromPersist(action.payload[this.name]);
+      }
+
+      return state;
     }
 
     if (this.after[actionType]) {

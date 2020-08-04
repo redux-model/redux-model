@@ -2,6 +2,9 @@ import { StoreHelper, ReduxStoreConfig } from './StoreHelper';
 import { PersistStorage } from './PersistStorage';
 import memory from '../storages/memoryStorage';
 import ACTION_TYPES from '../utils/actionType';
+import { IActionPayload } from '../actions/BaseAction';
+
+export interface IPersistRehydrate extends IActionPayload<Record<string, any>> {}
 
 export class Persist {
   protected readonly keyPrefix = 'ReduxModel:Persist:';
@@ -206,7 +209,7 @@ export class Persist {
       this.subscription = [];
 
       if (canDispatch) {
-        this.storeHelper.dispatch({
+        this.storeHelper.dispatch<IPersistRehydrate>({
           type: ACTION_TYPES.persist,
           payload,
         });
