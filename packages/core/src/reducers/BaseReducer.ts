@@ -75,16 +75,13 @@ export class BaseReducer<Data> {
     }
 
     if (this.after[actionType]) {
-      setTimeout(() => {
-        this.after[actionType].fn(action);
-      }, this.after[actionType].duration);
+      const currentAfter = this.after[actionType];
+      setTimeout(currentAfter.fn, currentAfter.duration, action);
     }
 
     if (action.modelName === this.name) {
       if (action.after) {
-        setTimeout(() => {
-          action.after!(action);
-        }, action.afterDuration);
+        setTimeout(action.after, action.afterDuration, action);
       }
 
       if (action.effect) {
