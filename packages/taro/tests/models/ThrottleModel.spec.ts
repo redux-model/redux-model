@@ -2,6 +2,7 @@ import { ThrottleModel } from './ThrottleModel';
 import { createReduxStore } from '../../src/stores/createReduxStore';
 import { $api } from '../libs/ApiService';
 import { $throttleApi } from '../libs/ThrottleService';
+import sleep from 'sleep-promise';
 
 let model: ThrottleModel;
 
@@ -32,9 +33,7 @@ test('Throttle action can return remote data without real fetch', async () => {
   expect(result4.response.id).toBe(456);
 
   // Cache is expired absolutely
-  await new Promise((resolve) => {
-    setTimeout(resolve, 3010);
-  });
+  await sleep(3010);
 
   $api.mockResolveValue({ id: 987 });
   const result5 = await model.enableThrottleProfile('a');
