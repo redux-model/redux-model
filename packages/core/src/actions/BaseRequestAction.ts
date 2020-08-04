@@ -25,7 +25,7 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
   query: Record<string, any>;
   successText: string;
   failText: string;
-  hideError: boolean | ((response: IResponseAction<Response, Payload>) => boolean);
+  hideError: boolean | ((response: IResponseAction<unknown, Payload>) => boolean);
   requestOptions: object;
   modelName: string;
   useThrottle: boolean;
@@ -53,26 +53,45 @@ export interface IResponseAction<Response = any, Payload = any> extends IActionP
   response: Response;
 }
 
-export interface InternalPrepareAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string> {
+export interface RequestPrepareAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string> {
   loading: boolean;
-  effect: IBaseRequestAction<Data, any, Payload>['onPrepare'];
-  after: IBaseRequestAction<Data, any, Payload>['afterPrepare'];
-  afterDuration: IBaseRequestAction<Data, any, Payload>['afterPrepareDuration'];
+  effect: IBaseRequestAction<Data, Response, Payload>['onPrepare'];
+  after: IBaseRequestAction<Data, Response, Payload>['afterPrepare'];
+  afterDuration: IBaseRequestAction<Data, Response, Payload>['afterPrepareDuration'];
 }
 
-export interface InternalSuccessAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string>, IResponseAction<Response, Payload> {
+export interface RequestSuccessAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string>, IResponseAction<Response, Payload> {
   loading: boolean;
-  effect: IBaseRequestAction<Data, Response, Payload, string>['onSuccess'];
-  after: IBaseRequestAction<Data, Response, Payload, string>['afterSuccess'];
-  afterDuration: IBaseRequestAction<Data, any, Payload>['afterSuccessDuration'];
+  effect: IBaseRequestAction<Data, Response, Payload, Payload>['onSuccess'];
+  after: IBaseRequestAction<Data, Response, Payload, Payload>['afterSuccess'];
+  afterDuration: IBaseRequestAction<Data, Response, Payload>['afterSuccessDuration'];
 }
 
-// TODO: 区分prepare, success, fail
-export interface RequestSubscriber<CustomData, Response, Payload> {
+export interface RequestFailAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload, string>, IResponseAction<unknown, Payload> {
+  loading: boolean;
+  effect: IBaseRequestAction<Data, Response, Payload, Payload>['onFail'];
+  after: IBaseRequestAction<Data, Response, Payload, Payload>['afterFail'];
+  afterDuration: IBaseRequestAction<Data, Response, Payload>['afterFailDuration'];
+}
+
+export interface RequestSubscriber {
   when: string;
+  duration?: number;
+}
+
+export interface RequestPrepareSubscriber<CustomData, Payload> extends RequestSubscriber {
+  then?: (state: State<CustomData>, action: IActionPayload<Payload>) => StateReturn<CustomData>;
+  after?: (action: IActionPayload<Payload>) => void;
+}
+
+export interface RequestSuccessSubscriber<CustomData, Response, Payload> extends RequestSubscriber {
   then?: (state: State<CustomData>, action: IResponseAction<Response, Payload>) => StateReturn<CustomData>;
   after?: (action: IResponseAction<Response, Payload>) => void;
-  duration?: number;
+}
+
+export interface RequestFailSubscriber<CustomData, Payload> extends RequestSubscriber {
+  then?: (state: State<CustomData>, action: IResponseAction<unknown, Payload>) => StateReturn<CustomData>;
+  after?: (action: IResponseAction<unknown, Payload>) => void;
 }
 
 export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, any, M>, Response, Payload, M> extends BaseAsyncAction<Data> {
@@ -105,14 +124,14 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     return this.getLoadingHandler(this.metas);
   }
 
-  public onSuccess<CustomData>(changeReducer: NonNullable<RequestSubscriber<CustomData, Response, Payload>['then']>): RequestSubscriber<CustomData, Response, Payload> {
+  public onSuccess<CustomData>(changeReducer: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['then']>): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
       then: changeReducer,
     };
   }
 
-  public afterSuccess<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
+  public afterSuccess<CustomData>(callback: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
       after: callback,
@@ -120,14 +139,14 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public onPrepare<CustomData>(changeReducer: NonNullable<RequestSubscriber<CustomData, Response, Payload>['then']>): RequestSubscriber<CustomData, Response, Payload> {
+  public onPrepare<CustomData>(changeReducer: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['then']>): RequestPrepareSubscriber<CustomData, Payload> {
     return {
       when: this.getPrepareType(),
       then: changeReducer,
     };
   }
 
-  public afterPrepare<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
+  public afterPrepare<CustomData>(callback: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['after']>, duration?: number): RequestPrepareSubscriber<CustomData, Payload> {
     return {
       when: this.getPrepareType(),
       after: callback,
@@ -135,14 +154,14 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public onFail<CustomData>(changeReducer: NonNullable<RequestSubscriber<CustomData, Response, Payload>['then']>): RequestSubscriber<CustomData, Response, Payload> {
+  public onFail<CustomData>(changeReducer: NonNullable<RequestFailSubscriber<CustomData, Payload>['then']>): RequestFailSubscriber<CustomData, Payload> {
     return {
       when: this.getFailType(),
       then: changeReducer,
     };
   }
 
-  public afterFail<CustomData>(callback: NonNullable<RequestSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSubscriber<CustomData, Response, Payload> {
+  public afterFail<CustomData>(callback: NonNullable<RequestFailSubscriber<CustomData, Payload>['after']>, duration?: number): RequestFailSubscriber<CustomData, Payload> {
     return {
       when: this.getFailType(),
       after: callback,

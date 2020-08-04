@@ -57,7 +57,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public hideError(is: boolean | ((response: IResponseAction<Response, Payload>) => boolean)): this {
+  public hideError(is: boolean | ((response: IResponseAction<unknown, Payload>) => boolean)): this {
     this.config.hideError = is;
 
     return this;

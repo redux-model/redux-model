@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro';
 import { stringify } from 'qs';
-import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse, HttpServiceBuilderWithMetas, PickData, PickMeta, IBaseRequestAction, BaseHttpServiceConfig, HttpTransform, METHOD, InternalSuccessAction, InternalPrepareAction, FetchHandle as SuperFetchHandle, storeHelper } from '@redux-model/core';
+import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse, HttpServiceBuilderWithMetas, PickData, PickMeta, IBaseRequestAction, BaseHttpServiceConfig, HttpTransform, METHOD, RequestSuccessAction, RequestPrepareAction, FetchHandle as SuperFetchHandle, storeHelper, RequestFailAction } from '@redux-model/core';
 import { RequestAction } from '../actions/RequestAction';
 import { getTaro } from '../utils/getTaro';
 
@@ -97,7 +97,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       requestOptions.data = action.body;
     }
 
-    prepare && storeHelper.dispatch<InternalPrepareAction>({
+    prepare && storeHelper.dispatch<RequestPrepareAction>({
       ...action,
       type: prepare,
       loading: true,
@@ -135,7 +135,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           response.data = this.config.transformSuccessData(response.data, response.header);
         }
 
-        const okAction: InternalSuccessAction = {
+        const okAction: RequestSuccessAction = {
           ...action,
           type: success,
           loading: false,
@@ -183,7 +183,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           }
         }
 
-        const errorResponse: InternalSuccessAction = {
+        const errorResponse: RequestFailAction = {
           ...action,
           response: error.data,
           type: fail,

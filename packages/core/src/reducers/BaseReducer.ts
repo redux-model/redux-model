@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 import { Effects, FilterPersist } from '../models/BaseModel';
-import { InternalSuccessAction } from '../actions/BaseRequestAction';
+import { RequestSuccessAction, RequestFailAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
 import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
@@ -11,6 +11,8 @@ import { IPersistRehydrate } from '../stores/Persist';
 export interface IReducers {
   [key: string]: (state: any, action: any) => any;
 }
+
+type AllAction<Data> = RequestSuccessAction<Data> | RequestFailAction<Data> | IActionNormal<Data>;
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;
@@ -57,7 +59,7 @@ export class BaseReducer<Data> {
     return action.type === ACTION_TYPES.persist;
   }
 
-  protected reducer(state: Data | undefined, action: InternalSuccessAction<Data> | IActionNormal<Data> | IPersistRehydrate): Data {
+  protected reducer(state: Data | undefined, action: AllAction<Data> | IPersistRehydrate): Data {
     if (state === undefined) {
       const newState = storeHelper.persist.getPersistData(this.name, this.initData);
       return this.initFromPersist(newState);
@@ -108,7 +110,7 @@ export class BaseReducer<Data> {
     });
   };
 
-  protected changeState(effect: Function, state: any, action: InternalSuccessAction<Data> | IActionNormal<Data>): any {
+  protected changeState(effect: Function, state: any, action: AllAction<Data>): any {
     if (isDraftable(state)) {
       const draft = createDraft(state);
       const responseDraft = effect(draft, action);

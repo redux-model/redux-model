@@ -1,5 +1,5 @@
 import { BaseReducer } from './BaseReducer';
-import { InternalSuccessAction, HttpTransform } from '../actions/BaseRequestAction';
+import { RequestSuccessAction, HttpTransform } from '../actions/BaseRequestAction';
 import ACTION_TYPES from '../utils/actionType';
 import { IActionPayload } from '../actions/BaseAction';
 import { storeHelper } from '../stores/StoreHelper';
@@ -89,11 +89,11 @@ class MetaReducer extends BaseReducer<Data> {
     return meta as T;
   }
 
-  protected isRestore(action: InternalSuccessAction | IMetaRestore): action is IMetaRestore {
+  protected isRestore(action: RequestSuccessAction | IMetaRestore): action is IMetaRestore {
     return action.type === ACTION_TYPES.metaRestore;
   }
 
-  protected reducer(state: Data | undefined, action: InternalSuccessAction | IMetaRestore): Data {
+  protected reducer(state: Data | undefined, action: RequestSuccessAction | IMetaRestore): Data {
     if (state === undefined) {
       return this.initData;
     }

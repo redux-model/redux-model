@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Canceler, AxiosInstance, AxiosError } from 'axios';
-import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse, HttpServiceBuilderWithMetas, PickData, PickMeta, IBaseRequestAction, BaseHttpServiceConfig, HttpTransform, METHOD, InternalSuccessAction, InternalPrepareAction, FetchHandle as SuperFetchHandle, storeHelper } from '@redux-model/core';
+import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse, HttpServiceBuilderWithMetas, PickData, PickMeta, IBaseRequestAction, BaseHttpServiceConfig, HttpTransform, METHOD, RequestSuccessAction, RequestPrepareAction, FetchHandle as SuperFetchHandle, storeHelper, RequestFailAction } from '@redux-model/core';
 import { RequestAction } from '../actions/RequestAction';
 
 export type HttpResponse<T = any> = AxiosResponse<T>;
@@ -81,7 +81,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
     let successInvoked = false;
 
-    prepare && storeHelper.dispatch<InternalPrepareAction>({
+    prepare && storeHelper.dispatch<RequestPrepareAction>({
       ...action,
       type: prepare,
       loading: true,
@@ -117,7 +117,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           response.data = this.config.transformSuccessData(response.data, response.headers);
         }
 
-        const okAction: InternalSuccessAction = {
+        const okAction: RequestSuccessAction = {
           ...action,
           type: success,
           loading: false,
@@ -165,7 +165,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           }
         }
 
-        const errorResponse: InternalSuccessAction = {
+        const errorResponse: RequestFailAction = {
           ...action,
           response: error.response,
           type: fail,

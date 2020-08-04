@@ -1,5 +1,5 @@
 import { HttpServiceBuilderWithMeta, HttpServiceBuilderWithMetas, HttpServiceBuilder } from './HttpServiceBuilder';
-import { IResponseAction, BaseRequestAction, IBaseRequestAction, InternalSuccessAction } from '../actions/BaseRequestAction';
+import { IResponseAction, BaseRequestAction, IBaseRequestAction, RequestSuccessAction, RequestFailAction } from '../actions/BaseRequestAction';
 import { Middleware, Action } from 'redux';
 import cloneDeep from 'clone';
 import { OrphanHttpService, OrphanRequestOptions } from './OrphanHttpService';
@@ -160,7 +160,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
 
     if (item && Date.now() <= item.timestamp) {
       const promise = new Promise((resolve) => {
-        const fakeOkAction: InternalSuccessAction = {
+        const fakeOkAction: RequestSuccessAction = {
           ...action,
           loading: false,
           type: action.type.success,
@@ -187,7 +187,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     return;
   }
 
-  protected storeThrottle(action: InternalSuccessAction) {
+  protected storeThrottle(action: RequestSuccessAction) {
     if (action.useThrottle && action.throttleMillSeconds > 0) {
       const type = action.type;
 
@@ -222,24 +222,20 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
 
   protected abstract runAction(action: any): Promise<any>;
 
-  protected triggerShowSuccess(okResponse: InternalSuccessAction, successText: string): void {
+  protected triggerShowSuccess(okResponse: RequestSuccessAction, successText: string): void {
     if (successText) {
       this.config.onShowSuccess(successText, okResponse);
     }
   }
 
-  protected triggerShowError(errorResponse: InternalSuccessAction, hideError: boolean | ((response: InternalSuccessAction) => boolean)): void {
+  protected triggerShowError(errorResponse: RequestFailAction, hideError: boolean | ((response: RequestFailAction) => boolean)): void {
     if (!errorResponse.message) {
       return;
     }
 
-    let showError: boolean;
-
-    if (typeof hideError === 'boolean') {
-      showError = !hideError;
-    } else {
-      showError = !hideError(errorResponse);
-    }
+    const showError = typeof hideError === 'boolean'
+      ? !hideError
+      : !hideError(errorResponse);
 
     if (showError) {
       this.config.onShowError(errorResponse.message, errorResponse);
