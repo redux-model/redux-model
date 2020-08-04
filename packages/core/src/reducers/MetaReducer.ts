@@ -63,31 +63,30 @@ class MetaReducer extends BaseReducer<Data> {
 
   constructor() {
     super('_metas_', {}, [], null);
-  }
-
-  protected getData(name: string): Meta | Metas {
-    return storeHelper.getState()[this.name][name];
+    storeHelper.appendReducers(this.createReducer());
   }
 
   public/*protected*/ getMeta<T extends Meta | Metas>(name: string): T | undefined {
     const stash = this.stash[name];
+    let meta = storeHelper.getState()[this.name][name];
 
-    if (!this.getData(name) && stash && stash !== USED_FLAG) {
-      const action: IMetaRestore = {
+    if (!meta && stash && stash !== USED_FLAG) {
+      storeHelper.dispatch<IMetaRestore>({
         type: ACTION_TYPES.metaRestore,
         payload: {
           key: name,
           value: stash,
         },
-      };
-      storeHelper.dispatch<IMetaRestore>(action);
+      });
+
+      meta = stash;
     }
 
     if (stash !== USED_FLAG) {
       this.stash[name] = USED_FLAG;
     }
 
-    return this.getData(name) as T;
+    return meta as T;
   }
 
   protected isRestore(action: InternalSuccessAction | IMetaRestore): action is IMetaRestore {
@@ -150,5 +149,3 @@ class MetaReducer extends BaseReducer<Data> {
 }
 
 export const metaReducer = new MetaReducer();
-
-storeHelper.appendReducers(metaReducer.createReducer());
