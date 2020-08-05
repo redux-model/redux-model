@@ -1,3 +1,14 @@
+# 7.2.1
+[type] Correctly fail action <br>
+[perf] Early returns for persist rehydrate <br>
+[perf] Reduce call getData() from twice to once
+
+-----------------------------------------
+
+[类型] 修正错误action的类型 <br>
+[优化] 处理reducer遇到持久化时立即返回 <br>
+[优化] 减少元数据值调用次数
+
 # 7.2.0
 [feat] **after** subscribers can using duration now. <br>
 [feat] Persist with cache to against entry hot-reload. <br>
