@@ -1,3 +1,23 @@
+# 7.3.0
+[feat] Normal Action support afterSuccess
+
+-----------------------------------------
+
+[特性] 普通Action支持afterSuccess的事件
+
+```typescript
+class Test extends Model {
+  t1 = this.action((state, payload: object) => {
+    // ...
+  }, {
+    afterSuccess: (action) => {
+      console.log(action.payload);
+    },
+    // duration: 1000,
+  });
+}
+```
+
 # 7.2.1
 [type] Correctly fail action <br>
 [perf] Early returns for persist rehydrate <br>
