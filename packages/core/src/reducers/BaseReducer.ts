@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 import { Effects, FilterPersist } from '../models/BaseModel';
-import { RequestSuccessAction, RequestFailAction } from '../actions/BaseRequestAction';
+import { RequestSuccessAction, RequestFailAction, RequestPrepareAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
 import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
@@ -12,7 +12,7 @@ export interface IReducers {
   [key: string]: (state: any, action: any) => any;
 }
 
-type AllAction<Data> = RequestSuccessAction<Data> | RequestFailAction<Data> | IActionNormal<Data>;
+type AllAction<Data> = RequestPrepareAction<Data> | RequestSuccessAction<Data> | RequestFailAction<Data> | IActionNormal<Data>;
 
 export class BaseReducer<Data> {
   protected readonly initData: Data;

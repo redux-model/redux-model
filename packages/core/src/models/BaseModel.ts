@@ -9,6 +9,7 @@ import { IReducers, BaseReducer } from '../reducers/BaseReducer';
 import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import { NullReducerError } from '../exceptions/NullReducerError';
 import { storeHelper } from '../stores/StoreHelper';
+import { IActionPayload } from '../actions/BaseAction';
 
 export type FilterPersist<Data> = ((state: State<Data>) => StateReturn<Data>) | null;
 
@@ -46,7 +47,7 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly _name: string;
-  private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any>;
+  private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any, any>;
 
   /**
    * Filter data from storage. Assign model to allowlist before you can use persist:
@@ -125,10 +126,14 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return this._action();
   }
 
-  protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>>(
-    changeReducer: Fn
-  ): CreateNormalActionEffect<Data, Fn> & NormalAction<Data, Fn, CreateNormalActionPayload<Fn>> {
-    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>>(this, changeReducer);
+  protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>, After extends (action: IActionPayload<CreateNormalActionPayload<Fn>>) => void>(
+    changeReducer: Fn,
+    options?: {
+      afterSuccess: After;
+      duration?: number;
+    }
+  ): CreateNormalActionEffect<Data, Fn> & NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After> {
+    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After>(this, changeReducer, options?.afterSuccess, options?.duration);
 
     return action as CreateNormalActionEffect<Data, Fn> & typeof action;
   }

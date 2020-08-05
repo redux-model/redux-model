@@ -5,7 +5,8 @@ import { storeHelper } from '../stores/StoreHelper';
 export interface IActionNormal<Data = any, Payload = any> extends IActionPayload<Payload> {
   modelName: string;
   effect: (state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>;
-  after: null;
+  after: null | ((action: IActionPayload<Payload>) => void);
+  afterDuration?: number;
 }
 
 export interface NormalSubscriber<CustomData, Payload> {
@@ -15,12 +16,16 @@ export interface NormalSubscriber<CustomData, Payload> {
   duration?: number;
 }
 
-export class NormalAction<Data, ChangeReducer extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload> extends BaseAction<Data> {
+export class NormalAction<Data, ChangeReducer extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload, After extends (action: IActionPayload<Payload>) => void> extends BaseAction<Data> {
   private effect: ChangeReducer;
+  private readonly after?: After;
+  private readonly afterDuration?: number;
 
-  constructor(model: BaseModel<Data>, effect: ChangeReducer, fromSubClass: boolean = false) {
+  constructor(model: BaseModel<Data>, effect: ChangeReducer, after?: After, afterDuration?: number, fromSubClass: boolean = false) {
     super(model);
     this.effect = effect;
+    this.after = after;
+    this.afterDuration = afterDuration;
 
     return fromSubClass ? this : this.proxy();
   }
@@ -55,7 +60,8 @@ export class NormalAction<Data, ChangeReducer extends (state: State<Data>, paylo
         effect: (state, action) => {
           return this.effect(state, action.payload);
         },
-        after: null,
+        after: this.after || null,
+        afterDuration: this.afterDuration,
       });
     };
   }

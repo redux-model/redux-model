@@ -14,6 +14,27 @@ export class BasicModel extends Model<Data> {
     Object.assign(state, payload);
   });
 
+  modifyWithAfter = this.action((state, payload: Partial<Data>) => {
+    Object.assign(state, payload);
+  }, {
+    afterSuccess: (action) => {
+      this.changeReducer((state) => {
+        state.id += action.payload.id || 1;
+      });
+    },
+  });
+
+  modifyWithAfterAndDuration = this.action((state, payload: Partial<Data>) => {
+    Object.assign(state, payload);
+  }, {
+    afterSuccess: (action) => {
+      this.changeReducer((state) => {
+        state.id += action.payload.id || 1;
+      });
+    },
+    duration: 100,
+  });
+
   returnNewObject = this.action(() => {
     return {
       id: 100,

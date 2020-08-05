@@ -1,5 +1,6 @@
 import { BasicModel } from './BasicModel';
 import { createReduxStore } from '../../src/stores/createReduxStore';
+import sleep from 'sleep-promise';
 
 let model: BasicModel;
 
@@ -26,6 +27,42 @@ test('Modify data by normal action', () => {
 
   model.modify({ name: 'cool' });
   expect(model.data.name).toBe('cool');
+});
+
+test('Modify data by normal action with after', async () => {
+  expect(model.data.id).toBe(1);
+  model.modifyWithAfter({ id: 3 });
+  expect(model.data.id).toBe(3);
+
+  await sleep(5);
+  expect(model.data.id).toBe(6);
+
+  model.modifyWithAfter({ name: 'cool' });
+  expect(model.data.name).toBe('cool');
+
+  await sleep(5);
+  expect(model.data.id).toBe(7);
+});
+
+test('Modify data by normal action with after and duration', async () => {
+  expect(model.data.id).toBe(1);
+  model.modifyWithAfterAndDuration({ id: 3 });
+  expect(model.data.id).toBe(3);
+
+  await sleep(50);
+  expect(model.data.id).toBe(3);
+
+  await sleep(51);
+  expect(model.data.id).toBe(6);
+
+  model.modifyWithAfterAndDuration({ name: 'cool' });
+  expect(model.data.name).toBe('cool');
+
+  await sleep(50);
+  expect(model.data.id).toBe(6);
+
+  await sleep(51);
+  expect(model.data.id).toBe(7);
 });
 
 test('Normal action has successType', () => {
