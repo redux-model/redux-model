@@ -28,10 +28,12 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
   hideError: boolean | ((response: IResponseAction<unknown, Payload>) => boolean);
   requestOptions: object;
   modelName: string;
-  useThrottle: boolean;
-  throttleMillSeconds: number;
-  throttleKey: string;
-  throttleTransfer: ThrottleKeyOption['transfer'];
+  throttle: {
+    enable: boolean;
+    duration: number;
+    key: string;
+    transfer: ThrottleKeyOption['transfer'];
+  },
   onPrepare: null | ((state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>);
   afterPrepare: null | ((action: IActionPayload<Payload>) => void);
   afterPrepareDuration?: number;

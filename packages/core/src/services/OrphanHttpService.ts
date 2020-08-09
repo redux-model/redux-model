@@ -23,7 +23,7 @@ export class OrphanHttpService<T = object> {
 
   collect(): IBaseRequestAction {
     const config = this.config;
-    const throttle: ThrottleOptions = config.throttle === undefined ? { duration: 0 } : config.throttle;
+    const { throttle } = config;
 
     const action: IBaseRequestAction = {
       uniqueId: this.uniqueId,
@@ -40,10 +40,19 @@ export class OrphanHttpService<T = object> {
         fail: '',
       },
       method: this.method,
-      useThrottle: throttle.enable !== false,
-      throttleMillSeconds: throttle.duration,
-      throttleKey: '',
-      throttleTransfer: throttle.transfer || null,
+      throttle: throttle
+        ? {
+          enable: throttle.duration > 0 && throttle.enable !== false,
+          duration: throttle.duration,
+          transfer: throttle.transfer || null,
+          key: '',
+        }
+        : {
+          enable: false,
+          duration: 0,
+          transfer: null,
+          key: '',
+        },
       metaKey: false,
       metaActionName: '',
       payload: undefined,

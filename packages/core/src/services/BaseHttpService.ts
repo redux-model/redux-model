@@ -145,7 +145,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     const actionName = action.type.success;
     const cacheData = this.caches[actionName];
 
-    if (!action.useThrottle) {
+    if (!action.throttle.enable) {
       if (cacheData) {
         cacheData[this.generateThrottleKey(throttleKeyOption)] = undefined;
       }
@@ -156,7 +156,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     const throttleKey = this.generateThrottleKey(throttleKeyOption);
     const item = cacheData?.[throttleKey];
 
-    action.throttleKey = throttleKey;
+    action.throttle.key = throttleKey;
 
     if (item && Date.now() <= item.timestamp) {
       const promise = new Promise((resolve) => {
@@ -188,12 +188,14 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
   }
 
   protected storeThrottle(action: RequestSuccessAction) {
-    if (action.useThrottle && action.throttleMillSeconds > 0) {
+    const throttle = action.throttle;
+
+    if (throttle.enable) {
       const type = action.type;
 
       this.caches[type] = this.caches[type] || {};
-      this.caches[type]![action.throttleKey] = {
-        timestamp: Date.now() + action.throttleMillSeconds,
+      this.caches[type]![throttle.key] = {
+        timestamp: Date.now() + throttle.duration,
         response: cloneDeep(action.response, false),
       };
     }

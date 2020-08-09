@@ -64,9 +64,12 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
   }
 
   public throttle(options: ThrottleOptions): this {
-    this.config.useThrottle = options.enable !== false;
-    this.config.throttleMillSeconds = options.duration;
-    this.config.throttleTransfer = options.transfer;
+    this.config.throttle = {
+      enable: options.duration > 0 && options.enable !== false,
+      duration: options.duration,
+      transfer: options.transfer || null,
+      key: '',
+    };
 
     return this;
   }
@@ -163,10 +166,12 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       onFail: config.onFail || null,
       afterFail: config.afterFail || null,
       afterFailDuration: config.afterFailDuration,
-      useThrottle: config.useThrottle || false,
-      throttleMillSeconds: config.throttleMillSeconds || 0,
-      throttleKey: '',
-      throttleTransfer: config.throttleTransfer || null,
+      throttle: config.throttle || {
+        enable: false,
+        duration: 0,
+        transfer: null,
+        key: '',
+      },
     };
 
     return action;

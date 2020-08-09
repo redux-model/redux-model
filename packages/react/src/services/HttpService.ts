@@ -97,8 +97,8 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       method: action.method,
       body: action.body,
       query: action.query,
-      headers: requestOptions.headers || {},
-      transfer: action.throttleTransfer,
+      headers: requestOptions.headers,
+      transfer: action.throttle.transfer,
     });
 
     if (throttleData) {
