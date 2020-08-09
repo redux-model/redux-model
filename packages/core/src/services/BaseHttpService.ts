@@ -1,11 +1,9 @@
 import { HttpServiceBuilderWithMeta, HttpServiceBuilderWithMetas, HttpServiceBuilder } from './HttpServiceBuilder';
 import { IResponseAction, BaseRequestAction, IBaseRequestAction, RequestSuccessAction, RequestFailAction } from '../actions/BaseRequestAction';
-import { Middleware, Action } from 'redux';
 import cloneDeep from 'clone';
 import { OrphanHttpService, OrphanRequestOptions } from './OrphanHttpService';
 import { METHOD } from '../utils/method';
 import { storeHelper } from '../stores/StoreHelper';
-import ACTION_TYPES from '../utils/actionType';
 
 export interface FetchHandle<Response = any, Payload = any, CancelFn = () => void> extends Promise<IResponseAction<Response, Payload>> {
   cancel: CancelFn;
@@ -34,11 +32,6 @@ export interface BaseHttpServiceConfig {
   throttleTransfer?: NonNullable<ThrottleKeyOption['transfer']>,
 }
 
-export interface IClearThrottleAction extends Action<string> {
-  uniqueId: number;
-  key: string;
-}
-
 export interface ThrottleKeyOption {
   modelName: string;                        // determine model
   successType: string;                      // determine action
@@ -51,7 +44,6 @@ export interface ThrottleKeyOption {
 }
 
 export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn> {
-  protected readonly uniqueId: number;
   protected readonly config: T;
 
   protected caches: Partial<{
@@ -65,10 +57,6 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
 
   constructor(config: T) {
     this.config = config;
-    this.uniqueId = Date.now() + Math.random();
-
-    storeHelper.middleware.use(this.uniqueId + '_throttle', this.createClearThrottleMiddleware());
-    storeHelper.middleware.use(this.uniqueId + '_request', this.createRequestMiddleware());
   }
 
   public action<Fn extends (...args: any[]) => HttpServiceBuilderWithMeta<Data, Response, Payload, any>, Data = PickData<Fn>, Response = PickResponse<Fn>, Payload = PickPayload<Fn>>(
@@ -80,43 +68,43 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
   ): ((...args: Parameters<Fn>) => FetchHandle<Response, Payload, CancelFn>) & Omit<BaseRequestAction<Data, Fn, Response, Payload, M>, 'meta' | 'loading'>;
 
   public action(fn: any): any {
-    return new BaseRequestAction(fn, this.uniqueId);
+    return new BaseRequestAction(fn, this);
   }
 
-  public getAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, never, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.get, this.uniqueId);
+  public getAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+    const service = new OrphanHttpService(config, METHOD.get);
 
-    return storeHelper.dispatch(service.collect());
+    return this.runAction(service.collect());
   }
 
-  public postAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, never, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.post, this.uniqueId);
+  public postAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+    const service = new OrphanHttpService(config, METHOD.post);
 
-    return storeHelper.dispatch(service.collect());
+    return this.runAction(service.collect());
   }
 
-  public putAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, never, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.put, this.uniqueId);
+  public putAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+    const service = new OrphanHttpService(config, METHOD.put);
 
-    return storeHelper.dispatch(service.collect());
+    return this.runAction(service.collect());
   }
 
-  public deleteAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, never, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.delete, this.uniqueId);
+  public deleteAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+    const service = new OrphanHttpService(config, METHOD.delete);
 
-    return storeHelper.dispatch(service.collect());
+    return this.runAction(service.collect());
   }
 
-  public patchAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, never, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.patch, this.uniqueId);
+  public patchAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+    const service = new OrphanHttpService(config, METHOD.patch);
 
-    return storeHelper.dispatch(service.collect());
+    return this.runAction(service.collect());
   }
 
-  public connectAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, never, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.connect, this.uniqueId);
+  public connectAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+    const service = new OrphanHttpService(config, METHOD.connect);
 
-    return storeHelper.dispatch(service.collect());
+    return this.runAction(service.collect());
   }
 
   protected generateThrottleKey(options: ThrottleKeyOption): string {
@@ -201,28 +189,11 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     }
   }
 
-  protected createClearThrottleMiddleware(): Middleware {
-    return () => (next) => (action: IClearThrottleAction) => {
-      if (action.uniqueId !== this.uniqueId || action.type !== ACTION_TYPES.clearThrottle) {
-        return next(action);
-      }
-
-      this.caches[action.key] = undefined;
-      return action;
-    };
+  public/*protected*/ clearThrottle(successType: string): void {
+    this.caches[successType] = undefined;
   }
 
-  protected createRequestMiddleware(): Middleware {
-    return () => (next) => (action: IBaseRequestAction) => {
-      if (action.uniqueId !== this.uniqueId || typeof action.type !== 'object') {
-        return next(action);
-      }
-
-      return this.runAction(action);
-    };
-  }
-
-  protected abstract runAction(action: any): Promise<any>;
+  public/*protected*/ abstract runAction(action: IBaseRequestAction): FetchHandle<any, any, any>;
 
   protected triggerShowSuccess(okResponse: RequestSuccessAction, successText: string): void {
     if (successText) {

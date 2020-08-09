@@ -3,7 +3,6 @@ const createActionType = (name: string): string => {
 };
 
 const ACTION_TYPES = {
-  clearThrottle: createActionType('clear/throttle'),
   persist: createActionType('persist'),
   metaRestore: createActionType('meta/restore'),
   httpRequest: createActionType('http/request'),

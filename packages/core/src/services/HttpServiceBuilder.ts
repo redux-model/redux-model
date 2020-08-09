@@ -139,7 +139,6 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
   public/*protected*/ collect(instance: BaseRequestAction<Data, any, any, any, any>): IBaseRequestAction<Data, Response, Payload> {
     const config = this.config;
     const action: IBaseRequestAction = {
-      uniqueId: instance.uniqueId,
       uri: config.uri,
       type: {
         prepare: instance.getPrepareType(),

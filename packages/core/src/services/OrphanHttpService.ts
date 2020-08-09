@@ -11,13 +11,11 @@ export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | '
   };
 
 export class OrphanHttpService<T = object> {
-  protected readonly uniqueId: number;
   protected readonly config: OrphanRequestOptions<T>;
   protected readonly method: METHOD = METHOD.get;
 
-  constructor(config: OrphanRequestOptions<T>, method: METHOD, uniqueId: number) {
+  constructor(config: OrphanRequestOptions<T>, method: METHOD) {
     this.config = config;
-    this.uniqueId = uniqueId;
     this.method = method;
   }
 
@@ -26,7 +24,6 @@ export class OrphanHttpService<T = object> {
     const { throttle } = config;
 
     const action: IBaseRequestAction = {
-      uniqueId: this.uniqueId,
       body: config.body || {},
       query: config.query || {},
       successText: '',

@@ -4,7 +4,6 @@ import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { PersistStorage } from './PersistStorage';
 import { BaseModel } from '../models/BaseModel';
 import { Persist } from './Persist';
-import { DynamicMiddleware } from './DynamicMiddleware';
 import ACTION_TYPES from '../utils/actionType';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {
@@ -23,7 +22,6 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
 
 export class StoreHelper {
   protected readonly _persist: Persist;
-  protected readonly _dynamicMiddleware: DynamicMiddleware;
   protected _store?: Store;
   protected autoReducers: IReducers = {};
   protected userReducers: IReducers = {};
@@ -34,7 +32,6 @@ export class StoreHelper {
 
   constructor() {
     this._persist = new Persist(this);
-    this._dynamicMiddleware = new DynamicMiddleware();
   }
 
   createStore(config: ReduxStoreConfig = {}): Store {
@@ -54,7 +51,7 @@ export class StoreHelper {
       this._store = createStore(
         combined,
         preloadedState,
-        customCompose(applyMiddleware(this._dynamicMiddleware.create(), ...middleware))
+        customCompose(applyMiddleware(...middleware))
       );
       this.publish();
       this.persist.rehydrate();
@@ -74,10 +71,6 @@ export class StoreHelper {
     }
 
     return this;
-  }
-
-  get middleware(): DynamicMiddleware {
-    return this._dynamicMiddleware;
   }
 
   get store(): Store {

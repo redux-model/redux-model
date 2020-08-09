@@ -54,10 +54,10 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
   ): ((...args: Parameters<Fn>) => FetchHandle<Response, Payload>) & Omit<RequestAction<Data, Fn, Response, Payload, M>, 'meta' | 'loading' | 'useMeta' | 'useLoading'>;
 
   public action(fn: any): any {
-    return new RequestAction(fn, this.uniqueId);
+    return new RequestAction(fn, this);
   }
 
-  protected runAction(action: IRequestAction): Promise<any> {
+  public/*protected*/ runAction(action: IRequestAction): FetchHandle {
     this.config.beforeSend?.(action);
 
     // For service.xxxAsync(), prepare and fail is empty string.

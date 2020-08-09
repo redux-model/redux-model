@@ -5,9 +5,7 @@ import { State, StateReturn } from '../models/BaseModel';
 import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
 import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
-import { IClearThrottleAction, ThrottleKeyOption } from '../services/BaseHttpService';
-import { storeHelper } from '../stores/StoreHelper';
-import ACTION_TYPES from '../utils/actionType';
+import { ThrottleKeyOption, BaseHttpService } from '../services/BaseHttpService';
 import { DEFAULT_METAS } from '../reducers/MetaReducer';
 import { BaseAsyncAction } from './BaseAsyncAction';
 
@@ -18,7 +16,6 @@ export interface Types {
 }
 
 export interface IBaseRequestAction<Data = any, Response = any, Payload = any, Type = Types> extends IActionPayload<Payload, Type>, IMetaAction {
-  uniqueId: number;
   method: METHOD;
   uri: string;
   body: Record<string, any>;
@@ -100,22 +97,18 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   protected readonly builder: Builder;
   // Avoid re-render component even if state doesn't change.
   protected loadingsCache?: [Metas, MetasLoading<any>];
-  public/*protected*/ readonly uniqueId: number;
+  protected readonly service: BaseHttpService<any, any>;
 
-  constructor(builder: Builder, uniqueId: number, fromSubClass: boolean = false) {
+  constructor(builder: Builder, service: BaseHttpService<any, any>, fromSubClass: boolean = false) {
     super(getCurrentModel());
     this.builder = builder;
-    this.uniqueId = uniqueId;
+    this.service = service;
 
     return fromSubClass ? this : this.proxy();
   }
 
   public clearThrottle(): void {
-    storeHelper.dispatch<IClearThrottleAction>({
-      type: ACTION_TYPES.clearThrottle,
-      key: this.getSuccessType(),
-      uniqueId: this.uniqueId,
-    });
+    this.service.clearThrottle(this.getSuccessType());
   }
 
   public get metas(): Metas {
@@ -204,7 +197,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
    */
   protected action(): Function {
     return (...args: Parameters<Builder>) => {
-      return storeHelper.dispatch(
+      return this.service.runAction(
         this.builder(...args).collect(this),
       );
     };
