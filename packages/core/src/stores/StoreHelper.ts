@@ -61,17 +61,16 @@ export class StoreHelper {
     return this.store;
   }
 
-  appendReducers(reducers: IReducers): this {
-    this.autoReducers = {
-      ...this.autoReducers,
-      ...reducers,
-    };
+  appendReducers(autoReducer: IReducers): void {
+    // Only 0 or 1 reducer will be provided.
+    const key = Object.keys(autoReducer)[0];
 
-    if (this._store) {
-      this._store.replaceReducer(this.combindReducers());
+    if (key) {
+      this.autoReducers[key] = autoReducer[key];
+
+      const store = this._store;
+      store && store.replaceReducer(this.combindReducers());
     }
-
-    return this;
   }
 
   get store(): Store {
