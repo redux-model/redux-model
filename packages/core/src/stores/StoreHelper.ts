@@ -26,9 +26,9 @@ export class StoreHelper {
   protected autoReducers: IReducers = {};
   protected userReducers: IReducers = {};
   protected listeners: Array<(storeHelper: StoreHelper) => void> = [];
-  protected isDispatching: boolean = false;
-  protected stateWhenDispatching: object = {};
-  protected onCombineReducers: ReduxStoreConfig['onCombineReducers'];
+  protected dispatching: boolean = false;
+  protected state: object = {};
+  protected onCombined: ReduxStoreConfig['onCombineReducers'];
 
   constructor() {
     this._persist = new Persist(this);
@@ -36,16 +36,17 @@ export class StoreHelper {
 
   createStore(config: ReduxStoreConfig = {}): Store {
     const { onCombineReducers, reducers = {}, preloadedState, compose: customCompose = compose, middleware = [] } = config;
+    const persist = this._persist;
 
-    this.onCombineReducers = onCombineReducers;
+    this.onCombined = onCombineReducers;
     this.userReducers = reducers;
-    this._persist.setConfig(config.persist);
+    persist.setConfig(config.persist);
 
     const combined = this.combindReducers();
 
     if (this._store) {
       // Avoid to dispatch persist data for @@redux/x.y.z triggerred by replaceReducer()
-      this.persist.rehydrate();
+      persist.rehydrate();
       this.store.replaceReducer(combined);
     } else {
       this._store = createStore(
@@ -54,10 +55,10 @@ export class StoreHelper {
         customCompose(applyMiddleware(...middleware))
       );
       this.publish();
-      this.persist.rehydrate();
+      persist.rehydrate();
     }
 
-    return this._store!;
+    return this.store;
   }
 
   appendReducers(reducers: IReducers): this {
@@ -85,12 +86,12 @@ export class StoreHelper {
     return this._persist;
   }
 
-  dispatch<T extends AnyAction>(action: T): any {
+  dispatch<T extends AnyAction>(action: T): T {
     return this.store.dispatch(action);
   }
 
   getState(): object {
-    return this.isDispatching ? this.stateWhenDispatching : this.store.getState();
+    return this.dispatching ? this.state : this.store.getState();
   }
 
   listenOnce(fn: (storeHelper: StoreHelper) => void): this {
@@ -115,22 +116,22 @@ export class StoreHelper {
       ...this.autoReducers,
       ...this.userReducers,
     });
-    if (this.onCombineReducers) {
-      combined = this.onCombineReducers(combined);
+    if (this.onCombined) {
+      combined = this.onCombined(combined);
     }
 
     return (state, action) => {
-      this.isDispatching = true;
-      this.stateWhenDispatching = state;
+      this.dispatching = true;
+      this.state = state;
 
       let mainResult = combined(state, action);
 
-      if (this.stateWhenDispatching !== mainResult) {
+      if (this.state !== mainResult) {
         this.persist.update(mainResult, action.type === ACTION_TYPES.persist);
       }
 
-      this.isDispatching = false;
-      this.stateWhenDispatching = {};
+      this.dispatching = false;
+      this.state = {};
 
       return mainResult;
     };
