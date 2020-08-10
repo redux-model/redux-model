@@ -74,14 +74,14 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     let url = requestOptions.url;
 
     // Make sure url is not absolute link
-    if (url.indexOf('://') === -1) {
+    if (!~url.indexOf('://')) {
       url = this.config.baseUrl + url;
     }
 
     const throttleUrl = url;
 
     if (action.query) {
-      const isArg = url.indexOf('?') >= 0 ? '&' : '?';
+      const isArg = ~url.indexOf('?') ? '&' : '?';
       const args = stringify(action.query, {
         arrayFormat: 'brackets',
         encodeValuesOnly: true,

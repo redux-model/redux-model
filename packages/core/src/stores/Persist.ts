@@ -112,7 +112,7 @@ export class Persist {
 
         this.persistReducers = {};
         Object.keys(tempReducers).forEach((key) => {
-          if (this.allowKeys.indexOf(key) >= 0) {
+          if (~this.allowKeys.indexOf(key)) {
             this.serializedStrings[key] = tempReducers[key];
             this.persistReducers[key] = JSON.parse(tempReducers[key]);
           } else {
@@ -182,7 +182,7 @@ export class Persist {
     }
 
     if (!this.ready) {
-      if (this.subscription.indexOf(reducerName) === -1) {
+      if (!~this.subscription.indexOf(reducerName)) {
         this.subscription.push(reducerName);
       }
 
