@@ -36,7 +36,7 @@ class ComposeModel extends Model<Data> {
     const reactResult = await this.getInfo('react');
     const vueResult = await this.getInfo('vue');
 
-    this.changeReducer((state) => {
+    this.changeState((state) => {
       state.react = {
         id: reactResult.response._id,
         homepage: reactResult.response.homepage,
@@ -48,7 +48,7 @@ class ComposeModel extends Model<Data> {
     });
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       react: {},
       vue: {},
@@ -58,13 +58,13 @@ class ComposeModel extends Model<Data> {
 
 export const composeModel = new ComposeModel();
 ```
-通过创建自定义函数`multipleFetch`，您将两个请求组合在一起，并在最后使用`changeReducer`合并了数据。
+通过创建自定义函数`multipleFetch`，您将两个请求组合在一起，并在最后使用`changeState`合并了数据。
 
 现在让我们把demo运行起来。请您点击按钮尝试，打开控制台可以看到日志：
 <iframe src="https://redux-model.github.io/docs-runtime/compose-action.html" height="300"></iframe>
 
 
-!> **changeReducer**是一个内置的保护方法，作用是立即改变模型state，您可以在组合、普通方法或者`after`订阅事件中使用。
+!> **changeState**是一个内置的保护方法，作用是立即改变模型state，您可以在组合、普通方法或者`after`订阅事件中使用。
 
 ### 状态追踪
 组合和普通的类方法的唯一区别，就是普通方法没有loading状态追踪。如果不用组合，您就必须在组件中通过使用`Promise.all()`来确保所有请求都已经结束，再手动设置loading为false。

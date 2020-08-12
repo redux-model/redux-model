@@ -74,7 +74,7 @@ class TestModel extends Model<Data> {
       });
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       counter: 0,
       users: {},

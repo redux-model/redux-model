@@ -9,13 +9,13 @@ export class ManualRegisterModel extends Model<Data> {
     state.foo = 'bar';
   });
 
-  testChangeReducer(name: string) {
-    this.changeReducer((state) => {
+  testChangeState(name: string) {
+    this.changeState((state) => {
       state.foo = name;
     });
   }
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       foo: 'foo',
     };

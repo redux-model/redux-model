@@ -42,17 +42,17 @@ export class RequestModel extends Model<Data> {
     return this
       .get<{ count: number }>('/')
       .afterPrepare(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.id += 1;
         });
       })
       .afterSuccess((action) => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.id += action.response.count;
         });
       })
       .afterFail(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.id += 2;
         });
       });
@@ -62,17 +62,17 @@ export class RequestModel extends Model<Data> {
     return this
       .get<{ count: number }>('/')
       .afterPrepare(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.id += 1;
         });
       }, 50)
       .afterSuccess((action) => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.id += action.response.count;
         });
       }, 200)
       .afterFail(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.id += 2;
         });
       }, 250);
@@ -127,7 +127,7 @@ export class RequestModel extends Model<Data> {
     return profile.response;
   }
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       id: 1,
       name: 'init-name',

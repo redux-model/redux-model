@@ -22,12 +22,12 @@ export class HookModel  extends Model<Data> {
     const { response } = await this.fetch();
     await this.multipleFetch(id);
 
-    this.changeReducer((state) => {
+    this.changeState((state) => {
       state.count = response.count;
     });
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       count: 0,
     };

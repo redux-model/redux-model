@@ -58,7 +58,7 @@ class EffectModel extends Model<Data> {
         ];
     }
 
-    protected initReducer(): Data {
+    protected initialState(): Data {
         return {
             name: '-',
         };
@@ -100,7 +100,7 @@ class EffectModel extends Model<Data> {
 
 
 !> on开头的订阅为同步触发，且只能变更模型state；<br>
-after开头的订阅为异步触发，可以执行子action，或者再次调用**changeReducer**来改变模型state。
+after开头的订阅为异步触发，可以执行子action，或者再次调用**changeState**来改变模型state。
 
 ### 普通Action自身异步订阅
 上面所提到的订阅，皆是订阅其它模型的action，我们也偶尔有对当前模型的action做订阅的需求。请求Action因为链式的结构，能够十分方便地做自订阅处理，而普通Action过于简洁，似乎是找不到订阅的入口的。经过不断地思索，最终给出了如下的解决方案：

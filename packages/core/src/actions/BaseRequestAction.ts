@@ -119,10 +119,10 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     return this.getLoadingHandler(this.metas);
   }
 
-  public onSuccess<CustomData>(changeReducer: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['then']>): RequestSuccessSubscriber<CustomData, Response, Payload> {
+  public onSuccess<CustomData>(changeState: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['then']>): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 
@@ -134,10 +134,10 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public onPrepare<CustomData>(changeReducer: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['then']>): RequestPrepareSubscriber<CustomData, Payload> {
+  public onPrepare<CustomData>(changeState: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['then']>): RequestPrepareSubscriber<CustomData, Payload> {
     return {
       when: this.getPrepareType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 
@@ -149,10 +149,10 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
-  public onFail<CustomData>(changeReducer: NonNullable<RequestFailSubscriber<CustomData, Payload>['then']>): RequestFailSubscriber<CustomData, Payload> {
+  public onFail<CustomData>(changeState: NonNullable<RequestFailSubscriber<CustomData, Payload>['then']>): RequestFailSubscriber<CustomData, Payload> {
     return {
       when: this.getFailType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 

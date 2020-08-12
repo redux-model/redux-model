@@ -74,10 +74,10 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public onSuccess<CustomData>(changeReducer: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
+  public onSuccess<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 
@@ -89,10 +89,10 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public onPrepare<CustomData>(changeReducer: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
+  public onPrepare<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 
@@ -104,10 +104,10 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
-  public onFail<CustomData>(changeReducer: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
+  public onFail<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 

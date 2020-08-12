@@ -24,7 +24,7 @@ class MyModel extends Model<Data> {
       });
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {};
   }
 }
@@ -61,7 +61,7 @@ class MyModel extends Model<Data> {
       });
   });
 
-  protected initReducer() {
+  protected initialState() {
     return {
       page: {},
       popup: {},

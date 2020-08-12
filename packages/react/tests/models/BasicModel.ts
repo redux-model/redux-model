@@ -18,7 +18,7 @@ export class BasicModel extends Model<Data> {
     Object.assign(state, payload);
   }, {
     afterSuccess: (action) => {
-      this.changeReducer((state) => {
+      this.changeState((state) => {
         state.id += action.payload.id || 1;
       });
     },
@@ -28,7 +28,7 @@ export class BasicModel extends Model<Data> {
     Object.assign(state, payload);
   }, {
     afterSuccess: (action) => {
-      this.changeReducer((state) => {
+      this.changeState((state) => {
         state.id += action.payload.id || 1;
       });
     },
@@ -56,7 +56,7 @@ export class BasicModel extends Model<Data> {
   effectWithPayload = this.action((_, __: { counter: number }) => {});
 
   modifyByMethod(id: number) {
-    this.changeReducer((state) => {
+    this.changeState((state) => {
       state.id = id;
     });
   }
@@ -65,7 +65,7 @@ export class BasicModel extends Model<Data> {
     this.data;
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       id: 1,
       name: 'init-name',

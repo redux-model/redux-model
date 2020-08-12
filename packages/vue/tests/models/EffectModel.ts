@@ -33,7 +33,7 @@ export class EffectModel extends Model<Data> {
       }),
 
       basicModel.effectOtherModel.afterSuccess(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 1;
         });
       }),
@@ -55,44 +55,44 @@ export class EffectModel extends Model<Data> {
       }),
 
       requestModel.getProfile.afterPrepare(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 4;
         });
       }),
 
       requestModel.getProfile.afterSuccess(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 2;
         });
       }),
 
       requestModel.getProfile.afterFail(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 1;
         });
       }),
 
       composeModel.manage.afterPrepare(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 4;
         });
       }),
 
       composeModel.manage.afterSuccess(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 2;
         });
       }),
 
       composeModel.manage.afterFail(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 1;
         });
       }),
     ];
   }
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       counter: 0,
       foo: 'foo',

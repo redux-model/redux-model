@@ -1,3 +1,20 @@
+# 8.0.0
+[breaking] Rename method initReducer to initialState <br>
+[breaking] Rename method changeReducer to changeState <br>
+[breaking] Remove method resetReducer <br>
+[chore] Reduce bundle size
+
+Easy to migrate from `7.x` by replace method names globally through IDE.
+
+-----------------------------------------
+
+[破坏] 重命名方法 initReducer 为 initialState <br>
+[破坏] 重命名方法 changeReducer 为 changeState <br>
+[破坏] 删除方法 resetReducer <br>
+[周边] 减小打包体积
+
+通过代码编辑器的全局替换功能，您可以很容易地从`7.x`升级到该版本
+
 # 7.3.0
 [feat] Normal Action support afterSuccess
 

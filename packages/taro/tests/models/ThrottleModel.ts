@@ -61,7 +61,7 @@ export class ThrottleModel extends Model {
       });
   });
 
-  protected initReducer() {
+  protected initialState() {
     return null;
   }
 }

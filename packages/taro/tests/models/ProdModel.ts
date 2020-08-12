@@ -12,7 +12,7 @@ export class ProdModel extends Model<Data> {
     return this.get('/');
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {};
   }
 }

@@ -53,4 +53,4 @@ const profileResult = await $api.getAsync<Profile>({
     },
 });
 ```
-!> 独立请求的主要场景是在[组合Action](/zh-cn/define-compose-action.md)中配合`changeReducer()`使用。
+!> 独立请求的主要场景是在[组合Action](/zh-cn/define-compose-action.md)中配合`changeState()`使用。

@@ -9,7 +9,7 @@ export class PersistModel extends Model<Data> {
     state.counter += 1;
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       counter: 0,
     };

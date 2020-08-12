@@ -16,7 +16,7 @@ class NormalModel extends Model<Data> {
     });
     // ---结束
 
-    protected initReducer(): Data {
+    protected initialState(): Data {
         return {
             counter: 0,
         };
@@ -61,7 +61,7 @@ class NormalModel extends Model<Data> {
         state.counter -= step;
     });
 
-    protected initReducer(): Data {
+    protected initialState(): Data {
         return {
             counter: 0,
         };

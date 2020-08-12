@@ -45,7 +45,7 @@ test('Reducer data can be found after register model to store', () => {
 });
 
 test('Not allowed to change reducer before register', () => {
-  expect(() => model.testChangeReducer('')).toThrowError();
+  expect(() => model.testChangeState('')).toThrowError();
 
   createReduxStore({
     reducers: {
@@ -54,9 +54,9 @@ test('Not allowed to change reducer before register', () => {
   });
   expect(model.data.foo).toBe('foo');
 
-  expect(() => model.testChangeReducer('new-bar')).not.toThrowError();
+  expect(() => model.testChangeState('new-bar')).not.toThrowError();
   expect(model.data.foo).toBe('new-bar');
 
-  model.testChangeReducer('new-foo');
+  model.testChangeState('new-foo');
   expect(model.data.foo).toBe('new-foo');
 });

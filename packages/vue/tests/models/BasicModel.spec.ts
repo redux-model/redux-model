@@ -85,7 +85,7 @@ test('Request action has three kind of types', () => {
   expect(model.getProfile.getFailType()).toContain('fail');
 });
 
-test('Easy to use changeReducer by non-action method', () => {
+test('Easy to use changeState by non-action method', () => {
   model.modifyByMethod(10002);
   expect(model.data.id).toBe(10002);
 
@@ -132,15 +132,4 @@ test('Even if it can be register automatically, but we can register model again 
 
 test('User can get redux data when changing reducer', () => {
   expect(() => model.allowGetData()).not.toThrowError();
-});
-
-test('can reset reducer by model instance', () => {
-  expect(model.data.id).toBe(1);
-  model.modify({
-    id: 15,
-  });
-  expect(model.data.id).toBe(15);
-
-  model.resetReducer();
-  expect(model.data.id).toBe(1);
 });

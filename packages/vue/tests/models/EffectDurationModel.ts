@@ -11,50 +11,50 @@ export class EffectDurationModel extends Model<Data> {
   protected effects(): Effects<Data> {
     return [
       effectModel.normalWithDuration.afterSuccess(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 1;
         });
       }, 200),
 
       effectModel.requestWithDuration.afterPrepare(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 4;
         });
       }, 100),
 
       effectModel.requestWithDuration.afterSuccess(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 2;
         });
       }, 200),
 
       effectModel.requestWithDuration.afterFail(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 1;
         });
       }, 200),
 
       effectModel.composeWithDuration.afterPrepare(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 4;
         });
       }, 100),
 
       effectModel.composeWithDuration.afterSuccess(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 2;
         });
       }, 200),
 
       effectModel.composeWithDuration.afterFail(() => {
-        this.changeReducer((state) => {
+        this.changeState((state) => {
           state.counter += 1;
         });
       }, 200),
     ];
   }
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       counter: 0,
       foo: 'foo',

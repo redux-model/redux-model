@@ -10,7 +10,7 @@ interface Data {
 }
 
 class FirstModel extends Model<Data> {
-    protected initReducer(): Data {
+    protected initialState(): Data {
         return {
             counter: 0,
         };
@@ -20,7 +20,7 @@ class FirstModel extends Model<Data> {
 export const firstModel = new FirstModel();
 ```
 
-我们刚刚创建了一个模型，它继承自框架的基础模型`Model<T>`。**\<T>**即为泛型，因为每个模型都默认存在一个reducer，所以泛型约束了reducer的数据类型。接着，模型实现了抽象方法`initReducer()`，为模型提供一个初始state。
+我们刚刚创建了一个模型，它继承自框架的基础模型`Model<T>`。**\<T>**即为泛型，因为每个模型都默认存在一个reducer，所以泛型约束了reducer的数据类型。接着，模型实现了抽象方法`initialState()`，为模型提供一个初始state。
 
 !> 定义的Data通过泛型注入后，所有的action都能享受数据的自动推导
 
@@ -110,9 +110,9 @@ const { user1, user2 } = model.useData((data) => {
 您不一定非要创建带state的模型，这符合常理。如果您只需要actions，那么欢迎您这么做：
 ```typescript
 import MyModel extends Model {
-    protected initReducer() {
+    protected initialState() {
         return null;
     }
 }
 ```
-由于`initReducer`是抽象方法，所以您必须重载，并返回null，代表您不需要state。
+由于`initialState`是抽象方法，所以您必须重载，并返回null，代表您不需要state。

@@ -27,7 +27,7 @@ class RequestModel extends Model<Data> {
             });
     });
 
-    protected initReducer(): Data {
+    protected initialState(): Data {
         return {
             id: '-',
             homepage: '-',

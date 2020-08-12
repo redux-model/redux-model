@@ -96,7 +96,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     const data = storeHelper.getState()[this._name];
 
     if (data === undefined) {
-      if (this.initReducer() === null) {
+      if (this.initialState() === null) {
         throw new NullReducerError(this._name);
       } else {
         throw new ForgetRegisterError(this._name);
@@ -106,13 +106,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return data;
   }
 
-  public/*protected*/ resetReducer(): IActionNormal<Data, null> {
-    return this.changeReducer(() => {
-      return this.initReducer() as StateReturn<Data>;
-    });
-  }
-
-  protected changeReducer(fn: (state: State<Data>) => StateReturn<Data>): IActionNormal<Data, null> {
+  protected changeState(fn: (state: State<Data>) => StateReturn<Data>): IActionNormal<Data, null> {
     // Make sure reducer is registered and initData not null.
     this.data;
 
@@ -127,13 +121,13 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>, After extends (action: IActionPayload<CreateNormalActionPayload<Fn>>) => void>(
-    changeReducer: Fn,
+    changeState: Fn,
     options?: {
       afterSuccess: After;
       duration?: number;
     }
   ): CreateNormalActionEffect<Data, Fn> & NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After> {
-    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After>(this, changeReducer, options?.afterSuccess, options?.duration);
+    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After>(this, changeState, options?.afterSuccess, options?.duration);
 
     return action as CreateNormalActionEffect<Data, Fn> & typeof action;
   }
@@ -173,7 +167,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public register(): IReducers {
-    const reducer = new BaseReducer(this.getReducerName(), this.initReducer(), this.effects(), this.filterPersistData());
+    const reducer = new BaseReducer(this.getReducerName(), this.initialState(), this.effects(), this.filterPersistData());
     return reducer.createReducer();
   }
 
@@ -186,7 +180,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     store: Store
   ): void {}
 
-  protected abstract initReducer(): Data;
+  protected abstract initialState(): Data;
 
   private _createBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     const builder = new HttpServiceBuilder<Data, Response>({

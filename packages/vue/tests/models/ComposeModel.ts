@@ -17,12 +17,12 @@ export class ComposeModel extends Model<Data> {
 
     const { response } = await basicModel.getProfile();
 
-    this.changeReducer((state) => {
+    this.changeState((state) => {
       state.id = response.id;
     });
   });
 
-  protected initReducer(): Data {
+  protected initialState(): Data {
     return {
       id: 0,
     };

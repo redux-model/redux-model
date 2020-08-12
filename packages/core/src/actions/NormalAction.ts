@@ -16,12 +16,12 @@ export interface NormalSubscriber<CustomData, Payload> {
   duration?: number;
 }
 
-export class NormalAction<Data, ChangeReducer extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload, After extends (action: IActionPayload<Payload>) => void> extends BaseAction<Data> {
-  private effect: ChangeReducer;
+export class NormalAction<Data, ChangeState extends (state: State<Data>, payload: Payload) => StateReturn<Data>, Payload, After extends (action: IActionPayload<Payload>) => void> extends BaseAction<Data> {
+  private effect: ChangeState;
   private readonly after?: After;
   private readonly afterDuration?: number;
 
-  constructor(model: BaseModel<Data>, effect: ChangeReducer, after?: After, afterDuration?: number, fromSubClass: boolean = false) {
+  constructor(model: BaseModel<Data>, effect: ChangeState, after?: After, afterDuration?: number, fromSubClass: boolean = false) {
     super(model);
     this.effect = effect;
     this.after = after;
@@ -30,14 +30,14 @@ export class NormalAction<Data, ChangeReducer extends (state: State<Data>, paylo
     return fromSubClass ? this : this.proxy();
   }
 
-  public/*protected*/ setEffect(fn: ChangeReducer) {
+  public/*protected*/ setEffect(fn: ChangeState) {
     this.effect = fn;
   }
 
-  public onSuccess<CustomData>(changeReducer: NonNullable<NormalSubscriber<CustomData, Payload>['then']>): NormalSubscriber<CustomData, Payload> {
+  public onSuccess<CustomData>(changeState: NonNullable<NormalSubscriber<CustomData, Payload>['then']>): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),
-      then: changeReducer,
+      then: changeState,
     };
   }
 
