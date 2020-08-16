@@ -35,11 +35,12 @@ export class StoreHelper {
   }
 
   createStore(config: ReduxStoreConfig = {}): Store {
-    const { onCombineReducers, reducers = {}, preloadedState, compose: customCompose = compose, middleware = [] } = config;
+    const { onCombineReducers, reducers, preloadedState, middleware } = config;
+    const customCompose = config.compose || compose;
     const persist = this._persist;
 
     this.onCombined = onCombineReducers;
-    this.userReducers = reducers;
+    this.userReducers = reducers || {};
     persist.setConfig(config.persist);
 
     const combined = this.combindReducers();
@@ -52,7 +53,7 @@ export class StoreHelper {
       this._store = createStore(
         combined,
         preloadedState,
-        customCompose(applyMiddleware(...middleware))
+        customCompose(applyMiddleware.apply(null, middleware || []))
       );
       this.publish();
       persist.rehydrate();

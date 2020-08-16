@@ -99,7 +99,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   protected loadingsCache?: [Metas, MetasLoading<any>];
   protected readonly service: BaseHttpService<any, any>;
 
-  constructor(builder: Builder, service: BaseHttpService<any, any>, fromSubClass: boolean = false) {
+  constructor(builder: Builder, service: BaseHttpService<any, any>, fromSubClass?: boolean) {
     super(getModel());
     this.builder = builder;
     this.service = service;
@@ -196,14 +196,18 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
    * @implements
    */
   protected action(): Function {
-    return (...args: Parameters<Builder>) => {
-      return this.service.runAction(
-        this.builder(...args).collect(this.getName(), {
-          prepare: this.getPrepareType(),
-          success: this.getSuccessType(),
-          fail: this.getFailType(),
+    const self = this;
+
+    return function () {
+      const args = Array.prototype.slice.call(arguments);
+
+      return self.service.runAction(
+        self.builder.apply(null, args).collect(self.getName(), {
+          prepare: self.getPrepareType(),
+          success: self.getSuccessType(),
+          fail: self.getFailType(),
         }),
       );
-    };
+    }
   }
 }

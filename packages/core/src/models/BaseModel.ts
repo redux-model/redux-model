@@ -76,7 +76,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return null;
   }
 
-  constructor(alias: string = '') {
+  constructor(alias?: string) {
     this._name = setModel(this, alias);
 
     if (this.autoRegister()) {

@@ -9,7 +9,7 @@ export const getModel = (): AnyModel => {
   return currentModel;
 };
 
-export const setModel = (model: AnyModel, alias: string): string => {
+export const setModel = (model: AnyModel, alias?: string): string => {
   currentModel = model;
 
   if (isCompressed()) {

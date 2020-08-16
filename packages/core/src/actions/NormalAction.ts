@@ -21,7 +21,7 @@ export class NormalAction<Data, ChangeState extends (state: State<Data>, payload
   private readonly after?: After;
   private readonly afterDuration?: number;
 
-  constructor(model: BaseModel<Data>, effect: ChangeState, after?: After, afterDuration?: number, fromSubClass: boolean = false) {
+  constructor(model: BaseModel<Data>, effect: ChangeState, after?: After, afterDuration?: number, fromSubClass?: boolean) {
     super(model);
     this.effect = effect;
     this.after = after;

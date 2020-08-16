@@ -20,7 +20,7 @@ export interface ComposeSubscriber<CustomData> {
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseAsyncAction<Data> {
   protected readonly runner: Runner;
 
-  constructor(model: BaseModel<Data>, runner: Runner, fromSubClass: boolean = false) {
+  constructor(model: BaseModel<Data>, runner: Runner, fromSubClass?: boolean) {
     super(model);
     this.runner = runner;
 
@@ -38,21 +38,24 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   protected action(): Function {
-    return (...args: Parameters<Runner>): Promise<any> => {
-      const actionName = this.getName();
+    const self = this;
+
+    return function (): Promise<any> {
+      const actionName = self.getName();
+      const args = Array.prototype.slice.call(arguments);
 
       storeHelper.dispatch<IActionCompose>({
-        type: this.getPrepareType(),
+        type: self.getPrepareType(),
         metaKey: true,
         actionName,
         loading: true,
       });
 
-      return this
-        .runner(...args)
+      return self
+        .runner.apply(null, args)
         .then((result) => {
           storeHelper.dispatch<IActionCompose>({
-            type: this.getSuccessType(),
+            type: self.getSuccessType(),
             metaKey: true,
             actionName,
             loading: false,
@@ -62,7 +65,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
         })
         .catch((e: Error) => {
           storeHelper.dispatch<IActionCompose>({
-            type: this.getFailType(),
+            type: self.getFailType(),
             metaKey: true,
             actionName,
             message: e.message,
@@ -71,7 +74,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
 
           return Promise.reject(e);
         });
-    };
+    }
   }
 
   public onSuccess<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
