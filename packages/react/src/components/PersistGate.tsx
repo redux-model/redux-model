@@ -33,14 +33,14 @@ export class PersistGate extends PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    this.unlisten?.();
+    this.unlisten && this.unlisten();
   }
 
   render(): ReactNode {
     const { children, loading } = this.props;
     const { isReady } = this.state;
 
-    if (!isCompressed && loading && typeof children === 'function') {
+    if (!isCompressed() && loading && typeof children === 'function') {
       console.error('ReduxModel: PersistGate expects either a function child or loading prop. The loading prop will be ignored.');
     }
 
