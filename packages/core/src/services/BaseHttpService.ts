@@ -40,7 +40,7 @@ export interface ThrottleKeyOption {
   body: Record<string, any>;                // condition
   query: Record<string, any>;               // condition
   headers: Record<string, any>;             // condition, especially token
-  transfer: null | ((options: Omit<ThrottleKeyOption, 'transfer'>) => void | Omit<ThrottleKeyOption, 'transfer'>);
+  transfer?: (options: Omit<ThrottleKeyOption, 'transfer'>) => void | Omit<ThrottleKeyOption, 'transfer'>;
 }
 
 export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn> {

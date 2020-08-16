@@ -67,7 +67,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     this.config.throttle = {
       enable: options.duration > 0 && options.enable !== false,
       duration: options.duration,
-      transfer: options.transfer || null,
+      transfer: options.transfer,
       key: '',
     };
 
@@ -151,20 +151,20 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       hideError: config.hideError || false,
       requestOptions: config.requestOptions || {},
       metaKey: config.metaKey === undefined ? true : config.metaKey,
-      metaActionName: actionName,
-      onPrepare: config.onPrepare || null,
-      afterPrepare: config.afterPrepare || null,
+      actionName,
+      onPrepare: config.onPrepare,
+      afterPrepare: config.afterPrepare,
       afterPrepareDuration: config.afterPrepareDuration,
-      onSuccess: config.onSuccess || null,
-      afterSuccess: config.afterSuccess || null,
+      onSuccess: config.onSuccess,
+      afterSuccess: config.afterSuccess,
       afterSuccessDuration: config.afterSuccessDuration,
-      onFail: config.onFail || null,
-      afterFail: config.afterFail || null,
+      onFail: config.onFail,
+      afterFail: config.afterFail,
       afterFailDuration: config.afterFailDuration,
       throttle: config.throttle || {
         enable: false,
         duration: 0,
-        transfer: null,
+        transfer: undefined,
         key: '',
       },
     };

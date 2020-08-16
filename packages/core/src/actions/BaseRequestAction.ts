@@ -31,14 +31,14 @@ export interface IBaseRequestAction<Data = any, Response = any, Payload = any, T
     key: string;
     transfer: ThrottleKeyOption['transfer'];
   },
-  onPrepare: null | ((state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>);
-  afterPrepare: null | ((action: IActionPayload<Payload>) => void);
+  onPrepare?: (state: State<Data>, action: IActionPayload<Payload>) => StateReturn<Data>;
+  afterPrepare?: (action: IActionPayload<Payload>) => void;
   afterPrepareDuration?: number;
-  onSuccess: null | ((state: State<Data>, action: IResponseAction<Response, Payload>) => StateReturn<Data>);
-  afterSuccess: null | ((action: IResponseAction<Response, Payload>) => void);
+  onSuccess?: (state: State<Data>, action: IResponseAction<Response, Payload>) => StateReturn<Data>;
+  afterSuccess?: (action: IResponseAction<Response, Payload>) => void;
   afterSuccessDuration?: number;
-  onFail: null | ((state: State<Data>, action: IResponseAction<unknown, Payload>) => StateReturn<Data>);
-  afterFail: null | ((action: IResponseAction<unknown, Payload>) => void);
+  onFail?: (state: State<Data>, action: IResponseAction<unknown, Payload>) => StateReturn<Data>;
+  afterFail?: (action: IResponseAction<unknown, Payload>) => void;
   afterFailDuration?: number;
 }
 

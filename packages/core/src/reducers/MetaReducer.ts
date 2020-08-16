@@ -6,7 +6,7 @@ import { storeHelper } from '../stores/StoreHelper';
 
 export interface IMetaAction {
   metaKey: string | number | symbol | boolean;
-  metaActionName: string;
+  actionName: string;
 }
 
 export type MetasLoading<M> = {
@@ -106,7 +106,7 @@ class MetaReducer extends BaseReducer<Data> {
     }
 
     const metaKey = action.metaKey;
-    const actionName = action.metaActionName;
+    const actionName = action.actionName;
 
     if (!actionName || metaKey === undefined || metaKey === false) {
       return state;

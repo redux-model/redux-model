@@ -41,24 +41,18 @@ export class OrphanHttpService<T = object> {
         ? {
           enable: throttle.duration > 0 && throttle.enable !== false,
           duration: throttle.duration,
-          transfer: throttle.transfer || null,
+          transfer: throttle.transfer,
           key: '',
         }
         : {
           enable: false,
           duration: 0,
-          transfer: null,
+          transfer: undefined,
           key: '',
         },
       metaKey: false,
-      metaActionName: '',
+      actionName: '',
       payload: undefined,
-      onPrepare: null,
-      afterPrepare: null,
-      onSuccess: null,
-      afterSuccess: null,
-      onFail: null,
-      afterFail: null,
       modelName: '',
     };
 
