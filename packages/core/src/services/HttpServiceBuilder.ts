@@ -1,4 +1,4 @@
-import { IResponseAction, BaseRequestAction, IBaseRequestAction } from '../actions/BaseRequestAction';
+import { IResponseAction, IBaseRequestAction, Types } from '../actions/BaseRequestAction';
 import { METHOD } from '../utils/method';
 import { ThrottleKeyOption } from './BaseHttpService';
 
@@ -136,15 +136,11 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
-  public/*protected*/ collect(instance: BaseRequestAction<Data, any, any, any, any>): IBaseRequestAction<Data, Response, Payload> {
+  public/*protected*/ collect(actionName: string, types: Types): IBaseRequestAction<Data, Response, Payload> {
     const config = this.config;
     const action: IBaseRequestAction = {
       uri: config.uri,
-      type: {
-        prepare: instance.getPrepareType(),
-        success: instance.getSuccessType(),
-        fail: instance.getFailType(),
-      },
+      type: types,
       method: config.method,
       modelName: config.instanceName,
       payload: config.payload,
@@ -155,7 +151,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
       hideError: config.hideError || false,
       requestOptions: config.requestOptions || {},
       metaKey: config.metaKey === undefined ? true : config.metaKey,
-      metaActionName: instance.getName(),
+      metaActionName: actionName,
       onPrepare: config.onPrepare || null,
       afterPrepare: config.afterPrepare || null,
       afterPrepareDuration: config.afterPrepareDuration,

@@ -1,6 +1,5 @@
 import { BaseAction } from './BaseAction';
 import { Meta, metaReducer } from '../reducers/MetaReducer';
-import { setActionName } from '../utils/setActionName';
 import { DEFAULT_META } from '../reducers/MetaReducer';
 
 export abstract class BaseAsyncAction<Data> extends BaseAction<Data> {
@@ -25,11 +24,11 @@ export abstract class BaseAsyncAction<Data> extends BaseAction<Data> {
   }
 
   public getPrepareType(): string {
-    return this._prepare || setActionName(this)._prepare!;
+    return this._prepare || this.assignName()._prepare!;
   }
 
   public getFailType(): string {
-    return this._fail || setActionName(this)._fail!;
+    return this._fail || this.assignName()._fail!;
   }
 
   protected methods(): string[] {

@@ -1,33 +1,34 @@
 import { Action } from 'redux';
 import { BaseModel } from '../models/BaseModel';
 import { isCompressed } from '../utils/isCompressed';
-import { setActionName, getActionCounter } from '../utils/setActionName';
 
 export interface IActionPayload<Payload = any, T = string> extends Action<T> {
   payload: Payload;
 }
 
+let actionCounter: number = 0;
+export const increase = (): number => {
+  return ++actionCounter;
+};
+
 export abstract class BaseAction<Data> {
-  public/*protected*/ readonly model: BaseModel<Data>;
+  protected readonly model: BaseModel<Data>;
   protected _name?: string;
   protected _success?: string;
 
-  declare public/*private*/ readonly _RMAction_: boolean;
+  declare private readonly _RMAction_: boolean;
 
   protected constructor(model: BaseModel<Data>) {
     this.model = model;
-
-    if (isCompressed()) {
-      this.setName(getActionCounter());
-    }
+    isCompressed() && this.setName(increase());
   }
 
   public getSuccessType(): string {
-    return this._success || setActionName(this)._success!;
+    return this._success || this.assignName()._success!;
   }
 
-  public/*protected*/ getName(): string {
-    return this._name || setActionName(this)._name!;
+  protected getName(): string {
+    return this._name || this.assignName()._name!;
   }
 
   public/*protected*/ setName(name: string | number): void {
@@ -35,12 +36,23 @@ export abstract class BaseAction<Data> {
     this._success = this._name + ' success';
   }
 
+  protected assignName(): this {
+    Object.keys(this.model).forEach((name) => {
+      const customAction: BaseAction<any> = this.model[name];
+      if (customAction && customAction._RMAction_) {
+        customAction.setName(name);
+      }
+    });
+
+    return this;
+  }
+
   protected proxy(): this {
     const fn = this.action();
     // @ts-ignore
-    const cache: { __methods: string[]; __getters: string[] } = this.constructor;
-    const methods = cache.__methods || (cache.__methods = this.methods(), cache.__methods);
-    const getters = cache.__getters || (cache.__getters = this.getters(), cache.__getters);
+    const cache: { _m: string[]; _g: string[] } = this.constructor;
+    const methods = cache._m || (cache._m = this.methods());
+    const getters = cache._g || (cache._g = this.getters());
 
     methods.forEach((method) => {
       fn[method] = this[method].bind(this);

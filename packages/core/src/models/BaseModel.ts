@@ -1,7 +1,6 @@
 import { Store } from 'redux';
-import { setModelName } from '../utils/setModelName';
+import { setModel } from '../utils/model';
 import { NormalAction, IActionNormal } from '../actions/NormalAction';
-import { setCurrentModel } from '../utils/setModel';
 import { ComposeAction } from '../actions/ComposeAction';
 import { HttpServiceBuilderWithMeta, HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
@@ -78,8 +77,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   constructor(alias: string = '') {
-    setCurrentModel(this);
-    this._name = setModelName(this.constructor.name, alias);
+    this._name = setModel(this, alias);
 
     if (this.autoRegister()) {
       storeHelper.appendReducers(this.register());

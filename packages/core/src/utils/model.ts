@@ -1,15 +1,22 @@
 import { isCompressed } from './isCompressed';
+import { AnyModel } from '../models/BaseModel';
 
 const instanceCounter: Record<string, number> = {};
-let instanceName: string = '';
 let modelCounter: number = 0;
+let currentModel: AnyModel;
 
-export const setModelName = (className: string, alias: string): string => {
+export const getModel = (): AnyModel => {
+  return currentModel;
+};
+
+export const setModel = (model: AnyModel, alias: string): string => {
+  currentModel = model;
+
   if (isCompressed()) {
     return 'm' + ++modelCounter;
   }
 
-  instanceName = className + (alias ? `.${alias}` : '');
+  let instanceName = model.constructor.name + (alias ? `.${alias}` : '');
   const key = instanceName;
 
   if (instanceCounter[key] === undefined) {
