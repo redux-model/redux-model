@@ -1,3 +1,14 @@
+# 8.0.1
+[fix] PersistGate forget to call isCompressed <br>
+[chore] Update package tslib from 2.0.0 to 2.0.1 <br>
+[chore] Reduce bundle size
+
+-----------------------------------------
+
+[修复] 持久层组件忘记调用方法 isCompressed <br>
+[周边] 升级tslib包到2.0.1 <br>
+[周边] 减小打包体积
+
 # 8.0.0
 [breaking] Rename method initReducer to initialState <br>
 [breaking] Rename method changeReducer to changeState <br>
