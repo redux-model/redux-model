@@ -30,7 +30,7 @@
   "dependencies": {
     "@redux-model/core": "8.0.0",
     "axios": "0.19.2",
-    "tslib": "2.0.0"
+    "tslib": "2.0.1"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",

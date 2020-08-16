@@ -32,7 +32,7 @@
     "axios": "0.19.2",
     "clone": "2.1.2",
     "deep-diff": "1.0.2",
-    "tslib": "2.0.0"
+    "tslib": "2.0.1"
   },
   "devDependencies": {
     "@types/clone": "^0.1.30",
