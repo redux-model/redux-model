@@ -125,7 +125,12 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
       duration?: number;
     }
   ): CreateNormalActionEffect<Data, Fn> & NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After> {
-    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After>(this, changeState, options?.afterSuccess, options?.duration);
+    const action = new NormalAction<Data, Fn, CreateNormalActionPayload<Fn>, After>(
+      this,
+      changeState,
+      options && options.afterSuccess,
+      options && options.duration,
+    );
 
     return action as CreateNormalActionEffect<Data, Fn> & typeof action;
   }

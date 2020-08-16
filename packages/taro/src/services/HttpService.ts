@@ -55,7 +55,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
   }
 
   public/*protected*/ runAction(action: IRequestAction): FetchHandle {
-    this.config.beforeSend?.(action);
+    this.config.beforeSend && this.config.beforeSend(action);
 
     // For service.xxxAsync(), prepare and fail is empty string.
     const { prepare, success, fail } = action.type;

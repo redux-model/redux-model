@@ -17,7 +17,7 @@ export const PersistGate = defineComponent({
     });
 
     return () => (
-      ready.isReady ? slots.default?.() || null : null
+      ready.isReady ? slots.default && slots.default() || null : null
     );
   }
 });

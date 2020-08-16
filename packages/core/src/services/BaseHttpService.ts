@@ -142,7 +142,7 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     } // end
 
     const throttleKey = this.generateThrottleKey(throttleKeyOption);
-    const item = cacheData?.[throttleKey];
+    const item = cacheData && cacheData[throttleKey];
 
     action.throttle.key = throttleKey;
 
