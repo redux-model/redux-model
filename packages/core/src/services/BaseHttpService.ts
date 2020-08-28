@@ -72,38 +72,31 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
   }
 
   public getAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.get);
-
-    return this.runAction(service.collect());
+    return this.runService(config, METHOD.get);
   }
 
   public postAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.post);
-
-    return this.runAction(service.collect());
+    return this.runService(config, METHOD.post);
   }
 
   public putAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.put);
-
-    return this.runAction(service.collect());
+    return this.runService(config, METHOD.put);
   }
 
   public deleteAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.delete);
-
-    return this.runAction(service.collect());
+    return this.runService(config, METHOD.delete);
   }
 
   public patchAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.patch);
-
-    return this.runAction(service.collect());
+    return this.runService(config, METHOD.patch);
   }
 
   public connectAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
-    const service = new OrphanHttpService(config, METHOD.connect);
+    return this.runService(config, METHOD.connect);
+  }
 
+  protected runService(config: OrphanRequestOptions<T['requestConfig']>, method: METHOD) {
+    const service = new OrphanHttpService(config, method);
     return this.runAction(service.collect());
   }
 
