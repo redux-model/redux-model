@@ -1,9 +1,8 @@
 import { Store, PreloadedState, Reducer, combineReducers, createStore, AnyAction, Middleware, compose, applyMiddleware } from 'redux';
 import { IReducers } from '../reducers/BaseReducer';
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
-import { PersistStorage } from './PersistStorage';
 import { BaseModel } from '../models/BaseModel';
-import { Persist } from './Persist';
+import { Persist, PersistStorage } from './Persist';
 import ACTION_TYPES from '../utils/actionType';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {

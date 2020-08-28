@@ -1,4 +1,4 @@
-import { PersistStorage } from '../stores/PersistStorage';
+import { PersistStorage } from '../stores/Persist';
 
 const cache: Record<string, string> = {};
 

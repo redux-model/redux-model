@@ -1,6 +1,6 @@
-import { createReduxStore } from '@redux-model/core';
 import { HookModel } from './HookModel';
 import { $api } from '../libs/ApiService';
+import { createReduxStore } from '../../src';
 
 let model: HookModel;
 

@@ -1,8 +1,15 @@
 import { StoreHelper, ReduxStoreConfig } from './StoreHelper';
-import { PersistStorage } from './PersistStorage';
 import memory from '../storages/memoryStorage';
 import ACTION_TYPES from '../utils/actionType';
 import { IActionPayload } from '../actions/BaseAction';
+
+/**
+ * We don't need method `removeItem` here
+ */
+export interface PersistStorage {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+}
 
 export interface IPersistRehydrate extends IActionPayload<Record<string, any>> {}
 
