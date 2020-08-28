@@ -25,10 +25,11 @@ export class Persist {
   // @ts-ignore It will exists by setConfig()
   protected storage: PersistStorage;
 
-  protected restoreTimer: number = -1;
+  protected restoreTimer?: NodeJS.Timeout;
 
   constructor(storeHelper: StoreHelper) {
     this.storeHelper = storeHelper;
+    this.restoreHandle = this.restoreHandle.bind(this);
     this.schema = {
       __persist: { version: '' },
     };
@@ -266,27 +267,31 @@ export class Persist {
       return this;
     }
 
-    const timer = this.restoreTimer = setTimeout(() => {
-      if (!this.config || timer !== this.restoreTimer) {
-        return;
-      }
-
-      const strings = {};
-
-      // Restore existing reducers
-      Object.keys(this.persistReducers).forEach((key) => {
-        strings[key] = this.serializedStrings[key];
-      });
-
-      const storageData = JSON.stringify({
-        ...strings,
-        ...this.schema,
-      });
-
-      this.storage.setItem(this.keyPrefix + this.config.key, storageData);
-      this.cacheData = storageData;
-    });
+    this.restoreTimer !== undefined && clearTimeout(this.restoreTimer);
+    this.restoreTimer = setTimeout(this.restoreHandle, 8);
 
     return this;
-  };
+  }
+
+  private restoreHandle(): void {
+    if (!this.config) {
+      return;
+    }
+
+    const strings = {};
+
+    // Restore existing reducers
+    Object.keys(this.persistReducers).forEach((key) => {
+      strings[key] = this.serializedStrings[key];
+    });
+
+    const storageData = JSON.stringify({
+      ...strings,
+      ...this.schema,
+    });
+
+    this.storage.setItem(this.keyPrefix + this.config.key, storageData);
+    this.cacheData = storageData;
+    this.restoreTimer = undefined;
+  }
 }
