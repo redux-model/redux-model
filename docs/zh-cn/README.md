@@ -10,7 +10,7 @@ Redux Model是为了弥补原生Redux繁琐的开发流程，开发者重复劳�
 
 * 深度封装，超高开发效率
 * 使用mvvm快速处理reducer
-* **无typescript不编程，拥有100%无死角的业务代码类型提示**
+* **👍真正意义上的Typescript框架，写起来和JS一样流畅**
 * 内置http服务，请求action自带loading追踪、节流
 * React/Vue Hooks
 * 数据持久化
