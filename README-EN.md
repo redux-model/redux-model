@@ -19,10 +19,10 @@ Lots of famous state framework are designed for JS users. They totally follow de
 
 * Highest coding efficiency
 * Modify reducer by MVVM
-* **Absolutely 100% static type checking with typescript**
+* **Absolutely 100% static type checking with typescript** (Automatically)
 * Provide http service, combine loading and throttle for each request action
 * Support react/vue hooks
-* Persist data
+* Support persist
 
 # Installation
 
