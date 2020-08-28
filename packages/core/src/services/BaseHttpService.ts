@@ -109,24 +109,16 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
 
   protected generateThrottleKey(options: ThrottleKeyOption): string {
     const { transfer, ...rest } = options;
+    const { throttleTransfer: globalTransfer } = this.config;
+    let cloneObj = rest;
 
-    if (transfer || this.config.throttleTransfer) {
-      let cloneObj = cloneDeep(rest);
-
-      [this.config.throttleTransfer, transfer].forEach((runner) => {
-        if (runner) {
-          const tmp = runner(cloneObj);
-
-          if (tmp !== undefined) {
-            cloneObj = tmp;
-          }
-        }
-      });
-
-      return JSON.stringify(cloneObj);
+    if (globalTransfer || transfer) {
+      cloneObj = cloneDeep(rest);
+      cloneObj = globalTransfer && globalTransfer(cloneObj) || cloneObj;
+      cloneObj = transfer && transfer(cloneObj) || cloneObj;
     }
 
-    return JSON.stringify(rest);
+    return JSON.stringify(cloneObj);
   }
 
   protected getThrottleData(action: IBaseRequestAction, throttleKeyOption: ThrottleKeyOption): FetchHandle | void {
