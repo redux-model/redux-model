@@ -1,11 +1,11 @@
-const createActionType = (name: string): string => {
-  return '@ReduxModel/' + name;
+const create = (name: string): string => {
+  return '@ReduxModel_' + name;
 };
 
 const ACTION_TYPES = {
-  persist: createActionType('persist'),
-  metaRestore: createActionType('meta/restore'),
-  httpRequest: createActionType('http/request'),
+  persist: create('persist'),
+  meta: create('meta'),
+  request: create('request'),
 };
 
 export default ACTION_TYPES;

@@ -72,7 +72,7 @@ class MetaReducer extends BaseReducer<Data> {
 
     if (!meta && value && value !== USED_FLAG) {
       storeHelper.dispatch<IMetaRestore>({
-        type: ACTION_TYPES.metaRestore,
+        type: ACTION_TYPES.meta,
         payload: {
           key: name,
           value: value,
@@ -90,7 +90,7 @@ class MetaReducer extends BaseReducer<Data> {
   }
 
   protected isRestore(action: RequestSuccessAction | IMetaRestore): action is IMetaRestore {
-    return action.type === ACTION_TYPES.metaRestore;
+    return action.type === ACTION_TYPES.meta;
   }
 
   protected reducer(state: Data | undefined, action: RequestSuccessAction | IMetaRestore): Data {

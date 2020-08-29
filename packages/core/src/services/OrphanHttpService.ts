@@ -33,7 +33,7 @@ export class OrphanHttpService<T = object> {
       uri: config.uri,
       type: {
         prepare: '',
-        success: ACTION_TYPES.httpRequest,
+        success: ACTION_TYPES.request,
         fail: '',
       },
       method: this.method,
