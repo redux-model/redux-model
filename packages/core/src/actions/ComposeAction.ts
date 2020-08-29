@@ -42,7 +42,6 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
 
     return function (): Promise<any> {
       const actionName = self.getName();
-      const args = Array.prototype.slice.call(arguments);
 
       storeHelper.dispatch<IActionCompose>({
         type: self.getPrepareType(),
@@ -52,7 +51,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
       });
 
       return self
-        .runner.apply(null, args)
+        .runner.apply(null, arguments as unknown as any[])
         .then((result) => {
           storeHelper.dispatch<IActionCompose>({
             type: self.getSuccessType(),

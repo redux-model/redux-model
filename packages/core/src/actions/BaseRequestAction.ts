@@ -199,10 +199,8 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     const self = this;
 
     return function () {
-      const args = Array.prototype.slice.call(arguments);
-
       return self.service.runAction(
-        self.builder.apply(null, args).collect(self.getName(), {
+        self.builder.apply(null, arguments as unknown as any[]).collect(self.getName(), {
           prepare: self.getPrepareType(),
           success: self.getSuccessType(),
           fail: self.getFailType(),
