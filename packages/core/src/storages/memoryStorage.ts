@@ -4,9 +4,9 @@ const cache: Record<string, string> = {};
 
 const memory: PersistStorage = {
   getItem(key) {
-    const data = cache.hasOwnProperty(key) && cache[key] !== undefined ? cache[key] : null;
-
-    return Promise.resolve(data);
+    return Promise.resolve(
+      cache[key] === undefined ? null : cache[key]
+    );
   },
   setItem(key, value) {
     cache[key] = value;
