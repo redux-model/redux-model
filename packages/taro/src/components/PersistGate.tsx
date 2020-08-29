@@ -1,5 +1,5 @@
 import { PureComponent, ReactNode } from 'react';
-import { storeHelper, isCompressed } from '@redux-model/core';
+import { storeHelper, isCrushed } from '@redux-model/core';
 
 interface Props {
   loading?: ReactNode;
@@ -40,7 +40,7 @@ export class PersistGate extends PureComponent<Props, State> {
     const { children, loading } = this.props;
     const { isReady } = this.state;
 
-    if (!isCompressed() && loading && typeof children === 'function') {
+    if (!isCrushed() && loading && typeof children === 'function') {
       console.error('ReduxModel: PersistGate expects either a function child or loading prop. The loading prop will be ignored.');
     }
 

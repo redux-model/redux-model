@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 import { BaseModel } from '../models/BaseModel';
-import { isCompressed } from '../utils/isCompressed';
+import { isCrushed } from '../utils/isCrushed';
 
 export interface IActionPayload<Payload = any, T = string> extends Action<T> {
   payload: Payload;
@@ -20,7 +20,7 @@ export abstract class BaseAction<Data> {
 
   protected constructor(model: BaseModel<Data>) {
     this.model = model;
-    isCompressed() && this.setName(increase());
+    isCrushed() && this.setName(increase());
   }
 
   public getSuccessType(): string {

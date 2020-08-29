@@ -1,4 +1,4 @@
-import { isCompressed } from './isCompressed';
+import { isCrushed } from './isCrushed';
 import { AnyModel } from '../models/BaseModel';
 
 const instanceCounter: Record<string, number> = {};
@@ -12,7 +12,7 @@ export const getModel = (): AnyModel => {
 export const setModel = (model: AnyModel, alias?: string): string => {
   currentModel = model;
 
-  if (isCompressed()) {
+  if (isCrushed()) {
     return 'm' + ++modelCounter;
   }
 

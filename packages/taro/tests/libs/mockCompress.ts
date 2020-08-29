@@ -1,8 +1,8 @@
-jest.mock('@redux-model/core/src/utils/isCompressed');
+jest.mock('@redux-model/core/src/utils/isCrushed');
 
-const dev: { isCompressed: jest.MockInstance<boolean, any[]> } = require('@redux-model/core/src/utils/isCompressed');
-dev.isCompressed.mockImplementation(() => true);
+const dev: { isCrushed: jest.MockInstance<boolean, any[]> } = require('@redux-model/core/src/utils/isCrushed');
+dev.isCrushed.mockImplementation(() => true);
 
 export const restoreCompressed = () => {
-  jest.unmock('@redux-model/core/src/utils/isCompressed');
+  jest.unmock('@redux-model/core/src/utils/isCrushed');
 };

@@ -9,7 +9,7 @@ export * from './stores/Persist';
 export * from './stores/getStore';
 export * from './utils/method';
 export * from './utils/httpStatusCode';
-export * from './utils/isCompressed';
+export * from './utils/isCrushed';
 export * from './utils/actionType';
 export * from './services/BaseHttpService';
 export * from './services/HttpServiceBuilder';
