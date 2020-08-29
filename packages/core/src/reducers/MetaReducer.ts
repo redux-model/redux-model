@@ -67,22 +67,22 @@ class MetaReducer extends BaseReducer<Data> {
   }
 
   public/*protected*/ getMeta<T extends Meta | Metas>(name: string): T | undefined {
-    const stash = this.stash[name];
+    const value = this.stash[name];
     let meta = storeHelper.getState()[this.name][name];
 
-    if (!meta && stash && stash !== USED_FLAG) {
+    if (!meta && value && value !== USED_FLAG) {
       storeHelper.dispatch<IMetaRestore>({
         type: ACTION_TYPES.metaRestore,
         payload: {
           key: name,
-          value: stash,
+          value: value,
         },
       });
 
-      meta = stash;
+      meta = value;
     }
 
-    if (stash !== USED_FLAG) {
+    if (value !== USED_FLAG) {
       this.stash[name] = USED_FLAG;
     }
 
@@ -119,14 +119,15 @@ class MetaReducer extends BaseReducer<Data> {
       httpStatus: action.httpStatus,
       businessCode: action.businessCode,
     };
-    const used = this.stash[actionName] === USED_FLAG;
+    const stash = this.stash;
+    const used = stash[actionName] === USED_FLAG;
 
     if (metaKey === true) {
       if (used) {
         return { ...state, [actionName]: meta };
       }
 
-      this.stash[actionName] = meta;
+      stash[actionName] = meta;
     } else {
       if (used) {
         return {
@@ -140,8 +141,8 @@ class MetaReducer extends BaseReducer<Data> {
       }
 
       // @ts-ignore
-      this.stash[actionName] = this.stash[actionName] || { ...METAS_PICK_METHOD };
-      this.stash[actionName][metaKey] = meta;
+      stash[actionName] = stash[actionName] || { ...METAS_PICK_METHOD };
+      stash[actionName][metaKey] = meta;
     }
 
     return state;

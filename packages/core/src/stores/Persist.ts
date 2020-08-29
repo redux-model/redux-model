@@ -179,14 +179,14 @@ export class Persist {
     return this.ready;
   }
 
-  getPersistData<T>(reducerName: string, state: T): T {
+  getPersistData(reducerName: string): any {
     if (!this.config) {
-      return state;
+      return;
     }
 
     const key = this.mapFromModelToKey[reducerName];
     if (!key) {
-      return state;
+      return;
     }
 
     if (!this.ready) {
@@ -194,11 +194,10 @@ export class Persist {
         this.subscription.push(reducerName);
       }
 
-      return state;
+      return;
     }
 
-    const persistState = this.persistReducers[key];
-    return persistState === undefined ? state : persistState;
+    return this.persistReducers[key];
   }
 
   protected onParsed(): this {

@@ -61,20 +61,17 @@ export class BaseReducer<Data> {
 
   protected reducer(state: Data | undefined, action: AllAction<Data> | IPersistRehydrate): Data {
     if (state === undefined) {
-      const newState = storeHelper.persist.getPersistData(this.name, this.initData);
-      return this.initFromPersist(newState);
+      const newState = storeHelper.persist.getPersistData(this.name);
+      return newState === undefined ? this.initData : this.initFromPersist(newState);
     }
-
-    const actionType = action.type;
 
     // Only subscriber can receive this action
     if (this.isPersist(action)) {
-      if (action.payload[this.name] !== undefined) {
-        return this.initFromPersist(action.payload[this.name]);
-      }
-
-      return state;
+      const newState = action.payload[this.name];
+      return newState === undefined ? state : this.initFromPersist(newState);
     }
+
+    const actionType = action.type;
 
     if (this.after[actionType]) {
       const currentAfter = this.after[actionType];
@@ -97,15 +94,17 @@ export class BaseReducer<Data> {
   }
 
   protected initFromPersist(state: any): any {
-    if (this.initData === state || !this.filterPersist) {
+    const filter = this.filterPersist;
+
+    if (!filter) {
       return state;
     }
 
-    return this.changeState(this.filterPersist, state, {
+    return this.changeState(filter, state, {
       type: 'filterPersistData',
       modelName: this.name,
       payload: undefined,
-      effect: this.filterPersist,
+      effect: filter,
       after: null,
     });
   };
