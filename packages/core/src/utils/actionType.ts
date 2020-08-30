@@ -5,7 +5,6 @@ const create = (name: string): string => {
 const ACTION_TYPES = {
   persist: create('persist'),
   meta: create('meta'),
-  request: create('request'),
 };
 
 export default ACTION_TYPES;

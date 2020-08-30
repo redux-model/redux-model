@@ -60,7 +60,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
   public/*protected*/ runAction(action: IRequestAction): FetchHandle {
     this.config.beforeSend && this.config.beforeSend(action);
 
-    // For service.xxxAsync(), prepare and fail is empty string.
+    // For service.xxxAsync(), prepare, success and fail are all empty string.
     const { prepare, success, fail } = action.type;
     const source = axios.CancelToken.source();
     const requestOptions: AxiosRequestConfig = {
@@ -92,8 +92,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
     const throttleData = this.getThrottleData(action, {
       url: requestOptions.url!,
-      modelName: action.modelName,
-      successType: success,
+      actionName: action.actionName,
       method: action.method,
       body: action.body,
       query: action.query,
@@ -129,7 +128,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
         successInvoked = true;
         success && storeHelper.dispatch(okAction);
-        this.storeThrottle(okAction);
+        this.setThrottle(okAction);
         this.triggerShowSuccess(okAction, action.successText);
 
         return Promise.resolve(okAction);

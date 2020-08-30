@@ -108,7 +108,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   public clearThrottle(): void {
-    this.service.clearThrottle(this.getSuccessType());
+    this.service.clearThrottle(this.getName());
   }
 
   public get metas(): Metas {

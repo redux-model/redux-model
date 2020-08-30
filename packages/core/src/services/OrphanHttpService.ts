@@ -1,7 +1,6 @@
 import { METHOD } from '../utils/method';
 import { IBaseRequestAction } from '../actions/BaseRequestAction';
 import { ThrottleOptions } from './HttpServiceBuilder';
-import ACTION_TYPES from '../utils/actionType';
 
 export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | 'query' | 'body' | 'requestOptions' >> &
   {
@@ -33,7 +32,7 @@ export class OrphanHttpService<T = object> {
       uri: config.uri,
       type: {
         prepare: '',
-        success: ACTION_TYPES.request,
+        success: '',
         fail: '',
       },
       method: this.method,
@@ -51,7 +50,7 @@ export class OrphanHttpService<T = object> {
           key: '',
         },
       metaKey: false,
-      actionName: '',
+      actionName: '@async/request',
       payload: undefined,
       modelName: '',
     };

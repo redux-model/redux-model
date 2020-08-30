@@ -33,8 +33,7 @@ export interface BaseHttpServiceConfig {
 }
 
 export interface ThrottleKeyOption {
-  modelName: string;                        // determine model
-  successType: string;                      // determine action
+  actionName: string;                       // determine model and action
   url: string;                              // params like: /user/2/post/3
   method: METHOD;                           // low compat, user always use the same method
   body: Record<string, any>;                // condition
@@ -115,8 +114,8 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
   }
 
   protected getThrottleData(action: IBaseRequestAction, throttleKeyOption: ThrottleKeyOption): FetchHandle | void {
-    const actionName = action.type.success;
-    const cacheData = this.caches[actionName];
+    // actionName includes model-name and action-name.
+    const cacheData = this.caches[action.actionName];
 
     if (!action.throttle.enable) {
       if (cacheData) {
@@ -146,11 +145,10 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
         storeHelper.dispatch(fakeOkAction);
         this.triggerShowSuccess(fakeOkAction, action.successText);
         resolve(fakeOkAction);
-      });
+      }) as FetchHandle;
 
-      const wrapPromise = promise as FetchHandle;
-      wrapPromise.cancel = () => {};
-      return wrapPromise;
+      promise.cancel = () => {};
+      return promise;
     } // end
 
     if (item) {
@@ -160,22 +158,22 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     return;
   }
 
-  protected storeThrottle(action: RequestSuccessAction) {
+  protected setThrottle(action: RequestSuccessAction) {
     const throttle = action.throttle;
 
     if (throttle.enable) {
-      const type = action.type;
+      const name = action.actionName;
 
-      this.caches[type] = this.caches[type] || {};
-      this.caches[type]![throttle.key] = {
+      this.caches[name] = this.caches[name] || {};
+      this.caches[name]![throttle.key] = {
         timestamp: Date.now() + throttle.duration,
         response: cloneDeep(action.response, false),
       };
     }
   }
 
-  public/*protected*/ clearThrottle(successType: string): void {
-    this.caches[successType] = undefined;
+  public/*protected*/ clearThrottle(actionName: string): void {
+    this.caches[actionName] = undefined;
   }
 
   public/*protected*/ abstract runAction(action: IBaseRequestAction): FetchHandle<any, any, any>;
