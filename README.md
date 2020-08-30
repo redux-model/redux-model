@@ -107,7 +107,7 @@ const loading = testModel.getUser.useLoading(); // boolean
 ```typescript jsx
 type ReactProps = ReturnType<typeof mapStateToProps>;
 
-const mapStateToProps = () => {
+const mapStateToProps = => {
   return {
     counter: testModel.data.counter, // number
     users: testModel.data.users, // object
@@ -118,15 +118,15 @@ const mapStateToProps = () => {
 export default connect(mapStateToProps)(App);
 ```
 
-# 在线运行例子
-* [Counter](https://codesandbox.io/s/redux-model-react-counter-zdgjh)
-* [Persist](https://codesandbox.io/s/redux-model-react-persist-uwhy8)
-* [Todo List](https://codesandbox.io/s/redux-model-react-todo-list-zn4nv)
-* [Request](https://codesandbox.io/s/redux-model-react-request-1ocyn)
-* [Request Throttle](https://codesandbox.io/s/redux-model-react-request-throttle-77mfy)
-* [Listener](https://codesandbox.io/s/redux-model-react-listener-p7khk)
-* [Action in Action](https://codesandbox.io/s/redux-model-react-action-in-action-oewkv)
-* [Compose](https://codesandbox.io/s/redux-model-react-compose-42wrc)
+# 在线运行示例
+* [计数器](https://codesandbox.io/s/redux-model-react-counter-zdgjh)
+* [数据持久化](https://codesandbox.io/s/redux-model-react-persist-uwhy8)
+* [TODO面板](https://codesandbox.io/s/redux-model-react-todo-list-zn4nv)
+* [请求](https://codesandbox.io/s/redux-model-react-request-1ocyn)
+* [请求节流](https://codesandbox.io/s/redux-model-react-request-throttle-77mfy)
+* [任务监听](https://codesandbox.io/s/redux-model-react-listener-p7khk)
+* [任务组合](https://codesandbox.io/s/redux-model-react-compose-42wrc)
+* [子任务](https://codesandbox.io/s/redux-model-react-action-in-action-oewkv)
 
 # 文档
 

@@ -124,8 +124,8 @@ export default connect(mapStateToProps)(App);
 * [Request](https://codesandbox.io/s/redux-model-react-request-1ocyn)
 * [Request Throttle](https://codesandbox.io/s/redux-model-react-request-throttle-77mfy)
 * [Listener](https://codesandbox.io/s/redux-model-react-listener-p7khk)
-* [Action in Action](https://codesandbox.io/s/redux-model-react-action-in-action-oewkv)
 * [Compose](https://codesandbox.io/s/redux-model-react-compose-42wrc)
+* [Action in Action](https://codesandbox.io/s/redux-model-react-action-in-action-oewkv)
 
 # Documents
 
