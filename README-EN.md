@@ -4,11 +4,9 @@
   </a>
 </h1>
 
-[中文](./README.md)
+[中文文档](./README.md)
 
 Redux Model is created to enhance original redux framework, which has complex flow and lots of boilerplate.
-
-Lots of famous state framework are designed for JS users. They totally follow design mode and hide everything you needn't see, it means you are difficult to combine these frameworks with typescript unless you inject `type interface` manually. Fortunately, Redux-Model is specially designed for typescript, feel free to inject once, use everywhere.
 
 [![License](https://img.shields.io/github/license/redux-model/redux-model)](https://github.com/redux-model/redux-model/blob/master/LICENSE)
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/redux-model/redux-model/CI/master)](https://github.com/redux-model/redux-model/actions)
@@ -17,10 +15,10 @@ Lots of famous state framework are designed for JS users. They totally follow de
 
 # Features
 
-* Highest coding efficiency
+* Modular coding
 * Modify reducer by MVVM
 * **👍Absolutely 100% static type checking with typescript**
-* Provide http service, combine loading and throttle for each request action
+* Provide http service with loading and throttle
 * Support react/vue hooks
 * Support persist
 
