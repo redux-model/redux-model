@@ -1,3 +1,12 @@
+# 8.1.0
+[feat] Orphan request support custom successText, failText and hideError properties <br>
+[chore] Reduce bundle size
+
+-----------------------------------------
+
+[特性] 独立请求支持自定义的 successText, failText 和 hideError 属性 <br>
+[周边] 减小打包体积
+
 # 8.0.1
 [fix] PersistGate forget to call isCompressed <br>
 [chore] Update package tslib from 2.0.0 to 2.0.1 <br>
