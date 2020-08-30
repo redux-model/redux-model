@@ -60,8 +60,8 @@ interface Data {
 }
 
 class TestModel extends Model<Data> {
-  increase = this.action((state) => {
-    state.counter += 1;
+  plus = this.action((state, step: number = 1) => {
+    state.counter += step;
   });
 
   getUser = $api.action((id: number) => {
@@ -83,92 +83,41 @@ class TestModel extends Model<Data> {
 export const testModel = new TestModel();
 ```
 
-# With React Hooks
-```typescript jsx
-import React, { FC } from 'react';
+# Run Action
+```typescript
+testModel.plus();
+testModel.plus(2);
 
-const App: FC = () => {
-  const counter = testModel.useData((data) => data.counter);
-  const loading = testModel.getUser.useLoading();
-
-  const increase = () => {
-    testModel.increase();
-    testModel.getUser(3);
-  };
-
-  return (
-    <button onClick={increase}>
-      {loading ? 'Waiting...' : `You clicked ${counter} times`}
-    </button>
-  );
-};
-
-export default App;
+testModel.getUser(3);
+testModel.getUser(5).then(({ response }) => {});
 ```
 
-# With Vue Hooks
-```vue
-<template>
-  <button @click="increase">
-    {{loading.value ? 'Waiting...' : `You clicked ${counter.value} times`}}
-  </button>
-</template>
+# Get data in Hooks
+```typescript jsx
+const data = testModel.useData(); // { counter: number, users: object }
 
-<script>
-export default {
-  setup() {
-    const increase = () => {
-      testModel.increase();
-      testModel.getUser(3);
-    };
+const counter = testModel.useData((data) => data.counter); // number
+const users = testModel.useData((data) => data.users); // object
 
-    const counter = testModel.useData((data) => data.counter);
-    const loading = testModel.getUser.useLoading();
-
-    return {
-      increase,
-      counter,
-      loading,
-    };
-  }
-};
-</script>
+const loading = testModel.getUser.useLoading(); // boolean
 ```
 
-# With Redux Connect
+# Get data in connect
 ```typescript jsx
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-
-type Props = ReturnType<typeof mapStateToProps>;
-
-class App extends Component<Props> {
-  increase() {
-    testModel.increase();
-    testModel.getUser(3);
-  }
-
-  render() {
-    const { loading, counter } = this.props;
-    return (
-      <button onClick={this.increase}>
-          {loading ? 'Waiting...' : `You clicked ${counter} times`}
-      </button>
-    );
-  }
-}
+type ReactProps = ReturnType<typeof mapStateToProps>;
 
 const mapStateToProps = () => {
   return {
-    counter: testModel.data.counter,
-    loading: testModel.getUser.loading,
+    counter: testModel.data.counter, // number
+    users: testModel.data.users, // object
+    loading: testModel.getUser.loading, // boolean
   };
 };
 
 export default connect(mapStateToProps)(App);
 ```
 
-# Demos
+# Online Runnable Demos
 * [Counter](https://codesandbox.io/s/redux-model-react-counter-zdgjh)
 * [Persist](https://codesandbox.io/s/redux-model-react-persist-uwhy8)
 * [Todo List](https://codesandbox.io/s/redux-model-react-todo-list-zn4nv)
