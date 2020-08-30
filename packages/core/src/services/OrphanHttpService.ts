@@ -2,7 +2,7 @@ import { METHOD } from '../utils/method';
 import { IBaseRequestAction } from '../actions/BaseRequestAction';
 import { ThrottleOptions } from './HttpServiceBuilder';
 
-export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | 'query' | 'body' | 'requestOptions' >> &
+export type OrphanRequestOptions<T> = Partial<Pick<IBaseRequestAction, 'uri' | 'query' | 'body' | 'successText' | 'failText' | 'hideError' | 'requestOptions' >> &
   {
     uri: string;
     requestOptions?: T;
@@ -25,17 +25,21 @@ export class OrphanHttpService<T = object> {
     const action: IBaseRequestAction = {
       body: config.body || {},
       query: config.query || {},
-      successText: '',
-      failText: '',
-      hideError: true,
+      successText: config.successText || '',
+      failText: config.failText || '',
+      hideError: config.hideError || false,
       requestOptions: config.requestOptions || {},
       uri: config.uri,
+      method: this.method,
+      metaKey: false,
+      actionName: '@async/request',
+      payload: undefined,
+      modelName: '',
       type: {
         prepare: '',
         success: '',
         fail: '',
       },
-      method: this.method,
       throttle: throttle
         ? {
           enable: throttle.duration > 0 && throttle.enable !== false,
@@ -49,10 +53,6 @@ export class OrphanHttpService<T = object> {
           transfer: undefined,
           key: '',
         },
-      metaKey: false,
-      actionName: '@async/request',
-      payload: undefined,
-      modelName: '',
     };
 
     return action;
