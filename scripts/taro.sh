@@ -2,7 +2,7 @@
 
 set -e
 
-# vue redefine JSX which incompatible with react JSX
+# Taro runtime pkg get wrong entry path
 file=packages/taro/node_modules/@tarojs/runtime/package.json
 
 # Don't use alias due to unbuntu (CI) can't recognize.

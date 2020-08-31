@@ -31,12 +31,12 @@
     "tslib": "2.0.1"
   },
   "devDependencies": {
-    "@tarojs/taro": "^3.0.2",
+    "@tarojs/taro": "^3.0.8",
     "@types/qs": "^6.9.3",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
     "@types/react-redux": "^7.1.9",
-    "@types/vue": "^2.0.0",
+    "vue": "^2.6.12",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-redux": "^7.2.0"
