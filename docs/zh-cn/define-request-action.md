@@ -1,6 +1,6 @@
 ### 第一个Action
 
-写业务肯定是要请求数据的，因此框架提供了`Http Service`，让您以最快的速度完成功能开发：
+写业务肯定是要请求数据的，因此框架提供了[Http Service](/zh-cn/service.md)，让您以最快的速度完成功能开发：
 
 ```typescript
 import { Model } from '@redux-model/react';

@@ -20,7 +20,7 @@ class FirstModel extends Model<Data> {
 export const firstModel = new FirstModel();
 ```
 
-我们刚刚创建了一个模型，它继承自框架的基础模型`Model<T>`。**\<T>**即为泛型，因为每个模型都默认存在一个reducer，所以泛型约束了reducer的数据类型。接着，模型实现了抽象方法`initialState()`，为模型提供一个初始state。
+我们刚刚创建了一个模型，它继承自框架的基础模型`Model<T>`。**\<T>** 即为泛型，因为每个模型都默认存在一个reducer，所以泛型约束了reducer的数据类型。接着，模型实现了抽象方法`initialState()`，为模型提供一个初始state。
 
 !> 定义的Data通过泛型注入后，所有的action都能享受数据的自动推导
 
@@ -93,8 +93,7 @@ export default defineComponent({
 // useData(selector: Function)
 const user1 = model.useData((data) => data[0]);
 
-// Vue不支持！！！！
-// 按需，组合最小数据
+// 按需，组合最小数据，产生了新的复合数据 （Vue不支持）
 // useData(selector: Function, shallowEqual: boolean)
 const { user1, user2 } = model.useData((data) => {
   return {

@@ -35,7 +35,7 @@ nomalModel.increase(1);
 
 <iframe src="https://redux-model.github.io/docs-runtime/normal-action.html" height="250"></iframe>
 
-!> action最多只能提供两个形参，第一个为固定参数state用于变更reducer，第二个为可选的任意类型的payload，当您调用action时，TS仅提示payload的类型。
+!> 同步action最多只能提供两个形参，第一个为固定参数state用于变更reducer，第二个为可选的任意类型的payload，当您调用action时，TS仅提示payload的类型。
 
 ### 多几个Action
 
@@ -106,6 +106,8 @@ const myReducer = (state = initState, action) => {
 };
 ```
 看看，各种解构操作！当case不断变多、对象越来越变复杂的时候，您需要做更多恐怖的操作，这极大地增加了心智负担，而且出错率直线上升。没有人愿意去维护这种代码。
+
+----------------------
 
 而使用模型，您可以随(早)心(点)所(下)欲(班)地改变数据，而且不用担心出错，因为您已经通过`Model<Data>`注入了数据类型，参数`state`被类型自动推导为Data：
 ```typescript
