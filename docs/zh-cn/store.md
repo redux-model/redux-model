@@ -59,3 +59,14 @@ const store = createReduxStore({
   middleware,
 });
 ```
+
+### Redux-Devtools
+如果您安装了[Redux扩展程序](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)，您也可以直接通过更改compose达到注册效果：
+```typescript
+const store = createReduxStore({
+  compose: process.env.NODE_ENV !== 'production'
+    // @ts-ignore
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : undefined,
+});
+```
