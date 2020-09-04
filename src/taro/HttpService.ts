@@ -62,7 +62,7 @@ export class HttpService extends BaseHttpService {
       url += `${isArg}${args}`;
     }
 
-    const requestOptions: Taro.request.Param = {
+    const requestOptions: Taro.request.Option = {
       url,
       method: action.method as any,
       ...this.config.requestConfig,
@@ -113,7 +113,7 @@ export class HttpService extends BaseHttpService {
 
         return Promise.resolve(okResponse);
       })
-      .catch((error: Taro.request.Promised & { errMsg?: string, status?: number }) => {
+      .catch((error: Taro.request.SuccessCallbackResult & { errMsg?: string, status?: number }) => {
         if (successInvoked) {
           return Promise.reject(error);
         }

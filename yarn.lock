@@ -941,25 +941,25 @@
     wcwidth "^1.0.1"
     ws "^1.1.0"
 
-"@tarojs/redux@1.3.22":
-  version "1.3.22"
-  resolved "https://registry.npmjs.org/@tarojs/redux/-/redux-1.3.22.tgz#2d400dd2675074f40b87d3219d8c690931ec2b26"
-  integrity sha512-XKz5AZol9IWGiUsqoYSi/dTnojI3boFJ+gK3gJ0PZ9WjZ2C4WhJME4CZIf6zNkAsqx8YAX9MBhwHD+YrvpeRKw==
+"@tarojs/redux@2.2.13":
+  version "2.2.13"
+  resolved "https://registry.npmjs.org/@tarojs/redux/-/redux-2.2.13.tgz#d3fb32f2f40f86e99a85627ad026ee2fbb8877e8"
+  integrity sha512-PMGzhIZYlhjs9BI5rRhIAhHcwLk74MHDDfCLxMxu4aBSE8y0JV4NHOOWqQ81DVkoUvvMqQui+E7jwGwNcV+sqw==
   dependencies:
-    "@tarojs/taro" "1.3.22"
-    "@tarojs/utils" "1.3.22"
+    "@tarojs/taro" "2.2.13"
+    "@tarojs/utils" "2.2.13"
 
-"@tarojs/taro@1.3.22":
-  version "1.3.22"
-  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-1.3.22.tgz#b953b6405de44e1eddc71b14e27738f88c92b3be"
-  integrity sha512-tdRaG94M2E20MHuCQNObvaRkGdiaSr74K3dbTLQ+rRYHg3cPm7iAZ4+jyPFGONUw/DcNeVgVijwwkci7Zuz+SA==
+"@tarojs/taro@2.2.13":
+  version "2.2.13"
+  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-2.2.13.tgz#1e4702a60a36c9ad4725809a170d6b739b73171b"
+  integrity sha512-pQeUq1aOlU1XDiM9WkY1CHjmd0BYaybQjXDd5RtEQ1bI7TSPAf/YFnogOsnhlNb6VHzQm+0sxREGHRCLI0n6Rw==
   dependencies:
-    "@tarojs/utils" "1.3.22"
+    "@tarojs/utils" "2.2.13"
 
-"@tarojs/utils@1.3.22":
-  version "1.3.22"
-  resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-1.3.22.tgz#38d473fc538a7ad6d7b2eab93eba3552794037d9"
-  integrity sha512-Af4SqG5Y5elRwLQte6p82eFYUfF9s0HXEXlw8NRpQkEkNQEJchrMOa8YGoAwTR8+3SxaP8soWtuYbnVHCDDL3g==
+"@tarojs/utils@2.2.13":
+  version "2.2.13"
+  resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-2.2.13.tgz#ac452d0743a6dee494ce8bfe529f904aa3e2c6ad"
+  integrity sha512-BB79eTIkEWjPv2aYwrmmo6xDG1JR4qckz4/FNMNP9vfcPIkI1h5YOatXw5Hm7FOmVawUlNLQRBEdfY3tTakCbQ==
 
 "@types/babel__core@^7.1.0":
   version "7.1.3"

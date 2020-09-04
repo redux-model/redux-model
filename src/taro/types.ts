@@ -10,20 +10,20 @@ import {
 
 export type HttpCanceler = () => void;
 
-export type HttpResponse<T = any> = Taro.request.Promised<T>;
+export type HttpResponse<T = any> = Taro.request.SuccessCallbackResult<T>;
 
 export interface FetchHandle<Response = any, Payload = any> extends Promise<ReducerAction<Response, Payload>> {
   cancel: HttpCanceler;
 }
 
 export interface ActionRequest<Data = any, Response = any, Payload = any, Type = Types> extends BaseActionRequest<Data, Response, Payload, Type> {
-  requestOptions: Omit<Taro.request.Param, 'url'>;
+  requestOptions: Omit<Taro.request.Option, 'url'>;
 }
 
 export interface HttpServiceConfig extends BaseHttpServiceConfig {
   onRespondError: (httpResponse: HttpResponse, transform: HttpTransform) => void;
   headers: (action: ActionRequest) => object;
-  requestConfig?: Omit<Taro.request.Param, 'url'>;
+  requestConfig?: Omit<Taro.request.Option, 'url'>;
   beforeSend?: (action: ActionRequest) => void;
   isSuccess?: (response: HttpResponse) => boolean;
   transformSuccessData?: (data: any, headers: any) => any;

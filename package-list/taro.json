@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/taro",
-  "version": "6.9.4",
+  "version": "6.10.0",
   "keywords": [
     "react",
     "redux-model",
@@ -15,7 +15,7 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "peerDependencies": {
-    "@tarojs/redux": "^1"
+    "@tarojs/redux": "^2"
   },
   "dependencies": {
     "immer": "^5.3.6",
