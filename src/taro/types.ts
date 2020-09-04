@@ -7,7 +7,6 @@ import {
   Omit,
   Types
 } from '../core/utils/types';
-import { AxiosRequestConfig } from 'axios';
 
 export type HttpCanceler = () => void;
 
@@ -24,7 +23,7 @@ export interface ActionRequest<Data = any, Response = any, Payload = any, Type =
 export interface HttpServiceConfig extends BaseHttpServiceConfig {
   onRespondError: (httpResponse: HttpResponse, transform: HttpTransform) => void;
   headers: (action: ActionRequest) => object;
-  requestConfig?: AxiosRequestConfig;
+  requestConfig?: Omit<Taro.request.Param, 'url'>;
   beforeSend?: (action: ActionRequest) => void;
   isSuccess?: (response: HttpResponse) => boolean;
   transformSuccessData?: (data: any, headers: any) => any;

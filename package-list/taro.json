@@ -15,7 +15,7 @@
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
   "peerDependencies": {
-    "@tarojs/redux": "*"
+    "@tarojs/redux": "^1"
   },
   "dependencies": {
     "immer": "^5.3.6",

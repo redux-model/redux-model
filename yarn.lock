@@ -941,7 +941,7 @@
     wcwidth "^1.0.1"
     ws "^1.1.0"
 
-"@tarojs/redux@^1.3.22":
+"@tarojs/redux@1.3.22":
   version "1.3.22"
   resolved "https://registry.npmjs.org/@tarojs/redux/-/redux-1.3.22.tgz#2d400dd2675074f40b87d3219d8c690931ec2b26"
   integrity sha512-XKz5AZol9IWGiUsqoYSi/dTnojI3boFJ+gK3gJ0PZ9WjZ2C4WhJME4CZIf6zNkAsqx8YAX9MBhwHD+YrvpeRKw==
