@@ -9,6 +9,7 @@ import {
 } from '../core/utils/types';
 import { METHOD } from '../core/utils/method';
 import { OrphanHttpServiceHandle } from '../core/service/OrphanHttpServiceHandle';
+import { getTaroRequest } from './getTaro';
 
 export class HttpService extends BaseHttpService {
   protected readonly config: HttpServiceConfig;
@@ -18,7 +19,7 @@ export class HttpService extends BaseHttpService {
     super(config);
 
     this.config = config;
-    this.request = require(`@tarojs/taro-${process.env.TARO_ENV}`).request;
+    this.request = getTaroRequest();
   }
 
   public connectAsync<Response>(config: OrphanRequestOptions): FetchHandle<Response, never> {
