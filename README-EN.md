@@ -29,18 +29,29 @@ Redux Model is created to enhance original redux framework, which has complex fl
 npm install @redux-model/react redux react-redux
 ```
 
-### Vue v3
+### Taro
 ```bash
-npm install @redux-model/vue redux
+# taro 3+
+npm install @redux-model/taro redux react-redux
+
+# taro 2+
+npm install @redux-model/taro@6.10.0 @tarojs/redux
+
+# taro 1+
+npm install @redux-model/taro@6.9.5 @tarojs/redux
 ```
 
-### Taro v3
+### Vue
 ```bash
-npm install @redux-model/taro redux react-redux
+# vue 3+
+npm install @redux-model/vue redux
+
+# vue 2+
+npm install @redux-model/vue@6.9.2 redux
 ```
 
 ### Others
-* For `taro < v3`, install @redux-model/taro@6.9.2 instead
+* For `taro < v3`, install @redux-model/taro@6.9.4 instead
 * For `vue < v3`, install @redux-model/vue@6.9.2 instead
 
 # Define Model
