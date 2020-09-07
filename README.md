@@ -112,7 +112,7 @@ const loading = testModel.getUser.useLoading(); // boolean
 ```typescript jsx
 type ReactProps = ReturnType<typeof mapStateToProps>;
 
-const mapStateToProps = => {
+const mapStateToProps = () => {
   return {
     counter: testModel.data.counter, // number
     users: testModel.data.users, // object
