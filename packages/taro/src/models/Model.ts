@@ -1,5 +1,5 @@
 import * as ReactRedux from 'react-redux';
-import { BaseModel } from '@redux-model/core';
+import { BaseModel, HttpServiceBuilderWithMeta } from '@redux-model/core';
 import { ComposeAction } from '../actions/ComposeAction';
 import { TaroRequestConfig } from '../services/HttpService';
 
@@ -8,6 +8,15 @@ export abstract class Model<Data = null> extends BaseModel<Data, TaroRequestConf
   // So we provide a quick way to combine all loading values.
   public static useLoading(...useLoading: boolean[]): boolean {
     return useLoading.some((is) => is);
+  }
+
+  /**
+   * @deprecated
+   * Taro doesn't support request method `patch`, actually, it's limited by mini-program.
+   * @see https://developers.weixin.qq.com/miniprogram/dev/api/network/request/wx.request.html
+   */
+  protected patch<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, TaroRequestConfig> {
+    return super.patch(uri);
   }
 
   /**
