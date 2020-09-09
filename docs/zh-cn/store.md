@@ -7,7 +7,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createReduxStore } from '@redux-mode/react';
+import { createReduxStore } from '@redux-model/react';
 
 const store = createReduxStore();
 
