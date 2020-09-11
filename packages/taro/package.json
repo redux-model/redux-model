@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@redux-model/core": "8.1.0",
-    "promise-listen-catch": "0.0.6",
+    "promise-listen-catch": "0.0.7",
     "qs": "6.9.4",
     "tslib": "2.0.1"
   },

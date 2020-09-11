@@ -32,13 +32,13 @@
     "axios": "0.19.2",
     "clone": "2.1.2",
     "deep-diff": "1.0.2",
-    "promise-listen-catch": "0.0.6",
+    "promise-listen-catch": "0.0.7",
     "tslib": "2.0.1"
   },
   "devDependencies": {
     "@types/clone": "^0.1.30",
     "@types/deep-diff": "^1.0.0",
-    "vue": "^3.0.0-rc.9"
+    "vue": "^3.0.0-rc.10"
   },
   "publishConfig": {
     "access": "public",
