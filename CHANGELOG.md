@@ -1,3 +1,16 @@
+# 8.1.3
+* Property compose support literal string `default` and `redux-devtools`
+
+-----------------------------------------
+
+* compose选项支持字符串`default`和`redux-devtools`
+
+```typescript
+const store = createReduxStore({
+  compose: process.env.NODE_ENV === 'production' ? 'default' : 'redux-devtools',
+});
+```
+
 # 8.1.2
 * Deprecate `patch` method in taro <br>
 * Skip rejection if user doesn't handle catch in action<br>
