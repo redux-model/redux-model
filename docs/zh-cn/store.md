@@ -65,8 +65,7 @@ const store = createReduxStore({
 ```typescript
 const store = createReduxStore({
   compose: process.env.NODE_ENV !== 'production'
-    // @ts-ignore
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']
     : undefined,
 });
 ```
