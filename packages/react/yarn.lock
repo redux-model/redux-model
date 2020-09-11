@@ -109,6 +109,11 @@ object-assign@^4.1.1:
   resolved "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
 
+promise-listen-catch@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/promise-listen-catch/-/promise-listen-catch-0.0.6.tgz#b4ee779a5a7c54cbeffe1dc3df1c0de13d6e34a1"
+  integrity sha512-LKmkorpLnjdjL22eeOw5ZC/Sak7qlXjN4DEIuIylsN4ViuRt334bz+Gz26HbFKiHI4K5r5ZHvIz6whpLNEE5LQ==
+
 prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"

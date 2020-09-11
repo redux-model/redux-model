@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Canceler, AxiosInstance, AxiosError } from 'axios';
 import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse, HttpServiceBuilderWithMetas, PickData, PickMeta, IBaseRequestAction, BaseHttpServiceConfig, HttpTransform, METHOD, RequestSuccessAction, RequestPrepareAction, FetchHandle as SuperFetchHandle, storeHelper, RequestFailAction } from '@redux-model/core';
+import PromiseListenCatch from 'promise-listen-catch';
 import { RequestAction } from '../actions/RequestAction';
 
 export type HttpResponse<T = any> = AxiosResponse<T>;
@@ -183,12 +184,17 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           this.triggerShowError(errorResponse, action.hideError);
         }
 
-        return Promise.reject(errorResponse);
+        if (listener.hasThen() || listener.hasCatch()) {
+          listener.hasCatch() || listener.appendCatchToEnd();
+          return Promise.reject(errorResponse);
+        }
+
+        return;
       });
 
+    const listener = new PromiseListenCatch(promise);
     // @ts-ignore
-    // @ts-expect-error
-    const fakePromise = promise as FetchHandle<any, any, HttpCanceler>;
+    const fakePromise: FetchHandle<any, any> = listener;
     fakePromise.cancel = source.cancel;
 
     return fakePromise;

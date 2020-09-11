@@ -165,6 +165,11 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
+promise-listen-catch@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/promise-listen-catch/-/promise-listen-catch-0.0.6.tgz#b4ee779a5a7c54cbeffe1dc3df1c0de13d6e34a1"
+  integrity sha512-LKmkorpLnjdjL22eeOw5ZC/Sak7qlXjN4DEIuIylsN4ViuRt334bz+Gz26HbFKiHI4K5r5ZHvIz6whpLNEE5LQ==
+
 prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"

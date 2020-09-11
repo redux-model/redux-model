@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@redux-model/core": "8.1.0",
+    "promise-listen-catch": "0.0.6",
     "qs": "6.9.4",
     "tslib": "2.0.1"
   },
@@ -36,10 +37,10 @@
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
     "@types/react-redux": "^7.1.9",
-    "vue": "^2.6.12",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-redux": "^7.2.0"
+    "react-redux": "^7.2.0",
+    "vue": "^2.6.12"
   },
   "publishConfig": {
     "access": "public",
