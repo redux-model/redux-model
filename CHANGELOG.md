@@ -1,11 +1,15 @@
-# 8.1.1
+# 8.1.2
 * Deprecate `patch` method in taro <br>
 * Skip rejection if user doesn't handle catch in action<br>
+* metas and loadings respond wrong pick type <br>
+* Upgrade pkg immer to 7.0.9
 
 -----------------------------------------
 
 * taro库中禁用`patch`请求 <br>
-* 用户请求action不带catch时将不向下抛出异常
+* 用户请求action不带catch时将不向下抛出异常 <br>
+* 修复metas和loading的pick方法类型错误的问题 <br>
+* 升级immer到7.0.9
 
 # 8.1.0
 [feat] Orphan request support custom successText, failText and hideError properties <br>
