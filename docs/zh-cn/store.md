@@ -61,11 +61,9 @@ const store = createReduxStore({
 ```
 
 ### Redux-Devtools
-如果您安装了[Redux扩展程序](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)，您也可以直接通过更改compose达到注册效果：
+日志也可以通过[Redux扩展程序](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)查看，您需要做以下操作才能正常连接扩展程序：
 ```typescript
 const store = createReduxStore({
-  compose: process.env.NODE_ENV !== 'production'
-    ? window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']
-    : undefined,
+  compose: process.env.NODE_ENV === 'production' ? 'default' : 'redux-devtools',
 });
 ```
