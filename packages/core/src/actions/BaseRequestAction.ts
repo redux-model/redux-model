@@ -111,11 +111,11 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     this.service.clearThrottle(this.getName());
   }
 
-  public get metas(): Metas {
+  public get metas(): Metas<M> {
     return metaReducer.getMeta(this.getName()) || DEFAULT_METAS;
   }
 
-  public get loadings(): MetasLoading<any> {
+  public get loadings(): MetasLoading<M> {
     return this.getLoadingHandler(this.metas);
   }
 
