@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/taro",
-  "version": "8.1.1",
+  "version": "8.1.2",
   "keywords": [
     "react",
     "redux-model",
@@ -26,7 +26,7 @@
     "redux": "^4.0.0"
   },
   "dependencies": {
-    "@redux-model/core": "8.1.0",
+    "@redux-model/core": "8.1.2",
     "promise-listen-catch": "0.0.7",
     "qs": "6.9.4",
     "tslib": "2.0.1"
