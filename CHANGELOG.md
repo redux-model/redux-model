@@ -1,3 +1,12 @@
+# 8.1.1
+* Deprecate `patch` method in taro <br>
+* Skip rejection if user doesn't handle catch in action<br>
+
+-----------------------------------------
+
+* taro库中禁用`patch`请求 <br>
+* 用户请求action不带catch时将不向下抛出异常
+
 # 8.1.0
 [feat] Orphan request support custom successText, failText and hideError properties <br>
 [chore] Reduce bundle size
