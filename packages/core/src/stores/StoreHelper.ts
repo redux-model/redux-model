@@ -7,7 +7,7 @@ import ACTION_TYPES from '../utils/actionType';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   reducers?: IReducers;
-  compose?: typeof compose;
+  compose?: 'default' | 'redux-devtools' | typeof compose;
   middleware?: Middleware[];
   preloadedState?: PreloadedState<any>;
   onCombineReducers?: (reducer: Reducer) => Reducer;
@@ -35,7 +35,16 @@ export class StoreHelper {
 
   createStore(config: ReduxStoreConfig = {}): Store {
     const { onCombineReducers, reducers, preloadedState, middleware } = config;
-    const customCompose = config.compose || compose;
+    const customCompose = (() => {
+      switch (config.compose) {
+        case 'redux-devtools':
+          return typeof window === 'object' && window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
+        case 'default':
+          return compose;
+        default:
+          return config.compose || compose;
+      }
+    })();
     const persist = this._persist;
 
     this.onCombined = onCombineReducers;
