@@ -199,8 +199,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
         fail && storeHelper.dispatch(errorResponse);
         this.triggerShowError(errorResponse, action.hideError);
 
-        if (listener.hasThen() || listener.hasCatch()) {
-          listener.hasCatch() || listener.appendCatchToEnd();
+        if (listener.canReject()) {
           return Promise.reject(errorResponse);
         }
 

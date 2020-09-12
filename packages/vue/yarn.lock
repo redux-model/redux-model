@@ -130,10 +130,10 @@ ms@2.0.0:
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
   integrity sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
 
-promise-listen-catch@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.npmjs.org/promise-listen-catch/-/promise-listen-catch-0.0.7.tgz#ee1784f2713bb16ac22a544aed26783684c41cfd"
-  integrity sha512-th1Q0ztbgpebOfPuFcDKtbOCpP4ywpyabyrC5KD30RvrgPqzVJYNGOYLs1vQzma0hp7s7CElH8OUQfNWy+TICA==
+promise-listen-catch@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/promise-listen-catch/-/promise-listen-catch-1.0.0.tgz#8c56875258b47449055763a204b28d572a5d383d"
+  integrity sha512-1Vce+A5+QcKn7acpz4WnP8o9yTTnTxCgkyCVEYiWtLgbJxtl82FIbcMSi+LB07E/Afjif4XFp7HYI7UZEmWNfg==
 
 source-map@^0.6.1:
   version "0.6.1"
