@@ -8,6 +8,7 @@ export enum HTTP_STATUS_CODE {
   forbidden = 403,
   notFound = 404,
   methodNotAllowed = 405,
+  requestEntityTooLarge = 413,
   unProcessableEntity = 422,
   serviceError = 500,
   badGateWay = 502,
