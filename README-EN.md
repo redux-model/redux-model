@@ -21,6 +21,7 @@ Redux Model is created to enhance original redux framework, which has complex fl
 * Provide http service with loading and throttle
 * Support react/vue hooks
 * Support persist
+* 支持[Graphql](https://github.com/redux-model/graphql)请求
 
 # Installation
 

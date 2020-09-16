@@ -2,6 +2,11 @@ import { IResponseAction, IBaseRequestAction, Types } from '../actions/BaseReque
 import { METHOD } from '../utils/method';
 import { ThrottleKeyOption } from './BaseHttpService';
 
+interface Graphql {
+  variables: object,
+  query: string
+};
+
 type Options<Data, Response, Payload> = Partial<Omit<IBaseRequestAction<Data, Response, Payload>, 'type'>> & {
   uri: string;
   instanceName: string;
@@ -35,6 +40,18 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
 
   public body(body: object): this {
     this.config.body = body;
+
+    return this;
+  }
+
+  public graphql(tpl: ((args: object) => Graphql) | Graphql): this {
+    let data = typeof tpl === 'function' ? tpl({}) : tpl;
+
+    if (this.config.method === METHOD.get) {
+      this.query(data);
+    } else {
+      this.body(data);
+    }
 
     return this;
   }

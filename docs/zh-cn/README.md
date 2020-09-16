@@ -12,5 +12,6 @@ Redux Model是为了弥补原生Redux繁琐的开发流程，开发者重复劳�
 * 内置http服务，请求action自带loading追踪、数据节流
 * 支持React/Vue Hooks
 * 支持数据持久化
+* 支持[Graphql](https://github.com/redux-model/graphql)请求
 
 !> 只有使用vscode编辑器开发项目，才能发挥TS的最大优势

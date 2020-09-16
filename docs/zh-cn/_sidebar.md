@@ -12,6 +12,7 @@
 * 高级
     * [持久化](/zh-cn/persist.md)
     * [请求服务](/zh-cn/service.md)
+    * [Graphql](/zh-cn/graphql.md)
     * [订阅](/zh-cn/subscription.md)
     * [状态追踪](/zh-cn/meta.md)
     * [双向绑定](/zh-cn/mvvm.md)
