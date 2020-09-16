@@ -1,3 +1,10 @@
+# 8.2.0
+* Support graphql request
+
+-----------------------------------------
+
+* 支持Graphql请求
+
 # 8.1.3
 * Property compose support literal string `default` and `redux-devtools`
 
