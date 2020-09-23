@@ -1,3 +1,10 @@
+# 8.2.1
+* Trigger onStoreCreated() after persist is done
+
+-----------------------------------------
+
+* onStoreCreated()的触发时间推迟到persist恢复之后
+
 # 8.2.0
 * Support graphql request
 
