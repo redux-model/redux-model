@@ -254,7 +254,7 @@ test('Persit will use cache data for re-create store', (done) => {
 });
 
 test('onStoreCreated will invoke on persist done', async () => {
-  localStorage.setItem(`ReduxModel:Persist:${persistKey}`, '{"model":"{\\"counter\\":20}","__persist":{"version":1}}');
+  localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue('{"model":"{\\"counter\\":20}","__persist":{"version":1}}'));
 
   createReduxStore({
     reducers: {
