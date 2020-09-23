@@ -133,3 +133,8 @@ test('Even if it can be register automatically, but we can register model again 
 test('User can get redux data when changing reducer', () => {
   expect(() => model.allowGetData()).not.toThrowError();
 });
+
+test('onStoreCreated will invoke on created', async () => {
+  await sleep(0);
+  expect(model.name).toBe('init-name');
+});

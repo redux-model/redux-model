@@ -24,7 +24,6 @@ export class StoreHelper {
   protected _store?: Store;
   protected autoReducers: IReducers = {};
   protected userReducers: IReducers = {};
-  protected listeners: Array<(storeHelper: StoreHelper) => void> = [];
   protected dispatching: boolean = false;
   protected state: object = {};
   protected onCombined: ReduxStoreConfig['onCombineReducers'];
@@ -54,7 +53,7 @@ export class StoreHelper {
     const combined = this.combindReducers();
 
     if (this._store) {
-      // Avoid to dispatch persist data for @@redux/x.y.z triggerred by replaceReducer()
+      // Avoid to dispatch persist data of @@redux/x.y.z triggerred by replaceReducer()
       persist.rehydrate();
       this.store.replaceReducer(combined);
     } else {
@@ -63,7 +62,6 @@ export class StoreHelper {
         preloadedState,
         customCompose(applyMiddleware.apply(null, middleware || []))
       );
-      this.publish();
       persist.rehydrate();
     }
 
@@ -102,21 +100,9 @@ export class StoreHelper {
     return this.dispatching ? this.state : this.store.getState();
   }
 
-  listenOnce(fn: (storeHelper: StoreHelper) => void): this {
-    this.listeners.push(fn);
-
-    if (this._store) {
-      setTimeout(() => {
-        this.publish();
-      });
-    }
-
+  listenOnce(fn: () => void): this {
+    this.persist.listenOnce(fn);
     return this;
-  }
-
-  protected publish(): void {
-    this.listeners.forEach((listener) => listener(this));
-    this.listeners = [];
   }
 
   protected combindReducers(): Reducer {

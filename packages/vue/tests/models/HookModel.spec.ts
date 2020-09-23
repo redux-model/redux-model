@@ -1,11 +1,13 @@
 import { HookModel } from './HookModel';
 import { $api } from '../libs/ApiService';
 import { createReduxStore } from '../../src';
+import sleep from 'sleep-promise';
 
 let model: HookModel;
 
-beforeAll(() => {
+beforeAll(async () => {
   createReduxStore();
+  await sleep(10);
 });
 
 beforeEach(() => {
@@ -91,19 +93,19 @@ test('request action metas', (done) => {
     count: 15,
   });
 
-  const userLoadings = model.multipleFetch.useLoadings(5);
-  const useMetas = model.multipleFetch.useMetas(5);
+  const loadings = model.multipleFetch.useLoadings(5);
+  const metas = model.multipleFetch.useMetas(5);
 
-  expect(userLoadings.value).toBeFalsy();
+  expect(loadings.value).toBeFalsy();
 
   const promise = model.multipleFetch(5);
 
-  expect(userLoadings.value).toBeTruthy();
-  expect(useMetas.value.actionType).toBe(model.multipleFetch.getPrepareType());
+  expect(loadings.value).toBeTruthy();
+  expect(metas.value.actionType).toBe(model.multipleFetch.getPrepareType());
 
   promise.then(() => {
-    expect(userLoadings.value).toBeFalsy();
-    expect(useMetas.value.actionType).toBe(model.multipleFetch.getSuccessType());
+    expect(loadings.value).toBeFalsy();
+    expect(metas.value.actionType).toBe(model.multipleFetch.getSuccessType());
     done();
   });
 });

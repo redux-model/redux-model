@@ -47,7 +47,7 @@ export class Persist {
     this.config = config;
 
     if (!config) {
-      return this.onReady();
+      return this;
     }
 
     switch (config.storage) {
@@ -85,7 +85,8 @@ export class Persist {
   }
 
   rehydrate():void {
-    if (this.ready || !this.config) {
+    if (!this.config) {
+      this.onReady();
       return;
     }
 
@@ -238,8 +239,12 @@ export class Persist {
     this.ready = true;
 
     if (this.readyEvents.length) {
-      this.readyEvents.forEach((item) => item());
-      this.readyEvents = [];
+      // onReady will invoke before store.replaceReducer().
+      // Some reducer may be not initialized currently, so just delay to run callback.
+      setTimeout(() => {
+        this.readyEvents.forEach((item) => item());
+        this.readyEvents = [];
+      });
     }
 
     return this;
@@ -249,11 +254,7 @@ export class Persist {
     this.readyEvents.push(fn);
 
     if (this.ready) {
-      setTimeout(() => {
-        if (this.ready) {
-          this.onReady();
-        }
-      });
+      this.onReady();
     }
 
     return () => {

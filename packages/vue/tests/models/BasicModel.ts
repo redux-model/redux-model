@@ -10,6 +10,8 @@ interface Response {
 type Data = Response;
 
 export class BasicModel extends Model<Data> {
+  name = '';
+
   modify = this.action((state, payload: Partial<Data>) => {
     Object.assign(state, payload);
   });
@@ -70,6 +72,9 @@ export class BasicModel extends Model<Data> {
       id: 1,
       name: 'init-name',
     };
+  }
+  protected onStoreCreated() {
+    this.name = this.data.name;
   }
 }
 

@@ -46,35 +46,8 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly _name: string;
+  private _listenerGenerated: boolean = false;
   private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any, any>;
-
-  /**
-   * Filter data from storage. Assign model to allowlist before you can use persist:
-   *
-   * ```javascript
-   * const store = createReduxStore({
-   *   persist: {
-   *     allowlist: {
-   *       xxxModel,
-   *       yyyModel,
-   *     }
-   *   }
-   * });
-   * ```
-   *
-   * Then override this method:
-   *
-   * protected filterPersistData(): FilterPersist<Data> {
-   *   return (state) => {
-   *     // ...
-   *     // logic by mvvm
-   *   };
-   * }
-   *
-   */
-  protected filterPersistData(): FilterPersist<Data> {
-    return null;
-  }
 
   constructor(alias?: string) {
     this._name = setModel(this, alias);
@@ -82,8 +55,6 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     if (this.autoRegister()) {
       storeHelper.appendReducers(this.register());
     }
-
-    storeHelper.listenOnce((item) => this.onStoreCreated(item.store));
   }
 
   public getReducerName(): string {
@@ -141,6 +112,34 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return action as Fn & typeof action;
   }
 
+  /**
+   * Filter data from storage. Assign model to allowlist before you can use persist:
+   *
+   * ```javascript
+   * const store = createReduxStore({
+   *   persist: {
+   *     allowlist: {
+   *       xxxModel,
+   *       yyyModel,
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * Then override this method:
+   *
+   * protected filterPersistData(): FilterPersist<Data> {
+   *   return (state) => {
+   *     // ...
+   *     // logic by mvvm
+   *   };
+   * }
+   *
+   */
+  protected filterPersistData(): FilterPersist<Data> {
+    return null;
+  }
+
   protected effects(): Effects<Data> {
     return [];
   }
@@ -170,7 +169,19 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public register(): IReducers {
-    const reducer = new BaseReducer(this.getReducerName(), this.initialState(), this.effects(), this.filterPersistData());
+    if (!this._listenerGenerated) {
+      this._listenerGenerated = true;
+      storeHelper.listenOnce(() => {
+        this.onStoreCreated(storeHelper.store);
+      });
+    }
+
+    const reducer = new BaseReducer(
+      this.getReducerName(),
+      this.initialState(),
+      this.effects(),
+      this.filterPersistData()
+    );
     return reducer.createReducer();
   }
 

@@ -5,6 +5,8 @@ interface Data {
 }
 
 export class PersistModel extends Model<Data> {
+  count = 0;
+
   increase = this.action((state) => {
     state.counter += 1;
   });
@@ -17,6 +19,10 @@ export class PersistModel extends Model<Data> {
 
   protected autoRegister(): boolean {
     return false;
+  }
+
+  protected onStoreCreated() {
+    this.count = this.data.counter;
   }
 }
 
