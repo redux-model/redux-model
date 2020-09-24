@@ -45,6 +45,7 @@ export class Persist {
   setConfig(config: ReduxStoreConfig['persist']): this {
     const originalConfig = this.config;
     this.config = config;
+    this.ready = false;
 
     if (!config) {
       return this;
@@ -60,7 +61,6 @@ export class Persist {
 
     const { allowlist, version } = config;
 
-    this.ready = false;
     this.schema.__persist.version = version;
     this.allowKeys = [];
     this.mapFromModelToKey = {};
@@ -74,7 +74,6 @@ export class Persist {
 
     if (
       !originalConfig ||
-      !config ||
       originalConfig.key !== config.key ||
       originalConfig.storage !== config.storage
     ) {
@@ -243,7 +242,6 @@ export class Persist {
       // Some reducer may be not initialized currently, so just delay to run callback.
       setTimeout(() => {
         this.readyEvents.forEach((item) => item());
-        this.readyEvents = [];
       });
     }
 
