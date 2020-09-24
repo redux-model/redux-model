@@ -3,7 +3,7 @@ import cloneDeep from 'clone';
 import { applyPatch } from './diff';
 import { storeHelper } from '@redux-model/core';
 
-storeHelper.listenOnce(() => {
+storeHelper.onCreated(() => {
   const getCurrentState = storeHelper.store.getState as () => object;
   let originalState = getCurrentState();
   const observer = Vue.reactive(cloneDeep(originalState));

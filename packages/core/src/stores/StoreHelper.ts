@@ -100,7 +100,7 @@ export class StoreHelper {
     return this.dispatching ? this.state : this.store.getState();
   }
 
-  listenOnce(fn: () => void): this {
+  onCreated(fn: () => void): this {
     this.persist.listenOnce(fn);
     return this;
   }

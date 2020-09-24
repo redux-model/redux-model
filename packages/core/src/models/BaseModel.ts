@@ -171,7 +171,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   public register(): IReducers {
     if (!this._listenerGenerated) {
       this._listenerGenerated = true;
-      storeHelper.listenOnce(() => {
+      storeHelper.onCreated(() => {
         this.onStoreCreated(storeHelper.store);
       });
     }
