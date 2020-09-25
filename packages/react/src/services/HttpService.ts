@@ -10,11 +10,85 @@ export type HttpCanceler = Canceler;
 export interface FetchHandle<Response = any, Payload = any> extends SuperFetchHandle<Response, Payload, HttpCanceler> {}
 
 export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
+  /**
+   * Axios original config
+   */
   requestConfig?: AxiosRequestConfig;
+  /**
+   * Collect http-status, error-message and business-code to meta. And error-message will display by invoke method `onShowError`.
+   *
+   * ```javascript
+   * {
+   *   onRespondError(httpResponse, transform) {
+   *     if (httpResponse.data && httpResponse.data.errMsg) {
+   *       transform.message = httpResponse.data.errMsg;
+   *     }
+   *
+   *     // If http-status is always 200 and the api put real http-status into your data.
+   *     if (httpResponse.data && httpResponse.data.status) {
+   *       transform.httpStatus = httpResponse.data.status;
+   *     }
+   *   }
+   * }
+   * ```
+   *
+   * And how to get error information in your component?
+   * ```javascript
+   * const meta = xModel.yAction.useMeta(); // object includes message, httpStatus, businessCode...
+   * ```
+   */
   onRespondError: (httpResponse: HttpResponse<ErrorData>, transform: HttpTransform) => void;
+  /**
+   * Transform your data globally.
+   *
+   * Consider that you have common struct for most api `{ data: {...} }`, you are boring to use literal `data` again and again, so you want to strip it.
+   * ```javascript
+   * {
+   *   onRespondSuccess(httpResponse) {
+   *     if (httpResponse.data.data) {
+   *       httpResponse.data = httpResponse.data.data;
+   *     }
+   *   }
+   * }
+   * ```
+   */
   onRespondSuccess?: (httpResponse: HttpResponse) => void;
+  /**
+   * Inject headers for every request.
+   * ```javascript
+   * import type { TokenModel } from '../../models/TokenModel';
+   *
+   * {
+   *   headers() {
+   *     const token = (require('../../models/TokenModel').tokenModel as TokenModel).data.access_token;
+   *
+   *     return {
+   *       Authorization: `Bearer ${token}`,
+   *       Accept: 'application/json',
+   *       'Content-Encoding': 'application/json',
+   *     };
+   *   }
+   * }
+   * ```
+   */
   headers: (action: IRequestAction) => object;
+  /**
+   * Before request, you can inject or modify data as your wish.
+   */
   beforeSend?: (action: IRequestAction) => void;
+  /**
+   * When the api puts httpStatus to your data struct such as `{ status: 400, msg: ..., data: ... }`, unfortunately, we only recognize standard httpStatus. At this time, you have to judge by yourself.
+   *
+   * ```javascript
+   * {
+   *   isSuccess(httpResponse) {
+   *     const status = httpResponse.data && httpResponse.data.status;
+   *
+   *     return status >= 200 && status < 300;
+   *   }
+   * }
+   * ```
+   */
   isSuccess?: (httpResponse: HttpResponse) => boolean;
   /**
    * @deprecated

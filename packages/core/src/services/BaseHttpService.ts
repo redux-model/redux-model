@@ -23,12 +23,60 @@ export type PickPayload<T> = T extends (...args: any[]) => HttpServiceBuilderWit
 export type PickMeta<T> = T extends (...args: any[]) => HttpServiceBuilderWithMetas<any, any, any, any, infer M> ? M : never;
 
 export interface BaseHttpServiceConfig {
+  /**
+   * The common url prefix.
+   * @example http://api.com
+   * @example http://api.com/api
+   */
   baseUrl: string;
   requestConfig?: object;
+  /**
+   * Display your success message to the screen. It only happens when you specific the successText in action.
+   * ```javascript
+   * $api.action((data) => {
+   *    return this
+   *      .post('/api')
+   *      .body(data)
+   *      .successText('Created');
+   * });
+   * ```
+   * And in service
+   * ```javascript
+   * {
+   *   onShowSuccess(message) {
+   *     alert(message);
+   *   }
+   * }
+   * ```
+   */
   onShowSuccess: (successText: string, action: IResponseAction) => void;
+  /**
+   * Display your error message to the screen.
+   * ```javascript
+   * {
+   *   onShowError(message) {
+   *     alert(message);
+   *   }
+   * }
+   * ```
+   */
   onShowError: (errorText: string, action: IResponseAction) => void;
+  /**
+   * Collect error message for request timeout.
+   */
   timeoutMessage?: (originalText: string) => string;
+  /**
+   * Collect error message for network is unavailable.
+   */
   networkErrorMessage?: (originalText: string) => string;
+  /**
+   * Control the throttle token
+   * {
+   *  throttleTransfer(options) {
+   *    delete options.query.__timestamp__;
+   *  }
+   * }
+   */
   throttleTransfer?: NonNullable<ThrottleKeyOption['transfer']>,
 }
 

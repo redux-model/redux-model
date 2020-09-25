@@ -11,10 +11,10 @@ interface ErrorData {
 }
 
 const $api = new HttpService<ErrorData>({
-  onRespondError(response, transform) {
-    if (response.errcode) {
-      transform.businessCode = response.errcode;
-      transform.message = response.errmsg;
+  onRespondError(httpResponse, transform) {
+    if (httpResponse.errcode) {
+      transform.businessCode = httpResponse.errcode;
+      transform.message = httpResponse.errmsg;
     }
   },
 });
