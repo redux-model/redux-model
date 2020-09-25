@@ -174,3 +174,66 @@ const $api = new HttpService({
 正常情况下，节流已经很智能，即使您在报头中变更了token，也是相当于重新建立了节流缓存。
 
 但如果您想手动清除节流缓存，可以执行方法：`model.action.clearThrottle()`
+
+### Graphql请求
+
+Redux默认都是处理Restful接口，现在我们赋予它支持Graphql的能力。
+
+```bash
+yarn add @redux-model/graphql
+```
+您也可以访问[这个仓库](https://github.com/redux-model/graphql)以获得全部信息
+
+--------------------
+
+我们知道，原始模板不仅枯燥，而且写完就是一串字符串，根本没有类型提示。在TS项目，如果再手写一遍类型，这个是无法忍受的。如果您通过cli自动生成类型，也会面临维护不及时的困扰，而且这不符合懒人的气质。
+```
+query getUser {
+  getUser {
+    id
+    name
+    bankAccount {
+      id
+      branch
+    }
+  }
+}
+```
+
+所以现在，我们打算合二为一，既生成了模板，又得到了类型提示。在减少代码量的同时也增强了后期维护的便利性。
+
+```typescript
+import { type, graphql } from '@redux-model/graphql';
+
+const tpl = graphql.query({
+  getUser: {
+    id: type.number,   // number
+    name: type.string, // string
+    bankAccount: {     // object
+      id: type.number,
+      branch: type.string.number,   // string | number
+    },
+  }
+});
+
+type Response = typeof tpl.type;
+
+type Data = {
+  list?: Response;
+}
+
+class TestModel extends Model<Data> {
+  getUser = $api.action(() => {
+    return this
+      .post<Response>('/graphql')
+      .graphql(tpl)
+      .onSuccess((state, action) => {
+        state.list = action.response;
+      });
+  });
+
+  protected initialState(): Data {
+    return {};
+  }
+}
+```
