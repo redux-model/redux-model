@@ -13,8 +13,18 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   onCombineReducers?: (reducer: Reducer) => Reducer;
   persist?: {
     version: string | number;
+    /**
+     * The storage key
+     */
     key: string;
     storage: PersistStorage | Engine;
+    /**
+     * {
+     *   xModel,
+     *   yModel,
+     *   zModel,
+     * }
+     */
     allowlist: Record<string, BaseModel<any>>;
   };
 }

@@ -61,6 +61,12 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return this._name;
   }
 
+  /**
+   * The redux data for this model. The same as `store.getState()[model.getReducerName()]`
+   *
+   * @throws NullReducerError
+   * @throws ForgetRegisterError
+   */
   public get data(): Data extends null ? never : Data {
     const data = storeHelper.getState()[this._name];
 
@@ -75,6 +81,24 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return data;
   }
 
+  /**
+   * The same as action(), but it's a type of IIFE, we can't not use it twice.
+   *
+   * ```javascript
+   * class TestModel extends Model {
+   *   custom() {
+   *     this.changeState((state) => {
+   *       state.amount += 1;
+   *     });
+   *
+   *     this.changeState((state) => {
+   *       state.amount += 2;
+   *     });
+   *   }
+   * }
+   * ```
+   * @see action()
+   */
   protected changeState(fn: (state: State<Data>) => StateReturn<Data>): IActionNormal<Data, null> {
     // Make sure reducer is registered and initData not null.
     this.data;
@@ -89,6 +113,17 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return this._action();
   }
 
+  /**
+   * Common action to change state.
+   *
+   * ```javascript
+   * class TestModel extends Model {
+   *   add = this.action((state, count: number) => {
+   *     state.amount += count;
+   *   });
+   * }
+   * ```
+   */
   protected action<Fn extends (state: State<Data>, payload: any) => StateReturn<Data>, After extends (action: IActionPayload<CreateNormalActionPayload<Fn>>) => void>(
     changeState: Fn,
     options?: {
@@ -106,6 +141,30 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return action as CreateNormalActionEffect<Data, Fn> & typeof action;
   }
 
+  /**
+   * The action which compose aysnchorize program and hold loading.
+   * ```
+   * class TestModel extends Model {
+   *   updateRoom = this.compose(async (id: number) => {
+   *     const roomId = await getRoomId(id);
+   *     const userId = await getUserId(roomId);
+   *
+   *     this.changeState((state) => {
+   *       state.push([userId, roomId]);
+   *     });
+   *   });
+   * }
+   *
+   * const testModel = new TestModel();
+   *
+   * -------------
+   *
+   * // Hold loading
+   * const loading = testModel.updateRoom.useLoading();
+   * // Dispatch action
+   * const promise = testModel.updateRoom(10);
+   * ```
+   */
   protected compose<Fn extends (...args: any[]) => Promise<any>>(fn: Fn): Fn & ComposeAction<Data, Fn> {
     const action = new ComposeAction(this, fn);
 
@@ -140,34 +199,93 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return null;
   }
 
+  /**
+   * The listeners subscribe events from other models.
+   * ```javascript
+   * import { Effects } from '@redux-model/*';
+   *
+   * class TestModel extends Model<Data> {
+   *
+   *   protected effects(): Effects<Data> {
+   *     return [
+   *       aModel.xxAction.onSuccess((state, action) => {
+   *          // Chagnge state here.
+   *          // The 'state' belongs to TestModel, and 'action' belongs to aModel.
+   *
+   *          // state.name = action.response.name;
+   *          // state.name = action.payload.name;
+   *       }),
+   *
+   *       aModel.xxAction.afterSuccess((action) => {
+   *          // Dispatch more action here.
+   *       }),
+   *
+   *        ...
+   *     ];
+   *   }
+   * }
+   * ```
+   */
   protected effects(): Effects<Data> {
     return [];
   }
 
+  /**
+   * Request get method
+   */
   protected get<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     return this._createBuilder<Response>(uri, METHOD.get);
   }
 
+  /**
+   * Request post method
+   */
   protected post<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     return this._createBuilder<Response>(uri, METHOD.post);
   }
 
+  /**
+   * Request put method
+   */
   protected put<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     return this._createBuilder<Response>(uri, METHOD.put);
   }
 
+  /**
+   * Request delete method
+   */
   protected delete<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     return this._createBuilder<Response>(uri, METHOD.delete);
   }
 
+  /**
+   * Request patch method
+   */
   protected patch<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     return this._createBuilder<Response>(uri, METHOD.patch);
   }
 
+  /**
+   * Request connect method
+   */
   protected connect<Response>(uri: string): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     return this._createBuilder<Response>(uri, METHOD.connect);
   }
 
+  /**
+   * Register reducer to store. Ignore this method because it's automatically.
+   *
+   * @see constructor()
+   * @see autoRegister()
+   *
+   * ```javascript
+   * const store = createReduxStore({
+   *   reducers: {
+   *     ...xModel.register(),
+   *   }
+   * });
+   * ```
+   */
   public register(): IReducers {
     if (!this._listenerGenerated) {
       this._listenerGenerated = true;
@@ -185,15 +303,26 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     return reducer.createReducer();
   }
 
+  /**
+   * Determinal register behavior is automatically or manually.
+   * Default returns `true`
+   */
   protected autoRegister(): boolean {
     return true;
   }
 
+  /**
+   * The callback on store is created and persist rehydrate is complete.
+   */
   protected onStoreCreated(
     // @ts-ignore
     store: Store
   ): void {}
 
+  /**
+   * The initial state for reducer.
+   * When you enable persist to effect this model, the persist data will override it.
+   */
   protected abstract initialState(): Data;
 
   private _createBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {

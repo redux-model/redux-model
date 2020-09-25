@@ -32,18 +32,36 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     this.config = config;
   }
 
+  /**
+   * Query String on url.
+   */
   public query(query: object): this {
     this.config.query = query;
 
     return this;
   }
 
+  /**
+   * The data you want to send.
+   */
   public body(body: object): this {
     this.config.body = body;
 
     return this;
   }
 
+  /**
+   * Graphql template instead of body
+   *
+   * @see https://github.com/redux-model/graphql
+   *
+   * ```javascript
+   * this.post('/graphql').graphql({
+   *   query: `...template...`,
+   *   variables: { ... },
+   * });
+   * ```
+   */
   public graphql(tpl: ((args: object) => Graphql) | Graphql): this {
     let data = typeof tpl === 'function' ? tpl({}) : tpl;
 
@@ -56,12 +74,34 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
+  /**
+   * The message for successful request.
+   *
+   * ```typescript
+   * const $api = new HttpService({
+   *   onShowSuccess(message) {
+   *     alert(message);
+   *   }
+   * });
+   * ```
+   */
   public successText(text: string): this {
     this.config.successText = text;
 
     return this;
   }
 
+  /**
+   * The message for error request.
+   *
+   * ```typescript
+   * const $api = new HttpService({
+   *   onShowError(message) {
+   *     alert(message);
+   *   }
+   * });
+   * ```
+   */
   public failText(text: string): this {
     this.config.failText = text;
 
@@ -74,12 +114,25 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
+  /**
+   * Don't show error message for this request. Default `false`, we will always show error message.
+   */
   public hideError(is: boolean | ((response: IResponseAction<unknown, Payload>) => boolean)): this {
     this.config.hideError = is;
 
     return this;
   }
 
+  /**
+   * Use cache data to interrupt request. Consider to use it only for get method.
+   *
+   * ```javascript
+   * this.get('/user').throttle({
+   *   // The cache expire after 10 seconds.
+   *   duration: 10000,
+   * });
+   * ```
+   */
   public throttle(options: ThrottleOptions): this {
     this.config.throttle = {
       enable: options.duration > 0 && options.enable !== false,
@@ -91,18 +144,63 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
+  /**
+   * The payload for model.effects()
+   *
+   * ```javascript
+   * class AModel extends Model {
+   *   getUser = $api.action((id: number) => {
+   *     return this.get(`/users/${id}`).payload({ id });
+   *   });
+   * }
+   *
+   * const aModel = new AModel();
+   *
+   * ---------
+   *
+   * class BModel extends Model {
+   *   protected effects(): Effects<Data> {
+   *     return [
+   *       aModel.getUser.onSuccess((state, action) => {
+   *         // action.payload.id
+   *       }).
+   *     ];
+   *   }
+   * }
+   * ```
+   */
   public payload<T>(payload: T): M extends true
     ? HttpServiceBuilderWithMeta<Data, Response, T, RequestOption, true>
     : HttpServiceBuilderWithMetas<Data, Response, T, RequestOption, M>
   {
     // @ts-ignore
-    // @ts-expect-error
     this.config.payload = payload;
     // @ts-ignore
-    // @ts-expect-error
     return this;
   }
 
+  /**
+   * Collect meta for each request
+   *
+   * ```javascript
+   * class TestModel extends Model {
+   *   getUser = $api.action((id: number) => {
+   *      return this.get('/user').metas(id);
+   *   });
+   * }
+   *
+   * const testModel = new TestModel();
+   *
+   * -------
+   *
+   * testModel.getUser.metas.pick(1);
+   * testModel.getUser.loadings.pick(1);
+   * testModel.getUser.useMetas(1);
+   * testModel.getUser.useMetas().pick(1);
+   * testModel.getUser.useLoadings(1);
+   * testModel.getUser.useLoadings().pick(1);
+   * ```
+   */
   public metas(value: string): HttpServiceBuilderWithMetas<Data, Response, Payload, RequestOption, string>;
   public metas(value: number): HttpServiceBuilderWithMetas<Data, Response, Payload, RequestOption, number>;
   public metas(value: symbol): HttpServiceBuilderWithMetas<Data, Response, Payload, RequestOption, symbol>;
@@ -110,16 +208,21 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     this.config.metaKey = value;
 
     // @ts-ignore
-    // @ts-expect-error
     return this;
   };
 
+  /**
+   * Change state before send
+   */
   public onPrepare(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['onPrepare']>): this {
     this.config.onPrepare = fn;
 
     return this;
   }
 
+  /**
+   * Dispatch more action before send
+   */
   public afterPrepare(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterPrepare']>, duration?: number): this {
     this.config.afterPrepare = fn;
     this.config.afterPrepareDuration = duration;
@@ -127,12 +230,18 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
+  /**
+   * Change state when request success
+   */
   public onSuccess(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['onSuccess']>): this {
     this.config.onSuccess = fn;
 
     return this;
   }
 
+  /**
+   * Dispatch more action when request success
+   */
   public afterSuccess(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterSuccess']>, duration?: number): this {
     this.config.afterSuccess = fn;
     this.config.afterSuccessDuration = duration;
@@ -140,12 +249,18 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
     return this;
   }
 
+  /**
+   * Change state when request fail
+   */
   public onFail(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['onFail']>): this {
     this.config.onFail = fn;
 
     return this;
   }
 
+  /**
+   * Dispatch more action when request fail
+   */
   public afterFail(fn: NonNullable<IBaseRequestAction<Data, Response, Payload>['afterFail']>, duration?: number): this {
     this.config.afterFail = fn;
     this.config.afterFailDuration = duration;

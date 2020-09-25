@@ -26,6 +26,30 @@ export abstract class Model<Data = null> extends BaseModel<Data, AxiosRequestCon
     });
   }
 
+  /**
+   * The action which compose aysnchorize program and hold loading.
+   * ```
+   * class TestModel extends Model {
+   *   updateRoom = this.compose(async (id: number) => {
+   *     const roomId = await getRoomId(id);
+   *     const userId = await getUserId(roomId);
+   *
+   *     this.changeState((state) => {
+   *       state.push([userId, roomId]);
+   *     });
+   *   });
+   * }
+   *
+   * const testModel = new TestModel();
+   *
+   * -------------
+   *
+   * // Hold loading
+   * const loading = testModel.updateRoom.useLoading();
+   * // Dispatch action
+   * const promise = testModel.updateRoom(10);
+   * ```
+   */
   protected compose<Fn extends (...args: any[]) => Promise<any>>(fn: Fn): Fn & ComposeAction<Data, Fn> {
     const action = new ComposeAction<Data, Fn>(this, fn);
 

@@ -34,6 +34,9 @@ export class NormalAction<Data, ChangeState extends (state: State<Data>, payload
     this.effect = fn;
   }
 
+  /**
+   * For model.effects()
+   */
   public onSuccess<CustomData>(changeState: NonNullable<NormalSubscriber<CustomData, Payload>['then']>): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),
@@ -41,6 +44,9 @@ export class NormalAction<Data, ChangeState extends (state: State<Data>, payload
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['after']>, duration?: number): NormalSubscriber<CustomData, Payload> {
     return {
       when: this.getSuccessType(),

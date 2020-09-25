@@ -111,14 +111,44 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     this.service.clearThrottle(this.getName());
   }
 
+  /**
+   * Information collected from service.
+   * ```javascript
+   * class TestModel extends Model {
+   *   getUser = $api.action((id: number) => {
+   *     return this
+   *      .get('/api')
+   *      .metas(id)
+   *      .onSuccess(() => {})
+   *   });
+   * }
+   *
+   * const testModel = new TestModel();
+   *
+   * // Get information
+   * testModel.getUser.metas.pick(1).httpStatus;
+   * // Dispatch action
+   * testModel.getUser(1);
+   * ```
+   */
   public get metas(): Metas<M> {
     return metaReducer.getMeta(this.getName()) || DEFAULT_METAS;
   }
 
+  /**
+   * @see get metas()
+   *
+   * ```javascript
+   * testModel.getUser.loadings.pick(1);
+   * ```
+   */
   public get loadings(): MetasLoading<M> {
     return this.getLoadingHandler(this.metas);
   }
 
+  /**
+   * For model.effects()
+   */
   public onSuccess<CustomData>(changeState: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['then']>): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
@@ -126,6 +156,9 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterSuccess<CustomData>(callback: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
       when: this.getSuccessType(),
@@ -134,6 +167,9 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public onPrepare<CustomData>(changeState: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['then']>): RequestPrepareSubscriber<CustomData, Payload> {
     return {
       when: this.getPrepareType(),
@@ -141,6 +177,9 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterPrepare<CustomData>(callback: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['after']>, duration?: number): RequestPrepareSubscriber<CustomData, Payload> {
     return {
       when: this.getPrepareType(),
@@ -149,6 +188,9 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public onFail<CustomData>(changeState: NonNullable<RequestFailSubscriber<CustomData, Payload>['then']>): RequestFailSubscriber<CustomData, Payload> {
     return {
       when: this.getFailType(),
@@ -156,6 +198,9 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterFail<CustomData>(callback: NonNullable<RequestFailSubscriber<CustomData, Payload>['after']>, duration?: number): RequestFailSubscriber<CustomData, Payload> {
     return {
       when: this.getFailType(),

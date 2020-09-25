@@ -76,6 +76,9 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     }
   }
 
+  /**
+   * For model.effects()
+   */
   public onSuccess<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
@@ -83,6 +86,9 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getSuccessType(),
@@ -91,6 +97,9 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public onPrepare<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
@@ -98,6 +107,9 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getPrepareType(),
@@ -106,6 +118,9 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public onFail<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
@@ -113,6 +128,9 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
     };
   }
 
+  /**
+   * For model.effects()
+   */
   public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
       when: this.getFailType(),
