@@ -16,9 +16,14 @@ export interface FetchHandle<Response = any, Payload = any> extends SuperFetchHa
 export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
   requestConfig?: TaroRequestConfig;
   onRespondError: (httpResponse: HttpResponse<ErrorData>, transform: HttpTransform) => void;
+  onRespondSuccess?: (httpResponse: HttpResponse) => void;
   headers: (action: IRequestAction) => object;
   beforeSend?: (action: IRequestAction) => void;
-  isSuccess?: (response: HttpResponse) => boolean;
+  isSuccess?: (httpResponse: HttpResponse) => boolean;
+  /**
+   * @deprecated
+   * This property will be removed at version 9.0.0, consider to use onRespondSuccess() instead.
+   */
   transformSuccessData?: (data: any, headers: any) => any;
 }
 
@@ -126,20 +131,25 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     let successInvoked = false;
 
     const promise = task
-      .then((response) => {
-        if (response.statusCode < 200 || response.statusCode >= 300 || (this.config.isSuccess && !this.config.isSuccess(response))) {
-          return Promise.reject(response);
+      .then((httpResponse) => {
+        if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 || (this.config.isSuccess && !this.config.isSuccess(httpResponse))) {
+          return Promise.reject(httpResponse);
+        }
+
+        if (this.config.onRespondSuccess) {
+          this.config.onRespondSuccess(httpResponse);
         }
 
         if (this.config.transformSuccessData) {
-          response.data = this.config.transformSuccessData(response.data, response.header);
+          console.error('[Warning] transformSuccessData is deprecated and will be removed at v9.0.0, consider to use onRespondSuccess instead');
+          httpResponse.data = this.config.transformSuccessData(httpResponse.data, httpResponse.header);
         }
 
         const okAction: RequestSuccessAction = {
           ...action,
           type: success,
           loading: false,
-          response: response.data,
+          response: httpResponse.data,
           effect: action.onSuccess,
           after: action.afterSuccess,
           afterDuration: action.afterSuccessDuration,
