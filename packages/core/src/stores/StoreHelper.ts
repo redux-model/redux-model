@@ -6,6 +6,9 @@ import { Persist, PersistStorage } from './Persist';
 import ACTION_TYPES from '../utils/actionType';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {
+  /**
+   * Accept custom reducer which is not created by model.
+   */
   reducers?: IReducers;
   compose?: 'default' | 'redux-devtools' | typeof compose;
   middleware?: Middleware[];
@@ -70,24 +73,22 @@ export class StoreHelper {
       this.reducers[key] = reducers[key];
     });
 
-    persist.setConfig(config.persist);
+    persist.rehydrate(config.persist);
 
     const combined = this.combineReducers();
+    let store = this._store;
 
-    if (this._store) {
-      // Avoid to dispatch persist data of @@redux/x.y.z triggerred by replaceReducer()
-      persist.rehydrate();
-      this.store.replaceReducer(combined);
+    if (store) {
+      store.replaceReducer(combined);
     } else {
-      this._store = createStore(
+      store = this._store = createStore(
         combined,
         preloadedState,
         customCompose(applyMiddleware.apply(null, middleware || []))
       );
-      persist.rehydrate();
     }
 
-    return this.store;
+    return store;
   }
 
   appendReducers(autoReducer: IReducers): void {
@@ -95,11 +96,12 @@ export class StoreHelper {
     const key = Object.keys(autoReducer)[0];
 
     if (key) {
-      const exists = this.reducers.hasOwnProperty(key);
+      const store = this._store;
+      const exists = store && this.reducers.hasOwnProperty(key);
       this.reducers[key] = autoReducer[key];
 
-      if (!exists && this._store) {
-        this._store.replaceReducer(this.combineReducers());
+      if (!exists && store) {
+        store.replaceReducer(this.combineReducers());
       }
     }
   }

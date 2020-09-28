@@ -29,7 +29,7 @@ export class Persist {
   protected subscription: string[] = [];
   protected readyEvents: Function[] = [];
 
-  // @ts-ignore It will exists by setConfig()
+  // @ts-ignore It will exists by rehydrate()
   protected storage: PersistStorage;
 
   protected restoreTimer?: NodeJS.Timeout;
@@ -42,104 +42,48 @@ export class Persist {
     };
   }
 
-  setConfig(config: ReduxStoreConfig['persist']): this {
+  rehydrate(config: ReduxStoreConfig['persist']): void {
     const originalConfig = this.config;
     this.config = config;
     this.ready = false;
 
     if (!config) {
-      return this;
+      return void this.onReady();
     }
 
-    switch (config.storage) {
-      case 'memory':
-        this.storage = memory;
-        break;
-      default:
-        this.storage = config.storage;
-    }
+    const { allowlist, version, storage } = config;
 
-    const { allowlist, version } = config;
-
+    this.storage = storage === 'memory' ? memory : storage;
     this.schema.__persist.version = version;
     this.allowKeys = [];
     this.mapFromModelToKey = {};
 
     Object.keys(allowlist).forEach((key) => {
       const model = allowlist[key];
-
       this.allowKeys.push(key);
       this.mapFromModelToKey[model.getReducerName()] = key;
     });
 
     if (
-      !originalConfig ||
-      originalConfig.key !== config.key ||
-      originalConfig.storage !== config.storage
+      this.cacheData !== undefined &&
+      (
+        !originalConfig ||
+        originalConfig.key !== config.key ||
+        originalConfig.storage !== config.storage
+      )
     ) {
       this.cacheData = undefined;
     }
 
-    return this;
-  }
-
-  rehydrate():void {
-    if (!this.config) {
-      this.onReady();
-      return;
-    }
-
-    if (this.cacheData !== undefined) {
-      this.parseData(this.cacheData);
-      return;
-    }
-
-    this.storage
-      .getItem(this.keyPrefix + this.config.key)
-      .then((data) => {
-        this.cacheData = data;
-        this.parseData(data);
-      });
-  }
-
-  protected parseData(data: string | null): void {
-    if (!this.config) {
-      return;
-    }
-
-    if (data === null) {
-      this.resetAndRestore().onParsed().onReady();
-      return;
-    }
-
-    try {
-      const tempReducers = JSON.parse(data);
-      if (tempReducers.__persist.version === this.config.version) {
-        let shouldRestore = false;
-        delete tempReducers.__persist;
-
-        this.persistReducers = {};
-        Object.keys(tempReducers).forEach((key) => {
-          if (~this.allowKeys.indexOf(key)) {
-            this.serializedStrings[key] = tempReducers[key];
-            this.persistReducers[key] = JSON.parse(tempReducers[key]);
-          } else {
-            shouldRestore = shouldRestore || true;
-          }
+    if (this.cacheData === undefined) {
+      this.storage
+        .getItem(this.keyPrefix + config.key)
+        .then((data) => {
+          config === this.config && this.parseData(this.cacheData = data);
         });
-
-        if (shouldRestore) {
-          this.restore();
-        }
-      } else {
-        this.resetAndRestore();
-      }
-    } catch (e) {
-      this.resetAndRestore();
-      console.error('Unable to parse persist reducers from storage: ' + e.message);
+    } else {
+      this.parseData(this.cacheData);
     }
-
-    this.onParsed().onReady();
   }
 
   update(nextState: any, force: boolean): void {
@@ -200,6 +144,64 @@ export class Persist {
     return this.persistReducers[key];
   }
 
+  listen(fn: () => void): Function {
+    this.readyEvents.push(fn);
+
+    if (this.ready) {
+      this.onReady();
+    }
+
+    return () => {
+      this.readyEvents = this.readyEvents.filter((item) => item !== fn);
+    };
+  };
+
+  listenOnce(fn: () => void): Function {
+    const unlisten = this.listen(() => {
+      unlisten();
+      fn();
+    });
+
+    return unlisten;
+  }
+
+  protected parseData(data: string | null): void {
+    if (!this.config) {
+      return;
+    }
+
+    if (data === null) {
+      return void this.resetAndRestore().onParsed().onReady();
+    }
+
+    try {
+      const tempReducers = JSON.parse(data);
+      if (tempReducers.__persist.version === this.config.version) {
+        let shouldRestore = false;
+        delete tempReducers.__persist;
+
+        this.persistReducers = {};
+        Object.keys(tempReducers).forEach((key) => {
+          if (~this.allowKeys.indexOf(key)) {
+            this.serializedStrings[key] = tempReducers[key];
+            this.persistReducers[key] = JSON.parse(tempReducers[key]);
+          } else {
+            shouldRestore = true;
+          }
+        });
+
+        shouldRestore && this.restore();
+      } else {
+        this.resetAndRestore();
+      }
+    } catch (e) {
+      this.resetAndRestore();
+      console.error('Unable to parse persist reducers from storage: ' + e.message);
+    }
+
+    this.onParsed().onReady();
+  }
+
   protected onParsed(): this {
     if (this.subscription.length) {
       const payload: Record<string, any> = {};
@@ -246,27 +248,6 @@ export class Persist {
     }
 
     return this;
-  }
-
-  listen(fn: () => void): Function {
-    this.readyEvents.push(fn);
-
-    if (this.ready) {
-      this.onReady();
-    }
-
-    return () => {
-      this.readyEvents = this.readyEvents.filter((item) => item !== fn);
-    };
-  };
-
-  listenOnce(fn: () => void): Function {
-    const unlisten = this.listen(() => {
-      unlisten();
-      fn();
-    });
-
-    return unlisten;
   }
 
   protected restore(): this {
