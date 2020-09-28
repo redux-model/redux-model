@@ -1,4 +1,4 @@
-import { Store, PreloadedState, Reducer, combineReducers, createStore, AnyAction, Middleware, compose, applyMiddleware } from 'redux';
+import { Store, PreloadedState, Reducer, createStore, AnyAction, Middleware, compose, applyMiddleware } from 'redux';
 import { IReducers } from '../reducers/BaseReducer';
 import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { BaseModel } from '../models/BaseModel';
@@ -10,6 +10,9 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   compose?: 'default' | 'redux-devtools' | typeof compose;
   middleware?: Middleware[];
   preloadedState?: PreloadedState<any>;
+  /**
+   * @deprecated Will be removed at v9.0.0
+   */
   onCombineReducers?: (reducer: Reducer) => Reducer;
   persist?: {
     version: string | number;
@@ -32,10 +35,12 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
 export class StoreHelper {
   protected readonly _persist: Persist;
   protected _store?: Store;
-  protected autoReducers: IReducers = {};
-  protected userReducers: IReducers = {};
+  protected reducers: IReducers = {};
   protected dispatching: boolean = false;
   protected state: object = {};
+  /**
+   * @deprecated
+   */
   protected onCombined: ReduxStoreConfig['onCombineReducers'];
 
   constructor() {
@@ -56,11 +61,18 @@ export class StoreHelper {
     })();
     const persist = this._persist;
 
-    this.onCombined = onCombineReducers;
-    this.userReducers = reducers || {};
+    if (onCombineReducers) {
+      console.error('[Warning] onCombineReducers is deprecated and will be removed at v9.0.0');
+      this.onCombined = onCombineReducers;
+    }
+
+    reducers && Object.keys(reducers).forEach((key) => {
+      this.reducers[key] = reducers[key];
+    });
+
     persist.setConfig(config.persist);
 
-    const combined = this.combindReducers();
+    const combined = this.combineReducers();
 
     if (this._store) {
       // Avoid to dispatch persist data of @@redux/x.y.z triggerred by replaceReducer()
@@ -79,14 +91,16 @@ export class StoreHelper {
   }
 
   appendReducers(autoReducer: IReducers): void {
-    // Only 0 or 1 reducer will be provided.
+    // Only 0-1 reducer will be provided.
     const key = Object.keys(autoReducer)[0];
 
     if (key) {
-      this.autoReducers[key] = autoReducer[key];
+      const exists = this.reducers.hasOwnProperty(key);
+      this.reducers[key] = autoReducer[key];
 
-      const store = this._store;
-      store && store.replaceReducer(this.combindReducers());
+      if (!exists && this._store) {
+        this._store.replaceReducer(this.combineReducers());
+      }
     }
   }
 
@@ -106,39 +120,56 @@ export class StoreHelper {
     return this.store.dispatch(action);
   }
 
-  getState(): object {
+  getState(): { readonly [key: string]: any } {
     return this.dispatching ? this.state : this.store.getState();
   }
 
-  onCreated(fn: () => void): this {
-    this.persist.listenOnce(fn);
-    return this;
+  onCreated(fn: () => void): Function {
+    return this.persist.listenOnce(fn);
   }
 
-  protected combindReducers(): Reducer {
-    let combined = combineReducers({
-      ...this.autoReducers,
-      ...this.userReducers,
-    });
-    if (this.onCombined) {
-      combined = this.onCombined(combined);
-    }
+  protected combineReducers(): Reducer {
+    const reducerKeys = Object.keys(this.reducers);
+    const keyLength = reducerKeys.length;
 
-    return (state, action) => {
+    let combined: Reducer = (state, action) => {
+      if (state === undefined) {
+        state = {};
+      }
+
       this.dispatching = true;
       this.state = state;
 
-      let mainResult = combined(state, action);
+      const nextState = {};
+      let hasChanged = false;
 
-      if (this.state !== mainResult) {
-        this.persist.update(mainResult, action.type === ACTION_TYPES.persist);
+      for (let i = 0; i < keyLength; ++i) {
+        const key = reducerKeys[i];
+        const reducer = this.reducers[key];
+        const previousStateForKey = state[key];
+        const nextStateForKey = reducer(previousStateForKey, action);
+
+        nextState[key] = nextStateForKey;
+        hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+      }
+
+      hasChanged = hasChanged || keyLength !== Object.keys(state).length;
+
+      if (hasChanged) {
+        this.persist.update(nextState, action.type === ACTION_TYPES.persist);
       }
 
       this.dispatching = false;
       this.state = {};
 
-      return mainResult;
+      return hasChanged ? nextState : state;
     };
+
+    if (this.onCombined) {
+      return this.onCombined(combined);
+    }
+
+    return combined;
   }
 }
 

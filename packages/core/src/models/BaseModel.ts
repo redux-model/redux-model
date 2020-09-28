@@ -273,6 +273,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   /**
+   * @deprecated will be removed at v9.0.0
    * Register reducer to store. Ignore this method because it's automatically.
    *
    * @see constructor()
@@ -285,10 +286,12 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    *   }
    * });
    * ```
+   *
    */
   public register(): IReducers {
     if (!this._listenerGenerated) {
       this._listenerGenerated = true;
+      // TODO: Move it to constructor since v9.0.0
       storeHelper.onCreated(() => {
         this.onStoreCreated(storeHelper.store);
       });
@@ -304,8 +307,9 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   /**
+   * @deprecated Will be removed at v9.0.0
    * Determinal register behavior is automatically or manually.
-   * Default returns `true`
+   * @default true
    */
   protected autoRegister(): boolean {
     return true;

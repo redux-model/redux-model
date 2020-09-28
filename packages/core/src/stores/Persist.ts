@@ -260,11 +260,13 @@ export class Persist {
     };
   };
 
-  listenOnce(fn: () => void): void {
+  listenOnce(fn: () => void): Function {
     const unlisten = this.listen(() => {
       unlisten();
       fn();
     });
+
+    return unlisten;
   }
 
   protected restore(): this {
