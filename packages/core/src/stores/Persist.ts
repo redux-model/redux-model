@@ -23,7 +23,7 @@ export class Persist {
   protected allowKeys: string[] = [];
   protected mapFromModelToKey: Record<string, string | undefined> = {};
 
-  protected persistReducers: Record<string, any> = {};
+  protected persistStates: Record<string, any> = {};
   protected serializedStrings: Record<string, string> = {};
 
   protected subscription: string[] = [];
@@ -96,7 +96,7 @@ export class Persist {
       return;
     }
 
-    const tempState: Record<string, any> = { ...this.persistReducers };
+    const tempState: Record<string, any> = { ...this.persistStates };
     let changed: boolean = false;
 
     Object.keys(this.mapFromModelToKey).forEach((reducerName) => {
@@ -104,7 +104,7 @@ export class Persist {
 
       tempState[key] = nextState[reducerName];
 
-      if (nextState[reducerName] !== this.persistReducers[key]) {
+      if (nextState[reducerName] !== this.persistStates[key]) {
         const tempString = JSON.stringify(nextState[reducerName]);
 
         changed = changed || this.serializedStrings[key] !== tempString;
@@ -112,7 +112,7 @@ export class Persist {
       }
     });
 
-    this.persistReducers = tempState;
+    this.persistStates = tempState;
 
     if (changed) {
       this.restore();
@@ -141,7 +141,7 @@ export class Persist {
       return;
     }
 
-    return this.persistReducers[key];
+    return this.persistStates[key];
   }
 
   listen(fn: () => void): Function {
@@ -175,16 +175,16 @@ export class Persist {
     }
 
     try {
-      const tempReducers = JSON.parse(data);
-      if (tempReducers.__persist.version === this.config.version) {
+      const tempStates = JSON.parse(data);
+      if (tempStates.__persist.version === this.config.version) {
         let shouldRestore = false;
-        delete tempReducers.__persist;
+        delete tempStates.__persist;
 
-        this.persistReducers = {};
-        Object.keys(tempReducers).forEach((key) => {
+        this.persistStates = {};
+        Object.keys(tempStates).forEach((key) => {
           if (~this.allowKeys.indexOf(key)) {
-            this.serializedStrings[key] = tempReducers[key];
-            this.persistReducers[key] = JSON.parse(tempReducers[key]);
+            this.serializedStrings[key] = tempStates[key];
+            this.persistStates[key] = JSON.parse(tempStates[key]);
           } else {
             shouldRestore = true;
           }
@@ -212,7 +212,7 @@ export class Persist {
 
         if (persistKey) {
           canDispatch = true;
-          payload[reducerName] = this.persistReducers[persistKey];
+          payload[reducerName] = this.persistStates[persistKey];
         }
       });
       this.subscription = [];
@@ -229,7 +229,7 @@ export class Persist {
   }
 
   protected resetAndRestore(): this {
-    this.persistReducers = {};
+    this.persistStates = {};
     this.subscription = [];
     this.restore();
 
@@ -269,7 +269,7 @@ export class Persist {
     const strings = {};
 
     // Restore existing reducers
-    Object.keys(this.persistReducers).forEach((key) => {
+    Object.keys(this.persistStates).forEach((key) => {
       strings[key] = this.serializedStrings[key];
     });
 
