@@ -39,6 +39,7 @@ export class StoreHelper {
   protected readonly _persist: Persist;
   protected _store?: Store;
   protected reducers: IReducers = {};
+  protected reducerKeys: string[] = [];
   protected dispatching: boolean = false;
   protected state: object = {};
   /**
@@ -72,7 +73,7 @@ export class StoreHelper {
     reducers && Object.keys(reducers).forEach((key) => {
       this.reducers[key] = reducers[key];
     });
-
+    this.reducerKeys = Object.keys(this.reducers);
     persist.rehydrate(config.persist);
 
     const combined = this.combineReducers();
@@ -100,8 +101,14 @@ export class StoreHelper {
       const exists = store && this.reducers.hasOwnProperty(key);
       this.reducers[key] = autoReducer[key];
 
-      if (!exists && store) {
-        store.replaceReducer(this.combineReducers());
+      if (store && !exists) {
+        this.reducerKeys = Object.keys(this.reducers);
+        // Initialize the new reducer state.
+        // replaceReducer() is unnecessary here,
+        // we have already overrided redux.combineReducers and it's always the latest version.
+        store.dispatch({
+          type: ACTION_TYPES.replace,
+        });
       }
     }
   }
@@ -131,9 +138,6 @@ export class StoreHelper {
   }
 
   protected combineReducers(): Reducer {
-    const reducerKeys = Object.keys(this.reducers);
-    const keyLength = reducerKeys.length;
-
     let combined: Reducer = (state, action) => {
       if (state === undefined) {
         state = {};
@@ -142,6 +146,8 @@ export class StoreHelper {
       this.dispatching = true;
       this.state = state;
 
+      const reducerKeys = this.reducerKeys;
+      const keyLength = reducerKeys.length;
       const nextState = {};
       let hasChanged = false;
 
