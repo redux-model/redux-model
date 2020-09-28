@@ -42,6 +42,7 @@ export class StoreHelper {
   protected reducerKeys: string[] = [];
   protected dispatching: boolean = false;
   protected state: object = {};
+  protected combined?: Reducer;
   /**
    * @deprecated
    */
@@ -75,15 +76,14 @@ export class StoreHelper {
     });
     this.reducerKeys = Object.keys(this.reducers);
     persist.rehydrate(config.persist);
-
-    const combined = this.combineReducers();
+    this.combined = this.combineReducers();
     let store = this._store;
 
     if (store) {
-      store.replaceReducer(combined);
+      store.replaceReducer(this.combined);
     } else {
       store = this._store = createStore(
-        combined,
+        this.combined,
         preloadedState,
         customCompose(applyMiddleware.apply(null, middleware || []))
       );
@@ -103,12 +103,7 @@ export class StoreHelper {
 
       if (store && !exists) {
         this.reducerKeys = Object.keys(this.reducers);
-        // Initialize the new reducer state.
-        // replaceReducer() is unnecessary here,
-        // we have already overrided redux.combineReducers and it's always the latest version.
-        store.dispatch({
-          type: ACTION_TYPES.replace,
-        });
+        store.replaceReducer(this.combined!);
       }
     }
   }
