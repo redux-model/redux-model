@@ -24,7 +24,7 @@ export class Persist {
   protected mapFromModelToKey: Record<string, string | undefined> = {};
 
   protected persistStates: Record<string, any> = {};
-  protected serializedStrings: Record<string, string> = {};
+  protected strings: Record<string, string> = {};
 
   protected subscription: string[] = [];
   protected readyEvents: Function[] = [];
@@ -96,27 +96,25 @@ export class Persist {
       return;
     }
 
-    const tempState: Record<string, any> = { ...this.persistStates };
+    const tempState: Record<string, any> = {};
     let changed: boolean = false;
 
     Object.keys(this.mapFromModelToKey).forEach((reducerName) => {
       const key = this.mapFromModelToKey[reducerName]!;
+      const value = tempState[key] = nextState[reducerName];
 
-      tempState[key] = nextState[reducerName];
+      if (value !== this.persistStates[key]) {
+        const tempString = JSON.stringify(value);
 
-      if (nextState[reducerName] !== this.persistStates[key]) {
-        const tempString = JSON.stringify(nextState[reducerName]);
-
-        changed = changed || this.serializedStrings[key] !== tempString;
-        this.serializedStrings[key] = tempString;
+        if (this.strings[key] !== tempString) {
+          changed = true;
+          this.strings[key] = tempString;
+        }
       }
     });
 
     this.persistStates = tempState;
-
-    if (changed) {
-      this.restore();
-    }
+    changed && this.restore();
   }
 
   isReady() {
@@ -183,7 +181,7 @@ export class Persist {
         this.persistStates = {};
         Object.keys(tempStates).forEach((key) => {
           if (~this.allowKeys.indexOf(key)) {
-            this.serializedStrings[key] = tempStates[key];
+            this.strings[key] = tempStates[key];
             this.persistStates[key] = JSON.parse(tempStates[key]);
           } else {
             shouldRestore = true;
@@ -270,7 +268,7 @@ export class Persist {
 
     // Restore existing reducers
     Object.keys(this.persistStates).forEach((key) => {
-      strings[key] = this.serializedStrings[key];
+      strings[key] = this.strings[key];
     });
 
     const storageData = JSON.stringify({
