@@ -15,13 +15,14 @@ export interface IPersistRehydrate extends IActionPayload<Record<string, any>> {
 
 export class Persist {
   protected readonly keyPrefix = 'ReduxModel:Persist:';
-  protected readonly storeHelper: StoreHelper;
+  protected readonly helper: StoreHelper;
   protected readonly schema: { __persist: { version: number | string } };
-  protected cacheData?: string | null;
+  protected cache?: string | null;
   protected config: ReduxStoreConfig['persist'];
   protected ready: boolean = false;
   protected allowKeys: string[] = [];
-  protected mapFromModelToKey: Record<string, string | undefined> = {};
+  protected model2key: Record<string, string | undefined> = {};
+  protected key2model: Record<string, string | undefined> = {};
 
   protected persistStates: Record<string, any> = {};
   protected strings: Record<string, string> = {};
@@ -32,11 +33,11 @@ export class Persist {
   // @ts-ignore It will exists by rehydrate()
   protected storage: PersistStorage;
 
-  protected restoreTimer?: NodeJS.Timeout;
+  protected timer?: NodeJS.Timeout;
 
   constructor(storeHelper: StoreHelper) {
-    this.storeHelper = storeHelper;
-    this.restoreHandle = this.restoreHandle.bind(this);
+    this.helper = storeHelper;
+    this._restore = this._restore.bind(this);
     this.schema = {
       __persist: { version: '' },
     };
@@ -56,33 +57,35 @@ export class Persist {
     this.storage = storage === 'memory' ? memory : storage;
     this.schema.__persist.version = version;
     this.allowKeys = [];
-    this.mapFromModelToKey = {};
+    this.model2key = {};
 
     Object.keys(allowlist).forEach((key) => {
-      const model = allowlist[key];
+      const modelName = allowlist[key].getReducerName();
+
       this.allowKeys.push(key);
-      this.mapFromModelToKey[model.getReducerName()] = key;
+      this.model2key[modelName] = key;
+      this.key2model[key] = modelName;
     });
 
     if (
-      this.cacheData !== undefined &&
+      this.cache !== undefined &&
       (
         !originalConfig ||
         originalConfig.key !== config.key ||
         originalConfig.storage !== config.storage
       )
     ) {
-      this.cacheData = undefined;
+      this.cache = undefined;
     }
 
-    if (this.cacheData === undefined) {
+    if (this.cache === undefined) {
       this.storage
         .getItem(this.keyPrefix + config.key)
         .then((data) => {
-          config === this.config && this.parseData(this.cacheData = data);
+          config === this.config && this.parseData(this.cache = data);
         });
     } else {
-      this.parseData(this.cacheData);
+      this.parseData(this.cache);
     }
   }
 
@@ -96,12 +99,11 @@ export class Persist {
       return;
     }
 
-    const tempState: Record<string, any> = {};
+    const tempStates: Record<string, any> = {};
     let changed: boolean = false;
 
-    Object.keys(this.mapFromModelToKey).forEach((reducerName) => {
-      const key = this.mapFromModelToKey[reducerName]!;
-      const value = tempState[key] = nextState[reducerName];
+    this.allowKeys.forEach((key) => {
+      const value = tempStates[key] = nextState[this.key2model[key]!];
 
       if (value !== this.persistStates[key]) {
         const tempString = JSON.stringify(value);
@@ -113,7 +115,7 @@ export class Persist {
       }
     });
 
-    this.persistStates = tempState;
+    this.persistStates = tempStates;
     changed && this.restore();
   }
 
@@ -121,12 +123,12 @@ export class Persist {
     return this.ready;
   }
 
-  getPersistData(reducerName: string): any {
+  getData(reducerName: string): any {
     if (!this.config) {
       return;
     }
 
-    const key = this.mapFromModelToKey[reducerName];
+    const key = this.model2key[reducerName];
     if (!key) {
       return;
     }
@@ -206,7 +208,7 @@ export class Persist {
       let canDispatch = false;
 
       this.subscription.forEach((reducerName) => {
-        const persistKey = this.mapFromModelToKey[reducerName];
+        const persistKey = this.model2key[reducerName];
 
         if (persistKey) {
           canDispatch = true;
@@ -216,7 +218,7 @@ export class Persist {
       this.subscription = [];
 
       if (canDispatch) {
-        this.storeHelper.dispatch<IPersistRehydrate>({
+        this.helper.dispatch<IPersistRehydrate>({
           type: ACTION_TYPES.persist,
           payload,
         });
@@ -249,17 +251,12 @@ export class Persist {
   }
 
   protected restore(): this {
-    if (!this.config) {
-      return this;
-    }
-
-    this.restoreTimer !== undefined && clearTimeout(this.restoreTimer);
-    this.restoreTimer = setTimeout(this.restoreHandle, 8);
-
+    this.timer !== undefined && clearTimeout(this.timer);
+    this.timer = setTimeout(this._restore, 8);
     return this;
   }
 
-  private restoreHandle(): void {
+  private _restore(): void {
     if (!this.config) {
       return;
     }
@@ -277,7 +274,7 @@ export class Persist {
     });
 
     this.storage.setItem(this.keyPrefix + this.config.key, storageData);
-    this.cacheData = storageData;
-    this.restoreTimer = undefined;
+    this.cache = storageData;
+    this.timer = undefined;
   }
 }
