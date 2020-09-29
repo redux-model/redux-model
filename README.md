@@ -22,7 +22,7 @@ Redux-Model是为了弥补原生Redux繁琐的开发流程，开发者重复劳�
 * 支持React/Vue Hooks
 * 支持数据持久化
 * 支持[Graphql](https://github.com/redux-model/graphql)请求
-
+* 支持代码分离
 
 # 安装
 
