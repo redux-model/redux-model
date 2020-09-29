@@ -1,3 +1,14 @@
+# 8.2.2
+* Support es modules <br>
+* HttpService add property `onRespondSuccess` to instead of transformSuccessData
+* Improve performance of redux
+
+-----------------------------------------
+
+* 支持es模块 <br>
+* 服务类增加属性`onRespondSuccess`以代替旧属性 transformSuccessData <br>
+* 提升redux性能
+
 # 8.2.1
 * Trigger onStoreCreated() after persist is done
 
