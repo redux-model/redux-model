@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/react",
-  "version": "8.2.1",
+  "version": "8.2.2",
   "keywords": [
     "react",
     "redux-model",
@@ -29,7 +29,7 @@
     "redux": "^4.0.0"
   },
   "dependencies": {
-    "@redux-model/core": "8.2.1",
+    "@redux-model/core": "8.2.2",
     "axios": "0.19.2",
     "promise-listen-catch": "1.0.0",
     "tslib": "2.0.1"
