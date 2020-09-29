@@ -12,8 +12,9 @@
     "html5",
     "browser"
   ],
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/redux-model/redux-model",
   "author": "范文华 <531362022@qq.com>",
   "license": "MIT",
@@ -49,6 +50,7 @@
   },
   "files": [
     "lib",
+    "es",
     "LICENSE",
     "package.json",
     "README.md",

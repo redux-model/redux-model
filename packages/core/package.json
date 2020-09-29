@@ -8,6 +8,7 @@
     "typescript"
   ],
   "main": "src/index.ts",
+  "module": "es/index.js",
   "types": "src/index.ts",
   "repository": "https://github.com/redux-model/redux-model",
   "author": "范文华 <531362022@qq.com>",
@@ -33,6 +34,7 @@
   },
   "files": [
     "lib",
+    "es",
     "LICENSE",
     "package.json",
     "README.md",
