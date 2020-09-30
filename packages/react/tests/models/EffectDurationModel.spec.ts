@@ -8,11 +8,7 @@ let model: EffectDurationModel;
 
 beforeEach(() => {
   model = new EffectDurationModel(Math.random().toString());
-  createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
-  });
+  createReduxStore();
 });
 
 describe('Effect data by action afterXXXX with duration', () => {

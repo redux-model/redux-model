@@ -11,10 +11,6 @@ test('Initial data will be used if persist data is missing', (done) => {
   const model2 = new PersistFilterModel();
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-      ...model2.register(),
-    },
     persist: {
       version: 1,
       key: 'test-persist',

@@ -17,10 +17,6 @@ export class PersistModel extends Model<Data> {
     };
   }
 
-  protected autoRegister(): boolean {
-    return false;
-  }
-
   protected onStoreCreated() {
     this.count = this.data.counter;
   }
