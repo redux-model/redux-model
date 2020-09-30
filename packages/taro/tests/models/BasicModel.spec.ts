@@ -116,16 +116,10 @@ test('Even if it can be register automatically, but we can register model again 
   expect(model.data.id).toBe(44);
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
   });
   expect(model.data.id).toBe(44);
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
   });
   expect(model.data.id).toBe(44);
 });

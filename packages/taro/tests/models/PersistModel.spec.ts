@@ -15,9 +15,6 @@ beforeEach(() => {
 describe('Persist bootstrap by async', () => {
   test('taroStorage', async() => {
     createReduxStore({
-      reducers: {
-        ...model.register(),
-      },
       persist: {
         version: 1,
         key: persistKey,
@@ -34,9 +31,6 @@ describe('Persist bootstrap by async', () => {
 
   test('memoryStorage', async() => {
     createReduxStore({
-      reducers: {
-        ...model.register(),
-      },
       persist: {
         version: 1,
         key: persistKey,
@@ -56,9 +50,6 @@ test('Restore persist data from storage', async () => {
   localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue('{"model":"{\\"counter\\":20}","__persist":{"version":1}}'));
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 1,
       key: persistKey,
@@ -68,6 +59,7 @@ test('Restore persist data from storage', async () => {
       },
     },
   });
+  storeHelper.persist.subscribe(model.getReducerName());
 
   expect(model.data.counter).toBe(0);
 
@@ -92,9 +84,6 @@ test('Clear the persist data when the json data invalid', async () => {
 
   const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 2,
       key: persistKey,
@@ -117,9 +106,6 @@ test('Clear the persist data when version is not matched', async () => {
   localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue('{"model":"{\\"counter\\":2}","__persist":{"version":1}}'));
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 3,
       key: persistKey,
@@ -137,9 +123,6 @@ test('Clear the persist data when version is not matched', async () => {
 
 test('No persist data in storage', async () => {
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 10,
       key: persistKey,
@@ -159,9 +142,6 @@ test('Reducer data is not hit', async () => {
   localStorage.setItem(`ReduxModel:Persist:${persistKey}`, '{"__persist":{"version":1}}');
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 1,
       key: persistKey,
@@ -184,9 +164,6 @@ test('Restore data from storage without whitelist', async () => {
   localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue('{"model":"{\\"counter\\":2}","__persist":{"version":1}}'));
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 1,
       key: persistKey,
@@ -211,9 +188,6 @@ test('Persit will use cache data for re-create store', (done) => {
   localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue(`{"model":"{\\"counter\\":2}","__persist":{"version":1}}`));
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 1,
       key: persistKey,
@@ -223,17 +197,15 @@ test('Persit will use cache data for re-create store', (done) => {
       },
     },
   });
+  storeHelper.persist.subscribe(model.getReducerName());
 
   storeHelper.persist.listenOnce(async () => {
     const model2 = new PersistModel(Math.random().toString());
 
     localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue(`{"model2":"{\\"counter\\":2000}","__persist":{"version":1}}`));
 
+    storeHelper.persist.subscribe(model2.getReducerName());
     createReduxStore({
-      reducers: {
-        ...model.register(),
-        ...model2.register(),
-      },
       persist: {
         version: 1,
         key: persistKey,
@@ -257,9 +229,6 @@ test('onStoreCreated will invoke on persist done', async () => {
   localStorage.setItem(`ReduxModel:Persist:${persistKey}`, markStorageValue('{"model":"{\\"counter\\":20}","__persist":{"version":1}}'));
 
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
     persist: {
       version: 1,
       key: persistKey,
@@ -269,6 +238,7 @@ test('onStoreCreated will invoke on persist done', async () => {
       },
     },
   });
+  storeHelper.persist.subscribe(model.getReducerName());
 
   await sleep(30);
   expect(model.count).toBe(20);

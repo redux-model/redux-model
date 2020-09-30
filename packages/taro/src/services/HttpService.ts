@@ -94,11 +94,6 @@ export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
    * ```
    */
   isSuccess?: (httpResponse: HttpResponse) => boolean;
-  /**
-   * @deprecated
-   * This property will be removed at version 9.0.0, consider to use onRespondSuccess() instead.
-   */
-  transformSuccessData?: (data: any, headers: any) => any;
 }
 
 export interface IRequestAction<Data = any, Response = any, Payload = any> extends IBaseRequestAction<Data, Response, Payload> {
@@ -212,11 +207,6 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
         if (this.config.onRespondSuccess) {
           this.config.onRespondSuccess(httpResponse);
-        }
-
-        if (this.config.transformSuccessData) {
-          console.error('[Warning] transformSuccessData is deprecated and will be removed at v9.0.0, consider to use onRespondSuccess instead');
-          httpResponse.data = this.config.transformSuccessData(httpResponse.data, httpResponse.header);
         }
 
         const okAction: RequestSuccessAction = {

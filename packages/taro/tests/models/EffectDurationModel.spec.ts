@@ -9,9 +9,6 @@ let model: EffectDurationModel;
 beforeEach(() => {
   model = new EffectDurationModel(Math.random().toString());
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
   });
 });
 

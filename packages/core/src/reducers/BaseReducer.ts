@@ -61,7 +61,7 @@ export class BaseReducer<Data> {
 
   protected reducer(state: Data | undefined, action: AllAction<Data> | IPersistRehydrate): Data {
     if (state === undefined) {
-      const newState = storeHelper.persist.getData(this.name);
+      const newState = storeHelper.persist.subscribe(this.name);
       return newState === undefined ? this.initData : this.initFromPersist(newState);
     }
 

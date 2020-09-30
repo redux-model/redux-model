@@ -11,9 +11,6 @@ let model: EffectModel;
 beforeEach(() => {
   model = new EffectModel(Math.random().toString());
   createReduxStore({
-    reducers: {
-      ...model.register(),
-    },
   });
 });
 
