@@ -30,7 +30,7 @@ export const firstModel = new FirstModel();
 #### ** Redux Connect **
 ```typescript
 import React, { FC } from 'react';
-import { connect } from 'react-redux';
+import { connect } from '@redux-model/react';
 
 type Props = ReturnType<typeof mapStateToProps>;
 
