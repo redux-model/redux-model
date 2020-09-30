@@ -3,7 +3,6 @@ const create = (name: string): string => {
 };
 
 const ACTION_TYPES = {
-  replace: create('replace' + Math.random()),
   persist: create('persist'),
   meta: create('meta'),
 };
