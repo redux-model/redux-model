@@ -4,3 +4,5 @@ export { Model } from './models/Model';
 export { HttpService, FetchHandle, HttpCanceler } from './services/HttpService';
 export { PersistGate } from './components/PersistGate';
 export { createReduxStore } from './stores/createReduxStore';
+export { Middleware } from 'redux';
+export * as redux from 'redux';

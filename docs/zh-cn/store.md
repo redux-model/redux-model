@@ -6,8 +6,7 @@
 ```typescript
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createReduxStore } from '@redux-model/react';
+import { createReduxStore, Provider } from '@redux-model/react';
 
 const store = createReduxStore();
 
@@ -42,7 +41,7 @@ export default {
 ### 日志
 Redux的操作日志可以通过控制台查看，但需要您安装插件包`redux-logger`
 ```typescript
-import { Middleware } from 'redux';
+import { Middleware } from '@redux-model/react';
 
 const middleware: Middleware[] = [];
 

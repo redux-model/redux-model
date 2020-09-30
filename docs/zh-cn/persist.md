@@ -6,8 +6,7 @@
 ```typescript
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createReduxStore, PersistGate } from '@redux-mode/react';
+import { createReduxStore, PersistGate, Provider } from '@redux-mode/react';
 
 const store = createReduxStore({
   persist: {
