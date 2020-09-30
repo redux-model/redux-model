@@ -108,22 +108,6 @@ test('One model can have many instance', () => {
   expect(modelInner.modify.getSuccessType()).toContain('my-alias');
 });
 
-test('Even if it can be register automatically, but we can register model again and again', () => {
-  expect(model.data.id).toBe(1);
-  model.modify({
-    id: 44,
-  });
-  expect(model.data.id).toBe(44);
-
-  createReduxStore({
-  });
-  expect(model.data.id).toBe(44);
-
-  createReduxStore({
-  });
-  expect(model.data.id).toBe(44);
-});
-
 test('User can get redux data when changing reducer', () => {
   expect(() => model.allowGetData()).not.toThrowError();
 });
