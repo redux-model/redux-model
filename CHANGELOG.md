@@ -1,3 +1,23 @@
+# 9.0.0
+* 自动引入了`redux`和`react-redux`，请将项目中相关的库删除 <br>
+```bash
+yarn remove redux react-redux @types/react-redux
+```
+```diff
+- import { Middleware } from 'redux'
++ import { Middleware } from '@redux-model/react'
+
+- import { Provide } from 'react-redux'
++ import { Provide } from '@redux-model/react'
+
+- import { connect } from 'react-redux'
++ import { connect } from '@redux-model/react'
+```
+* 删除 `Model.autoRegister` 方法，模型一定是自动注册的 <br>
+* 删除 `Model.register` 方法，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xxxModel'`即可 <br>
+* 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>
+* 删除 `createReduxStore.onCombineReducers` 属性，缺少使用场景 <br>
+
 # 8.2.2
 * Support es modules <br>
 * HttpService add property `onRespondSuccess` to instead of transformSuccessData
