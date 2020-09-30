@@ -115,3 +115,43 @@ import MyModel extends Model {
 }
 ```
 由于`initialState`是抽象方法，所以您必须重载，并返回null，代表您不需要state。
+
+### 自动注册
+模型默认就是在实例化的时候自动注册到store的，~~您无需像使用其他redux库一样把各个reducer集中到一起然后执行combineReducer~~，Redux-Model足够细心，它已经帮您处理好这一段既无聊又容易忘记去做的代码，所以您实例化(**new XxxModel()**)完模型就可以直接导出使用。
+
+### 代码分离
+基于自动注册的机制，只要您的组件是动态引入的，那么配套使用的模型也会跟随动态引入，并且在动态引入后能够立即注册。可以说您无需关注模型是否需要分离。
+
+### 延迟注册
+这个功能大部分场景用不上，但是假设您在实例化的时候传入了参数，并且想用这些参数作为初始化数据的一部分，那么延迟注册就显得很有必要
+```typescript
+import { keepRegister, Model } from '@redux-model/react';
+
+interface Data {
+  count: number;
+}
+
+class TestModel extends Model<Data> {
+  protected readonly initialCount = 0;
+
+  constructor(count: number = 0) {
+    // 拦截自动注册
+    const register = keepRegister(TestModel);
+    // 父类执行自动注册，并确定初始数据（被拦截）
+    super();
+    // 定制业务
+    this.initialCount = count;
+    // 手动注册
+    register();
+  }
+
+  protected initialState(): Data {
+    return {
+      count: this.initialCount,
+    };
+  }
+}
+
+export const testModel = new TestModel(100);
+```
+通过拦截父类的自动注册机制，您可以自由地定制初始数据，并在合适的时机恢复注册。
