@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { setModel } from '../utils/model';
+import { initModel, setModel } from '../utils/model';
 import { NormalAction, IActionNormal } from '../actions/NormalAction';
 import { ComposeAction } from '../actions/ComposeAction';
 import { HttpServiceBuilderWithMeta, HttpServiceBuilder } from '../services/HttpServiceBuilder';
@@ -45,6 +45,22 @@ export type CreateNormalActionPayload<A> = A extends (state: any, payload: infer
 export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: infer P) => any ? (...args: P) => IActionNormal<Data, P[0]> : never;
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
+  /**
+   * You want to execute register after constructor of current model is finished.
+   * ```javascript
+   * class TestModel extends Model {
+   *   constructor() {
+   *     super();
+   *     ...
+   *     ...
+   *     // Auto register delay to here after all code is done.
+   *   }
+   * }
+   *
+   * export const testModel = TestModel.init();
+   * ```
+   */
+  public static init = initModel;
   private readonly _name: string;
   private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any, any>;
 
