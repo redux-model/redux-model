@@ -123,7 +123,7 @@ export class Persist {
     return this.ready;
   }
 
-  getData(reducerName: string): any {
+  subscribe(reducerName: string): any {
     if (!this.config) {
       return;
     }

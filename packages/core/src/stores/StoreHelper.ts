@@ -13,10 +13,6 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   compose?: 'default' | 'redux-devtools' | typeof compose;
   middleware?: Middleware[];
   preloadedState?: PreloadedState<any>;
-  /**
-   * @deprecated Will be removed at v9.0.0
-   */
-  onCombineReducers?: (reducer: Reducer) => Reducer;
   persist?: {
     version: string | number;
     /**
@@ -42,18 +38,15 @@ export class StoreHelper {
   protected reducerKeys: string[] = [];
   protected dispatching: boolean = false;
   protected state: object = {};
-  protected combined?: Reducer;
-  /**
-   * @deprecated
-   */
-  protected onCombined: ReduxStoreConfig['onCombineReducers'];
+  protected readonly combined: Reducer;
 
   constructor() {
     this._persist = new Persist(this);
+    this.combined = this.combineReducers();
   }
 
   createStore(config: ReduxStoreConfig = {}): Store {
-    const { onCombineReducers, reducers, preloadedState, middleware } = config;
+    const { reducers, preloadedState, middleware } = config;
     const customCompose = (() => {
       switch (config.compose) {
         case 'redux-devtools':
@@ -66,17 +59,11 @@ export class StoreHelper {
     })();
     const persist = this._persist;
 
-    if (onCombineReducers) {
-      console.error('[Warning] onCombineReducers is deprecated and will be removed at v9.0.0');
-      this.onCombined = onCombineReducers;
-    }
-
     reducers && Object.keys(reducers).forEach((key) => {
       this.reducers[key] = reducers[key];
     });
     this.reducerKeys = Object.keys(this.reducers);
     persist.rehydrate(config.persist);
-    this.combined = this.combineReducers();
     let store = this._store;
 
     if (store) {
@@ -103,7 +90,7 @@ export class StoreHelper {
 
       if (store && !exists) {
         this.reducerKeys = Object.keys(this.reducers);
-        store.replaceReducer(this.combined!);
+        store.replaceReducer(this.combined);
       }
     }
   }
@@ -133,7 +120,7 @@ export class StoreHelper {
   }
 
   protected combineReducers(): Reducer {
-    let combined: Reducer = (state, action) => {
+    return (state, action) => {
       if (state === undefined) {
         state = {};
       }
@@ -167,12 +154,6 @@ export class StoreHelper {
 
       return hasChanged ? nextState : state;
     };
-
-    if (this.onCombined) {
-      return this.onCombined(combined);
-    }
-
-    return combined;
   }
 }
 

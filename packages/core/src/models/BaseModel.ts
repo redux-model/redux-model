@@ -46,15 +46,15 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   private readonly _name: string;
-  private _listenerGenerated: boolean = false;
   private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any, any>;
 
   constructor(alias?: string) {
     this._name = setModel(this, alias);
 
-    if (this.autoRegister()) {
-      storeHelper.appendReducers(this.register());
-    }
+    storeHelper.appendReducers(this._register());
+    storeHelper.onCreated(() => {
+      this.onStoreCreated(storeHelper.store);
+    });
   }
 
   public getReducerName(): string {
@@ -273,49 +273,6 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   /**
-   * @deprecated will be removed at v9.0.0
-   * Register reducer to store. Ignore this method because it's automatically.
-   *
-   * @see constructor()
-   * @see autoRegister()
-   *
-   * ```javascript
-   * const store = createReduxStore({
-   *   reducers: {
-   *     ...xModel.register(),
-   *   }
-   * });
-   * ```
-   *
-   */
-  public register(): IReducers {
-    if (!this._listenerGenerated) {
-      this._listenerGenerated = true;
-      // TODO: Move it to constructor since v9.0.0
-      storeHelper.onCreated(() => {
-        this.onStoreCreated(storeHelper.store);
-      });
-    }
-
-    const reducer = new BaseReducer(
-      this.getReducerName(),
-      this.initialState(),
-      this.effects(),
-      this.filterPersistData()
-    );
-    return reducer.createReducer();
-  }
-
-  /**
-   * @deprecated Will be removed at v9.0.0
-   * Determinal register behavior is automatically or manually.
-   * @default true
-   */
-  protected autoRegister(): boolean {
-    return true;
-  }
-
-  /**
    * The callback on store is created and persist rehydrate is complete.
    */
   protected onStoreCreated(
@@ -329,6 +286,15 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    */
   protected abstract initialState(): Data;
 
+  private _register(): IReducers {
+    return new BaseReducer(
+      this.getReducerName(),
+      this.initialState(),
+      this.effects(),
+      this.filterPersistData()
+    ).createReducer();
+  }
+
   private _createBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
     const builder = new HttpServiceBuilder<Data, Response>({
       uri,
@@ -337,7 +303,6 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     });
 
     // @ts-ignore
-    // @ts-expect-error
     return builder;
   }
 }
