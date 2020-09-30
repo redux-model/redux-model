@@ -36,3 +36,24 @@ export const setModel = (model: AnyModel, alias?: string): string => {
 
   return instanceName;
 };
+
+
+const methodName = '_register';
+
+export function initModel<T extends new (...args: any[]) => AnyModel>(this: T, ...args: ConstructorParameters<T>): InstanceType<T>;
+export function initModel<T extends new (...args: any[]) => AnyModel>(this: T): InstanceType<T> {
+  const CustomModel = this;
+  const proto = CustomModel.prototype;
+  let originalRegister: Function = proto[methodName];
+
+  proto[methodName] = function() {
+    proto[methodName] = originalRegister;
+  };
+
+  const model = new CustomModel(...arguments);
+
+  model[methodName]();
+
+  // @ts-ignore
+  return model;
+};
