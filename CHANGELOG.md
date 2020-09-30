@@ -17,6 +17,7 @@ yarn remove redux react-redux @types/react-redux
 * 删除 `Model.register` 方法，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xxxModel'`即可 <br>
 * 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>
 * 删除 `createReduxStore.onCombineReducers` 属性，缺少使用场景 <br>
+* 新增 `keepRegister` 方法，用于延迟自动注册以满足初始化需求
 
 # 8.2.2
 * Support es modules <br>
