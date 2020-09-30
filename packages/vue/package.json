@@ -25,7 +25,6 @@
     "relink": "bash ../../scripts/relink.sh"
   },
   "peerDependencies": {
-    "redux": "^4.0.0",
     "vue": "^3.0.0"
   },
   "dependencies": {
@@ -34,6 +33,7 @@
     "clone": "2.1.2",
     "deep-diff": "1.0.2",
     "promise-listen-catch": "1.0.0",
+    "redux": "4.0.5",
     "tslib": "2.0.1"
   },
   "devDependencies": {
