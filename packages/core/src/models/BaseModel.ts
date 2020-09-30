@@ -4,7 +4,7 @@ import { NormalAction, IActionNormal } from '../actions/NormalAction';
 import { ComposeAction } from '../actions/ComposeAction';
 import { HttpServiceBuilderWithMeta, HttpServiceBuilder } from '../services/HttpServiceBuilder';
 import { METHOD } from '../utils/method';
-import { IReducers, BaseReducer } from '../reducers/BaseReducer';
+import { BaseReducer } from '../reducers/BaseReducer';
 import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import { NullReducerError } from '../exceptions/NullReducerError';
 import { storeHelper } from '../stores/StoreHelper';
@@ -50,8 +50,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
 
   constructor(alias?: string) {
     this._name = setModel(this, alias);
-
-    storeHelper.appendReducers(this._register());
+    this._register();
     storeHelper.onCreated(() => {
       this.onStoreCreated(storeHelper.store);
     });
@@ -286,13 +285,15 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    */
   protected abstract initialState(): Data;
 
-  private _register(): IReducers {
-    return new BaseReducer(
-      this.getReducerName(),
-      this.initialState(),
-      this.effects(),
-      this.filterPersistData()
-    ).createReducer();
+  private _register(): void {
+    storeHelper.appendReducers(
+      new BaseReducer(
+        this.getReducerName(),
+        this.initialState(),
+        this.effects(),
+        this.filterPersistData()
+      ).createReducer()
+    );
   }
 
   private _createBuilder<Response>(uri: string, method: METHOD): HttpServiceBuilderWithMeta<Data, Response, unknown, RequestOption> {
