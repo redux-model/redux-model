@@ -5,13 +5,11 @@ const instanceCounter: Record<string, number> = {};
 let modelCounter: number = 0;
 let currentModel: AnyModel;
 
-export const getModel = (): AnyModel => {
+export const getCurrentModel = (): AnyModel => {
   return currentModel;
 };
 
-export const setModel = (model: AnyModel, alias?: string): string => {
-  currentModel = model;
-
+export const getModelName = (model: AnyModel, alias?: string): string => {
   if (isCrushed()) {
     return 'm' + ++modelCounter;
   }
@@ -37,6 +35,9 @@ export const setModel = (model: AnyModel, alias?: string): string => {
   return instanceName;
 };
 
+export const setCurrentModel = (model: AnyModel): void => {
+  currentModel = model;
+};
 
 const methodName = '_register';
 

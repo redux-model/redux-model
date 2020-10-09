@@ -1,9 +1,9 @@
-import { Model } from '../../src';
+import { TestModel } from '../libs/TestModel';
 import { $api } from '../libs/ApiService';
 import { $throttleApi } from '../libs/ThrottleService';
 
 // Notice: Keep Data as null to make sure http-servie and null-data can work fine together.
-export class ThrottleModel extends Model {
+export class ThrottleModel extends TestModel {
   enableThrottleProfile = $api.action((name: string) => {
     return this
       .get<{ id: number }>('/profile/manage')
