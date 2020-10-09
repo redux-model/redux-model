@@ -1,5 +1,5 @@
 # 9.0.0
-* 自动引入了`redux`和`react-redux`，请将项目中相关的库删除 <br>
+* 自动引入了 `redux` 和 `react-redux`，请将项目中相关的库删除 <br>
 ```bash
 yarn remove redux react-redux @types/react-redux
 ```
@@ -13,9 +13,10 @@ yarn remove redux react-redux @types/react-redux
 - import { connect } from 'react-redux'
 + import { connect } from '@redux-model/react'
 ```
-* 新增 `Model.init` 方法，用于延迟自动注册以满足定制初始化数据的需求
-* 删除 `model.autoRegister` 方法，模型一定是自动注册的 <br>
-* 删除 `model.register` 方法，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xyzModel'`即可 <br>
+* 新增 模型静态方法 `init()`，用于延迟自动注册以满足定制初始化数据的需求 <br>
+* 删除 模型实例方法 `autoRegister()`，模型一定是自动注册的 <br>
+* 删除 模型实例方法 `register()`，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xyzModel'`即可 <br>
+* 删除 模型构造函数中的 `alias` 参数，即使出现同名类，重写方法 `getReducerName()` 即可 <br>
 * 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>
 * 删除 `createReduxStore.onCombineReducers` 属性，缺少使用场景 <br>
 
