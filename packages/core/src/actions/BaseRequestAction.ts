@@ -1,5 +1,5 @@
 import { IActionPayload } from './BaseAction';
-import { getModel } from '../utils/model';
+import { getCurrentModel } from '../utils/model';
 import { metaReducer, Metas, MetasLoading, IMetaAction } from '../reducers/MetaReducer';
 import { State, StateReturn } from '../models/BaseModel';
 import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
@@ -100,7 +100,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   protected readonly service: BaseHttpService<any, any>;
 
   constructor(builder: Builder, service: BaseHttpService<any, any>, fromSubClass?: boolean) {
-    super(getModel());
+    super(getCurrentModel());
     this.builder = builder;
     this.service = service;
 

@@ -1,11 +1,11 @@
-import { Model } from '../../src';
+import { TestModel } from '../libs/TestModel';
 import { $api } from '../libs/ApiService';
 
 interface Data {
   hello?: string;
 }
 
-export class ProdModel extends Model<Data> {
+export class ProdModel extends TestModel<Data> {
   test1 = this.action(() => {});
 
   test2 = $api.action(() => {

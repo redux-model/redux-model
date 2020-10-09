@@ -1,11 +1,11 @@
-import { Model } from '../../src';
+import { TestModel } from '../libs/TestModel';
 import { $api } from '../libs/ApiService';
 
 interface Data {
   count: number;
 }
 
-export class HookModel  extends Model<Data> {
+export class HookModel  extends TestModel<Data> {
   increase = this.action((state) => {
     state.count += 1;
   });

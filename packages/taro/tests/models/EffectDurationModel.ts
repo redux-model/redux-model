@@ -1,4 +1,5 @@
-import { Model, Effects } from '../../src';
+import { Effects } from '../../src';
+import { TestModel } from '../libs/TestModel';
 import { effectModel } from './EffectModel';
 
 interface Data {
@@ -7,7 +8,7 @@ interface Data {
   bar: string;
 }
 
-export class EffectDurationModel extends Model<Data> {
+export class EffectDurationModel extends TestModel<Data> {
   protected effects(): Effects<Data> {
     return [
       effectModel.normalWithDuration.afterSuccess(() => {
