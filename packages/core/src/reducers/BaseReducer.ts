@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { Effects, FilterPersist } from '../models/BaseModel';
+import { Subscriptions, FilterPersist } from '../models/BaseModel';
 import { RequestSuccessAction, RequestFailAction, RequestPrepareAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
 import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
@@ -17,20 +17,20 @@ type AllAction<Data> = RequestPrepareAction<Data> | RequestSuccessAction<Data> |
 export class BaseReducer<Data> {
   protected readonly initData: Data;
   protected readonly name: string;
-  protected readonly cases: Record<string, NonNullable<Effects<Data>[number]['then']>>;
+  protected readonly cases: Record<string, NonNullable<Subscriptions<Data>[number]['then']>>;
   protected readonly after: Record<string, {
-    fn: NonNullable<Effects<Data>[number]['after']>;
+    fn: NonNullable<Subscriptions<Data>[number]['after']>;
     duration?: number;
   }>;
   protected readonly filterPersist: FilterPersist<Data>;
 
-  constructor(reducerName: string, initData: Data, effects: Effects<Data>, filterPersistData: FilterPersist<Data>) {
+  constructor(reducerName: string, initData: Data, subscriptions: Subscriptions<Data>, filterPersistData: FilterPersist<Data>) {
     this.initData = initData;
     this.name = reducerName;
     this.cases = {};
     this.after = {};
 
-    effects.forEach(({ when, then, after, duration }) => {
+    subscriptions.forEach(({ when, then, after, duration }) => {
       if (then) {
         this.cases[when] = then;
       }

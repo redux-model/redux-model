@@ -1,4 +1,4 @@
-import { Effects } from '../../src';
+import { Subscriptions } from '../../src';
 import { TestModel } from '../libs/TestModel';
 import { effectModel } from './EffectModel';
 
@@ -9,7 +9,7 @@ interface Data {
 }
 
 export class EffectDurationModel extends TestModel<Data> {
-  protected effects(): Effects<Data> {
+  protected subscriptions(): Subscriptions<Data> {
     return [
       effectModel.normalWithDuration.afterSuccess(() => {
         this.changeState((state) => {

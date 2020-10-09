@@ -77,7 +77,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onSuccess<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
@@ -87,7 +87,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterSuccess<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
@@ -98,7 +98,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onPrepare<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
@@ -108,7 +108,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterPrepare<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
@@ -119,7 +119,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onFail<CustomData>(changeState: NonNullable<ComposeSubscriber<CustomData>['then']>): ComposeSubscriber<CustomData> {
     return {
@@ -129,7 +129,7 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterFail<CustomData>(callback: NonNullable<ComposeSubscriber<CustomData>['after']>, duration?: number): ComposeSubscriber<CustomData> {
     return {
