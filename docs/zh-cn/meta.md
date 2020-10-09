@@ -11,15 +11,15 @@ interface ErrorData {
 }
 
 const $api = new HttpService<ErrorData>({
-  onRespondError(httpResponse, transform) {
+  onRespondError(httpResponse, meta) {
     if (httpResponse.errcode) {
-      transform.businessCode = httpResponse.errcode;
-      transform.message = httpResponse.errmsg;
+      meta.businessCode = httpResponse.errcode;
+      meta.message = httpResponse.errmsg;
     }
   },
 });
 ```
-而针对httpStatus，则会从请求返回的头部信息中获取。您也可以通过`transform.httpStatus = xxx`赋值的方式来改变它。
+而针对httpStatus，则会从请求返回的头部信息中获取。您也可以通过`meta.httpStatus = xxx`赋值的方式来改变它。
 
 !> `meta`和`useMeta`也都暴露在action句柄下。<br>
 常用的`loading`和`useLoading`本质上也是从meta中取出的。

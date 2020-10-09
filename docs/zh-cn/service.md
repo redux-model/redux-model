@@ -15,10 +15,10 @@ export const $api = new HttpService<ErrorData>({
   headers: () => {
     return {};
   },
-  onRespondError: (httpResponse, transform) => {
+  onRespondError: (httpResponse, meta) => {
     if (httpResponse.message) {
-      transform.businessCode = httpResponse.code;
-      transform.message = httpResponse.message;
+      meta.businessCode = httpResponse.code;
+      meta.message = httpResponse.message;
     }
   },
   onShowSuccess: (msg) => {
@@ -89,10 +89,10 @@ const $api = new HttpService({
     return status >= 200 && status < 300;
   },
   // 收集错误信息阶段
-  onRespondError(httpResponse, transform) {
+  onRespondError(httpResponse, meta) {
     // 收集状态码。如果您需要在业务中使用到状态码，就请在此收集，否则可以删除这段。
     if (httpResponse.data && httpResponse.data.code) {
-      transform.httpStatus = httpResponse.data.code;
+      meta.httpStatus = httpResponse.data.code;
     }
   }
 });
