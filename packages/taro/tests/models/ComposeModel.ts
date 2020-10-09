@@ -1,4 +1,4 @@
-import { Model } from '../../src/models/Model';
+import { TestModel } from '../libs/TestModel';
 import { $api } from '../libs/ApiService';
 import { basicModel } from './BasicModel';
 
@@ -8,7 +8,7 @@ interface Response {
 
 type Data = Response;
 
-export class ComposeModel extends Model<Data> {
+export class ComposeModel extends TestModel<Data> {
   manage = this.compose(async () => {
     await $api.postAsync({
       uri: '/',

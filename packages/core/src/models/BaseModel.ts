@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { initModel, setModel } from '../utils/model';
+import { initModel, setCurrentModel, getModelName } from '../utils/model';
 import { NormalAction, IActionNormal } from '../actions/NormalAction';
 import { ComposeAction } from '../actions/ComposeAction';
 import { HttpServiceBuilderWithMeta, HttpServiceBuilder } from '../services/HttpServiceBuilder';
@@ -46,14 +46,14 @@ export type CreateNormalActionEffect<Data, A> = A extends (state: any, ...args: 
 
 export abstract class BaseModel<Data = null, RequestOption extends object = object> {
   /**
-   * You want to execute register after constructor of current model is finished.
+   * Execute register at the end of the constructor for current model.
    * ```javascript
    * class TestModel extends Model {
-   *   constructor() {
-   *     super();
+   *   constructor(p1, p2, p3) {
+   *     super(); // Auto register here for `new TestModel()`
    *     ...
    *     ...
-   *     // Auto register delay to here after all code is done.
+   *     // Auto register delay to here for `TestModel.init()`
    *   }
    * }
    *
@@ -61,11 +61,13 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    * ```
    */
   public static init = initModel;
+
   private readonly _name: string;
   private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any, any>;
 
-  constructor(alias?: string) {
-    this._name = setModel(this, alias);
+  constructor() {
+    setCurrentModel(this);
+    this._name = this.getReducerName();
     this._register();
     storeHelper.onCreated(() => {
       this.onStoreCreated(storeHelper.store);
@@ -73,7 +75,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   }
 
   public getReducerName(): string {
-    return this._name;
+    return this._name || getModelName(this);
   }
 
   /**

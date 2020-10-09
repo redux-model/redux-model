@@ -1,10 +1,10 @@
-import { Model } from '../../src/models/Model';
+import { TestModel } from '../libs/TestModel';
 
 interface Data {
   counter: number;
 }
 
-export class PersistModel extends Model<Data> {
+export class PersistModel extends TestModel<Data> {
   count = 0;
 
   increase = this.action((state) => {

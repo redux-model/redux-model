@@ -1,10 +1,10 @@
-import { Model } from '../../src';
+import { TestModel } from '../libs/TestModel';
 
 interface Data {
   count: number;
 }
 
-export class KeepRegisterModel extends Model<Data> {
+export class KeepRegisterModel extends TestModel<Data> {
   protected readonly stateCount: number;
 
   constructor(count: number = 0, alias: string = '') {

@@ -1,4 +1,4 @@
-import { Model } from '../../src/models/Model';
+import { TestModel } from '../libs/TestModel';
 import { Effects } from '../../src';
 import { basicModel } from './BasicModel';
 import { requestModel } from './RequestModel';
@@ -11,7 +11,7 @@ interface Data {
   bar: string;
 }
 
-export class EffectModel extends Model<Data> {
+export class EffectModel extends TestModel<Data> {
   reset = this.action((state) => {
     state.counter = 0;
   });

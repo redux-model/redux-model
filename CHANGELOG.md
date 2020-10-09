@@ -13,7 +13,7 @@ yarn remove redux react-redux @types/react-redux
 - import { connect } from 'react-redux'
 + import { connect } from '@redux-model/react'
 ```
-* 新增 `Model.init` 方法，用于延迟自动注册以满足初始化需求
+* 新增 `Model.init` 方法，用于延迟自动注册以满足定制初始化数据的需求
 * 删除 `model.autoRegister` 方法，模型一定是自动注册的 <br>
 * 删除 `model.register` 方法，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xyzModel'`即可 <br>
 * 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>

@@ -1,5 +1,5 @@
 import { $api } from '../libs/ApiService';
-import { Model } from '../../src/models/Model';
+import { TestModel } from '../libs/TestModel';
 
 interface Response {
   id: number;
@@ -17,7 +17,7 @@ type Data = Response & {
   }>;
 };
 
-export class RequestModel extends Model<Data> {
+export class RequestModel extends TestModel<Data> {
   getProfile = $api.action(() => {
     return this
       .get<Response>('/profile.json')

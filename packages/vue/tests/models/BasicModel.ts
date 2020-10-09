@@ -1,5 +1,5 @@
 import { $api } from '../libs/ApiService';
-import { Model } from '../../src/models/Model';
+import { TestModel } from '../libs/TestModel';
 
 interface Response {
   id: number;
@@ -9,7 +9,7 @@ interface Response {
 
 type Data = Response;
 
-export class BasicModel extends Model<Data> {
+export class BasicModel extends TestModel<Data> {
   name = '';
 
   modify = this.action((state, payload: Partial<Data>) => {

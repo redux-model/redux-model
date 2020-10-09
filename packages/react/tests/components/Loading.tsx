@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { basicModel } from '../models/BasicModel';
 import { $api } from '../libs/ApiService';
-import { Model } from '../../src';
 import { requestModel } from '../models/RequestModel';
+import { Model } from '../../src';
 
 export const Loading: FunctionComponent = () => {
   const loading = basicModel.getProfile.useLoading();
