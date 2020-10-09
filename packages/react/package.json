@@ -31,7 +31,7 @@
     "promise-listen-catch": "1.0.0",
     "react-redux": "7.2.1",
     "redux": "4.0.5",
-    "tslib": "2.0.1"
+    "tslib": "2.0.2"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",

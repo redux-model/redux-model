@@ -16,3 +16,8 @@ immer@7.0.9:
   version "7.0.9"
   resolved "https://registry.npmjs.org/immer/-/immer-7.0.9.tgz#28e7552c21d39dd76feccd2b800b7bc86ee4a62e"
   integrity sha512-Vs/gxoM4DqNAYR7pugIxi0Xc8XAun/uy7AQu4fLLqaTBHxjOP9pJ266Q9MWA/ly4z6rAFZbvViOtihxUZ7O28A==
+
+tslib@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.0.2.tgz#462295631185db44b21b1ea3615b63cd1c038242"
+  integrity sha512-wAH28hcEKwna96/UacuWaVspVLkg4x1aDM9JlzqaQTOFczCktkVAb5fmXChgandR1EraDPs2w8P+ozM+oafwxg==
