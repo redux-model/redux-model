@@ -59,10 +59,11 @@ interface Data {
 
 class MetaReducer extends BaseReducer<Data> {
   // All metas will be stored here before user need them.
-  protected readonly stash: IMetaStash = {};
+  protected stash: IMetaStash;
 
   constructor() {
-    super('_metas_', {}, [], null);
+    super('_metas_', {});
+    this.stash = {};
     storeHelper.appendReducers(this.createReducer());
   }
 
@@ -95,7 +96,7 @@ class MetaReducer extends BaseReducer<Data> {
 
   protected reducer(state: Data | undefined, action: RequestSuccessAction | IMetaRestore): Data {
     if (state === undefined) {
-      return this.initData;
+      return this.initialState;
     }
 
     if (this.isRestore(action)) {
@@ -103,6 +104,11 @@ class MetaReducer extends BaseReducer<Data> {
         ...state,
         [action.payload.key]: action.payload.value,
       };
+    }
+
+    if (action.type === ACTION_TYPES.reset) {
+      this.stash = {};
+      return this.initialState;
     }
 
     const metaKey = action.metaKey;

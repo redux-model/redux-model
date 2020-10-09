@@ -3,6 +3,7 @@ const create = (name: string): string => {
 };
 
 const ACTION_TYPES = {
+  reset: create('reset'),
   persist: create('persist'),
   meta: create('meta'),
 };

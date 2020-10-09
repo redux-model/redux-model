@@ -9,7 +9,7 @@ interface Data {
 }
 
 export class EffectDurationModel extends TestModel<Data> {
-  protected subscriptions(): Subscriptions<Data> {
+  subscriptions(): Subscriptions<Data> {
     return [
       effectModel.normalWithDuration.afterSuccess(() => {
         this.changeState((state) => {

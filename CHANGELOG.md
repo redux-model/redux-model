@@ -13,6 +13,7 @@ yarn remove redux react-redux @types/react-redux
 - import { connect } from 'react-redux'
 + import { connect } from '@redux-model/react'
 ```
+* 新增 模型静态方法 `resetStore()`，用于重置所有模型数据，并支持部分模型保留数据 <br>
 * 新增 模型静态方法 `init()`，用于延迟自动注册以满足定制初始化数据的需求 <br>
 * 重构 模型实例方法 `effects()` 重命名为 `subscriptions`，更具表达力 <br>
 ```diff

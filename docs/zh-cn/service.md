@@ -99,3 +99,11 @@ const $api = new HttpService({
 ```
 
 !> 收集到的信息可以在[状态追踪](/zh-cn/meta.md)meta里获取
+
+### 清除节流
+依赖服务的action可能会使用到节流缓存功能，每个action都可以删除自己名下的缓存。当然了，服务本身也支持删除缓存，不同的是，服务会把所有缓存全部清空掉。
+```
+const $api = new HttpService();
+
+$api.clearThrottle();
+```
