@@ -34,7 +34,7 @@ export type StateReturn<Data> = void | (Data & {
   readonly __mvvm?: 'Don\'t return state unless it\'s new';
 });
 
-export type Effects<Data> = Array<{
+export type Subscriptions<Data> = Array<{
   when: string;
   then?: (state: State<Data>, action: any) => StateReturn<Data>;
   after?: (action: any) => void;
@@ -219,11 +219,11 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
   /**
    * The listeners subscribe events from other models.
    * ```javascript
-   * import { Effects } from '@redux-model/*';
+   * import { Subscriptions } from '@redux-model/*';
    *
    * class TestModel extends Model<Data> {
    *
-   *   protected effects(): Effects<Data> {
+   *   protected subscriptions(): Subscriptions<Data> {
    *     return [
    *       aModel.xxAction.onSuccess((state, action) => {
    *          // Chagnge state here.
@@ -243,7 +243,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    * }
    * ```
    */
-  protected effects(): Effects<Data> {
+  protected subscriptions(): Subscriptions<Data> {
     return [];
   }
 
@@ -308,7 +308,7 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
       new BaseReducer(
         this.getReducerName(),
         this.initialState(),
-        this.effects(),
+        this.subscriptions(),
         this.filterPersistData()
       ).createReducer()
     );

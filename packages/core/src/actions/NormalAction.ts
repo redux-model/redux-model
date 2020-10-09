@@ -35,7 +35,7 @@ export class NormalAction<Data, ChangeState extends (state: State<Data>, payload
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onSuccess<CustomData>(changeState: NonNullable<NormalSubscriber<CustomData, Payload>['then']>): NormalSubscriber<CustomData, Payload> {
     return {
@@ -45,7 +45,7 @@ export class NormalAction<Data, ChangeState extends (state: State<Data>, payload
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterSuccess<CustomData>(callback: NonNullable<NormalSubscriber<CustomData, Payload>['after']>, duration?: number): NormalSubscriber<CustomData, Payload> {
     return {

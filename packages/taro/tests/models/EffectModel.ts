@@ -1,5 +1,5 @@
 import { TestModel } from '../libs/TestModel';
-import { Effects } from '../../src';
+import { Subscriptions } from '../../src';
 import { basicModel } from './BasicModel';
 import { requestModel } from './RequestModel';
 import { composeModel } from './ComposeModel';
@@ -26,7 +26,7 @@ export class EffectModel extends TestModel<Data> {
     });
   });
 
-  protected effects(): Effects<Data> {
+  protected subscriptions(): Subscriptions<Data> {
     return [
       basicModel.effectOtherModel.onSuccess((state) => {
         state.counter += 1;
