@@ -23,14 +23,14 @@ export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
    *
    * ```javascript
    * {
-   *   onRespondError(httpResponse, transform) {
+   *   onRespondError(httpResponse, meta) {
    *     if (httpResponse.data && httpResponse.data.errMsg) {
-   *       transform.message = httpResponse.data.errMsg;
+   *       meta.message = httpResponse.data.errMsg;
    *     }
    *
    *     // If http-status is always 200 and the api put real http-status into your data.
    *     if (httpResponse.data && httpResponse.data.status) {
-   *       transform.httpStatus = httpResponse.data.status;
+   *       meta.httpStatus = httpResponse.data.status;
    *     }
    *   }
    * }
@@ -41,7 +41,7 @@ export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
    * const meta = xModel.yAction.useMeta(); // object includes message, httpStatus, businessCode...
    * ```
    */
-  onRespondError: (httpResponse: HttpResponse<ErrorData>, transform: HttpTransform) => void;
+  onRespondError: (httpResponse: HttpResponse<ErrorData>, meta: HttpTransform) => void;
   /**
    * Transform your data globally.
    *
@@ -239,14 +239,14 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
         // Weapp  ok => statusCode | error => statusCode
         // ...
         if (error.statusCode || error.status) {
-          const transform: HttpTransform = {
+          const meta: HttpTransform = {
             httpStatus: error.statusCode || error.status,
           };
 
-          this.config.onRespondError(error, transform);
-          errorMessage = action.failText || transform.message || 'Fail to fetch api';
-          httpStatus = transform.httpStatus;
-          businessCode = transform.businessCode;
+          this.config.onRespondError(error, meta);
+          errorMessage = action.failText || meta.message || 'Fail to fetch api';
+          httpStatus = meta.httpStatus;
+          businessCode = meta.businessCode;
         } else {
           errorMessage = 'Fail to request api';
 
