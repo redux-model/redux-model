@@ -58,8 +58,8 @@ export const $api = new ApiService<{ error: string }>({
   isSuccess: () => {
     return true;
   },
-  onRespondError: (response, transform) => {
-    transform.message = response.data.error;
+  onRespondError: (response, meta) => {
+    meta.message = response.data.error;
   },
   onShowSuccess: () => {},
   onShowError: () => {},
