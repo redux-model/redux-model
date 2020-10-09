@@ -94,8 +94,8 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
   protected readonly config: T;
 
   protected caches: Partial<{
-    [key: string]: Partial<{
-      [key: string]: {
+    [actionName: string]: Partial<{
+      [throttleKey: string]: {
         timestamp: number;
         response: any;
       };
@@ -220,8 +220,14 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     }
   }
 
-  public/*protected*/ clearThrottle(actionName: string): void {
-    this.caches[actionName] = undefined;
+  public clearThrottle(): void;
+  public clearThrottle(actionName: string): void;
+  public clearThrottle(actionName?: string): void {
+    if (actionName) {
+      this.caches[actionName] = undefined;
+    } else {
+      this.caches = {};
+    }
   }
 
   public/*protected*/ abstract runAction(action: IBaseRequestAction): FetchHandle<any, any, any>;
