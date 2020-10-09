@@ -26,7 +26,7 @@ export class EffectModel extends TestModel<Data> {
     });
   });
 
-  protected subscriptions(): Subscriptions<Data> {
+  subscriptions(): Subscriptions<Data> {
     return [
       basicModel.effectOtherModel.onSuccess((state) => {
         state.counter += 1;

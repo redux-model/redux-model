@@ -1,12 +1,10 @@
-import { Action } from 'redux';
-import { Subscriptions, FilterPersist } from '../models/BaseModel';
+import { Subscriptions, FilterPersist, AnyModel } from '../models/BaseModel';
 import { RequestSuccessAction, RequestFailAction, RequestPrepareAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
 import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import ACTION_TYPES from '../utils/actionType';
-import { IPersistRehydrate } from '../stores/Persist';
 
 export interface IReducers {
   [key: string]: (state: any, action: any) => any;
@@ -15,7 +13,8 @@ export interface IReducers {
 type AllAction<Data> = RequestPrepareAction<Data> | RequestSuccessAction<Data> | RequestFailAction<Data> | IActionNormal<Data>;
 
 export class BaseReducer<Data> {
-  protected readonly initData: Data;
+  protected readonly model?: AnyModel;
+  protected readonly initialState: Data;
   protected readonly name: string;
   protected readonly cases: Record<string, NonNullable<Subscriptions<Data>[number]['then']>>;
   protected readonly after: Record<string, {
@@ -23,14 +22,16 @@ export class BaseReducer<Data> {
     duration?: number;
   }>;
   protected readonly filterPersist: FilterPersist<Data>;
+  protected readonly keepOnReset: boolean;
 
-  constructor(reducerName: string, initData: Data, subscriptions: Subscriptions<Data>, filterPersistData: FilterPersist<Data>) {
-    this.initData = initData;
+  constructor(reducerName: string, initialState: Data, model?: AnyModel) {
+    this.model = model;
+    this.initialState = initialState;
     this.name = reducerName;
     this.cases = {};
     this.after = {};
 
-    subscriptions.forEach(({ when, then, after, duration }) => {
+    model && model.subscriptions().forEach(({ when, then, after, duration }) => {
       if (then) {
         this.cases[when] = then;
       }
@@ -42,11 +43,12 @@ export class BaseReducer<Data> {
         };
       }
     });
-    this.filterPersist = filterPersistData;
+    this.filterPersist = model ? model.filterPersistData() : null;
+    this.keepOnReset = model ? model.keepOnResetStore() : false;
   }
 
   public createReducer(): IReducers {
-    if (this.initData === null) {
+    if (this.initialState === null) {
       return {};
     }
 
@@ -55,23 +57,23 @@ export class BaseReducer<Data> {
     };
   }
 
-  protected isPersist(action: Action<string>): action is IPersistRehydrate {
-    return action.type === ACTION_TYPES.persist;
-  }
-
-  protected reducer(state: Data | undefined, action: AllAction<Data> | IPersistRehydrate): Data {
+  protected reducer(state: Data | undefined, action: AllAction<Data>): Data {
     if (state === undefined) {
       const newState = storeHelper.persist.subscribe(this.name);
-      return newState === undefined ? this.initData : this.initFromPersist(newState);
+      return newState === undefined ? this.initialState : this.initFromPersist(newState);
     }
 
+    const actionType = action.type;
+
     // Only subscriber can receive this action
-    if (this.isPersist(action)) {
+    if (actionType === ACTION_TYPES.persist) {
       const newState = action.payload[this.name];
       return newState === undefined ? state : this.initFromPersist(newState);
     }
 
-    const actionType = action.type;
+    if (actionType === ACTION_TYPES.reset) {
+      return this.keepOnReset ? state : this.initialState;
+    }
 
     if (this.after[actionType]) {
       const currentAfter = this.after[actionType];

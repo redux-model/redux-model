@@ -107,6 +107,9 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
     return fromSubClass ? this : this.proxy();
   }
 
+  /**
+   * Clear throttle cache for this action
+   */
   public clearThrottle(): void {
     this.service.clearThrottle(this.getName());
   }

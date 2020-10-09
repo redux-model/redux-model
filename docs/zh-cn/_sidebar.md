@@ -7,12 +7,13 @@
     * [模型](/zh-cn/define-model.md)
     * [同步Action](/zh-cn/define-normal-action.md)
     * [请求Action](/zh-cn/define-request-action.md)
+    * [请求服务](/zh-cn/service.md)
     * [组合Action](/zh-cn/define-compose-action.md)
 
 * 高级
     * [持久化](/zh-cn/persist.md)
-    * [请求服务](/zh-cn/service.md)
     * [订阅](/zh-cn/subscription.md)
     * [状态追踪](/zh-cn/meta.md)
     * [双向绑定](/zh-cn/mvvm.md)
     * [模型多实例](/zh-cn/multiple-model.md)
+    * [重置数据](/zh-cn/reset-store.md)
