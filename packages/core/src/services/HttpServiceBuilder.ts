@@ -145,7 +145,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
   }
 
   /**
-   * The payload for model.effects()
+   * The payload for model.subscriptions()
    *
    * ```javascript
    * class AModel extends Model {
@@ -159,7 +159,7 @@ export class HttpServiceBuilder<Data, Response, Payload = unknown, RequestOption
    * ---------
    *
    * class BModel extends Model {
-   *   protected effects(): Effects<Data> {
+   *   protected subscriptions(): Subscriptions<Data> {
    *     return [
    *       aModel.getUser.onSuccess((state, action) => {
    *         // action.payload.id

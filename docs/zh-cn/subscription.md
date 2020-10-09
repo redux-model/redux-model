@@ -3,7 +3,7 @@
 在原生Redux中，dispatch下发action后，您可以通过判断`action.type`改变多个reducer的数据。模型中可以使用订阅的方式来实现：
 
 ```typescript
-import { Model, Effects } from '@redux-model/react';
+import { Model, Subscriptions } from '@redux-model/react';
 
 class NormalModel extends Model {
     increase = this.action((state, payload: { step: number; }) => {});
@@ -41,7 +41,7 @@ interface Data {
 }
 
 class EffectModel extends Model<Data> {
-    protected effects(): Effects<Data> {
+    protected subscriptions(): Subscriptions<Data> {
         return [
             normalModel.increase.onSuccess((state, action) => {
                 state.name = 'increase';
@@ -67,7 +67,7 @@ class EffectModel extends Model<Data> {
 
 export const effectModel = new EffectModel();
 ```
-通过重载`effects()`方法，您可以订阅任意其它模型的action调用，以及执行该action时传入的payload，并更改当前模型下的数据。
+通过重载`subscriptions()`方法，您可以订阅任意其它模型的action调用，以及执行该action时传入的payload，并更改当前模型下的数据。
 
 * 普通Action可以订阅的事件：`onSuccess`
 * 请求Action可以订阅的事件：`onPrepare`, `onSuccess`, `onFail`
@@ -80,7 +80,7 @@ class EffectModel extends Model<Data> {
     myAction1 = this.action((state) => {});
     myAction2 = this.action((state) => {});
 
-    protected effects(): Effects<Data> {
+    protected subscriptions(): Subscriptions<Data> {
         return [
             normalModel.increase.afterSuccess((action) => {
                 // ...

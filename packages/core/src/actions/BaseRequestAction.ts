@@ -147,7 +147,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onSuccess<CustomData>(changeState: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['then']>): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
@@ -157,7 +157,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterSuccess<CustomData>(callback: NonNullable<RequestSuccessSubscriber<CustomData, Response, Payload>['after']>, duration?: number): RequestSuccessSubscriber<CustomData, Response, Payload> {
     return {
@@ -168,7 +168,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onPrepare<CustomData>(changeState: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['then']>): RequestPrepareSubscriber<CustomData, Payload> {
     return {
@@ -178,7 +178,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterPrepare<CustomData>(callback: NonNullable<RequestPrepareSubscriber<CustomData, Payload>['after']>, duration?: number): RequestPrepareSubscriber<CustomData, Payload> {
     return {
@@ -189,7 +189,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public onFail<CustomData>(changeState: NonNullable<RequestFailSubscriber<CustomData, Payload>['then']>): RequestFailSubscriber<CustomData, Payload> {
     return {
@@ -199,7 +199,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
   }
 
   /**
-   * For model.effects()
+   * For model.subscriptions()
    */
   public afterFail<CustomData>(callback: NonNullable<RequestFailSubscriber<CustomData, Payload>['after']>, duration?: number): RequestFailSubscriber<CustomData, Payload> {
     return {
