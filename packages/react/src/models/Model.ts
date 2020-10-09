@@ -17,19 +17,13 @@ export abstract class Model<Data = null> extends BaseModel<Data, AxiosRequestCon
    *   return state.counter;
    * });
    * ```
-   * Set shallowEqual `true` when you respond a new object.
-   * ```typescript
-   * const { counter } = model.useData((state) => {
-   *   return { counter: state.counter };
-   * }, true);
-   * ```
    */
   public useData(): Data;
-  public useData<T>(selector: (data: Data) => T, shallowEqual?: boolean): T;
-  public useData(selector?: (data: Data) => any, shallowEqual?: boolean): any {
+  public useData<T>(selector: (data: Data) => T): T;
+  public useData(selector?: (data: Data) => any): any {
     return ReactRedux.useSelector(() => {
       return selector ? selector(this.data) : this.data;
-    }, shallowEqual ? ReactRedux.shallowEqual : undefined);
+    }, ReactRedux.shallowEqual);
   }
 
   /**

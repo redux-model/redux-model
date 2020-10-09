@@ -90,20 +90,16 @@ export default defineComponent({
 使用`useData()`时，可以不传选择器函数，这样就返回了整个state。虽然很方便，但缺点也很明显，就是一旦内部有数据变化，组件就会重渲染。正常情况下每一个组件可能只需要使用其中一部分数据，选择最小的数据集合，才能保证组件按需重渲染。
 ```typescript
 // 按需，最小数据
-// useData(selector: Function)
 const user1 = model.useData((data) => data[0]);
 
-// 按需，组合最小数据，产生了新的复合数据 （Vue不支持）
-// useData(selector: Function, shallowEqual: boolean)
+// 按需，组合最小数据，产生了新的复合数据
 const { user1, user2 } = model.useData((data) => {
   return {
     user1: data[0],
     user2: data[1],
   };
-}, true);
+});
 ```
-
-!> 当您在选择器中返回了新的复合数据，必须启用`shallowEqual`，否则对于组件来说，您每次都是返回新数据，导致重渲染
 
 ### 无数据
 您不一定非要创建带state的模型，这符合常理。如果您只需要actions，那么欢迎您这么做：
