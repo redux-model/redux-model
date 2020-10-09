@@ -31,7 +31,7 @@
     "qs": "6.9.4",
     "react-redux": "7.2.1",
     "redux": "4.0.5",
-    "tslib": "2.0.1"
+    "tslib": "2.0.2"
   },
   "devDependencies": {
     "@tarojs/taro": "^3.0.8",
