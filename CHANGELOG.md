@@ -14,6 +14,18 @@ yarn remove redux react-redux @types/react-redux
 + import { connect } from '@redux-model/react'
 ```
 * 新增 模型静态方法 `init()`，用于延迟自动注册以满足定制初始化数据的需求 <br>
+* 重命名 模型实例方法 `effects()` 为 `subscriptions`，更具表达力 <br>
+```diff
+class TestModel extends Model {
+- protected effects(): Effects<Data> {
++ protected subscriptions(): Subscriptions<Data> {
+    return [
+      ...,
+      ...,
+    ];
+  }
+}
+```
 * 删除 模型实例方法 `autoRegister()`，模型一定是自动注册的 <br>
 * 删除 模型实例方法 `register()`，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xyzModel'`即可 <br>
 * 删除 模型构造函数中的 `alias` 参数，即使出现同名类，重写方法 `getReducerName()` 即可 <br>
