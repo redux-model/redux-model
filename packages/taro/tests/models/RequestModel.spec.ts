@@ -85,17 +85,17 @@ test('Fetch profile by orphan request', async () => {
   expect(profile.id).toBe(data.id);
 });
 
-// FIXME:
-// test('Request not found', async () => {
-//   try {
-//     await model.getNpmInfo((new Date()).toUTCString());
-//   } catch (e) {
-//     expect(e.type).toBe(model.getNpmInfo.getFailType());
-//     expect(e.message).toBe('Not found');
-//     expect(e.httpStatus).toBe(404);
-//   }
-// });
+test('Request not found', async () => {
+  try {
+    await model.getNpmInfo((new Date()).toUTCString());
+  } catch (e) {
+    expect(e.type).toBe(model.getNpmInfo.getFailType());
+    expect(e.message).toBe('Not found');
+    expect(e.httpStatus).toBe(404);
+  }
+});
 
+// FIXME:
 // test('Request timeout', async () => {
 //   try {
 //     await model.getNpmInfoWithTimeout('redux');

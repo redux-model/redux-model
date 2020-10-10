@@ -9,50 +9,49 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@tarojs/api@3.0.8":
-  version "3.0.8"
-  resolved "https://registry.npmjs.org/@tarojs/api/-/api-3.0.8.tgz#45d74ebe32221e533ccc7edab22e5a491679af14"
-  integrity sha512-i1vHc3hRRJ2OJHTDhxfQj5mGnZvIJLhkNjRWRduthk/SLaffz2nd74Dd1FJFUXYwWASanP7ATIccH3pSHnVrLg==
+"@tarojs/api@3.0.14":
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/@tarojs/api/-/api-3.0.14.tgz#8be2c755dea4085aae399da98587f379eb8ace01"
+  integrity sha512-U8K8a7BD40ZYT2RmXz/zp2BsGL+25fjYHyyWRZvMdBWEgKQ0MNu49ftMiJMfxW8NYnQ/JLXHacRe6jVCy+iaVA==
   dependencies:
-    "@tarojs/runtime" "3.0.8"
+    "@tarojs/runtime" "3.0.14"
 
-"@tarojs/router@3.0.8":
-  version "3.0.8"
-  resolved "https://registry.npmjs.org/@tarojs/router/-/router-3.0.8.tgz#65d52f6c4b77c03d45dedcd6d6fcd9ccb4c5d8cd"
-  integrity sha512-HfGH3Olu0CKh4cd6IO0zAGXhLrcycfOm38PVKChVnKkUturpbjl9jokiNh0uVu8sUppGqU9GeR/4ZZUfydavoA==
+"@tarojs/router@3.0.14":
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/@tarojs/router/-/router-3.0.14.tgz#b781263c05143b985d680da7c9854b62c3d8df3e"
+  integrity sha512-T00UAlRnQBy2XsDlzhN9rZhW5hBFLiT191MLie4/zG3XSJxhNgwcoIQAaAKaHDP8E9t5f04hxTJYVICu6P5V+A==
   dependencies:
-    "@tarojs/runtime" "3.0.8"
+    "@tarojs/runtime" "3.0.14"
     history "^4.10.1"
     universal-router "^8.3.0"
     url-parse "^1.4.7"
 
-"@tarojs/runtime@3.0.8":
-  version "3.0.8"
-  resolved "https://registry.npmjs.org/@tarojs/runtime/-/runtime-3.0.8.tgz#f21dddb09299ea57a0475e34ddc1ba995c910749"
-  integrity sha512-x1I70byvRwlqh+XuB04KYkM487GrrEMWgjmKAWcgkkAF9FTpL+7EN69VcXvdUFqU+dAqi0tp0np4LvOjd87PiA==
+"@tarojs/runtime@3.0.14":
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/@tarojs/runtime/-/runtime-3.0.14.tgz#e337472524d0221be3b2b2e6642278f73f01b610"
+  integrity sha512-0LSA4UHAi/clptzIFaIL7lu+RnmBV7xN4DHCbTOfsEWxX8azXXeQ4tgqh8MjIAFAHKgUElZIdFXHSvc0O8u3YQ==
 
-"@tarojs/taro-h5@3.0.8":
-  version "3.0.8"
-  resolved "https://registry.npmjs.org/@tarojs/taro-h5/-/taro-h5-3.0.8.tgz#d8ddc5b34b1ce2452369b7da650f24e5762a254a"
-  integrity sha512-TZoKp/4Gidwbh3cmFcUrL0TJtVX6wiJ0PjqbPftvyV+pT3JPoCnblWJ5zj/OnWgYgSA4/8nAE69AZMt5ZHy/6Q==
+"@tarojs/taro-h5@3.0.14":
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/@tarojs/taro-h5/-/taro-h5-3.0.14.tgz#0e78c96e6bed6cc7e24ea8b1d043769333c887c0"
+  integrity sha512-fBQOs9cDAu2ehrPH2ojjAbX8Zcrr3c+7Lv3U2guYLiOE81pZZJGEs6wFFGbX9rSdzof/J36IiFIERPOaQaMKdg==
   dependencies:
-    "@tarojs/api" "3.0.8"
-    "@tarojs/router" "3.0.8"
-    "@tarojs/runtime" "3.0.8"
+    "@tarojs/api" "3.0.14"
+    "@tarojs/router" "3.0.14"
+    "@tarojs/runtime" "3.0.14"
     base64-js "^1.3.0"
     jsonp-retry "^1.0.3"
     mobile-detect "^1.4.2"
     raf "^3.4.1"
-    unfetch "^4.1.0"
-    whatwg-fetch "^2.0.4"
+    whatwg-fetch "^3.4.0"
 
-"@tarojs/taro@^3.0.8":
-  version "3.0.8"
-  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-3.0.8.tgz#cbfa38f7e9f26c7e5b3d18ff3c80c1e1a9053506"
-  integrity sha512-IbLDjK5zQTYASYAMerb0HxF7TvMgGUJxpO8Rs/q8rtJhgaalvBjD2boJYxxRgKrLpBm4LCobu+jM7+H4lx9qYw==
+"@tarojs/taro@3.0.14":
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-3.0.14.tgz#d6b03ccc568ba3da3d22ec424bd10228810262cf"
+  integrity sha512-RTaCow0WpX4bYbLWJm6dLhZYAP0mAtCNO7uY4kKyNfZugJchA1Rgo0NP4qt0k836/vkigEzhhDGcYd4PE9XBKA==
   dependencies:
-    "@tarojs/api" "3.0.8"
-    "@tarojs/taro-h5" "3.0.8"
+    "@tarojs/api" "3.0.14"
+    "@tarojs/taro-h5" "3.0.14"
 
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
@@ -67,12 +66,12 @@
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
   integrity sha512-KfRL3PuHmqQLOG+2tGpRO26Ctg+Cq1E01D2DMriKEATHgWLfeNDmq9e29Q9WIky0dQ3NPkd1mzYH8Lm936Z9qw==
 
-"@types/qs@^6.9.3":
+"@types/qs@6.9.3":
   version "6.9.3"
   resolved "https://registry.npmjs.org/@types/qs/-/qs-6.9.3.tgz#b755a0934564a200d3efdf88546ec93c369abd03"
   integrity sha512-7s9EQWupR1fTc2pSMtXRQ9w9gLOcrJn+h7HOXw4evxyvVqMi4f+q7d2tnFe3ng3SNHjtK+0EzGMGFUQX4/AQRA==
 
-"@types/react-dom@^16.9.8":
+"@types/react-dom@16.9.8":
   version "16.9.8"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-16.9.8.tgz#fe4c1e11dfc67155733dfa6aa65108b4971cb423"
   integrity sha512-ykkPQ+5nFknnlU6lDd947WbQ6TE3NNzbQAkInC2EKY1qeYdTKp7onFusmYZb+ityzx2YviqT6BXSu+LyWWJwcA==
@@ -89,7 +88,7 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
-"@types/react@*", "@types/react@^16.9.43":
+"@types/react@*", "@types/react@16.9.43":
   version "16.9.43"
   resolved "https://registry.npmjs.org/@types/react/-/react-16.9.43.tgz#c287f23f6189666ee3bebc2eb8d0f84bcb6cdb6b"
   integrity sha512-PxshAFcnJqIWYpJbLPriClH53Z2WlJcVZE+NP2etUtWQs2s7yIMj3/LDKZT/5CHJ/F62iyjVCDu2H3jHEXIxSg==
@@ -282,11 +281,6 @@ tslib@2.0.2:
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.0.2.tgz#462295631185db44b21b1ea3615b63cd1c038242"
   integrity sha512-wAH28hcEKwna96/UacuWaVspVLkg4x1aDM9JlzqaQTOFczCktkVAb5fmXChgandR1EraDPs2w8P+ozM+oafwxg==
 
-unfetch@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/unfetch/-/unfetch-4.1.0.tgz#6ec2dd0de887e58a4dee83a050ded80ffc4137db"
-  integrity sha512-crP/n3eAPUJxZXM9T80/yv0YhkTEx2K1D3h7D1AJM6fzsWZrxdyRuLN0JH/dkZh1LNH8LxCnBzoPFCPbb2iGpg==
-
 universal-router@^8.3.0:
   version "8.3.0"
   resolved "https://registry.npmjs.org/universal-router/-/universal-router-8.3.0.tgz#533bce135d7b1abf591421c5d2028d54407a34a0"
@@ -307,12 +301,12 @@ value-equal@^1.0.1:
   resolved "https://registry.npmjs.org/value-equal/-/value-equal-1.0.1.tgz#1e0b794c734c5c0cade179c437d356d931a34d6c"
   integrity sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==
 
-vue@^2.6.12:
+vue@2.6.12:
   version "2.6.12"
   resolved "https://registry.npmjs.org/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
 
-whatwg-fetch@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
-  integrity sha512-dcQ1GWpOD/eEQ97k66aiEVpNnapVj90/+R+SXTPYGHpYBBypfKJEQjLrvMZ7YXbKm21gXd4NcuxUTjiv1YtLng==
+whatwg-fetch@^3.4.0:
+  version "3.4.1"
+  resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-3.4.1.tgz#e5f871572d6879663fa5674c8f833f15a8425ab3"
+  integrity sha512-sofZVzE1wKwO+EYPbWfiwzaKovWiZXf4coEzjGP9b2GBVgQRLQUZ2QcuPpQExGDAW5GItpEm6Tl4OU5mywnAoQ==
