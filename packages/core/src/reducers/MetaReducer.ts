@@ -13,10 +13,13 @@ export type MetasLoading<M> = {
   pick: (value: M) => boolean;
 };
 
-export type Meta = Readonly<{
+export type ComposeMeta = Readonly<{
   actionType: string;
   loading: boolean;
-} & HttpTransform>;
+  message?: string;
+}>;
+
+export type Meta = ComposeMeta & Readonly<HttpTransform>;
 
 export type Metas<M = any> = Partial<{
   [key: string]: Meta;
