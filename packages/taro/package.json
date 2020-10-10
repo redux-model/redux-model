@@ -34,13 +34,13 @@
     "tslib": "2.0.2"
   },
   "devDependencies": {
-    "@tarojs/taro": "^3.0.8",
-    "@types/qs": "^6.9.3",
-    "@types/react": "^16.9.43",
-    "@types/react-dom": "^16.9.8",
+    "@tarojs/taro": "3.0.14",
+    "@types/qs": "6.9.3",
+    "@types/react": "16.9.43",
+    "@types/react-dom": "16.9.8",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "vue": "^2.6.12"
+    "vue": "2.6.12"
   },
   "publishConfig": {
     "access": "public",
