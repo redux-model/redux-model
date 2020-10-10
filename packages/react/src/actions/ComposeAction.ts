@@ -1,10 +1,10 @@
-import { ComposeAction as BaseComponseAction, Meta } from '@redux-model/core';
+import { ComposeAction as BaseComponseAction, ComposeMeta } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
 
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseComponseAction<Data, Runner> {
-  public useMeta(): Meta;
-  public useMeta<T extends keyof Meta>(key?: T): Meta[T];
-  public useMeta<T extends keyof Meta>(key?: T): Meta | Meta[T] {
+  public useMeta(): ComposeMeta;
+  public useMeta<T extends keyof ComposeMeta>(key?: T): ComposeMeta[T];
+  public useMeta<T extends keyof ComposeMeta>(key?: T): ComposeMeta | ComposeMeta[T] {
     return ReactRedux.useSelector(() => {
       return key ? this.meta[key] : this.meta;
     });

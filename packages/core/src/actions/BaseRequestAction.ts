@@ -1,6 +1,6 @@
 import { IActionPayload } from './BaseAction';
 import { getCurrentModel } from '../utils/model';
-import { metaReducer, Metas, MetasLoading, IMetaAction } from '../reducers/MetaReducer';
+import { metaReducer, Metas, MetasLoading, IMetaAction, Meta, DEFAULT_META } from '../reducers/MetaReducer';
 import { State, StateReturn } from '../models/BaseModel';
 import { HTTP_STATUS_CODE } from '../utils/httpStatusCode';
 import { HttpServiceBuilder } from '../services/HttpServiceBuilder';
@@ -112,6 +112,41 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
    */
   public clearThrottle(): void {
     this.service.clearThrottle(this.getName());
+  }
+
+  /**
+   * Information collected from service
+   *
+   * ```javascript
+   * class TestModel extends Model {
+   *   getUser = $api.action(() => {
+   *     return this
+   *      .get('/api')
+   *      .onSuccess(() => {})
+   *   });
+   * }
+   *
+   * const testModel = new TestModel();
+   *
+   * // Get information
+   * testModel.getUser.meta.httpStatus;
+   * // Dispatch action
+   * testModel.getUser();
+   * ```
+   */
+  public get meta(): Meta {
+    return metaReducer.getMeta(this.getName()) || DEFAULT_META;
+  }
+
+  /**
+   * @see get meta()
+   *
+   * ```javascript
+   * testModel.getUser.loading;
+   * ```
+   */
+  public get loading(): boolean {
+    return this.meta.loading;
   }
 
   /**
@@ -237,7 +272,7 @@ export class BaseRequestAction<Data, Builder extends (...args: any[]) => HttpSer
    * @override
    */
   protected getters(): string[] {
-    return super.getters().concat('metas', 'loadings');
+    return super.getters().concat('metas', 'loadings', 'meta', 'loading');
   }
 
   /**

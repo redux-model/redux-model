@@ -1,4 +1,4 @@
-import { IMetaAction } from '../reducers/MetaReducer';
+import { ComposeMeta, DEFAULT_META, IMetaAction, metaReducer } from '../reducers/MetaReducer';
 import { BaseModel, State, StateReturn } from '../models/BaseModel';
 import { Action } from 'redux';
 import { storeHelper } from '../stores/StoreHelper';
@@ -16,7 +16,6 @@ export interface ComposeSubscriber<CustomData> {
   duration?: number;
 }
 
-// FIXME: 这里的Meta是子集，也许有必要做一个ComposeMeta
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseAsyncAction<Data> {
   protected readonly runner: Runner;
 
@@ -28,6 +27,49 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
   }
 
   /**
+   * Information collected from service
+   *
+   * ```javascript
+   * class TestModel extends Model {
+   *   getUser = this.compose((id1: number, id2: number) => {
+   *     const result1 = await $api.getAsync({
+   *       uri: `/api/users/${id1}`,
+   *     });
+   *     const result2 = await $api.getAsync({
+   *       uri: `/api/users/${id2}`,
+   *     });
+   *
+   *     this.changeState((state) => {
+   *       state[id1] = result1.response;
+   *       state[id2] = result2.response;
+   *     });
+   *   });
+   * }
+   *
+   * const testModel = new TestModel();
+   *
+   * // Get information
+   * testModel.getUser.meta.message;
+   * // Dispatch action
+   * testModel.getUser();
+   * ```
+   */
+  public get meta(): ComposeMeta {
+    return metaReducer.getMeta(this.getName()) || DEFAULT_META;
+  }
+
+  /**
+   * @see get meta()
+   *
+   * ```javascript
+   * testModel.getUser.loading;
+   * ```
+   */
+  public get loading(): boolean {
+    return this.meta.loading;
+  }
+
+  /**
    * @override
    */
   protected methods(): string[] {
@@ -35,6 +77,10 @@ export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>
       'onSuccess', 'onPrepare', 'onFail',
       'afterSuccess', 'afterPrepare', 'afterFail',
     );
+  }
+
+  protected getters(): string[] {
+    return super.getters().concat('meta', 'loading');
   }
 
   protected action(): Function {
