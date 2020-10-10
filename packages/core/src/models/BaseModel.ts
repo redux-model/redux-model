@@ -117,12 +117,11 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    * @see action()
    */
   protected changeState(fn: (state: State<Data>) => StateReturn<Data>): IActionNormal<Data, null> {
-    // Make sure reducer is registered and initData not null.
-    this.data;
-
     if (this._action) {
       this._action.setEffect(fn);
     } else {
+      // Make sure reducer is registered and initData not null.
+      this.data;
       this._action = this.action(fn);
       this._action.setName('anonymous');
     }
