@@ -1,4 +1,4 @@
-import { createReduxStore, Model } from '../../src';
+import { createReduxStore, resetStore } from '../../src';
 import { KeepStoreModel, ResetStoreModel } from './ResetStoreModel';
 
 beforeAll(() => {
@@ -11,7 +11,7 @@ test('Reset store', () => {
   expect(model.data.counter).toBe(0);
   model.plus();
   expect(model.data.counter).toBe(1);
-  Model.resetStore();
+  resetStore();
   expect(model.data.counter).toBe(0);
 });
 
@@ -21,6 +21,6 @@ test('Keep state when reset store', () => {
   expect(model.data.counter).toBe(0);
   model.plus();
   expect(model.data.counter).toBe(1);
-  Model.resetStore();
+  resetStore();
   expect(model.data.counter).toBe(1);
 });

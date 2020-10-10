@@ -1,4 +1,4 @@
-import { AnyAction, Store } from 'redux';
+import { Store } from 'redux';
 import { initModel, setCurrentModel, getModelName } from '../utils/model';
 import { NormalAction, IActionNormal } from '../actions/NormalAction';
 import { ComposeAction } from '../actions/ComposeAction';
@@ -9,7 +9,6 @@ import { ForgetRegisterError } from '../exceptions/ForgetRegisterError';
 import { NullReducerError } from '../exceptions/NullReducerError';
 import { storeHelper } from '../stores/StoreHelper';
 import { IActionPayload } from '../actions/BaseAction';
-import ACTION_TYPES from '../utils/actionType';
 
 export type FilterPersist<Data> = ((state: State<Data>) => StateReturn<Data>) | null;
 
@@ -62,28 +61,6 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
    * ```
    */
   public static init = initModel;
-
-  /**
-   * Reset store and reassign initial state for each model.
-   * ```javascript
-   * logout().then(() => {
-   *   Model.resetStore();
-   * });
-   * ```
-   * You can keep current state by override method `keepStateOnReset()`
-   * ```javascript
-   * class TestModel extends Model {
-   *   protected keepOnResetStore() {
-   *     return true;
-   *   }
-   * }
-   * ```
-   */
-  public static resetStore(): AnyAction {
-    return storeHelper.dispatch({
-      type: ACTION_TYPES.reset,
-    });
-  }
 
   private readonly _name: string;
   private _action?: (() => IActionNormal<Data>) & NormalAction<Data, (state: State<Data>) => StateReturn<Data>, any, any>;
