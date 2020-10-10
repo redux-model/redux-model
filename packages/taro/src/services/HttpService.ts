@@ -4,6 +4,7 @@ import { BaseHttpService, HttpServiceBuilderWithMeta, PickPayload, PickResponse,
 import PromiseListenCatch from 'promise-listen-catch';
 import { RequestAction } from '../actions/RequestAction';
 import { getTaro } from '../utils/getTaro';
+import { parseFetch } from '../utils/parseFetch';
 
 export type TaroRequestConfig<T = any> = Partial<Taro.request.Option<T>>;
 
@@ -226,7 +227,34 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
         return Promise.resolve(okAction);
       })
-      .catch((error: Taro.request.SuccessCallbackResult & { errMsg?: string, status?: number }) => {
+      .catch((error: Taro.request.SuccessCallbackResult & { status?: number } & Response) => {
+        if (successInvoked) {
+          return Promise.reject(error);
+        }
+
+        // H5     ok => statusCode | error => status
+        // Weapp  ok => statusCode | error => statusCode
+        // ...
+        if (error.status && !error.statusCode) {
+          error.statusCode = error.status;
+        }
+
+        /**
+         * H5 throws original response when fail.
+         * @see ./node_modules/@tarojs/taro-h5/src/api/request/index.js
+         **/
+        if (error.statusCode && !error.hasOwnProperty('data')) {
+          return new Promise((_, reject) => {
+            parseFetch(requestOptions, error).then((data) => {
+              error.data = data;
+              reject(error);
+            });
+          });
+        }
+
+        return Promise.reject(error);
+      })
+      .catch((error: Taro.request.SuccessCallbackResult) => {
         if (successInvoked) {
           return Promise.reject(error);
         }
@@ -235,12 +263,9 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
         let httpStatus: number | undefined;
         let businessCode: string | undefined;
 
-        // H5     ok => statusCode | error => status
-        // Weapp  ok => statusCode | error => statusCode
-        // ...
-        if (error.statusCode || error.status) {
+        if (error.statusCode) {
           const meta: HttpTransform = {
-            httpStatus: error.statusCode || error.status,
+            httpStatus: error.statusCode,
           };
 
           this.config.onRespondError(error, meta);

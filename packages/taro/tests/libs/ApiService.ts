@@ -55,9 +55,6 @@ export const $api = new ApiService<{ error: string }>({
   headers: () => {
     return {};
   },
-  isSuccess: () => {
-    return true;
-  },
   onRespondError: (response, meta) => {
     meta.message = response.data.error;
   },
