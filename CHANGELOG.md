@@ -13,8 +13,50 @@ yarn remove redux react-redux @types/react-redux
 - import { connect } from 'react-redux'
 + import { connect } from '@redux-model/react'
 ```
-* 新增 方法 `resetStore()`，用于重置所有模型数据，并支持部分模型保留数据 <br>
+* 新增 全局方法 `resetStore()`，用于重置所有模型数据，并支持部分模型保留数据 <br>
+```diff
+import { resetStore } from '@redux-model/react';
+
+logout().then(() => {
++ resetStore();
+});
+```
+* 新增 模型实例方法 `keepOnResetStore()`，用于重置数据时保护当前模型不被影响 <br>
+```diff
+class TestModel extends Model<Data> {
+  protected initialState(): Data {
+    return {};
+  }
+
++ protected keepOnResetStore() {
++   return true;
++ }
+}
+```
 * 新增 模型静态方法 `init()`，用于延迟自动注册以满足定制初始化数据的需求 <br>
+```diff
+interface Data {
+  counter: number;
+}
+
+class TestModel extends Model<Data> {
++ protected readonly initCounter: number;
+
+  constructor(p1: number) {
+    super();
++   this.initCounter = p1;
+  }
+
+  protected initialState(): Data {
+    return {
++     counter: this.initCounter,
+    };
+  }
+}
+
+- const testModel = new TestModel(10);  // testModel.data.counter === undefined
++ const testModel = TestModel.init(10); // testModel.data.counter === 10
+```
 * 重构 模型实例方法 `effects()` 重命名为 `subscriptions`，更具表达力 <br>
 ```diff
 class TestModel extends Model {
