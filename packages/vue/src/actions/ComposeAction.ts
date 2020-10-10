@@ -1,10 +1,10 @@
 import * as Vue from 'vue';
-import { ComposeAction as BaseComponseAction, Meta } from '@redux-model/core';
+import { ComposeAction as BaseComponseAction, ComposeMeta } from '@redux-model/core';
 
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseComponseAction<Data, Runner> {
-  public useMeta(): Vue.ComputedRef<Meta>;
-  public useMeta<T extends keyof Meta>(key?: T): Vue.ComputedRef<Meta[T]>;
-  public useMeta<T extends keyof Meta>(key?: T): Vue.ComputedRef<Meta | Meta[T]> {
+  public useMeta(): Vue.ComputedRef<ComposeMeta>;
+  public useMeta<T extends keyof ComposeMeta>(key?: T): Vue.ComputedRef<ComposeMeta[T]>;
+  public useMeta<T extends keyof ComposeMeta>(key?: T): Vue.ComputedRef<ComposeMeta | ComposeMeta[T]> {
     return Vue.computed(() => {
       return key ? this.meta[key] : this.meta;
     });
