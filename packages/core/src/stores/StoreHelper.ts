@@ -4,6 +4,7 @@ import { StoreNotFoundError } from '../exceptions/StoreNotFoundError';
 import { BaseModel } from '../models/BaseModel';
 import { Persist, PersistStorage } from './Persist';
 import ACTION_TYPES from '../utils/actionType';
+import { fromSSR } from '../utils/ssr';
 
 export interface ReduxStoreConfig<Engine extends string = 'memory'> {
   /**
@@ -34,7 +35,7 @@ export interface ReduxStoreConfig<Engine extends string = 'memory'> {
 export class StoreHelper {
   protected readonly _persist: Persist;
   protected _store?: Store;
-  protected reducers: IReducers = {};
+  public/*protected*/ reducers: IReducers = {};
   protected reducerKeys: string[] = [];
   protected dispatching: boolean = false;
   protected state: object = {};
@@ -46,7 +47,7 @@ export class StoreHelper {
   }
 
   createStore(config: ReduxStoreConfig = {}): Store {
-    const { reducers, preloadedState, middleware } = config;
+    const { reducers, middleware } = config;
     const customCompose = (() => {
       switch (config.compose) {
         case 'redux-devtools':
@@ -71,7 +72,7 @@ export class StoreHelper {
     } else {
       store = this._store = createStore(
         this.combined,
-        preloadedState,
+        config.preloadedState || fromSSR(),
         customCompose(applyMiddleware.apply(null, middleware || []))
       );
     }

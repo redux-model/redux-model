@@ -5,6 +5,7 @@ import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import ACTION_TYPES from '../utils/actionType';
+import { appendInitialStateToReducer } from '../utils/ssr';
 
 export interface IReducers {
   [key: string]: (state: any, action: any) => any;
@@ -53,7 +54,7 @@ export class BaseReducer<Data> {
     }
 
     return {
-      [this.name]: this.reducer.bind(this),
+      [this.name]: appendInitialStateToReducer(this.reducer.bind(this), this.initialState),
     };
   }
 

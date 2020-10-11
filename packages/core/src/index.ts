@@ -12,5 +12,6 @@ export * from './utils/method';
 export * from './utils/httpStatusCode';
 export * from './utils/isCrushed';
 export * from './utils/actionType';
+export * from './utils/ssr';
 export * from './services/BaseHttpService';
 export * from './services/HttpServiceBuilder';
