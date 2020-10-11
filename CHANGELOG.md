@@ -75,6 +75,8 @@ class TestModel extends Model {
 * 删除 模型构造函数中的 `alias` 参数，即使出现同名类，重写方法 `getReducerName()` 即可 <br>
 * 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>
 * 删除 `createReduxStore.onCombineReducers` 属性，缺少使用场景 <br>
+* 修复 Taro-h5请求异常时未解析data
+* 修复 Taro-h5请求不支持abort操作
 
 # 8.2.2
 * Support es modules <br>
