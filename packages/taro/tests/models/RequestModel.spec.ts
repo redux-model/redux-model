@@ -106,27 +106,27 @@ test('Request not found', async () => {
 //   }
 // });
 
-// test('Easy to abort request action', (done) => {
-//   const promise = model.getNpmInfo('redux');
+test('Easy to abort request action', (done) => {
+  const promise = model.getNpmInfo('redux');
 
-//   promise
-//     .catch((e: IResponseAction) => {
-//       expect(e.type).toBe(model.getNpmInfo.getFailType());
-//       expect(e.message).toBe('Abort');
+  promise
+    .catch((e: IResponseAction) => {
+      expect(e.type).toBe(model.getNpmInfo.getFailType());
+      expect(e.message).toBe('Aborted');
 
-//       const promise = model.getNpmInfo('react-redux');
-//       promise
-//         .catch((e: IResponseAction) => {
-//           expect(e.type).toBe(model.getNpmInfo.getFailType());
+      const promise = model.getNpmInfo('react-redux');
+      promise
+        .catch((e: IResponseAction) => {
+          expect(e.type).toBe(model.getNpmInfo.getFailType());
 
-//           done();
-//         });
+          done();
+        });
 
-//       promise.cancel();
-//     });
+      promise.cancel();
+    });
 
-//   promise.cancel();
-// });
+  promise.cancel();
+});
 
 describe('Request action has three kinds of reducer event', () => {
   test('case onPrepare', () => {

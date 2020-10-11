@@ -110,7 +110,7 @@ test('Easy to abort request action', (done) => {
   promise
     .catch((e: IResponseAction) => {
       expect(e.type).toBe(model.getNpmInfo.getFailType());
-      expect(e.message).toBe('Abort');
+      expect(e.message).toBe('Aborted');
 
       const promise = model.getNpmInfo('react-redux');
       promise
