@@ -131,7 +131,9 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
   }
 
   public/*protected*/ runAction(action: IRequestAction): FetchHandle {
-    this.config.beforeSend && this.config.beforeSend(action);
+    const config = this.config;
+
+    config.beforeSend && config.beforeSend(action);
 
     // For service.xxxAsync(), prepare, success and fail are all empty string.
     const { prepare, success, fail } = action.type;
@@ -139,10 +141,10 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     const requestOptions: Taro.request.Option = {
       url: action.uri,
       method: action.method as any,
-      ...this.config.requestConfig,
+      ...config.requestConfig,
       ...action.requestOptions,
       header: {
-        ...this.config.headers(action),
+        ...config.headers(action),
         ...action.requestOptions.header,
       },
     };
@@ -151,7 +153,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
     // Make sure url is not absolute link
     if (!~url.indexOf('://')) {
-      url = this.config.baseUrl + url;
+      url = config.baseUrl + url;
     }
 
     const throttleUrl = url;
@@ -196,18 +198,34 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       return throttleData;
     }
 
-    const task = this.request(requestOptions);
-    const canceler = task.abort;
     let successInvoked = false;
+    let canceler: HttpCanceler | undefined;
+    let fetchAbort: AbortController | undefined;
+
+    // H5 fetch() doesn't support abort
+    if (process.env.TARO_ENV === 'h5' && typeof AbortController === 'function') {
+      fetchAbort = new AbortController();
+      // @ts-ignore
+      requestOptions.signal = fetchAbort.signal;
+      // Be careful to keep scope
+      canceler = fetchAbort.abort.bind(fetchAbort);
+    }
+
+    const task = this.request(requestOptions);
+
+    // H5 fetch() doesn't support abort
+    if (!canceler && task.abort) {
+      canceler = task.abort.bind(task);
+    }
 
     const promise = task
       .then((httpResponse) => {
-        if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 || (this.config.isSuccess && !this.config.isSuccess(httpResponse))) {
+        if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 || (config.isSuccess && !config.isSuccess(httpResponse))) {
           return Promise.reject(httpResponse);
         }
 
-        if (this.config.onRespondSuccess) {
-          this.config.onRespondSuccess(httpResponse);
+        if (config.onRespondSuccess) {
+          config.onRespondSuccess(httpResponse);
         }
 
         const okAction: RequestSuccessAction = {
@@ -259,26 +277,41 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           return Promise.reject(error);
         }
 
+        const errMsg = error.errMsg;
+        let isCancel: boolean = false;
         let errorMessage: string;
         let httpStatus: number | undefined;
         let businessCode: string | undefined;
 
-        if (error.statusCode) {
+        if (
+          // @ts-ignore
+          (fetchAbort && error.name === 'AbortError')
+          ||
+          (errMsg && /abort/i.test(errMsg))
+        ) {
+          isCancel = true;
+        }
+
+        if (isCancel) {
+          errorMessage = 'Aborted';
+        } else if (error.statusCode) {
           const meta: HttpTransform = {
             httpStatus: error.statusCode,
           };
 
-          this.config.onRespondError(error, meta);
+          config.onRespondError(error, meta);
           errorMessage = action.failText || meta.message || 'Fail to fetch api';
           httpStatus = meta.httpStatus;
           businessCode = meta.businessCode;
         } else {
           errorMessage = 'Fail to request api';
 
-          if (error.errMsg && /timeout/i.test(error.errMsg)) {
-            errorMessage = this.config.timeoutMessage ? this.config.timeoutMessage(error.errMsg): error.errMsg;
-          } else if (error.errMsg && /fail/i.test(error.errMsg)) {
-            errorMessage = this.config.networkErrorMessage ? this.config.networkErrorMessage(error.errMsg) : error.errMsg;
+          if (errMsg) {
+            if (/timeout/i.test(errMsg)) {
+              errorMessage = config.timeoutMessage ? config.timeoutMessage(errMsg): errMsg;
+            } else if (/fail/i.test(errMsg)) {
+              errorMessage = config.networkErrorMessage ? config.networkErrorMessage(errMsg) : errMsg;
+            }
           }
         }
 
@@ -296,7 +329,10 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
         };
 
         fail && storeHelper.dispatch(errorResponse);
-        this.triggerShowError(errorResponse, action.hideError);
+
+        if (!isCancel) {
+          this.triggerShowError(errorResponse, action.hideError);
+        }
 
         if (listener.canReject()) {
           return Promise.reject(errorResponse);
@@ -308,7 +344,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     const listener = new PromiseListenCatch(promise);
     // @ts-ignore
     const fakePromise: FetchHandle<any, any> = listener;
-    fakePromise.cancel = canceler;
+    fakePromise.cancel = canceler || (() => {});
 
     return fakePromise;
   }

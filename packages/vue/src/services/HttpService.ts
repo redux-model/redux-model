@@ -133,7 +133,9 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
   }
 
   public/*protected*/ runAction(action: IRequestAction): FetchHandle {
-    this.config.beforeSend && this.config.beforeSend(action);
+    const config = this.config;
+
+    config.beforeSend && config.beforeSend(action);
 
     // For service.xxxAsync(), prepare, success and fail are all empty string.
     const { prepare, success, fail } = action.type;
@@ -145,7 +147,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       method: action.method as AxiosRequestConfig['method'],
       ...action.requestOptions,
       headers: {
-        ...this.config.headers(action),
+        ...config.headers(action),
         ...action.requestOptions.headers,
       },
     };
@@ -181,14 +183,14 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
 
     const promise = this.httpHandler.request(requestOptions)
       .then((httpResponse) => {
-        if (this.config.isSuccess && !this.config.isSuccess(httpResponse)) {
+        if (config.isSuccess && !config.isSuccess(httpResponse)) {
           return Promise.reject({
             response: httpResponse,
           });
         }
 
-        if (this.config.onRespondSuccess) {
-          this.config.onRespondSuccess(httpResponse);
+        if (config.onRespondSuccess) {
+          config.onRespondSuccess(httpResponse);
         }
 
         const okAction: RequestSuccessAction = {
@@ -219,13 +221,13 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
         let businessCode: string | undefined;
 
         if (isCancel) {
-          errorMessage = error.message || 'Abort';
+          errorMessage = error.message || 'Aborted';
         } else if (error.response) {
           const meta: HttpTransform = {
             httpStatus: error.response.status,
           };
 
-          this.config.onRespondError(error.response as HttpResponse, meta);
+          config.onRespondError(error.response as HttpResponse, meta);
           errorMessage = action.failText || meta.message || 'Fail to request api';
           httpStatus = meta.httpStatus;
           businessCode = meta.businessCode;
@@ -233,9 +235,9 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
           errorMessage = error.message;
 
           if (/^timeout\sof\s\d+m?s\sexceeded$/i.test(errorMessage)) {
-            errorMessage = this.config.timeoutMessage ? this.config.timeoutMessage(errorMessage) : errorMessage;
+            errorMessage = config.timeoutMessage ? config.timeoutMessage(errorMessage) : errorMessage;
           } else if (/Network\sError/i.test(errorMessage)) {
-            errorMessage = this.config.networkErrorMessage ? this.config.networkErrorMessage(errorMessage) : errorMessage;
+            errorMessage = config.networkErrorMessage ? config.networkErrorMessage(errorMessage) : errorMessage;
           }
         }
 
