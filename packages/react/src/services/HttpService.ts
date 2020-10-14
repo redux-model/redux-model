@@ -13,7 +13,7 @@ export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
   /**
    * Axios original config
    */
-  requestConfig?: AxiosRequestConfig;
+  requestOptions?: AxiosRequestConfig;
   /**
    * Collect http-status, error-message and business-code to meta. And error-message will display by invoke method `onShowError`.
    *
@@ -107,7 +107,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
       timeout: 20000,
       withCredentials: false,
       responseType: 'json',
-      ...config.requestConfig,
+      ...config.requestOptions,
     });
   }
 
