@@ -1,5 +1,7 @@
 # 9.0.0
-* 自动引入了 `redux` 和 `react-redux`，请将项目中相关的库删除 <br>
+
+## Breaking
+* 重构 自动引入了 `redux` 和 `react-redux`，请将项目中相关的库删除 <br>
 ```bash
 yarn remove redux react-redux @types/react-redux
 ```
@@ -13,6 +15,27 @@ yarn remove redux react-redux @types/react-redux
 - import { connect } from 'react-redux'
 + import { connect } from '@redux-model/react'
 ```
+* 重构 模型实例方法 `effects()` 重命名为 `subscriptions()`，更具表达力 <br>
+```diff
+class TestModel extends Model {
+- protected effects(): Effects<Data> {
++ protected subscriptions(): Subscriptions<Data> {
+    return [
+      ...,
+      ...,
+    ];
+  }
+}
+```
+* 重构 模型实例方法 `useData` 总是采用浅对比的方式获取数据，以降低组件重渲染的概率 <br>
+* 重构 请求服务属性 `requestConfig` 重命名为 `requestOptions`，统一名称 <br>
+* 删除 模型实例方法 `autoRegister()`，模型一定是自动注册的 <br>
+* 删除 模型实例方法 `register()`，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xyzModel'`即可 <br>
+* 删除 模型构造函数中的 `alias` 参数，即使出现同名类，重写方法 `getReducerName()` 即可 <br>
+* 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>
+* 删除 `createReduxStore.onCombineReducers` 属性，缺少使用场景 <br>
+
+## Features
 * 新增 全局方法 `resetStore()`，用于重置所有模型数据，并支持部分模型保留数据 <br>
 ```diff
 import { resetStore } from '@redux-model/react';
@@ -57,24 +80,8 @@ class TestModel extends Model<Data> {
 - const testModel = new TestModel(10);  // testModel.data.counter === undefined
 + const testModel = TestModel.init(10); // testModel.data.counter === 10
 ```
-* 重构 模型实例方法 `effects()` 重命名为 `subscriptions`，更具表达力 <br>
-```diff
-class TestModel extends Model {
-- protected effects(): Effects<Data> {
-+ protected subscriptions(): Subscriptions<Data> {
-    return [
-      ...,
-      ...,
-    ];
-  }
-}
-```
-* 重构 模型实例方法 `useData` 总是采用浅对比的方式获取数据，以降低组件重渲染的概率 <br>
-* 删除 模型实例方法 `autoRegister()`，模型一定是自动注册的 <br>
-* 删除 模型实例方法 `register()`，您无需手动注册。在代码分离时，如果您想提前注册，直接在入口`import 'xyzModel'`即可 <br>
-* 删除 模型构造函数中的 `alias` 参数，即使出现同名类，重写方法 `getReducerName()` 即可 <br>
-* 删除 `HttpService.transformSuccessData`，并引入 `HttpService.onRespondSuccess` 做为代替属性 <br>
-* 删除 `createReduxStore.onCombineReducers` 属性，缺少使用场景 <br>
+
+## Fixes
 * 修复 Taro-h5请求异常时未解析data
 * 修复 Taro-h5请求不支持abort操作
 
