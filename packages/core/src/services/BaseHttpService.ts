@@ -29,7 +29,7 @@ export interface BaseHttpServiceConfig {
    * @example http://api.com/api
    */
   baseUrl: string;
-  requestConfig?: object;
+  requestOptions?: object;
   /**
    * Display your success message to the screen. It only happens when you specific the successText in action.
    * ```javascript
@@ -118,31 +118,31 @@ export abstract class BaseHttpService<T extends BaseHttpServiceConfig, CancelFn>
     return new BaseRequestAction(fn, this);
   }
 
-  public getAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+  public getAsync<Response>(config: OrphanRequestOptions<T['requestOptions']>): FetchHandle<Response, unknown, CancelFn> {
     return this.runService(config, METHOD.get);
   }
 
-  public postAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+  public postAsync<Response>(config: OrphanRequestOptions<T['requestOptions']>): FetchHandle<Response, unknown, CancelFn> {
     return this.runService(config, METHOD.post);
   }
 
-  public putAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+  public putAsync<Response>(config: OrphanRequestOptions<T['requestOptions']>): FetchHandle<Response, unknown, CancelFn> {
     return this.runService(config, METHOD.put);
   }
 
-  public deleteAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+  public deleteAsync<Response>(config: OrphanRequestOptions<T['requestOptions']>): FetchHandle<Response, unknown, CancelFn> {
     return this.runService(config, METHOD.delete);
   }
 
-  public patchAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+  public patchAsync<Response>(config: OrphanRequestOptions<T['requestOptions']>): FetchHandle<Response, unknown, CancelFn> {
     return this.runService(config, METHOD.patch);
   }
 
-  public connectAsync<Response>(config: OrphanRequestOptions<T['requestConfig']>): FetchHandle<Response, unknown, CancelFn> {
+  public connectAsync<Response>(config: OrphanRequestOptions<T['requestOptions']>): FetchHandle<Response, unknown, CancelFn> {
     return this.runService(config, METHOD.connect);
   }
 
-  protected runService(config: OrphanRequestOptions<T['requestConfig']>, method: METHOD) {
+  protected runService(config: OrphanRequestOptions<T['requestOptions']>, method: METHOD) {
     const service = new OrphanHttpService(config, method);
     return this.runAction(service.collect());
   }

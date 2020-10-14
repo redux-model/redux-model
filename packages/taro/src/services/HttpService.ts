@@ -18,7 +18,7 @@ export interface HttpServiceConfig<ErrorData> extends BaseHttpServiceConfig {
   /**
    * Taro original config
    */
-  requestConfig?: TaroRequestConfig;
+  requestOptions?: TaroRequestConfig;
   /**
    * Collect http-status, error-message and business-code to meta. And error-message will display by invoke method `onShowError`.
    *
@@ -141,7 +141,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     const requestOptions: Taro.request.Option = {
       url: action.uri,
       method: action.method as any,
-      ...config.requestConfig,
+      ...config.requestOptions,
       ...action.requestOptions,
       header: {
         ...config.headers(action),
