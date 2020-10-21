@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/vue",
-  "version": "9.0.0-alpha.5",
+  "version": "9.0.0",
   "keywords": [
     "vue",
     "redux-model",
@@ -28,7 +28,7 @@
     "vue": "^3.0.0"
   },
   "dependencies": {
-    "@redux-model/core": "9.0.0-alpha.5",
+    "@redux-model/core": "9.0.0",
     "axios": "0.19.2",
     "clone": "2.1.2",
     "deep-diff": "1.0.2",
