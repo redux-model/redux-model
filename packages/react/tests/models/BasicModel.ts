@@ -12,6 +12,11 @@ type Data = Response;
 export class BasicModel extends TestModel<Data> {
   name = '';
 
+  // @ts-expect-error
+  typeCheckStateReturn = this.action((state) => {
+    return state;
+  });
+
   modify = this.action((state, payload: Partial<Data>) => {
     Object.assign(state, payload);
   });
