@@ -34,7 +34,7 @@
     "deep-diff": "1.0.2",
     "promise-listen-catch": "1.0.0",
     "redux": "4.0.5",
-    "tslib": "2.0.2"
+    "tslib": "2.0.3"
   },
   "devDependencies": {
     "@types/clone": "^0.1.30",
