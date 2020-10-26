@@ -27,6 +27,31 @@ ReactDOM.render(
 );
 
 ```
+#### ** Taro **
+```typescript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { createReduxStore, PersistGate, Provider } from '@redux-mode/taro';
+
+const store = createReduxStore({
+  persist: {
+    key: 'PROJECT_NAME',
+    version: 1,
+    storage: 'taro',
+    allowlist: {},
+  },
+});
+
+ReactDOM.render(
+  <Provider store={store}>
+    <PersistGate>
+      <div>Hello world</div>
+    </PersistGate>
+  </Provider>,
+  document.getElementById('root')
+);
+
+```
 #### ** Vue **
 ```typescript
 <template>
@@ -60,13 +85,13 @@ export default {
 ##### key
 持久层存放数据的名称，建议您以项目名作为key值。
 #### version
-数据的版本号，当传入的版本号与持久层中的版本号对应不上时，持久层中的数据便会被丢弃。
+数据的版本号，当传入的版本号与持久层中的版本号对应不上时，持久层中的数据便会被丢弃。**（请谨慎修改）**
 #### storage
 持久层引擎，框架已提供常用的引擎：
-* `local` => 浏览器 localStorage
-* `session` => 浏览器 sessionStorge
+* `local` => 浏览器专用的 localStorage
+* `session` => 浏览器专用的 sessionStorge
+* `taro` => **Taro**项目请选择这个引擎
 * `memory` => 内存，常用于测试
-* `taro` => Taro框架专用引擎
 
 对于RN项目，您可以直接引入`@react-native-community/async-storage`作为引擎。
 
@@ -91,7 +116,7 @@ export default {
 
 * 持久层数据携带过期的字段，如果过期（比如token），则仍使用初始数据。
 * 持久层数据恢复时，需要更新部分字段，如时间戳和一些根据外部条件动态改变的状态。
-* 持久层数据类型变化（推荐变更`persist.version`重置持久层）
+* 持久层数据类型变化（推荐修改`persist.allowlist`的key值来重置单个模型）
 
 您只需在模型中增加一个保护方法即可：
 ```typescript
