@@ -1,10 +1,16 @@
 import { Subscriptions, FilterPersist, AnyModel } from '../models/BaseModel';
 import { RequestSuccessAction, RequestFailAction, RequestPrepareAction } from '../actions/BaseRequestAction';
 import { IActionNormal } from '../actions/NormalAction';
-import { isDraftable, createDraft, finishDraft, isDraft } from 'immer';
+import { isDraftable, createDraft, finishDraft, isDraft, enableES5, enableMapSet } from 'immer';
 import { storeHelper } from '../stores/StoreHelper';
 import { StateReturnRequiredError } from '../exceptions/StateReturnRequiredError';
 import ACTION_TYPES from '../utils/actionType';
+
+// Since immer@6, support for the fallback implementation has to be explicitly enabled by calling enableES5()
+// https://immerjs.github.io/immer/docs/installation#pick-your-immer-version
+enableES5();
+// We can't stop developer to use Map and Set in redux.
+enableMapSet();
 
 export interface IReducers {
   [key: string]: (state: any, action: any) => any;
