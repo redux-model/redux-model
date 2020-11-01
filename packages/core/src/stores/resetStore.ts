@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux';
-import { storeHelper } from '..';
+import { storeHelper } from './StoreHelper';
 import ACTION_TYPES from '../utils/actionType';
 
 /**
