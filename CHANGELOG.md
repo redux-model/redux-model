@@ -15,8 +15,8 @@ yarn remove redux react-redux @types/react-redux
 - import { Middleware } from 'redux'
 + import { Middleware } from '@redux-model/react'
 
-- import { Provide } from 'react-redux'
-+ import { Provide } from '@redux-model/react'
+- import { Provider } from 'react-redux'
++ import { Provider } from '@redux-model/react'
 
 - import { connect } from 'react-redux'
 + import { connect } from '@redux-model/react'
