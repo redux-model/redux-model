@@ -29,9 +29,8 @@ ReactDOM.render(
 ```
 #### ** Taro **
 ```typescript
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { createReduxStore, PersistGate, Provider } from '@redux-mode/taro';
+// app.tsx
+import { createReduxStore, PersistGate } from '@redux-mode/taro';
 
 const store = createReduxStore({
   persist: {
@@ -42,16 +41,29 @@ const store = createReduxStore({
   },
 });
 
-ReactDOM.render(
-  <Provider store={store}>
-    <PersistGate>
-      <div>Hello world</div>
-    </PersistGate>
-  </Provider>,
-  document.getElementById('root')
-);
-
 ```
+因为一些已知的[官方原因(点击查看)](https://github.com/NervJS/taro/issues/6548#issuecomment-717896033)，PersistGate不能放在app入口，只能放在首页入口组件中。
+
+放在首页会存在一个**隐患**。如果访问的小程序带上了路径，那么首页会被直接跳过，里面的PersistGate也不会执行，起不到守卫的作用，数据也不再安全。
+
+```typescript
+// pages/index/index.tsx
+import React, { Component } from 'react';
+import { createReduxStore, PersistGate } from '@redux-mode/taro';
+
+class Index extends Component {
+  render() {
+    return (
+      <PersistGate>
+        <View>
+          <Text>Hello, World</Text>
+        </View>
+      </PersistGate>
+    );
+  }
+}
+```
+
 #### ** Vue **
 ```typescript
 <template>

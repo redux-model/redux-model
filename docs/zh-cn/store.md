@@ -16,8 +16,27 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
-
 ```
+#### ** Taro **
+```typescript
+import React, { Component } from 'react';
+import { createReduxStore, Provider } from '@redux-model/taro';
+
+const store = createReduxStore();
+
+class App extends Component {
+  render() {
+    return (
+      <Provider store={store}>
+        <View>
+          <Text>Hello world</Text>
+        </View>
+      </Provider>
+    );
+  }
+}
+```
+
 #### ** Vue **
 ```typescript
 <template>
