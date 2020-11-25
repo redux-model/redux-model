@@ -142,7 +142,7 @@ export default connect(mapStateToProps)(App);
 * git clone 你fork的仓库
 * yarn install && yarn bootstrap
 
-执行测试用例请使用 `yarn test`
+执行测试用例请使用 `yarn test` <br>
 修改在线文档请使用 `yarn docs`
 
 ---------------------

@@ -142,7 +142,7 @@ Here is the [document](https://redux-model.github.io/redux-model)
 * git clone YOUR_FORK_REPO
 * yarn install && yarn bootstrap
 
-To check test, run `yarn test`
+To check test, run `yarn test` <br>
 To edit document, run `yarn docs`
 
 ---------------------
