@@ -6,6 +6,7 @@
   "scripts": {
     "next": "lerna run build && lerna publish --dist-tag=next",
     "latest": "lerna run build && lerna publish",
+    "local": "rm -rf packages/*/build && lerna run build && lerna version --no-git-tag-version --no-push",
     "test": "rm -rf packages/*/build && yarn relink && lerna run tsc && jest --runInBand",
     "bootstrap": "lerna clean -y && lerna bootstrap && yarn relink",
     "relink": "lerna run relink && bash scripts/vue.sh && bash scripts/taro.sh",
