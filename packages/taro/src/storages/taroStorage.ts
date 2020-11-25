@@ -5,22 +5,25 @@ const TaroJS = getTaro();
 
 const taro: PersistStorage = {
   getItem(key) {
-    return Promise.resolve().then(() => {
-      try {
-        const data = TaroJS.getStorageSync(key);
-        if (data === '') {
-          return null;
-        }
-        return typeof data === 'string' ? data : null;
-      } catch (e) {
-        // Mini program will throw error when key is not found.
-        return null;
-      }
+    return new Promise((resolve) => {
+      TaroJS.getStorage({ key })
+        .then(({ data }) => {
+          resolve(typeof data === 'string' ? data : null);
+        })
+        .catch(() => {
+          // Mini program will throw error when key is not found.
+          resolve(null);
+        });
     });
   },
   setItem(key, value) {
-    return Promise.resolve().then(() => {
-      return TaroJS.setStorageSync(key, value);
+    return new Promise((resolve) => {
+      TaroJS.setStorage({
+        key,
+        data: value,
+      }).then(() => {
+        resolve();
+      });
     });
   },
 };
