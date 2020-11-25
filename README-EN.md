@@ -138,6 +138,13 @@ export default connect(mapStateToProps)(App);
 
 Here is the [document](https://redux-model.github.io/redux-model)
 
+# Development
+* git clone YOUR_FORK_REPO
+* yarn install && yarn bootstrap
+
+To check test, run `yarn test`
+To edit document, run `yarn docs`
+
 ---------------------
 
 Feel free to use it and welcome to send PR to me.

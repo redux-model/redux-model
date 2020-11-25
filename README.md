@@ -138,6 +138,13 @@ export default connect(mapStateToProps)(App);
 
 请点击[这里查看文档](https://redux-model.github.io/redux-model)
 
+# 本地开发
+* git clone 你fork的仓库
+* yarn install && yarn bootstrap
+
+执行测试用例请使用 `yarn test`
+修改在线文档请使用 `yarn docs`
+
 ---------------------
 
 欢迎使用并随时给我建议
