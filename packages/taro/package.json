@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@redux-model/core": "9.0.2",
-    "@types/react-redux": "7.1.9",
+    "@types/react-redux": "7.1.11",
     "promise-listen-catch": "1.0.0",
     "qs": "6.9.4",
-    "react-redux": "7.2.1",
+    "react-redux": "7.2.2",
     "redux": "4.0.5",
     "tslib": "2.0.3"
   },
