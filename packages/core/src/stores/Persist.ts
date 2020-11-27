@@ -33,7 +33,7 @@ export class Persist {
   // @ts-ignore It will exists by rehydrate()
   protected storage: PersistStorage;
 
-  protected timer?: NodeJS.Timeout;
+  protected timer?: number;
 
   constructor(storeHelper: StoreHelper) {
     this.helper = storeHelper;
@@ -251,8 +251,8 @@ export class Persist {
   }
 
   protected restore(): this {
-    this.timer !== undefined && clearTimeout(this.timer);
-    this.timer = setTimeout(this._restore, 8);
+    clearTimeout(this.timer);
+    this.timer = setTimeout(this._restore, 8) as unknown as number;
     return this;
   }
 
