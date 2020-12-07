@@ -8,7 +8,9 @@ import { parseFetch } from '../utils/parseFetch';
 
 export type TaroRequestConfig<T = any> = Partial<Taro.request.Option<T>>;
 
-export type HttpResponse<T = any> = Taro.request.SuccessCallbackResult<T>;
+export type HttpResponse<T = any> = Taro.request.SuccessCallbackResult<T> & {
+  config: Taro.request.Option;
+};
 
 export type HttpCanceler = () => void;
 
@@ -219,7 +221,8 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
     }
 
     const promise = task
-      .then((httpResponse) => {
+      .then((value) => {
+        const httpResponse: HttpResponse = { ...value, config: requestOptions };
         if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 || (config.isSuccess && !config.isSuccess(httpResponse))) {
           return Promise.reject(httpResponse);
         }
@@ -299,7 +302,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
             httpStatus: error.statusCode,
           };
 
-          config.onRespondError(error, meta);
+          config.onRespondError({ ...error, config: requestOptions }, meta);
           errorMessage = action.failText || meta.message || 'Fail to fetch api';
           httpStatus = meta.httpStatus;
           businessCode = meta.businessCode;
