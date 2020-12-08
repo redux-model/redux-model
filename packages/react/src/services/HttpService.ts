@@ -227,7 +227,7 @@ export class HttpService<ErrorData = any> extends BaseHttpService<HttpServiceCon
             httpStatus: error.response.status,
           };
 
-          config.onRespondError(error.response as HttpResponse, meta);
+          config.onRespondError(error.response, meta);
           errorMessage = action.failText || meta.message || 'Fail to request api';
           httpStatus = meta.httpStatus;
           businessCode = meta.businessCode;
