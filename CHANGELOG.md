@@ -1,3 +1,6 @@
+# 9.0.3
+[特性] Taro service在httpResponse参数中增加config属性
+
 # 9.0.2
 [修复] 模块循环引用的问题
 
