@@ -1,3 +1,6 @@
+# 9.0.4
+[修复] react-redux浅对比无法处理Map和Set对象
+
 # 9.0.3
 [特性] Taro service在httpResponse参数中增加config属性
 
