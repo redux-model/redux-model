@@ -1,5 +1,5 @@
 import * as ReactRedux from 'react-redux';
-import { BaseModel, HttpServiceBuilderWithMeta } from '@redux-model/core';
+import { BaseModel, HttpServiceBuilderWithMeta, shallowEqual } from '@redux-model/core';
 import { ComposeAction } from '../actions/ComposeAction';
 import { TaroRequestConfig } from '../services/HttpService';
 
@@ -31,7 +31,7 @@ export abstract class Model<Data = null> extends BaseModel<Data, TaroRequestConf
   public useData(selector?: (data: Data) => any): any {
     return ReactRedux.useSelector(() => {
       return selector ? selector(this.data) : this.data;
-    }, ReactRedux.shallowEqual);
+    }, shallowEqual);
   }
 
   /**

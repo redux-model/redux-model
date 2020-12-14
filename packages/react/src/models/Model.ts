@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { BaseModel } from '@redux-model/core';
+import { BaseModel, shallowEqual } from '@redux-model/core';
 import * as ReactRedux from 'react-redux';
 import { ComposeAction } from '../actions/ComposeAction';
 
@@ -23,7 +23,7 @@ export abstract class Model<Data = null> extends BaseModel<Data, AxiosRequestCon
   public useData(selector?: (data: Data) => any): any {
     return ReactRedux.useSelector(() => {
       return selector ? selector(this.data) : this.data;
-    }, ReactRedux.shallowEqual);
+    }, shallowEqual);
   }
 
   /**
