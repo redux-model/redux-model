@@ -1,6 +1,6 @@
 {
   "name": "@redux-model/taro",
-  "version": "9.0.3",
+  "version": "9.0.4",
   "keywords": [
     "react",
     "redux-model",
@@ -25,7 +25,7 @@
     "@tarojs/taro": "^3.0.0"
   },
   "dependencies": {
-    "@redux-model/core": "9.0.3",
+    "@redux-model/core": "9.0.4",
     "@types/react-redux": "7.1.11",
     "promise-listen-catch": "1.0.0",
     "qs": "6.9.4",
