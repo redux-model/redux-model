@@ -151,3 +151,59 @@ class TestModel extends Model<Data> {
 // 拦截自动注册
 export const testModel = TestModel.init(100);
 ```
+
+# 局部模型
+在hooks中，支持使用局部模型。所谓局部，就是仅在组件生命周期内有效，和react的`useReducer`功能类似。
+
+```typescript
+import { Model } from '@redux-model/react';
+
+interface Data {
+  count: number;
+}
+
+export class TestModel extends Model<Data> {
+  plus = this.action((state, payload: number) => {
+    state.count += payload;
+  });
+
+  protected initialState(): Data {
+    return {
+      count: 0,
+    };
+  }
+}
+
+// ---------------------
+
+import React, { FC } from 'react';
+import { TestModel } from '../models/TestModel';
+
+const App: FC = () => {
+  const model = useLocalModel(TestModel);
+  // 这是一个新的模型实例，model !== model2
+  const model2 = useLocalModel(TestModel);
+  const counter = model.useData((data) => data.count);
+
+  const increase = useCallback(() => {
+    model.plus(1);
+  }, [model]);
+
+  return (
+    <p onClick={increase}>Hello: {counter}</p>
+  );
+};
+```
+`useLocalModel`的参数随着模型类构造方法的参数变化而变化，并且会有相应的类型提示
+```typescript
+export class TestModel extends Model<Data> {
+  constructor(p1: boolean, p2: number) {
+    super();
+    ...
+  }
+}
+
+// -----------
+
+const testModel = useLocalModel(TestModel, true, 123);
+```

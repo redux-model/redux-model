@@ -13,5 +13,6 @@ export * from './utils/httpStatusCode';
 export * from './utils/isCrushed';
 export * from './utils/actionType';
 export * from './utils/shallowEqual';
+export { setModelAlias } from './utils/model';
 export * from './services/BaseHttpService';
 export * from './services/HttpServiceBuilder';

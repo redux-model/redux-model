@@ -330,4 +330,8 @@ export abstract class BaseModel<Data = null, RequestOption extends object = obje
     // @ts-ignore
     return builder;
   }
+
+  public/*private*/ _unregister() {
+    storeHelper.removeReducer(this._name);
+  }
 }

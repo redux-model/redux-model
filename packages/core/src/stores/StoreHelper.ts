@@ -80,18 +80,29 @@ export class StoreHelper {
   }
 
   appendReducers(autoReducer: IReducers): void {
-    // Only 0-1 reducer will be provided.
+    // Only exists 0 or 1 reducer.
     const key = Object.keys(autoReducer)[0];
 
     if (key) {
-      const store = this._store;
-      const exists = store && this.reducers.hasOwnProperty(key);
+      const exists = this.reducers.hasOwnProperty(key);
       this.reducers[key] = autoReducer[key];
 
-      if (store && !exists) {
-        this.reducerKeys = Object.keys(this.reducers);
-        store.replaceReducer(this.combined);
+      if (!exists) {
+        const store = this._store;
+
+        this.reducerKeys.push(key);
+        store && store.replaceReducer(this.combined);
       }
+    }
+  }
+
+  removeReducer(key: string): void {
+    if (this.reducers.hasOwnProperty(key)) {
+      const store = this._store;
+
+      delete this.reducers[key];
+      this.reducerKeys = Object.keys(this.reducers);
+      store && store.replaceReducer(this.combined);
     }
   }
 

@@ -4,6 +4,11 @@ import { AnyModel } from '../models/BaseModel';
 const instanceCounter: Record<string, number> = {};
 let modelCounter: number = 0;
 let currentModel: AnyModel;
+let globalAlias: string = '';
+
+export const setModelAlias = (alias: string) => {
+  globalAlias = alias;
+};
 
 export const getCurrentModel = (): AnyModel => {
   return currentModel;
@@ -14,8 +19,13 @@ export const getModelName = (model: AnyModel, alias?: string): string => {
     return 'm' + ++modelCounter;
   }
 
-  let instanceName = model.constructor.name + (alias ? `.${alias}` : '');
+  let instanceName = model.constructor.name
+    + (globalAlias ? `.${globalAlias}` : '')
+    + (alias ? `.${alias}` : '');
   const key = instanceName;
+
+  // Always reset global alias due to it's unique string.
+  globalAlias = '';
 
   if (instanceCounter[key] === undefined) {
     instanceCounter[key] = 0;
