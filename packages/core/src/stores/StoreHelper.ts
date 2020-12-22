@@ -98,11 +98,11 @@ export class StoreHelper {
 
   removeReducer(key: string): void {
     if (this.reducers.hasOwnProperty(key)) {
-      const store = this._store;
-
       delete this.reducers[key];
       this.reducerKeys = Object.keys(this.reducers);
-      store && store.replaceReducer(this.combined);
+      // It's unnecessary to call replaceReducer() here.
+      // 1: We don't need initial state.
+      // 2: Duo to different key length, the store.state will be refreshed once next action has been dispatched.
     }
   }
 
