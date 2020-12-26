@@ -3,7 +3,7 @@ import * as ReactRedux from 'react-redux';
 
 export class ComposeAction<Data, Runner extends (...args: any[]) => Promise<any>> extends BaseComponseAction<Data, Runner> {
   public useMeta(): ComposeMeta;
-  public useMeta<T extends keyof ComposeMeta>(key?: T): ComposeMeta[T];
+  public useMeta<T extends keyof ComposeMeta>(key: T): ComposeMeta[T];
   public useMeta<T extends keyof ComposeMeta>(key?: T): ComposeMeta | ComposeMeta[T] {
     return ReactRedux.useSelector(() => {
       return key ? this.meta[key] : this.meta;

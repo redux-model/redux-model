@@ -4,7 +4,7 @@ import * as ReactRedux from 'react-redux';
 
 export class RequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, AxiosRequestConfig, M>, Response, Payload, M> extends BaseRequestAction<Data, Builder, Response, Payload, M> {
   public useMeta(): Meta;
-  public useMeta<T extends keyof Meta>(key?: T): Meta[T];
+  public useMeta<T extends keyof Meta>(key: T): Meta[T];
   public useMeta<T extends keyof Meta>(key?: T): Meta | Meta[T] {
     return ReactRedux.useSelector(() => {
       return key ? this.meta[key] : this.meta;
