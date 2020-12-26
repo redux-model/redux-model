@@ -4,7 +4,7 @@ import { BaseRequestAction, HttpServiceBuilder, Meta, Metas } from '@redux-model
 
 export class RequestAction<Data, Builder extends (...args: any[]) => HttpServiceBuilder<Data, Response, Payload, AxiosRequestConfig, M>, Response, Payload, M> extends BaseRequestAction<Data, Builder, Response, Payload, M> {
   public useMeta(): Vue.ComputedRef<Meta>;
-  public useMeta<T extends keyof Meta>(key?: T): Vue.ComputedRef<Meta[T]>;
+  public useMeta<T extends keyof Meta>(key: T): Vue.ComputedRef<Meta[T]>;
   public useMeta<T extends keyof Meta>(key?: T): Vue.ComputedRef<Meta | Meta[T]> {
     return Vue.computed(() => {
       return key ? this.meta[key] : this.meta;
