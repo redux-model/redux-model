@@ -10,7 +10,7 @@
 const name = (() => {
   function CustomModel() {}
   return CustomModel.name;
-});
+})();
 
 const crushed = typeof name !== 'string' || name !== 'CustomModel';
 
