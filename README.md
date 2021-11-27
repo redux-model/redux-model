@@ -4,6 +4,15 @@
   </a>
 </h1>
 
+# 废弃通知
+**redux-model不再维护，请迁移到[foca](https://github.com/foca-js/foca)**
+
+经过对状态库多年积累和实践，以及个人技术方面的成长，发现用class写状态开发效率还是不够高，因此创建了一套新的状态库 [foca](https://github.com/foca-js/foca) ，它更极致、更高效，算是redux-model的**重制版**。虽然都是基于redux，但幸运的是foca和redux-model可以在一个项目里同时使用，数据互不干扰，再次欢迎使用foca。
+
+
+
+----------------------------
+
 [English Document](./README-EN.md)
 
 Redux-Model是为了弥补原生Redux繁琐的开发流程，开发者重复劳动效率低下，模板文件导致代码量臃肿，以及因action和reducer文件分散造成代码追踪困难的问题而设计的。
